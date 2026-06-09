@@ -1,4 +1,4 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
 export interface UserInfo { login: string; role: 'admin' | 'user'; }
 export interface GeoItem { key: string; label: string; registrationUrl: string; documentTypes: string[]; }
