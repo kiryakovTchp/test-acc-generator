@@ -32,7 +32,34 @@ export function fillTemplate(template: string) {
 }
 
 export function extractLinks(text: string) {
-  return [...text.matchAll(/https?:\/\/[^\s]+/g)].map((m) => m[0]);
+  return [...text.matchAll(/https?:\/\/[^\s)\]"'>]+/g)].map((m) => m[0]);
+}
+
+export function cleanEmailText(text: string) {
+  return text
+    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+export function dedupeLinks<T extends { url: string }>(links: T[]) {
+  const seen = new Set<string>();
+  return links.filter((link) => {
+    const normalized = normalizeUrl(link.url);
+    if (seen.has(normalized)) return false;
+    seen.add(normalized);
+    link.url = normalized;
+    return true;
+  });
+}
+
+export function pickPrimaryVerificationLink(links: Array<{ url: string; label?: string }>) {
+  return links.find((link) => /activate|verify|confirm|registration|complete/i.test(`${link.label ?? ''} ${link.url}`)) ?? links[0] ?? null;
+}
+
+function normalizeUrl(url: string) {
+  return url.replace(/[)\]>'".,]+$/g, '');
 }
 
 export function extractCodes(text: string) {

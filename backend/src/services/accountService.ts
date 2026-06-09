@@ -1,7 +1,7 @@
 import db from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
-import { fillTemplate, randomString, extractLinks, extractCodes, generatePersonaProfile } from '../utils.js';
+import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 
 const rules = geoRules as unknown as GeoRule[];
@@ -176,6 +176,7 @@ export function getHistoryDetail(id: number, userId: number) {
       receivedAt: row.inbox_received_at,
       plainText: row.inbox_plain_text ?? '',
       links: JSON.parse(row.inbox_links_json),
+      primaryVerificationLink: pickPrimaryVerificationLink(JSON.parse(row.inbox_links_json)),
       codes: JSON.parse(row.inbox_codes_json),
       rawHtml: row.inbox_html,
     },
@@ -202,9 +203,9 @@ function trimHistoryForUser(userId: number) {
 
 function toInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {
   const firstMessage = inbox[0];
-  const plainText = inbox.map((msg) => msg.plainText).filter(Boolean).join('\n\n');
+  const plainText = inbox.map((msg) => msg.cleanText ?? msg.plainText).filter(Boolean).join('\n\n');
   const rawHtml = inbox.map((msg) => msg.html).find(Boolean) ?? null;
-  const links = extractLinks([plainText, ...inbox.map((msg) => msg.html ?? '')].join('\n\n'));
+  const links = dedupeLinks(inbox.flatMap((msg) => msg.links ?? []));
   return {
     status: firstMessage ? 'email_received' : 'no_email_found',
     sender: firstMessage?.sender ?? '',

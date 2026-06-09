@@ -1,6 +1,6 @@
 import { simpleParser } from 'mailparser';
 import type { EmailAccount, EmailProvider, InboxMessage } from './emailProvider.js';
-import { randomString } from '../utils.js';
+import { cleanEmailText, dedupeLinks, extractLinks, pickPrimaryVerificationLink, randomString } from '../utils.js';
 
 interface MailTmDomain {
   domain: string;
@@ -122,12 +122,16 @@ export class MailTmProvider implements EmailProvider {
     });
 
     if (!response.ok) {
+      const rawText = preview.text ?? preview.htmlAsText ?? preview.intro ?? '';
+      const links = buildLinks(preview.html, rawText);
       return {
-        plainText: preview.text ?? preview.htmlAsText ?? preview.intro ?? '',
+        plainText: rawText,
+        cleanText: cleanEmailText(rawText),
         html: preview.html,
         sender: preview.from?.address ?? preview.from?.name,
         subject: preview.subject,
         receivedAt: preview.createdAt,
+        links,
       };
     }
 
@@ -135,12 +139,15 @@ export class MailTmProvider implements EmailProvider {
     const parsed = payload.source ? await safeParseSource(payload.source) : null;
     const plainText = parsed?.text ?? payload.text ?? payload.htmlAsText ?? payload.intro ?? '';
     const html = normalizeHtml(parsed?.html) ?? normalizeHtml(payload.html) ?? normalizeHtml(payload.textAsHtml);
+    const links = buildLinks(html, plainText);
     return {
       plainText,
+      cleanText: cleanEmailText(plainText),
       html,
       sender: payload.from?.address ?? payload.from?.name,
       subject: payload.subject,
       receivedAt: payload.createdAt,
+      links,
     };
   }
 }
@@ -159,4 +166,19 @@ async function safeParseSource(source: string) {
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function buildLinks(html: string | undefined, text: string) {
+  const fromHtml = extractAnchorLinks(html ?? '');
+  const fromText = extractLinks(text).map((url) => ({ url }));
+  const merged = dedupeLinks([...fromHtml, ...fromText]);
+  const primary = pickPrimaryVerificationLink(merged);
+  return merged.map((link) => ({ ...link, isPrimary: primary?.url === link.url }));
+}
+
+function extractAnchorLinks(html: string) {
+  return [...html.matchAll(/<a\b[^>]*href=["']([^"']+)["'][^>]*>(.*?)<\/a>/gis)].map((match) => ({
+    url: match[1],
+    label: match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim() || undefined,
+  }));
 }

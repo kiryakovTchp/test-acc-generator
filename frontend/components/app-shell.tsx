@@ -30,7 +30,7 @@ interface Detail {
   registrationUrl: string;
   registrationUrlStatus: 'real' | 'placeholder';
   fullProfileText: string;
-  inbox: { status: 'waiting_for_email' | 'email_received' | 'no_email_found'; sender: string; subject: string; receivedAt: string; plainText: string; links: string[]; codes: string[]; rawHtml?: string | null };
+  inbox: { status: 'waiting_for_email' | 'email_received' | 'no_email_found'; sender: string; subject: string; receivedAt: string; plainText: string; links: Array<{ url: string; label?: string; isPrimary?: boolean }>; primaryVerificationLink?: { url: string; label?: string; isPrimary?: boolean } | null; codes: string[]; rawHtml?: string | null };
   createdAt: string;
 }
 
@@ -322,7 +322,7 @@ export default function AppShell() {
 
               <div className="rounded-xl bg-slate-950 p-4">
                 <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-medium">Inbox plain text</p>
+                  <p className="font-medium">Email</p>
                   <div className="flex flex-wrap gap-2">
                     <button type="button" className="rounded border border-slate-700 px-3 py-1 text-xs" onClick={() => refreshInboxForDetail(0)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Refreshing...' : 'Refresh Inbox'}</button>
                     <button type="button" className="rounded border border-slate-700 px-3 py-1 text-xs" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting...' : 'Wait for Email (60s)'}</button>
@@ -334,6 +334,7 @@ export default function AppShell() {
                   {detail.inbox.subject ? <span>Subject: {detail.inbox.subject}</span> : null}
                   {detail.inbox.receivedAt ? <span>Received: {new Date(detail.inbox.receivedAt).toLocaleString()}</span> : null}
                 </div>
+                {detail.inbox.primaryVerificationLink ? <div className="mb-3 flex items-center gap-2"><button type="button" className="rounded bg-emerald-600 px-3 py-2 text-sm font-medium" onClick={() => window.open(detail.inbox.primaryVerificationLink!.url, '_blank')}>Open Verification Link</button><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`primary:${detail.inbox.primaryVerificationLink!.url}`, detail.inbox.primaryVerificationLink!.url)}>{copiedField === `primary:${detail.inbox.primaryVerificationLink!.url}` ? 'Copied' : 'Copy'}</button></div> : null}
                 <button type="button" className="w-full text-left whitespace-pre-wrap text-slate-300" onClick={() => copyValue(`inbox:${detail.id}`, detail.inbox.plainText || '')}>
                   {detail.inbox.plainText || 'No messages yet'}
                 </button>
@@ -342,11 +343,11 @@ export default function AppShell() {
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl bg-slate-950 p-4">
-                  <p className="mb-2 font-medium">Extracted links</p>
-                  <ul className="space-y-2">{detail.inbox.links.map((link) => <li key={link} className="flex items-start gap-2"><a href={link} target="_blank" className="break-all">{link}</a><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => window.open(link, '_blank')}>Open Link</button><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`link:${link}`, link)}>{copiedField === `link:${link}` ? 'Copied' : 'Copy'}</button></li>)}</ul>
+                  <p className="mb-2 font-medium">Links Found</p>
+                  <ul className="space-y-3">{detail.inbox.links.map((link) => <li key={link.url} className="rounded border border-slate-800 p-3"><div className="mb-1 font-medium text-slate-200">{link.label || 'Link'}</div><div className="break-all text-xs text-slate-400">{link.url}</div><div className="mt-2 flex gap-2"><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => window.open(link.url, '_blank')}>{link.isPrimary ? 'Open Verification Link' : 'Open Link'}</button><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`link:${link.url}`, link.url)}>{copiedField === `link:${link.url}` ? 'Copied' : 'Copy'}</button></div></li>)}</ul>
                 </div>
                 <div className="rounded-xl bg-slate-950 p-4">
-                  <p className="mb-2 font-medium">Extracted codes</p>
+                  <p className="mb-2 font-medium">Codes Found</p>
                   <ul className="space-y-2">{detail.inbox.codes.map((code) => <li key={code} className="flex items-center justify-between gap-2"><span>{code}</span><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`code:${code}`, code)}>{copiedField === `code:${code}` ? 'Copied' : 'Copy'}</button></li>)}</ul>
                 </div>
               </div>
