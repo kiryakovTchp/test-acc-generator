@@ -1,8 +1,9 @@
 'use client';
 
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { API_URL, apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
+
+type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 
 interface Detail {
   id: number;
@@ -14,14 +15,41 @@ interface Detail {
   firstName: string;
   lastName: string;
   phone: string;
+  age: number;
+  gender: 'male' | 'female';
+  dateOfBirth: string;
+  country: string;
+  city: string;
+  addressLine: string;
+  postalCode: string;
+  persona: PersonaKey;
   role: 'admin' | 'user';
   documentType: string;
   documentValue: string;
   documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
   registrationUrl: string;
-  inbox: { plainText: string; links: string[]; codes: string[]; rawHtml?: string | null };
+  registrationUrlStatus: 'real' | 'placeholder';
+  fullProfileText: string;
+  inbox: { status: 'waiting_for_email' | 'email_received' | 'no_email_found'; sender: string; subject: string; receivedAt: string; plainText: string; links: string[]; codes: string[]; rawHtml?: string | null };
   createdAt: string;
 }
+
+const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
+  { value: 'standard_user', label: 'Standard User: 25–40' },
+  { value: 'young_user', label: 'Young User: 18–24' },
+  { value: 'senior_user', label: 'Senior User: 55+' },
+  { value: 'male_user', label: 'Male User' },
+  { value: 'female_user', label: 'Female User' },
+];
+
+const E2E_CHECKLIST = [
+  'generate profile',
+  'open registration',
+  'submit form',
+  'refresh inbox',
+  'verify email received',
+  'verify code/link extracted',
+];
 
 export default function AppShell() {
   const [token, setToken] = useState<string>('');
@@ -32,12 +60,15 @@ export default function AppShell() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [selectedGeo, setSelectedGeo] = useState('zambia');
   const [documentType, setDocumentType] = useState('passport');
+  const [persona, setPersona] = useState<PersonaKey>('standard_user');
   const [accountRole, setAccountRole] = useState<'admin' | 'user'>('user');
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showHtml, setShowHtml] = useState(false);
   const [copiedField, setCopiedField] = useState<string>('');
+  const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
+  const [inboxStatusLabel, setInboxStatusLabel] = useState('');
 
   useEffect(() => {
     const storedToken = window.localStorage.getItem('tag-token') ?? '';
@@ -88,7 +119,7 @@ export default function AppShell() {
     setError('');
     const res = await apiFetch<Detail>('/accounts/generate', token, {
       method: 'POST',
-      body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole }),
+      body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
     });
     setDetail(res);
     await refresh();
@@ -96,6 +127,27 @@ export default function AppShell() {
 
   async function loadDetail(id: number) {
     setDetail(await apiFetch<Detail>(`/history/${id}`, token));
+  }
+
+  async function refreshInboxForDetail(waitMs = 0) {
+    if (!detail) return;
+    setIsRefreshingInbox(true);
+    setInboxStatusLabel(waitMs > 0 ? 'Waiting for email' : 'Checking inbox');
+    setError('');
+    try {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/refresh-inbox`, token, {
+        method: 'POST',
+        body: JSON.stringify({ waitMs }),
+      });
+      setDetail(updated);
+      setInboxStatusLabel(updated.inbox.status === 'email_received' ? 'Email received' : 'No email found');
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to refresh inbox');
+      setInboxStatusLabel('No email found');
+    } finally {
+      setIsRefreshingInbox(false);
+    }
   }
 
   async function remove(id: number) {
@@ -139,7 +191,6 @@ export default function AppShell() {
           <input className="w-full rounded-lg bg-slate-950 p-3" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
           <button className="w-full rounded-lg bg-sky-600 p-3 font-medium">Sign in</button>
-          <p className="text-xs text-slate-500">Local dev seeds admin/demo accounts by default. Production should use custom seeded credentials.</p>
         </form>
       </main>
     );
@@ -147,7 +198,7 @@ export default function AppShell() {
 
   return (
     <main className="mx-auto max-w-7xl p-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-semibold">Test Account Generator</h1>
           <p className="text-sm text-slate-400">API: {API_URL} • {user.login} ({user.role})</p>
@@ -157,51 +208,74 @@ export default function AppShell() {
 
       {error ? <p className="mb-4 rounded-lg border border-rose-900 bg-rose-950/40 p-3 text-rose-200">{error}</p> : null}
 
-      <div className="grid gap-6 lg:grid-cols-[360px_1fr_420px]">
+      <div className="grid gap-6 xl:grid-cols-[360px_1fr_460px]">
         <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-5">
           <h2 className="text-xl font-semibold">Generate</h2>
           <label className="block text-sm text-slate-300">GEO</label>
           <select className="w-full rounded-lg bg-slate-950 p-3" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
             {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
           </select>
+
+          <label className="block text-sm text-slate-300">Persona</label>
+          <select className="w-full rounded-lg bg-slate-950 p-3" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </select>
+
           <label className="block text-sm text-slate-300">Document type</label>
           <select className="w-full rounded-lg bg-slate-950 p-3" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
             {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
             <option value="missing_rule_probe">missing_rule_probe</option>
           </select>
+
           <label className="block text-sm text-slate-300">Account role</label>
           <select className="w-full rounded-lg bg-slate-950 p-3" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
             <option value="user">user</option>
             <option value="admin">admin</option>
           </select>
+
           <div className="rounded-lg border border-slate-800 bg-slate-950 p-3 text-sm text-slate-300">
-            <div>Registration URL</div>
-            <a href={currentGeo?.registrationUrl} target="_blank">{currentGeo?.registrationUrl}</a>
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span>Registration URL</span>
+              <span className={`rounded-full px-2 py-1 text-xs ${currentGeo?.registrationUrlStatus === 'real' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}`}>
+                {currentGeo?.registrationUrlStatus === 'real' ? 'Real URL' : 'Placeholder URL'}
+              </span>
+            </div>
+            <a href={currentGeo?.registrationUrl} target="_blank" className="break-all text-sky-300">{currentGeo?.registrationUrl}</a>
           </div>
+
           <button className="w-full rounded-lg bg-emerald-600 p-3 font-medium" onClick={generate}>Generate account</button>
         </section>
 
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold">History</h2>
-            <span className="text-sm text-slate-400">last 50 only</span>
-          </div>
-          <div className="space-y-3">
-            {history.map((item) => (
-              <div key={item.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-medium">{item.geoLabel} • {item.documentType}</p>
-                    <p className="text-sm text-slate-400">{item.firstName} {item.lastName} • {item.email}</p>
-                    <p className="text-xs text-slate-500">{item.username} • {item.phone} • {item.documentQuality} • {new Date(item.createdAt).toLocaleString()}</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <button className="rounded-lg border border-slate-700 px-3 py-1 text-sm" onClick={() => loadDetail(item.id)}>View</button>
-                    <button className="rounded-lg border border-rose-800 px-3 py-1 text-sm text-rose-300" onClick={() => remove(item.id)}>Delete</button>
+        <section className="space-y-6 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <div>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-xl font-semibold">History</h2>
+              <span className="text-sm text-slate-400">last 50 only</span>
+            </div>
+            <div className="space-y-3">
+              {history.map((item) => (
+                <div key={item.id} className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="font-medium">{item.geoLabel} • {item.documentType}</p>
+                      <p className="text-sm text-slate-400">{item.firstName} {item.lastName} • {item.email}</p>
+                      <p className="text-xs text-slate-500">{item.username} • {item.phone} • {item.documentQuality} • {new Date(item.createdAt).toLocaleString()}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button className="rounded-lg border border-slate-700 px-3 py-1 text-sm" onClick={() => loadDetail(item.id)}>View</button>
+                      <button className="rounded-lg border border-rose-800 px-3 py-1 text-sm text-rose-300" onClick={() => remove(item.id)}>Delete</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+          </div>
+
+          <div className="rounded-xl border border-slate-800 bg-slate-950 p-4">
+            <h3 className="mb-3 text-lg font-semibold">E2E checklist</h3>
+            <ul className="space-y-2 text-sm text-slate-300">
+              {E2E_CHECKLIST.map((step, index) => <li key={step}>{index + 1}. {step}</li>)}
+            </ul>
           </div>
         </section>
 
@@ -210,13 +284,27 @@ export default function AppShell() {
           {!detail ? <p className="text-sm text-slate-400">Generate or open a history row.</p> : (
             <div className="space-y-4 text-sm">
               <div className="grid gap-3 rounded-xl bg-slate-950 p-4">
+                <div className="flex items-center justify-between gap-2">
+                  <span className={`rounded-full px-2 py-1 text-xs ${detail.registrationUrlStatus === 'real' ? 'bg-emerald-900/50 text-emerald-300' : 'bg-amber-900/50 text-amber-300'}`}>
+                    {detail.registrationUrlStatus === 'real' ? 'Real URL' : 'Placeholder URL'}
+                  </span>
+                  <button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`full-profile:${detail.id}`, detail.fullProfileText)}>{copiedField === `full-profile:${detail.id}` ? 'Copied full profile' : 'Copy Full Profile'}</button>
+                </div>
                 <CopyRow label="First name" value={detail.firstName} />
                 <CopyRow label="Last name" value={detail.lastName} />
+                <CopyRow label="Gender" value={detail.gender} />
+                <CopyRow label="Date of Birth" value={detail.dateOfBirth} />
+                <CopyRow label="Age" value={String(detail.age)} />
+                <CopyRow label="Country" value={detail.country} />
+                <CopyRow label="City" value={detail.city} />
+                <CopyRow label="Address" value={detail.addressLine} />
+                <CopyRow label="Postal Code" value={detail.postalCode} />
                 <CopyRow label="Phone" value={detail.phone} />
                 <CopyRow label="Email" value={detail.email} />
                 <CopyRow label="Password" value={detail.emailPassword} hidden />
                 <CopyRow label="Username" value={detail.username} />
                 <CopyRow label="Document" value={`${detail.documentType} = ${detail.documentValue}`} />
+                <CopyRow label="Persona" value={detail.persona} />
                 <div className="grid gap-2 sm:grid-cols-[120px_1fr] sm:items-center">
                   <strong>Role:</strong>
                   <span>{detail.role}</span>
@@ -231,23 +319,38 @@ export default function AppShell() {
                   <button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`registration:${detail.registrationUrl}`, detail.registrationUrl)}>{copiedField === `registration:${detail.registrationUrl}` ? 'Copied' : 'Copy'}</button>
                 </div>
               </div>
+
               <div className="rounded-xl bg-slate-950 p-4">
-                <p className="mb-2 font-medium">Inbox plain text</p>
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                  <p className="font-medium">Inbox plain text</p>
+                  <div className="flex flex-wrap gap-2">
+                    <button type="button" className="rounded border border-slate-700 px-3 py-1 text-xs" onClick={() => refreshInboxForDetail(0)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Refreshing...' : 'Refresh Inbox'}</button>
+                    <button type="button" className="rounded border border-slate-700 px-3 py-1 text-xs" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting...' : 'Wait for Email (60s)'}</button>
+                  </div>
+                </div>
+                <div className="mb-3 flex flex-wrap items-center gap-2 text-xs">
+                  <span className={`rounded-full px-2 py-1 ${detail.inbox.status === 'email_received' ? 'bg-emerald-900/50 text-emerald-300' : detail.inbox.status === 'waiting_for_email' ? 'bg-sky-900/50 text-sky-300' : 'bg-slate-800 text-slate-300'}`}>{isRefreshingInbox ? 'Waiting for email' : inboxStatusLabel || (detail.inbox.status === 'email_received' ? 'Email received' : 'No email found')}</span>
+                  {detail.inbox.sender ? <span>From: {detail.inbox.sender}</span> : null}
+                  {detail.inbox.subject ? <span>Subject: {detail.inbox.subject}</span> : null}
+                  {detail.inbox.receivedAt ? <span>Received: {new Date(detail.inbox.receivedAt).toLocaleString()}</span> : null}
+                </div>
                 <button type="button" className="w-full text-left whitespace-pre-wrap text-slate-300" onClick={() => copyValue(`inbox:${detail.id}`, detail.inbox.plainText || '')}>
                   {detail.inbox.plainText || 'No messages yet'}
                 </button>
-                {detail.inbox.plainText ? <div className="mt-2 text-xs text-slate-500">Tap the text to copy it.</div> : null}
+                {detail.inbox.plainText ? <div className="mt-2 text-xs text-slate-500">Tap the text to copy it.</div> : <div className="mt-2 text-xs text-slate-500">No message received yet. Use Refresh Inbox or Wait for Email after registering on the target site.</div>}
               </div>
+
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="rounded-xl bg-slate-950 p-4">
                   <p className="mb-2 font-medium">Extracted links</p>
-                  <ul className="space-y-2">{detail.inbox.links.map((link) => <li key={link} className="flex items-start gap-2"><a href={link} target="_blank" className="break-all">{link}</a><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`link:${link}`, link)}>{copiedField === `link:${link}` ? 'Copied' : 'Copy'}</button></li>)}</ul>
+                  <ul className="space-y-2">{detail.inbox.links.map((link) => <li key={link} className="flex items-start gap-2"><a href={link} target="_blank" className="break-all">{link}</a><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => window.open(link, '_blank')}>Open Link</button><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`link:${link}`, link)}>{copiedField === `link:${link}` ? 'Copied' : 'Copy'}</button></li>)}</ul>
                 </div>
                 <div className="rounded-xl bg-slate-950 p-4">
                   <p className="mb-2 font-medium">Extracted codes</p>
                   <ul className="space-y-2">{detail.inbox.codes.map((code) => <li key={code} className="flex items-center justify-between gap-2"><span>{code}</span><button type="button" className="rounded border border-slate-700 px-2 py-1 text-xs" onClick={() => copyValue(`code:${code}`, code)}>{copiedField === `code:${code}` ? 'Copied' : 'Copy'}</button></li>)}</ul>
                 </div>
               </div>
+
               <details className="rounded-xl bg-slate-950 p-4" open={showHtml}>
                 <summary className="cursor-pointer font-medium" onClick={() => setShowHtml((v) => !v)}>Debug raw HTML</summary>
                 <pre className="mt-3 whitespace-pre-wrap text-slate-400">{detail.inbox.rawHtml ?? 'No HTML message'}</pre>

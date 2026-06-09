@@ -20,7 +20,7 @@ test('geo rules include required starter geos', () => {
 });
 
 test('missing rules yield missing_rules quality', async () => {
-  const item = await generateAccount({ userId: 1, geoKey: 'uganda', documentType: 'national_id', role: 'user', emailProvider: provider });
+  const item = await generateAccount({ userId: 1, geoKey: 'uganda', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(item?.documentQuality, 'missing_rules');
   assert.equal(item?.documentValue, 'Missing Rules');
   assert.equal(item?.emailPassword, 'secret');

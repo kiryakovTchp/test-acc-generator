@@ -1,7 +1,13 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
 
 export interface UserInfo { login: string; role: 'admin' | 'user'; }
-export interface GeoItem { key: string; label: string; registrationUrl: string; documentTypes: string[]; }
+export interface GeoItem {
+  key: string;
+  label: string;
+  registrationUrl: string;
+  registrationUrlStatus: 'real' | 'placeholder';
+  documentTypes: string[];
+}
 export interface HistoryItem {
   id: number;
   geoKey: string;
@@ -11,6 +17,14 @@ export interface HistoryItem {
   firstName: string;
   lastName: string;
   phone: string;
+  age: number;
+  gender: 'male' | 'female';
+  dateOfBirth: string;
+  country: string;
+  city: string;
+  addressLine: string;
+  postalCode: string;
+  persona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
   role: 'admin' | 'user';
   createdAt: string;
   documentType: string;

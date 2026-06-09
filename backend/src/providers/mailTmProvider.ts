@@ -13,6 +13,9 @@ interface MailTmMessage {
   text?: string;
   html?: string;
   htmlAsText?: string;
+  subject?: string;
+  createdAt?: string;
+  from?: { address?: string; name?: string };
 }
 
 export class MailTmProvider implements EmailProvider {
@@ -40,15 +43,18 @@ export class MailTmProvider implements EmailProvider {
     return { address, password };
   }
 
-  async fetchInbox(address: string, password: string): Promise<InboxMessage[]> {
+  async fetchInbox(address: string, password: string, waitMs = 0): Promise<InboxMessage[]> {
     const token = await this.getToken(address, password);
+    const configuredAttempts = this.inboxPollAttempts;
+    const configuredDelay = this.inboxPollDelayMs;
+    const overrideAttempts = waitMs > 0 ? Math.max(1, Math.ceil(waitMs / Math.max(configuredDelay, 1000))) : configuredAttempts;
 
-    for (let attempt = 0; attempt < this.inboxPollAttempts; attempt += 1) {
+    for (let attempt = 0; attempt < overrideAttempts; attempt += 1) {
       const messages = await this.listMessages(token);
-      if (messages.length > 0 || attempt === this.inboxPollAttempts - 1) {
+      if (messages.length > 0 || attempt === overrideAttempts - 1) {
         return Promise.all(messages.map((message) => this.hydrateMessage(token, message.id, message)));
       }
-      await sleep(this.inboxPollDelayMs);
+      await sleep(configuredDelay);
     }
 
     return [];
@@ -119,6 +125,9 @@ export class MailTmProvider implements EmailProvider {
       return {
         plainText: preview.text ?? preview.htmlAsText ?? preview.intro ?? '',
         html: preview.html,
+        sender: preview.from?.address ?? preview.from?.name,
+        subject: preview.subject,
+        receivedAt: preview.createdAt,
       };
     }
 
@@ -126,7 +135,13 @@ export class MailTmProvider implements EmailProvider {
     const parsed = payload.source ? await safeParseSource(payload.source) : null;
     const plainText = parsed?.text ?? payload.text ?? payload.htmlAsText ?? payload.intro ?? '';
     const html = normalizeHtml(parsed?.html) ?? normalizeHtml(payload.html) ?? normalizeHtml(payload.textAsHtml);
-    return { plainText, html };
+    return {
+      plainText,
+      html,
+      sender: payload.from?.address ?? payload.from?.name,
+      subject: payload.subject,
+      receivedAt: payload.createdAt,
+    };
   }
 }
 
