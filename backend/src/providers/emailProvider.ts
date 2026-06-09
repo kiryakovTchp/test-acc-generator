@@ -1,9 +1,17 @@
+export interface InboxLink {
+  url: string;
+  label?: string;
+  isPrimary?: boolean;
+}
+
 export interface InboxMessage {
   plainText: string;
+  cleanText?: string;
   html?: string;
   sender?: string;
   subject?: string;
   receivedAt?: string;
+  links?: InboxLink[];
 }
 
 export interface EmailAccount {
