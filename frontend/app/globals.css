@@ -7,9 +7,15 @@
 }
 
 body {
-  @apply bg-slate-950 text-slate-100 min-h-screen;
+  @apply min-h-screen;
+  background: #142f04;
+  color: #e6fcd9;
 }
 
 a {
-  @apply text-sky-300 hover:text-sky-200;
+  color: #2993a3;
+}
+
+a:hover {
+  color: #e6fcd9;
 }
