@@ -23,8 +23,8 @@ interface Detail {
 export default function AppShell() {
   const [token, setToken] = useState<string>('');
   const [user, setUser] = useState<UserInfo | null>(null);
-  const [login, setLogin] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
   const [geoItems, setGeoItems] = useState<GeoItem[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [selectedGeo, setSelectedGeo] = useState('zambia');
@@ -106,13 +106,13 @@ export default function AppShell() {
         <form className="w-full space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-6" onSubmit={doLogin}>
           <div>
             <h1 className="text-2xl font-semibold">Test Account Generator</h1>
-            <p className="mt-2 text-sm text-slate-400">Login with demo credentials. Passwords you generate are never shown in lists.</p>
+            <p className="mt-2 text-sm text-slate-400">Sign in with your assigned credentials. Passwords you generate are never shown in lists.</p>
           </div>
           <input className="w-full rounded-lg bg-slate-950 p-3" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
           <input className="w-full rounded-lg bg-slate-950 p-3" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
           {error ? <p className="text-sm text-rose-300">{error}</p> : null}
           <button className="w-full rounded-lg bg-sky-600 p-3 font-medium">Sign in</button>
-          <p className="text-xs text-slate-500">Default users: admin/admin123, demo/demo123</p>
+          <p className="text-xs text-slate-500">Local dev seeds admin/demo accounts by default. Production should use custom seeded credentials.</p>
         </form>
       </main>
     );

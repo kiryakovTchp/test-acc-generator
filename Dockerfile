@@ -12,4 +12,4 @@ WORKDIR /app
 ENV NODE_ENV=production
 COPY --from=builder /app /app
 EXPOSE 4000 3000
-CMD ["sh", "-c", "node backend/dist/index.js & node frontend/node_modules/next/dist/bin/next start -p 3000 -H 0.0.0.0 -d frontend"]
+CMD ["sh", "-c", "node backend/dist/index.js & node node_modules/next/dist/bin/next start -p 3000 -H 0.0.0.0 frontend"]

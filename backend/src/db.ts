@@ -41,14 +41,33 @@ CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_histor
 
 const count = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
 if (count.count === 0) {
-  db.prepare('INSERT INTO users (login, password, role) VALUES (?, ?, ?), (?, ?, ?)').run(
-    'admin',
-    'admin123',
-    'admin',
-    'demo',
-    'demo123',
-    'user',
-  );
+  const seedUsers = loadSeedUsers();
+  const values = seedUsers.map((user) => '(?, ?, ?)').join(', ');
+  const params = seedUsers.flatMap((user) => [user.login, user.password, user.role]);
+  db.prepare(`INSERT INTO users (login, password, role) VALUES ${values}`).run(...params);
+}
+
+function loadSeedUsers() {
+  const raw = process.env.SEED_USERS_JSON;
+  if (!raw) {
+    return [
+      { login: 'admin', password: 'admin123', role: 'admin' as const },
+      { login: 'demo', password: 'demo123', role: 'user' as const },
+    ];
+  }
+
+  const parsed = JSON.parse(raw) as Array<{ login: string; password: string; role: Role }>;
+  if (!Array.isArray(parsed) || parsed.length === 0) {
+    throw new Error('SEED_USERS_JSON must be a non-empty JSON array');
+  }
+
+  for (const user of parsed) {
+    if (!user?.login || !user?.password || !['admin', 'user'].includes(user.role)) {
+      throw new Error('SEED_USERS_JSON contains an invalid user entry');
+    }
+  }
+
+  return parsed;
 }
 
 export interface UserRow { id: number; login: string; password: string; role: Role; }

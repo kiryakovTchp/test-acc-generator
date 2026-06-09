@@ -1,0 +1,8 @@
+node_modules
+frontend/.next
+backend/dist
+backend/data
+.git
+.env.production
+.DS_Store
+*.log
