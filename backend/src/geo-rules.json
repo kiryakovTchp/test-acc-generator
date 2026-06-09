@@ -1,0 +1,92 @@
+[
+  {
+    "key": "zambia",
+    "label": "Zambia",
+    "registrationUrl": "https://registration.example.com/zm",
+    "documents": {
+      "passport": {
+        "templates": ["ZM-P-{YYYY}{RAND4}"],
+        "quality": "synthetic_pattern",
+        "notes": "Pattern only."
+      },
+      "national_id": {
+        "templates": ["ZMNID-{RAND8}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "uganda",
+    "label": "Uganda",
+    "registrationUrl": "https://registration.example.com/ug",
+    "documents": {
+      "passport": {
+        "templates": ["UG-P-{RAND2}{RAND6}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "nigeria",
+    "label": "Nigeria",
+    "registrationUrl": "https://registration.example.com/ng",
+    "documents": {
+      "nin": {
+        "templates": ["{RAND11}"],
+        "quality": "synthetic_pattern"
+      },
+      "passport": {
+        "templates": ["A{RAND8}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "guinea",
+    "label": "Guinea",
+    "registrationUrl": "https://registration.example.com/gn",
+    "documents": {
+      "passport": {
+        "templates": ["GNA{RAND7}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "uzbekistan",
+    "label": "Uzbekistan",
+    "registrationUrl": "https://registration.example.com/uz",
+    "documents": {
+      "passport": {
+        "templates": ["AA{RAND7}"],
+        "quality": "synthetic_pattern"
+      },
+      "pinfl": {
+        "templates": ["{RAND14}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "kazakhstan",
+    "label": "Kazakhstan",
+    "registrationUrl": "https://registration.example.com/kz",
+    "documents": {
+      "iin": {
+        "templates": ["{RAND12}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
+    "key": "generic_intl",
+    "label": "Generic International",
+    "registrationUrl": "https://registration.example.com/global",
+    "documents": {
+      "passport": {
+        "templates": ["INTL-{RAND10}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  }
+]
