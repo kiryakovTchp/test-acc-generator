@@ -1,7 +1,7 @@
 import db from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
-import type { GeoRule, DocumentQuality, Role } from '../types.js';
-import { fillTemplate, randomString, extractLinks, extractCodes, randomPersonName, randomPhone } from '../utils.js';
+import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
+import { fillTemplate, randomString, extractLinks, extractCodes, generatePersonaProfile } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 
 const rules = geoRules as unknown as GeoRule[];
@@ -12,6 +12,7 @@ export function listGeoRules() {
     label: rule.label,
     registrationUrl: rule.registrationUrl,
     documentTypes: Object.keys(rule.documents),
+    registrationUrlStatus: rule.registrationUrl.includes('example.com') ? 'placeholder' : 'real',
   }));
 }
 
@@ -20,6 +21,7 @@ export async function generateAccount(input: {
   geoKey: string;
   documentType: string;
   role: Role;
+  persona: PersonaKey;
   emailProvider: EmailProvider;
 }) {
   cleanupOldHistory();
@@ -27,12 +29,9 @@ export async function generateAccount(input: {
   if (!geo) throw new Error('Unknown GEO');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
-  const person = randomPersonName();
-  const phone = randomPhone(geo.key);
+  const profile = generatePersonaProfile(geo.key, input.persona);
   const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password);
-  const plainText = inbox.map((msg) => msg.plainText).join('\n\n');
-  const links = extractLinks(plainText);
-  const codes = extractCodes(plainText);
+  const hydratedInbox = toInboxPayload(inbox);
 
   let documentValue = 'Missing Rules';
   let quality: DocumentQuality = 'missing_rules';
@@ -44,10 +43,12 @@ export async function generateAccount(input: {
   const username = `${geo.key}_${randomString(8)}`;
   const result = db.prepare(`
     INSERT INTO account_history (
-      user_id, geo_key, geo_label, email, email_password, username, first_name, last_name, phone, account_role,
-      document_type, document_value, document_quality, registration_url,
+      user_id, geo_key, geo_label, email, email_password, username,
+      first_name, last_name, phone, age, gender, date_of_birth, country, city, address_line, postal_code, persona,
+      account_role, document_type, document_value, document_quality, registration_url,
+      inbox_status, inbox_sender, inbox_subject, inbox_received_at,
       inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     input.userId,
     geo.key,
@@ -55,30 +56,68 @@ export async function generateAccount(input: {
     emailAccount.address,
     emailAccount.password,
     username,
-    person.firstName,
-    person.lastName,
-    phone,
+    profile.firstName,
+    profile.lastName,
+    profile.phone,
+    profile.age,
+    profile.gender,
+    profile.dateOfBirth,
+    profile.country,
+    profile.city,
+    profile.addressLine,
+    profile.postalCode,
+    profile.persona,
     input.role,
     input.documentType,
     documentValue,
     quality,
     geo.registrationUrl,
-    plainText,
-    JSON.stringify(links),
-    JSON.stringify(codes),
-    inbox[0]?.html ?? null,
+    hydratedInbox.status,
+    hydratedInbox.sender,
+    hydratedInbox.subject,
+    hydratedInbox.receivedAt,
+    hydratedInbox.plainText,
+    JSON.stringify(hydratedInbox.links),
+    JSON.stringify(hydratedInbox.codes),
+    hydratedInbox.rawHtml ?? null,
   );
 
   trimHistoryForUser(input.userId);
   return getHistoryDetail(Number(result.lastInsertRowid), input.userId);
 }
 
+export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0) {
+  const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
+  if (!row) return null;
+  const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
+  const hydratedInbox = toInboxPayload(inbox);
+  db.prepare(`
+    UPDATE account_history
+    SET inbox_status = ?, inbox_sender = ?, inbox_subject = ?, inbox_received_at = ?,
+        inbox_plain_text = ?, inbox_links_json = ?, inbox_codes_json = ?, inbox_html = ?
+    WHERE id = ? AND user_id = ?
+  `).run(
+    hydratedInbox.status,
+    hydratedInbox.sender,
+    hydratedInbox.subject,
+    hydratedInbox.receivedAt,
+    hydratedInbox.plainText,
+    JSON.stringify(hydratedInbox.links),
+    JSON.stringify(hydratedInbox.codes),
+    hydratedInbox.rawHtml ?? null,
+    id,
+    userId,
+  );
+  return getHistoryDetail(id, userId);
+}
+
 export function listHistory(userId: number) {
   cleanupOldHistory();
   return db.prepare(`
     SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username,
-           first_name as firstName, last_name as lastName, phone,
-           account_role as role, created_at as createdAt,
+           first_name as firstName, last_name as lastName, phone, age, gender,
+           date_of_birth as dateOfBirth, country, city, address_line as addressLine, postal_code as postalCode,
+           persona, account_role as role, created_at as createdAt,
            document_type as documentType, document_quality as documentQuality
     FROM account_history
     WHERE user_id = ?
@@ -100,12 +139,41 @@ export function getHistoryDetail(id: number, userId: number) {
     firstName: row.first_name,
     lastName: row.last_name,
     phone: row.phone,
+    age: row.age,
+    gender: row.gender,
+    dateOfBirth: row.date_of_birth,
+    country: row.country,
+    city: row.city,
+    addressLine: row.address_line,
+    postalCode: row.postal_code,
+    persona: row.persona,
     role: row.account_role,
     documentType: row.document_type,
     documentValue: row.document_value,
     documentQuality: row.document_quality,
     registrationUrl: row.registration_url,
+    registrationUrlStatus: row.registration_url.includes('example.com') ? 'placeholder' : 'real',
+    fullProfileText: [
+      `Email: ${row.email}`,
+      `Password: ${row.email_password}`,
+      `Phone: ${row.phone}`,
+      `First Name: ${row.first_name}`,
+      `Last Name: ${row.last_name}`,
+      `Gender: ${row.gender}`,
+      `Date of Birth: ${row.date_of_birth}`,
+      `Age: ${row.age}`,
+      `Country: ${row.country}`,
+      `City: ${row.city}`,
+      `Address: ${row.address_line}`,
+      `Postal Code: ${row.postal_code}`,
+      `Document Type: ${row.document_type}`,
+      `Document Number: ${row.document_value}`,
+    ].join('\n'),
     inbox: {
+      status: row.inbox_status,
+      sender: row.inbox_sender,
+      subject: row.inbox_subject,
+      receivedAt: row.inbox_received_at,
       plainText: row.inbox_plain_text ?? '',
       links: JSON.parse(row.inbox_links_json),
       codes: JSON.parse(row.inbox_codes_json),
@@ -130,4 +198,21 @@ function trimHistoryForUser(userId: number) {
       SELECT id FROM account_history WHERE user_id = ? ORDER BY datetime(created_at) DESC LIMIT 50
     )
   `).run(userId, userId);
+}
+
+function toInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {
+  const firstMessage = inbox[0];
+  const plainText = inbox.map((msg) => msg.plainText).filter(Boolean).join('\n\n');
+  const rawHtml = inbox.map((msg) => msg.html).find(Boolean) ?? null;
+  const links = extractLinks([plainText, ...inbox.map((msg) => msg.html ?? '')].join('\n\n'));
+  return {
+    status: firstMessage ? 'email_received' : 'no_email_found',
+    sender: firstMessage?.sender ?? '',
+    subject: firstMessage?.subject ?? '',
+    receivedAt: firstMessage?.receivedAt ?? '',
+    plainText,
+    links,
+    codes: extractCodes(plainText),
+    rawHtml,
+  };
 }

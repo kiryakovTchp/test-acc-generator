@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
-import db from './db.js';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory } from './services/accountService.js';
-import type { Role } from './types.js';
+import { deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox } from './services/accountService.js';
+import type { PersonaKey, Role } from './types.js';
+import db from './db.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -50,19 +50,31 @@ app.get('/history/:id', auth, (req, res) => {
   res.json(item);
 });
 
+app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
+  const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
+  try {
+    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs);
+    if (!item) return res.status(404).json({ error: 'Not found' });
+    res.json(item);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to refresh inbox' });
+  }
+});
+
 app.delete('/history/:id', auth, (req, res) => {
   deleteHistory(Number(req.params.id), (req as any).user.userId);
   res.status(204).send();
 });
 
 app.post('/accounts/generate', auth, async (req, res) => {
-  const { geoKey, documentType, role } = req.body ?? {};
+  const { geoKey, documentType, role, persona } = req.body ?? {};
   try {
     const item = await generateAccount({
       userId: (req as any).user.userId,
       geoKey,
       documentType,
       role: role === 'admin' ? 'admin' : 'user',
+      persona: isPersona(persona) ? persona : 'standard_user',
       emailProvider,
     });
     res.json(item);
@@ -76,3 +88,7 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export default app;
+
+function isPersona(value: unknown): value is PersonaKey {
+  return ['standard_user', 'young_user', 'senior_user', 'male_user', 'female_user'].includes(String(value));
+}

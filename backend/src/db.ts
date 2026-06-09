@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
-import type { Role, DocumentQuality } from './types.js';
+import type { Role, DocumentQuality, Gender, PersonaKey } from './types.js';
 
 const dataDir = path.resolve(process.cwd(), 'backend', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
@@ -27,11 +27,23 @@ CREATE TABLE IF NOT EXISTS account_history (
   first_name TEXT NOT NULL DEFAULT '',
   last_name TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '',
+  age INTEGER NOT NULL DEFAULT 0,
+  gender TEXT NOT NULL DEFAULT 'male',
+  date_of_birth TEXT NOT NULL DEFAULT '',
+  country TEXT NOT NULL DEFAULT '',
+  city TEXT NOT NULL DEFAULT '',
+  address_line TEXT NOT NULL DEFAULT '',
+  postal_code TEXT NOT NULL DEFAULT '',
+  persona TEXT NOT NULL DEFAULT 'standard_user',
   account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
   document_type TEXT NOT NULL,
   document_value TEXT NOT NULL,
   document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','synthetic_pattern','missing_rules')),
   registration_url TEXT NOT NULL,
+  inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
+  inbox_sender TEXT NOT NULL DEFAULT '',
+  inbox_subject TEXT NOT NULL DEFAULT '',
+  inbox_received_at TEXT NOT NULL DEFAULT '',
   inbox_plain_text TEXT,
   inbox_links_json TEXT NOT NULL DEFAULT '[]',
   inbox_codes_json TEXT NOT NULL DEFAULT '[]',
@@ -45,6 +57,18 @@ CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_histor
 ensureColumn('account_history', 'first_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'last_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'phone', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'age', 'INTEGER NOT NULL DEFAULT 0');
+ensureColumn('account_history', 'gender', "TEXT NOT NULL DEFAULT 'male'");
+ensureColumn('account_history', 'date_of_birth', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'country', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'city', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'address_line', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'postal_code', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'persona', "TEXT NOT NULL DEFAULT 'standard_user'");
+ensureColumn('account_history', 'inbox_status', "TEXT NOT NULL DEFAULT 'no_email_found'");
+ensureColumn('account_history', 'inbox_sender', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'inbox_subject', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'inbox_received_at', "TEXT NOT NULL DEFAULT ''");
 
 const count = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
 if (count.count === 0) {
@@ -79,9 +103,38 @@ function loadSeedUsers() {
 
 export interface UserRow { id: number; login: string; password: string; role: Role; }
 export interface HistoryRow {
-  id: number; user_id: number; geo_key: string; geo_label: string; email: string; email_password: string; username: string;
-  account_role: Role; document_type: string; document_value: string; document_quality: DocumentQuality; registration_url: string;
-  inbox_plain_text: string | null; inbox_links_json: string; inbox_codes_json: string; inbox_html: string | null; created_at: string;
+  id: number;
+  user_id: number;
+  geo_key: string;
+  geo_label: string;
+  email: string;
+  email_password: string;
+  username: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
+  age: number;
+  gender: Gender;
+  date_of_birth: string;
+  country: string;
+  city: string;
+  address_line: string;
+  postal_code: string;
+  persona: PersonaKey;
+  account_role: Role;
+  document_type: string;
+  document_value: string;
+  document_quality: DocumentQuality;
+  registration_url: string;
+  inbox_status: 'waiting_for_email' | 'email_received' | 'no_email_found';
+  inbox_sender: string;
+  inbox_subject: string;
+  inbox_received_at: string;
+  inbox_plain_text: string | null;
+  inbox_links_json: string;
+  inbox_codes_json: string;
+  inbox_html: string | null;
+  created_at: string;
 }
 
 export default db;

@@ -1,6 +1,9 @@
 export interface InboxMessage {
   plainText: string;
   html?: string;
+  sender?: string;
+  subject?: string;
+  receivedAt?: string;
 }
 
 export interface EmailAccount {
@@ -10,5 +13,5 @@ export interface EmailAccount {
 
 export interface EmailProvider {
   createAccount(): Promise<EmailAccount>;
-  fetchInbox(address: string, password: string): Promise<InboxMessage[]>;
+  fetchInbox(address: string, password: string, waitMs?: number): Promise<InboxMessage[]>;
 }
