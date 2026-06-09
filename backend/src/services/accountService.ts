@@ -1,7 +1,7 @@
 import db from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, Role } from '../types.js';
-import { fillTemplate, randomString, extractLinks, extractCodes } from '../utils.js';
+import { fillTemplate, randomString, extractLinks, extractCodes, randomPersonName, randomPhone } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 
 const rules = geoRules as unknown as GeoRule[];
@@ -27,6 +27,8 @@ export async function generateAccount(input: {
   if (!geo) throw new Error('Unknown GEO');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
+  const person = randomPersonName();
+  const phone = randomPhone(geo.key);
   const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password);
   const plainText = inbox.map((msg) => msg.plainText).join('\n\n');
   const links = extractLinks(plainText);
@@ -42,10 +44,10 @@ export async function generateAccount(input: {
   const username = `${geo.key}_${randomString(8)}`;
   const result = db.prepare(`
     INSERT INTO account_history (
-      user_id, geo_key, geo_label, email, email_password, username, account_role,
+      user_id, geo_key, geo_label, email, email_password, username, first_name, last_name, phone, account_role,
       document_type, document_value, document_quality, registration_url,
       inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     input.userId,
     geo.key,
@@ -53,6 +55,9 @@ export async function generateAccount(input: {
     emailAccount.address,
     emailAccount.password,
     username,
+    person.firstName,
+    person.lastName,
+    phone,
     input.role,
     input.documentType,
     documentValue,
@@ -71,7 +76,9 @@ export async function generateAccount(input: {
 export function listHistory(userId: number) {
   cleanupOldHistory();
   return db.prepare(`
-    SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username, account_role as role, created_at as createdAt,
+    SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username,
+           first_name as firstName, last_name as lastName, phone,
+           account_role as role, created_at as createdAt,
            document_type as documentType, document_quality as documentQuality
     FROM account_history
     WHERE user_id = ?
@@ -90,6 +97,9 @@ export function getHistoryDetail(id: number, userId: number) {
     email: row.email,
     emailPassword: row.email_password,
     username: row.username,
+    firstName: row.first_name,
+    lastName: row.last_name,
+    phone: row.phone,
     role: row.account_role,
     documentType: row.document_type,
     documentValue: row.document_value,

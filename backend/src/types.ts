@@ -20,6 +20,9 @@ export interface HistoryListItem {
   geoLabel: string;
   email: string;
   username: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   role: Role;
   createdAt: string;
   documentType: string;

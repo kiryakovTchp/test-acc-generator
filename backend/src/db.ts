@@ -24,6 +24,9 @@ CREATE TABLE IF NOT EXISTS account_history (
   email TEXT NOT NULL,
   email_password TEXT NOT NULL,
   username TEXT NOT NULL,
+  first_name TEXT NOT NULL DEFAULT '',
+  last_name TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '',
   account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
   document_type TEXT NOT NULL,
   document_value TEXT NOT NULL,
@@ -38,6 +41,10 @@ CREATE TABLE IF NOT EXISTS account_history (
 );
 CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_history(user_id, created_at DESC);
 `);
+
+ensureColumn('account_history', 'first_name', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'last_name', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'phone', "TEXT NOT NULL DEFAULT ''");
 
 const count = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
 if (count.count === 0) {
@@ -78,3 +85,10 @@ export interface HistoryRow {
 }
 
 export default db;
+
+function ensureColumn(table: string, column: string, definition: string) {
+  const columns = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
+  if (!columns.some((item) => item.name === column)) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
+}

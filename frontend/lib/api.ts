@@ -8,6 +8,9 @@ export interface HistoryItem {
   geoLabel: string;
   email: string;
   username: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   role: 'admin' | 'user';
   createdAt: string;
   documentType: string;
