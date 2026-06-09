@@ -70,12 +70,13 @@ ensureColumn('account_history', 'inbox_sender', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_subject', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_received_at', "TEXT NOT NULL DEFAULT ''");
 
-const count = db.prepare('SELECT COUNT(*) as count FROM users').get() as { count: number };
-if (count.count === 0) {
-  const seedUsers = loadSeedUsers();
-  const values = seedUsers.map((user) => '(?, ?, ?)').join(', ');
-  const params = seedUsers.flatMap((user) => [user.login, user.password, user.role]);
-  db.prepare(`INSERT INTO users (login, password, role) VALUES ${values}`).run(...params);
+const seedUsers = loadSeedUsers();
+for (const user of seedUsers) {
+  db.prepare(`
+    INSERT INTO users (login, password, role)
+    VALUES (?, ?, ?)
+    ON CONFLICT(login) DO UPDATE SET password = excluded.password, role = excluded.role
+  `).run(user.login, user.password, user.role);
 }
 
 function loadSeedUsers() {
