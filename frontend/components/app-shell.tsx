@@ -80,6 +80,7 @@ export default function AppShell() {
   const [expandedLink, setExpandedLink] = useState<string>('');
   const [copiedField, setCopiedField] = useState<string>('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
 
   useEffect(() => {
@@ -130,13 +131,20 @@ export default function AppShell() {
 
   async function generate() {
     setError('');
-    const res = await apiFetch<Detail>('/accounts/generate', token, {
-      method: 'POST',
-      body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
-    });
-    setDetail(res);
-    setShowFullProfile(false);
-    await refresh();
+    setIsGenerating(true);
+    try {
+      const res = await apiFetch<Detail>('/accounts/generate', token, {
+        method: 'POST',
+        body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
+      });
+      setDetail(res);
+      setShowFullProfile(false);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate account');
+    } finally {
+      setIsGenerating(false);
+    }
   }
 
   async function loadDetail(id: number) {
@@ -277,7 +285,8 @@ export default function AppShell() {
                   <option value="admin">admin</option>
                 </select>
               </div>
-              <button className="w-full rounded-lg bg-[#55ce10] p-3 font-medium" onClick={generate}>Generate account</button>
+              <button className="w-full rounded-lg bg-[#55ce10] p-3 font-medium text-[#142f04] disabled:cursor-not-allowed disabled:opacity-60" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Generating profile...' : 'Generate account'}</button>
+              {isGenerating ? <div className="text-sm text-[#cbe9bf]">Creating mailbox, generating profile, and checking inbox. Please wait...</div> : null}
             </div>
           </section>
 

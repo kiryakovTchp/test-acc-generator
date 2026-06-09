@@ -8,8 +8,8 @@
 
 body {
   @apply min-h-screen;
-  background: #142f04;
-  color: #e6fcd9;
+  background: #ffffff;
+  color: #142f04;
 }
 
 a {
