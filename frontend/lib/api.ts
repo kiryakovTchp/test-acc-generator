@@ -6,8 +6,6 @@ export interface UserInfo { login: string; role: 'admin' | 'user'; }
 export interface GeoItem {
   key: string;
   label: string;
-  registrationUrl: string;
-  registrationUrlStatus: 'real' | 'placeholder';
   documentTypes: string[];
 }
 export interface HistoryItem {

@@ -1,7 +1,7 @@
 import db from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
-import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, getRegistrationUrlStatus } from '../utils.js';
+import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 
 const rules = geoRules as unknown as GeoRule[];
@@ -10,9 +10,7 @@ export function listGeoRules() {
   return rules.map((rule) => ({
     key: rule.key,
     label: rule.label,
-    registrationUrl: rule.registrationUrl,
     documentTypes: Object.keys(rule.documents),
-    registrationUrlStatus: getRegistrationUrlStatus(rule.registrationUrl),
   }));
 }
 
@@ -75,7 +73,7 @@ export async function generateAccount(input: {
     documentValue,
     profile.documentIssueDate,
     quality,
-    geo.registrationUrl,
+    '',
     hydratedInbox.status,
     hydratedInbox.sender,
     hydratedInbox.subject,
@@ -160,8 +158,6 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     documentValue: row.document_value,
     documentIssueDate: row.document_issue_date,
     documentQuality: row.document_quality,
-    registrationUrl: row.registration_url,
-    registrationUrlStatus: getRegistrationUrlStatus(row.registration_url),
     fullProfileText: [
       `Email: ${row.email}`,
       `Mailbox Password: ${row.email_password}`,

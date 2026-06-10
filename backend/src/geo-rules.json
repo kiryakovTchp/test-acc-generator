@@ -2,7 +2,6 @@
   {
     "key": "zambia",
     "label": "Zambia",
-    "registrationUrl": "https://registration.example.com/zm",
     "documents": {
       "passport": {
         "templates": ["ZM-P-{YYYY}{RAND4}"],
@@ -18,7 +17,6 @@
   {
     "key": "uganda",
     "label": "Uganda",
-    "registrationUrl": "https://registration.example.com/ug",
     "documents": {
       "passport": {
         "templates": ["UG-P-{RAND2}{RAND6}"],
@@ -29,7 +27,6 @@
   {
     "key": "nigeria",
     "label": "Nigeria",
-    "registrationUrl": "https://registration.example.com/ng",
     "documents": {
       "nin": {
         "templates": ["{RAND11}"],
@@ -44,7 +41,6 @@
   {
     "key": "guinea",
     "label": "Guinea",
-    "registrationUrl": "https://registration.example.com/gn",
     "documents": {
       "passport": {
         "templates": ["GNA{RAND7}"],
@@ -55,7 +51,6 @@
   {
     "key": "uzbekistan",
     "label": "Uzbekistan",
-    "registrationUrl": "https://registration.example.com/uz",
     "documents": {
       "passport": {
         "templates": ["AA{RAND7}"],
@@ -70,7 +65,6 @@
   {
     "key": "kazakhstan",
     "label": "Kazakhstan",
-    "registrationUrl": "https://registration.example.com/kz",
     "documents": {
       "iin": {
         "templates": ["{RAND12}"],
@@ -81,7 +75,6 @@
   {
     "key": "generic_intl",
     "label": "Generic International",
-    "registrationUrl": "https://registration.example.com/global",
     "documents": {
       "passport": {
         "templates": ["INTL-{RAND10}"],

@@ -66,9 +66,9 @@ button {
   width: min(100%, 420px);
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
 }
 
 .login-card h1 {
@@ -136,7 +136,7 @@ button {
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: rgba(255, 255, 255, 0.08);
   color: white;
   font-size: 13px;
@@ -169,8 +169,8 @@ button {
   gap: 10px;
   width: 100%;
   border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 9px 10px;
   background: transparent;
   color: #cbd5e1;
   text-align: left;
@@ -187,7 +187,7 @@ button {
   place-items: center;
   min-width: 30px;
   height: 24px;
-  border-radius: 8px;
+  border-radius: 6px;
   background: rgba(255, 255, 255, 0.08);
   font-size: 10px;
   font-weight: 800;
@@ -201,8 +201,8 @@ button {
 .sidebar-user,
 .sidebar-logout {
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   background: rgba(255, 255, 255, 0.04);
 }
 
@@ -211,15 +211,22 @@ button {
 }
 
 .workspace-shell {
-  padding: 20px;
+  padding: 16px;
 }
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   justify-content: space-between;
   gap: 20px;
   align-items: flex-start;
-  margin-bottom: 14px;
+  margin: -16px -16px 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(247, 248, 250, 0.94);
+  backdrop-filter: blur(12px);
 }
 
 .topbar h1,
@@ -257,7 +264,7 @@ button {
 .workspace-grid {
   display: grid;
   grid-template-columns: 320px minmax(0, 1fr) 320px;
-  gap: 16px;
+  gap: 12px;
   align-items: start;
 }
 
@@ -266,8 +273,8 @@ button {
 .side-card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04);
+  border-radius: 8px;
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.035);
 }
 
 .panel {
@@ -276,11 +283,11 @@ button {
 
 .panel-list,
 .panel-side {
-  padding: 14px;
+  padding: 12px;
 }
 
 .panel-detail {
-  padding: 14px;
+  padding: 12px;
 }
 
 .panel-header {
@@ -315,7 +322,7 @@ button {
 
 .account-list {
   display: grid;
-  gap: 8px;
+  gap: 6px;
   max-height: calc(100vh - 245px);
   overflow: auto;
 }
@@ -323,8 +330,8 @@ button {
 .account-row {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   background: #fff;
   text-align: left;
 }
@@ -394,7 +401,7 @@ button {
 
 .detail-card,
 .side-card {
-  padding: 14px;
+  padding: 12px;
 }
 
 .detail-card-header {
@@ -411,8 +418,8 @@ button {
 
 .metric-chip {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 8px;
+  padding: 8px 10px;
   background: #f8fafc;
 }
 
@@ -438,8 +445,8 @@ button {
 
 .info-item {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   background: #fff;
 }
 
@@ -460,8 +467,8 @@ button {
 
 .link-row {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
 }
 
 .link-row-meta {
@@ -528,8 +535,8 @@ button {
 
 .code-tile {
   border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
+  border-radius: 8px;
+  padding: 14px;
   background: #f8fafc;
   text-align: left;
 }
@@ -556,8 +563,8 @@ button {
 .mailbox-body,
 .debug-block {
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 12px;
+  border-radius: 8px;
+  padding: 10px;
   background: #f8fafc;
   white-space: pre-wrap;
   word-break: break-word;
@@ -610,8 +617,8 @@ button {
 .input-field {
   width: 100%;
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 11px 12px;
+  border-radius: 8px;
+  padding: 10px 11px;
   background: #fff;
   color: var(--text);
   outline: none;
@@ -633,7 +640,7 @@ button {
 .micro-button,
 .sidebar-logout {
   border-radius: 10px;
-  padding: 10px 12px;
+  padding: 9px 11px;
   border: 1px solid transparent;
   background: transparent;
 }
@@ -664,7 +671,7 @@ button {
 }
 
 .alert {
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 12px 14px;
   font-size: 13px;
 }

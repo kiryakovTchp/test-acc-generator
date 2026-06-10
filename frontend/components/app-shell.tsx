@@ -32,8 +32,6 @@ interface Detail {
   documentValue: string;
   documentIssueDate: string;
   documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
-  registrationUrl: string;
-  registrationUrlStatus: 'real' | 'placeholder';
   fullProfileText: string;
   inbox: {
     status: 'waiting_for_email' | 'email_received' | 'no_email_found';
@@ -117,6 +115,11 @@ function getBrowserStorage(): Storage | null {
     : null;
 }
 
+function isEditableTarget(target: EventTarget | null) {
+  if (!(target instanceof HTMLElement)) return false;
+  return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable;
+}
+
 export default function AppShell() {
   const [activeNav, setActiveNav] = useState<NavKey>('accounts');
   const [token, setToken] = useState<string>('');
@@ -127,6 +130,7 @@ export default function AppShell() {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [selectedGeo, setSelectedGeo] = useState('zambia');
   const [documentType, setDocumentType] = useState('passport');
+  const [bulkCount, setBulkCount] = useState(5);
   const [persona, setPersona] = useState<PersonaKey>('standard_user');
   const [accountRole, setAccountRole] = useState<'admin' | 'user'>('user');
   const [detail, setDetail] = useState<Detail | null>(null);
@@ -139,6 +143,7 @@ export default function AppShell() {
   const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
@@ -204,8 +209,29 @@ export default function AppShell() {
   const selectedStatus = mapDetailStatus(detail);
   const primaryActionsDisabled = !detail;
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
-  const realRegistrationGeoCount = geoItems.filter((item) => item.registrationUrlStatus === 'real').length;
-  const canOpenRegistration = detail?.registrationUrlStatus === 'real';
+  const isGenerateDisabled = isGenerating || isBulkGenerating;
+
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if (!user || isEditableTarget(event.target) || event.metaKey || event.ctrlKey || event.altKey) return;
+      const key = event.key.toLowerCase();
+      if (key === 'g') {
+        event.preventDefault();
+        if (!isGenerateDisabled) void generate();
+      }
+      if (key === 'b') {
+        event.preventDefault();
+        if (!isGenerateDisabled) void generateBulk();
+      }
+      if (key === 'r') {
+        event.preventDefault();
+        if (!primaryActionsDisabled && !isRefreshingInbox) void refreshInboxForDetail(0);
+      }
+    }
+
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  });
 
   async function refresh(authToken = token) {
     const [geo, historyRes] = await Promise.all([
@@ -250,6 +276,27 @@ export default function AppShell() {
       setError(err instanceof Error ? err.message : 'Failed to generate account');
     } finally {
       setIsGenerating(false);
+    }
+  }
+
+  async function generateBulk() {
+    setError('');
+    setIsBulkGenerating(true);
+    try {
+      const res = await apiFetch<{ items: Detail[] }>('/accounts/generate-bulk', token, {
+        method: 'POST',
+        body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona, count: bulkCount }),
+      });
+      const firstItem = res.items[0] ?? null;
+      setDetail(firstItem);
+      setActiveNav('accounts');
+      setShowRawProfile(false);
+      setShowRawHtml(false);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate accounts');
+    } finally {
+      setIsBulkGenerating(false);
     }
   }
 
@@ -314,7 +361,6 @@ export default function AppShell() {
       `Document Type: ${detail.documentType}`,
       `Document Value: ${detail.documentValue}`,
       `Issue Date: ${detail.documentIssueDate}`,
-      `Registration URL: ${detail.registrationUrl}`,
     ].join('\n');
     void copyValue(`identity-pack:${detail.id}`, identityPack);
   }
@@ -325,7 +371,7 @@ export default function AppShell() {
         <form className="login-card" onSubmit={doLogin}>
           <div className="login-badge">Internal QA console</div>
           <h1>Test Account Generator</h1>
-          <p>Sign in to generate accounts, inspect inbox activity, and capture verification data from one workspace.</p>
+          <p>Generate accounts, inspect mailbox activity, and capture verification data.</p>
           <div className="login-fields">
             <input className="input-field" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
             <input className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
@@ -378,19 +424,19 @@ export default function AppShell() {
           <div>
             <div className="section-kicker">Operational console</div>
             <h1>Accounts workspace</h1>
-            <p>{history.length} total accounts, {recentCount} created in the last 24h, {realRegistrationGeoCount} GEOs with live registration URLs.</p>
+            <p>{history.length} total accounts, {recentCount} created in the last 24h.</p>
           </div>
           <div className="topbar-actions">
-            <button className="primary-button" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Creating…' : 'Create Account'}</button>
-            <button className="secondary-button" disabled title="Bulk generation is not implemented yet">Bulk generation soon</button>
+            <button className="primary-button" onClick={generate} disabled={isGenerateDisabled} title="G">{isGenerating ? 'Creating...' : 'Create Account'}</button>
+            <button className="secondary-button" onClick={generateBulk} disabled={isGenerateDisabled} title="B">{isBulkGenerating ? `Generating ${bulkCount}...` : 'Generate Bulk'}</button>
             <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox}>Refresh Inbox</button>
             <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy Identity Pack</button>
-            <button className="secondary-button" onClick={() => detail && window.open(detail.registrationUrl, '_blank')} disabled={!canOpenRegistration}>Open Registration URL</button>
           </div>
         </div>
 
         {error ? <div className="alert alert-error slim">{error}</div> : null}
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
+        {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} accounts and mailbox snapshots.</div> : null}
 
         <div className="workspace-grid">
           <section className="panel panel-list">
@@ -468,12 +514,12 @@ export default function AppShell() {
                   <div className="detail-card-header">
                     <div>
                       <h3>Account details</h3>
-                      <p>Core registration fields with one-click copy and reveal controls.</p>
+                      <p>Core account fields with one-click copy and reveal controls.</p>
                     </div>
                     <div className="summary-metrics">
                       <Metric label="GEO" value={detail.geoLabel} />
                       <Metric label="Created" value={formatCompactDate(detail.createdAt)} />
-                      <Metric label="Status" value={detail.registrationUrlStatus} />
+                      <Metric label="Mailbox" value={statusLabel(selectedStatus)} />
                     </div>
                   </div>
                   <div className="info-grid two-col">
@@ -482,8 +528,7 @@ export default function AppShell() {
                     <InfoItem label="Full Name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
                     <InfoItem label="Date of Birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
                     <InfoItem label="GEO" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
-                    <InfoItem label="Registration URL" value={detail.registrationUrl} onCopy={() => copyValue(`reg:${detail.id}`, detail.registrationUrl)} copied={copiedField === `reg:${detail.id}`} action={canOpenRegistration ? <button className="micro-button" onClick={() => window.open(detail.registrationUrl, '_blank')}>Open</button> : undefined} />
-                    <InfoItem label="Status" value={detail.registrationUrlStatus} onCopy={() => copyValue(`url-status:${detail.id}`, detail.registrationUrlStatus)} copied={copiedField === `url-status:${detail.id}`} />
+                    <InfoItem label="Status" value={statusLabel(selectedStatus)} onCopy={() => copyValue(`status:${detail.id}`, statusLabel(selectedStatus))} copied={copiedField === `status:${detail.id}`} />
                     <InfoItem label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
                 </section>
@@ -492,7 +537,7 @@ export default function AppShell() {
                   <div className="detail-card-header">
                     <div>
                       <h3>Identity pack</h3>
-                      <p>Reusable profile blocks for registration and verification.</p>
+                      <p>Reusable profile blocks for QA and verification.</p>
                     </div>
                     <button className="ghost-button" onClick={copyIdentityPack}>{copiedField === `identity-pack:${detail.id}` ? 'Copied' : 'Copy all'}</button>
                   </div>
@@ -570,7 +615,7 @@ export default function AppShell() {
                     <span>Subject: {detail.inbox.subject || '—'}</span>
                     <span>Received: {formatDate(detail.inbox.receivedAt)}</span>
                   </div>
-                  <div className="mailbox-body">{detail.inbox.plainText || 'No email yet. Complete registration first, then refresh the inbox.'}</div>
+                  <div className="mailbox-body">{detail.inbox.plainText || 'No email yet. Use the generated account, then refresh the inbox.'}</div>
                   <div className="collapsible-area">
                     <button className="ghost-button" onClick={async () => {
                       const next = !showRawProfile;
@@ -618,13 +663,24 @@ export default function AppShell() {
                     <option value="missing_rule_probe">missing_rule_probe</option>
                   </select>
                 </Field>
+                <Field label="Bulk count">
+                  <input
+                    className="input-field compact"
+                    type="number"
+                    min="1"
+                    max="25"
+                    value={bulkCount}
+                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
+                  />
+                </Field>
                 <Field label="Role">
                   <select className="input-field compact" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
                     <option value="user">user</option>
                     <option value="admin">admin</option>
                   </select>
                 </Field>
-                <button className="primary-button w-full" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Generating…' : 'Create account'}</button>
+                <button className="primary-button w-full" onClick={generate} disabled={isGenerateDisabled}>{isGenerating ? 'Generating...' : 'Create account'}</button>
+                <button className="secondary-button w-full" onClick={generateBulk} disabled={isGenerateDisabled}>{isBulkGenerating ? `Generating ${bulkCount}...` : 'Generate bulk'}</button>
               </div>
             </section>
 
@@ -651,7 +707,7 @@ export default function AppShell() {
 
             <section className="side-card compact-metrics">
               <Metric label="History" value={String(history.length)} />
-              <Metric label="Live GEOs" value={String(realRegistrationGeoCount)} />
+              <Metric label="GEOs" value={String(geoItems.length)} />
               <Metric label="Codes" value={String(detail?.inbox.codes.length ?? 0)} />
               <Metric label="Links" value={String(detail?.inbox.links.length ?? 0)} />
             </section>

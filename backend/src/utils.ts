@@ -5,14 +5,69 @@ const MALE_FIRST_NAMES = ['John', 'Michael', 'David', 'Daniel', 'James', 'Alex',
 const FEMALE_FIRST_NAMES = ['Grace', 'Mary', 'Esther', 'Ruth', 'Anna', 'Joy', 'Alice', 'Sarah', 'Diana', 'Lydia'];
 const LAST_NAMES = ['Banda', 'Phiri', 'Zulu', 'Mwansa', 'Tembo', 'Okoro', 'Adebayo', 'Diallo', 'Camara', 'Toure', 'Kimani', 'Ndlovu', 'Moyo', 'Ibrahim', 'Khan', 'Aliyev', 'Sadykova', 'Bekov', 'Mendes', 'Costa'];
 
-const GEO_PROFILE_DEFAULTS: Record<string, { country: string; cities: string[]; postalPrefixes: string[]; streetPrefixes: string[] }> = {
-  zambia: { country: 'Zambia', cities: ['Lusaka', 'Ndola', 'Kitwe'], postalPrefixes: ['101', '102', '103'], streetPrefixes: ['Kafue Road', 'Freedom Way', 'Church Road'] },
-  uganda: { country: 'Uganda', cities: ['Kampala', 'Entebbe', 'Jinja'], postalPrefixes: ['25', '26', '27'], streetPrefixes: ['Jinja Road', 'Acacia Avenue', 'Kira Road'] },
-  nigeria: { country: 'Nigeria', cities: ['Lagos', 'Abuja', 'Port Harcourt'], postalPrefixes: ['100', '900', '500'], streetPrefixes: ['Allen Avenue', 'Adetokunbo Ademola', 'Aba Road'] },
-  guinea: { country: 'Guinea', cities: ['Conakry', 'Kankan', 'Kindia'], postalPrefixes: ['001', '101', '201'], streetPrefixes: ['Rue KA', 'Rue Niger', 'Avenue Republique'] },
-  uzbekistan: { country: 'Uzbekistan', cities: ['Tashkent', 'Samarkand', 'Bukhara'], postalPrefixes: ['100', '140', '200'], streetPrefixes: ['Amir Temur', 'Navoi Street', 'Mustaqillik'] },
-  kazakhstan: { country: 'Kazakhstan', cities: ['Almaty', 'Astana', 'Shymkent'], postalPrefixes: ['050', '010', '160'], streetPrefixes: ['Abay Avenue', 'Dostyk Street', 'Tauke Khan'] },
-  generic_intl: { country: 'United Kingdom', cities: ['London', 'Manchester', 'Birmingham'], postalPrefixes: ['SW1', 'M1', 'B1'], streetPrefixes: ['King Street', 'Victoria Road', 'High Street'] },
+interface GeoRegionProfile {
+  name?: string;
+  cities: string[];
+  postalPrefixes: string[];
+  streetPrefixes: string[];
+}
+
+interface GeoProfile {
+  country: string;
+  regions: GeoRegionProfile[];
+}
+
+const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
+  zambia: {
+    country: 'Zambia',
+    regions: [
+      { name: 'Lusaka Province', cities: ['Lusaka', 'Kafue'], postalPrefixes: ['101', '102'], streetPrefixes: ['Kafue Road', 'Church Road'] },
+      { name: 'Copperbelt Province', cities: ['Ndola', 'Kitwe'], postalPrefixes: ['103', '104'], streetPrefixes: ['Freedom Way', 'President Avenue'] },
+    ],
+  },
+  uganda: {
+    country: 'Uganda',
+    regions: [
+      { name: 'Central Region', cities: ['Kampala', 'Entebbe'], postalPrefixes: ['25', '26'], streetPrefixes: ['Jinja Road', 'Kira Road'] },
+      { name: 'Eastern Region', cities: ['Jinja', 'Mbale'], postalPrefixes: ['27', '28'], streetPrefixes: ['Acacia Avenue', 'Republic Street'] },
+    ],
+  },
+  nigeria: {
+    country: 'Nigeria',
+    regions: [
+      { name: 'Lagos', cities: ['Lagos', 'Ikeja'], postalPrefixes: ['100', '101'], streetPrefixes: ['Allen Avenue', 'Broad Street'] },
+      { name: 'Federal Capital Territory', cities: ['Abuja'], postalPrefixes: ['900'], streetPrefixes: ['Adetokunbo Ademola', 'Ahmadu Bello Way'] },
+      { name: 'Rivers', cities: ['Port Harcourt'], postalPrefixes: ['500'], streetPrefixes: ['Aba Road', 'Peter Odili Road'] },
+    ],
+  },
+  guinea: {
+    country: 'Guinea',
+    regions: [
+      { name: 'Conakry Region', cities: ['Conakry'], postalPrefixes: ['001'], streetPrefixes: ['Rue KA', 'Avenue Republique'] },
+      { name: 'Kankan Region', cities: ['Kankan', 'Kindia'], postalPrefixes: ['101', '201'], streetPrefixes: ['Rue Niger', 'Route Nationale'] },
+    ],
+  },
+  uzbekistan: {
+    country: 'Uzbekistan',
+    regions: [
+      { name: 'Tashkent Region', cities: ['Tashkent'], postalPrefixes: ['100'], streetPrefixes: ['Amir Temur', 'Mustaqillik'] },
+      { name: 'Samarkand Region', cities: ['Samarkand', 'Bukhara'], postalPrefixes: ['140', '200'], streetPrefixes: ['Navoi Street', 'Registan Street'] },
+    ],
+  },
+  kazakhstan: {
+    country: 'Kazakhstan',
+    regions: [
+      { name: 'Almaty Region', cities: ['Almaty'], postalPrefixes: ['050'], streetPrefixes: ['Abay Avenue', 'Dostyk Street'] },
+      { name: 'Akmola Region', cities: ['Astana'], postalPrefixes: ['010'], streetPrefixes: ['Tauelsizdik Avenue', 'Kabanbay Batyr Avenue'] },
+      { name: 'Shymkent', cities: ['Shymkent'], postalPrefixes: ['160'], streetPrefixes: ['Tauke Khan', 'Baidibek Bi Avenue'] },
+    ],
+  },
+  generic_intl: {
+    country: 'United Kingdom',
+    regions: [
+      { name: 'Not specified', cities: ['London', 'Manchester', 'Birmingham'], postalPrefixes: ['SW1', 'M1', 'B1'], streetPrefixes: ['King Street', 'Victoria Road', 'High Street'] },
+    ],
+  },
 };
 
 export function randomString(length: number, alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789') {
@@ -37,8 +92,16 @@ export function extractLinks(text: string) {
 
 export function cleanEmailText(text: string) {
   return text
-    .replace(/https?:\/\/[^\s]+/g, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '$1')
+    .replace(/<(https?:\/\/[^>\s]+)>/g, '$1')
+    .replace(/https?:\/\/[^\s)\]>]+/g, ' ')
+    .replace(/[([]\s*[)\]]/g, ' ')
     .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n[ \t]+/g, '\n')
+    .replace(/[ \t]{2,}/g, ' ')
+    .replace(/ ?([,.;:!?])/g, '$1')
     .replace(/\n{3,}/g, '\n\n')
     .trim();
 }
@@ -55,7 +118,33 @@ export function dedupeLinks<T extends { url: string }>(links: T[]) {
 }
 
 export function pickPrimaryVerificationLink(links: Array<{ url: string; label?: string }>) {
-  return links.find((link) => /activate|verify|confirm|registration|complete/i.test(`${link.label ?? ''} ${link.url}`)) ?? links[0] ?? null;
+  return [...links]
+    .sort((a, b) => scoreVerificationLink(b) - scoreVerificationLink(a))[0] ?? null;
+}
+
+function scoreVerificationLink(link: { url: string; label?: string }) {
+  const combined = `${link.label ?? ''} ${link.url}`.toLowerCase();
+  let score = 0;
+
+  if (/verify|verification|confirm|activation|activate|complete registration|finish sign\s?up|validate email/.test(combined)) score += 70;
+  if (/otp|one[- ]time|security code|passcode|login/.test(combined)) score += 10;
+  if (/unsubscribe|preferences|privacy|support|help|view in browser/.test(combined)) score -= 80;
+
+  try {
+    const parsed = new URL(link.url);
+    const host = parsed.hostname.toLowerCase();
+    const pathAndQuery = `${parsed.pathname}${parsed.search}`.toLowerCase();
+
+    if (/verify|confirm|activate|complete|registration/.test(pathAndQuery)) score += 45;
+    if (/token=|code=|otp=|confirmation/.test(pathAndQuery)) score += 15;
+    if (/click|track|trk|lnk|mailchi\.mp|mandrillapp|sendgrid|sparkpost|mailgun/.test(host)) score -= 35;
+    if (/(^|[?&])(url|u|redirect|redirect_url|target|dest|destination)=https?%3a/i.test(parsed.search)) score -= 45;
+    if (/(^|[?&])(url|u|redirect|redirect_url|target|dest|destination)=https?:\/\//i.test(parsed.search)) score -= 45;
+  } catch {
+    if (/click|track|redirect/.test(combined)) score -= 25;
+  }
+
+  return score;
 }
 
 function normalizeUrl(url: string) {
@@ -74,11 +163,14 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
   const age = randomAge(persona);
   const dateOfBirth = buildDateOfBirth(age);
   const geo = GEO_PROFILE_DEFAULTS[geoKey] ?? GEO_PROFILE_DEFAULTS.generic_intl;
-  const city = geo.cities[randomIndex(geo.cities.length)];
-  const postalBase = geo.postalPrefixes[randomIndex(geo.postalPrefixes.length)];
+  const region = geo.regions[randomIndex(geo.regions.length)] ?? GEO_PROFILE_DEFAULTS.generic_intl.regions[0];
+  const city = region.cities[randomIndex(region.cities.length)];
+  const postalBase = region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
   const postalCode = `${postalBase}${randomDigits(3)}`;
-  const street = geo.streetPrefixes[randomIndex(geo.streetPrefixes.length)];
+  const street = region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
   const addressLine = `${1 + crypto.randomInt(1, 250)} ${street}`;
+  const placeOfBirth = city;
+  const documentIssueDate = buildDocumentIssueDate(dateOfBirth);
 
   return {
     firstName,
@@ -87,9 +179,12 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
     age,
     dateOfBirth,
     country: geo.country,
+    region: region.name?.trim() || 'Not specified',
     city,
+    placeOfBirth,
     addressLine,
     postalCode,
+    documentIssueDate,
     phone: randomPhone(geoKey),
     persona,
   };
@@ -138,6 +233,25 @@ function buildDateOfBirth(age: number) {
   const month = 1 + crypto.randomInt(0, 12);
   const day = 1 + crypto.randomInt(0, 28);
   return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+}
+
+function buildDocumentIssueDate(dateOfBirth: string) {
+  const birthDate = new Date(`${dateOfBirth}T00:00:00Z`);
+  const earliest = new Date(Date.UTC(birthDate.getUTCFullYear() + 18, birthDate.getUTCMonth(), birthDate.getUTCDate()));
+  const latest = new Date();
+  const earliestTs = earliest.getTime();
+  const latestTs = latest.getTime();
+
+  if (!Number.isFinite(earliestTs) || earliestTs >= latestTs) {
+    return formatDate(latest);
+  }
+
+  const issueDate = new Date(earliestTs + crypto.randomInt(0, latestTs - earliestTs + 1));
+  return formatDate(issueDate);
+}
+
+function formatDate(date: Date) {
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}`;
 }
 
 function randomIndex(length: number) {
