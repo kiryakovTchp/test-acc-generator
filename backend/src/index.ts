@@ -19,7 +19,11 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
     const decoded = jwt.verify(token, jwtSecret) as { userId: number; login: string; role: Role };
-    (req as any).user = decoded;
+    const user = db.prepare('SELECT id, login, role FROM users WHERE id = ? OR login = ? LIMIT 1').get(decoded.userId, decoded.login) as { id: number; login: string; role: Role } | undefined;
+    if (!user) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    (req as any).user = { userId: user.id, login: user.login, role: user.role };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -45,15 +49,17 @@ app.get('/history', auth, (req, res) => {
 });
 
 app.get('/history/:id', auth, (req, res) => {
-  const item = getHistoryDetail(Number(req.params.id), (req as any).user.userId);
+  const includeDebug = req.query.debug === '1';
+  const item = getHistoryDetail(Number(req.params.id), (req as any).user.userId, includeDebug);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
 });
 
 app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
+  const includeDebug = req.query.debug === '1';
   try {
-    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs);
+    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs, includeDebug);
     if (!item) return res.status(404).json({ error: 'Not found' });
     res.json(item);
   } catch (error) {
@@ -76,6 +82,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
       role: role === 'admin' ? 'admin' : 'user',
       persona: isPersona(persona) ? persona : 'standard_user',
       emailProvider,
+      includeDebug: req.query.debug === '1',
     });
     res.json(item);
   } catch (error) {
