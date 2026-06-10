@@ -388,11 +388,18 @@ export default function AppShell() {
       <aside className="sidebar">
         <div>
           <div className="sidebar-brand">
-            <div className="sidebar-brand-mark">TG</div>
+            <div className="sidebar-brand-mark">QA</div>
             <div>
-              <strong>Test Generator</strong>
-              <span>QA operations</span>
+              <strong>PMO / QA Rig</strong>
+              <span>Verification console</span>
             </div>
+          </div>
+
+          <div className="flow-block">
+            <div className="flow-label">Flow</div>
+            <div className="flow-title">Registration Flow</div>
+            <div className="flow-subtitle">Core registration with verification and inbox</div>
+            <span className="flow-status">Active</span>
           </div>
 
           <nav className="sidebar-nav">
@@ -405,6 +412,13 @@ export default function AppShell() {
               >
                 <span className="sidebar-nav-short">{item.short}</span>
                 <span>{item.label}</span>
+                <span className="sidebar-count">
+                  {item.key === 'accounts' ? history.length
+                    : item.key === 'mailboxes' ? history.length
+                      : item.key === 'profiles' ? recentCount
+                        : item.key === 'codes' ? (detail?.inbox.codes.length ?? 0)
+                          : ''}
+                </span>
               </button>
             ))}
           </nav>
@@ -420,28 +434,17 @@ export default function AppShell() {
       </aside>
 
       <section className="workspace-shell">
-        <div className="topbar command-bar">
-          <div className="command-context">
-            <div className="section-kicker">Accounts</div>
-            <h1>Operator workspace</h1>
-            <div className="command-meta">
-              <span>{history.length} accounts</span>
-              <span>{recentCount} last 24h</span>
-              <span>{geoItems.length} GEO rules</span>
-              {detail ? <span>Selected: {detail.username}</span> : <span>No selection</span>}
-            </div>
+        <div className="topbar">
+          <div className="breadcrumb">
+            <span>Flows</span>
+            <span>Registration Flow</span>
+            <strong>Core Flow</strong>
           </div>
-          <div className="topbar-actions" aria-label="Primary account actions">
-            <button className="primary-button" onClick={generate} disabled={isGenerateDisabled} title="G">
-              <kbd>G</kbd>{isGenerating ? 'Creating...' : 'Create'}
-            </button>
-            <button className="secondary-button" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
-              <kbd>B</kbd>{isBulkGenerating ? `Generating ${bulkCount}` : `Bulk ${bulkCount}`}
-            </button>
-            <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
-              <kbd>R</kbd>{isRefreshingInbox ? 'Refreshing' : 'Refresh inbox'}
-            </button>
-            <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy pack</button>
+          <div className="topbar-admin">
+            <button className="icon-button" title="Command menu">CMD K</button>
+            <div className="env-select"><span /> Environment · admin-live</div>
+            <div className="env-select">{user.login}</div>
+            <button className="logout-button" onClick={() => { getBrowserStorage()?.clear(); setUser(null); setToken(''); }}>Logout</button>
           </div>
         </div>
 
@@ -449,19 +452,49 @@ export default function AppShell() {
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
         {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} accounts and mailbox snapshots.</div> : null}
 
+        <section className="quick-actions-panel">
+          <div className="quick-actions-title">Quick actions</div>
+          <div className="quick-actions-grid" aria-label="Primary account actions">
+            <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
+              <span className="action-icon">+</span>
+              <span><strong>{isGenerating ? 'Creating account' : 'Create account'}</strong><small>Single account</small></span>
+              <kbd>G</kbd>
+            </button>
+            <button className="action-card" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
+              <span className="action-icon">B</span>
+              <span><strong>{isBulkGenerating ? `Generating ${bulkCount}` : 'Generate bulk'}</strong><small>Multiple accounts</small></span>
+              <kbd>B</kbd>
+            </button>
+            <button className="action-card" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
+              <span className="action-icon">R</span>
+              <span><strong>{isRefreshingInbox ? 'Refreshing inbox' : 'Refresh inbox'}</strong><small>Selected account</small></span>
+              <kbd>R</kbd>
+            </button>
+            <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
+              <span className="action-icon">CP</span>
+              <span><strong>Copy identity pack</strong><small>Credentials and profile</small></span>
+            </button>
+            <button className="action-card" disabled>
+              <span className="action-icon">URL</span>
+              <span><strong>Open registration URL</strong><small>Not configured</small></span>
+            </button>
+            <button className="action-card" onClick={() => setActiveNav('activity')}>
+              <span className="action-icon">LOG</span>
+              <span><strong>View full activity log</strong><small>{history.length} generated records</small></span>
+            </button>
+          </div>
+        </section>
+
         <div className="workspace-grid">
           <section className="panel panel-list">
             <div className="panel-header">
-              <div>
-                <div className="section-kicker">Accounts</div>
-                <h2>Recent generated accounts</h2>
-              </div>
-              <button type="button" className="ghost-button" onClick={() => setShowFilters((value) => !value)}>{showFilters ? 'Hide controls' : 'Show controls'}</button>
+              <h2>Accounts <span>({history.length})</span></h2>
+              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
             </div>
 
             {showFilters ? (
               <div className="list-controls">
-                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search username, email, GEO" />
+                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts..." />
                 <div className="control-row">
                   <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
@@ -477,164 +510,63 @@ export default function AppShell() {
               </div>
             ) : null}
 
-            <div className="account-list-meta">
-              <span>{filteredHistory.length} visible</span>
-              <span>{recentCount} recent</span>
-            </div>
-
             <div className="account-list">
               {filteredHistory.length ? filteredHistory.map((item) => {
                 const rowStatus = mapHistoryStatus(item);
                 const selected = detail?.id === item.id;
                 return (
                   <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
-                    <div className="account-row-main">
-                      <div>
-                        <div className="account-row-title">{item.username}</div>
-                        <div className="account-row-subtitle">{item.email}</div>
-                      </div>
-                      <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
-                    </div>
-                    <div className="account-row-meta">
-                      <span>{statusLabel(rowStatus)}</span>
-                      <span>{formatCompactDate(item.createdAt)}</span>
-                    </div>
+                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
+                    <strong>{item.username}</strong>
+                    <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
               }) : <div className="empty-state">No accounts match the current filters.</div>}
             </div>
+            <button type="button" className="view-all-button">View all accounts</button>
           </section>
 
           <section className="panel panel-detail">
-            <div className="panel-header sticky">
-              <div>
-                <div className="section-kicker">Selected account</div>
-                <h2>{detail ? detail.username : 'No account selected'}</h2>
+            <div className="panel-header">
+              <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
+              <div className="panel-actions">
+                <button className="micro-button" disabled>Open in site</button>
+                <button className="micro-button">...</button>
               </div>
-              {detail ? <div className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</div> : null}
             </div>
 
             {!detail ? (
               <div className="empty-workspace">
                 <h3>Generate an account or open one from the list</h3>
-                <p>The center panel keeps credentials, identity data, verification links, and codes on a single working surface.</p>
+                <p>The selected account appears here without navigating away from the account list.</p>
               </div>
             ) : (
               <div className="detail-stack">
-                <section className="inspector-card">
-                  <div className="inspector-head">
-                    <div>
-                      <div className="section-kicker">Inspector</div>
-                      <h3>{detail.firstName} {detail.lastName}</h3>
-                    </div>
-                    <div className="summary-metrics">
-                      <Metric label="GEO" value={detail.geoLabel} />
-                      <Metric label="Created" value={formatCompactDate(detail.createdAt)} />
-                      <Metric label="Mailbox" value={statusLabel(selectedStatus)} />
-                    </div>
-                  </div>
-
-                  <div className="inspector-grid">
-                    <InspectorGroup title="Credentials">
-                      <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
-                      <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
-                      <InspectorRow label="Mailbox password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
-                      <InspectorRow label="Role" value={detail.role} onCopy={() => copyValue(`role:${detail.id}`, detail.role)} copied={copiedField === `role:${detail.id}`} />
-                    </InspectorGroup>
-
-                    <InspectorGroup title="Person">
-                      <InspectorRow label="Full name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
-                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
-                      <InspectorRow label="Gender" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
-                      <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
-                    </InspectorGroup>
-
-                    <InspectorGroup title="Location">
-                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
-                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
-                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
-                      <InspectorRow label="Address" value={detail.addressLine} onCopy={() => copyValue(`addr:${detail.id}`, detail.addressLine)} copied={copiedField === `addr:${detail.id}`} />
-                      <InspectorRow label="Postal code" value={detail.postalCode} onCopy={() => copyValue(`postal:${detail.id}`, detail.postalCode)} copied={copiedField === `postal:${detail.id}`} />
-                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
-                    </InspectorGroup>
-
-                    <InspectorGroup title="Document">
-                      <InspectorRow label="Type" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
-                      <InspectorRow label="Value" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
-                      <InspectorRow label="Issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue:${detail.id}`} />
-                      <InspectorRow label="Quality" value={detail.documentQuality} onCopy={() => copyValue(`quality:${detail.id}`, detail.documentQuality)} copied={copiedField === `quality:${detail.id}`} />
-                    </InspectorGroup>
-                  </div>
+                <section className="details-table">
+                  <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
+                  <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
+                  <InspectorRow label="Full name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
+                  <InspectorRow label="Persona" value={PERSONAS.find((item) => item.value === detail.persona)?.label ?? detail.persona} onCopy={() => copyValue(`persona:${detail.id}`, detail.persona)} copied={copiedField === `persona:${detail.id}`} />
+                  <InspectorRow label="Geo" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
+                  <InspectorRow label="Registration URL" value="Not configured" onCopy={() => copyValue(`registration-url:${detail.id}`, 'Not configured')} copied={copiedField === `registration-url:${detail.id}`} />
+                  <InspectorRow label="Status" value={statusLabel(selectedStatus)} onCopy={() => copyValue(`status:${detail.id}`, statusLabel(selectedStatus))} copied={copiedField === `status:${detail.id}`} />
+                  <InspectorRow label="Created" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
+                  <InspectorRow label="Mailbox" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                  <InspectorRow label="Verification codes" value={String(detail.inbox.codes.length)} onCopy={() => copyValue(`codes-count:${detail.id}`, String(detail.inbox.codes.length))} copied={copiedField === `codes-count:${detail.id}`} />
+                  <InspectorRow label="Last activity" value={detail.inbox.receivedAt ? formatDate(detail.inbox.receivedAt) : 'Pending'} onCopy={() => copyValue(`activity:${detail.id}`, detail.inbox.receivedAt || 'Pending')} copied={copiedField === `activity:${detail.id}`} />
                 </section>
 
-                <section className="detail-card">
-                  <div className="detail-card-header">
-                    <h3>Verification links</h3>
+                <section className="identity-pack">
+                  <div className="identity-pack-header">
+                    <h3>Identity pack</h3>
+                    <button className="micro-button" onClick={copyIdentityPack}>View all</button>
                   </div>
-                  <div className="link-list">
-                    {detail.inbox.links.length ? detail.inbox.links.map((link) => (
-                      <div key={link.url} className="link-row">
-                        <div className="link-row-main">
-                          <div className="link-row-title">{link.label || (link.isPrimary ? 'Primary verification link' : 'Verification link')}</div>
-                          <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 72)}</div>
-                        </div>
-                        <div className="link-row-meta">
-                          <span>{formatCompactDate(detail.inbox.receivedAt)}</span>
-                          {link.isPrimary ? <span className="tag">Primary</span> : null}
-                        </div>
-                        <div className="link-row-actions">
-                          <button className="micro-button" onClick={() => window.open(link.url, '_blank')}>Open</button>
-                          <button className="micro-button" onClick={() => copyValue(`link:${link.url}`, link.url)}>{copiedField === `link:${link.url}` ? 'Copied' : 'Copy'}</button>
-                          <button className="micro-button" onClick={() => setExpandedLink((current) => current === link.url ? '' : link.url)}>{expandedLink === link.url ? 'Hide' : 'View'}</button>
-                        </div>
-                      </div>
-                    )) : <div className="empty-state compact">No verification links captured yet.</div>}
+                  <div className="identity-pack-grid">
+                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="View" onClick={() => copyValue(`doc:${detail.id}`, detail.documentValue)} />
+                    <InfoTile label="Address" value={`${detail.city}, ${detail.country}`} action="View" onClick={() => copyValue(`addr:${detail.id}`, detail.addressLine)} />
+                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, detail.phone)} />
+                    <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
-                </section>
-
-                <section className="detail-card">
-                  <div className="detail-card-header">
-                    <h3>Verification codes</h3>
-                  </div>
-                  <div className="code-grid">
-                    {detail.inbox.codes.length ? detail.inbox.codes.map((code) => (
-                      <button key={code} type="button" className="code-tile" onClick={() => copyValue(`code:${code}`, code)}>
-                        <span>{code}</span>
-                        <small>{copiedField === `code:${code}` ? 'Copied' : 'Copy code'}</small>
-                      </button>
-                    )) : <div className="empty-state compact">No verification codes found.</div>}
-                  </div>
-                </section>
-
-                <section className="detail-card">
-                  <div className="detail-card-header">
-                    <h3>Mailbox</h3>
-                    <div className="inline-actions">
-                      <button className="micro-button" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting…' : 'Wait 60s'}</button>
-                    </div>
-                  </div>
-                  <div className="mailbox-meta">
-                    <span className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{isRefreshingInbox ? 'Waiting for email' : inboxStatusLabel || statusLabel(selectedStatus)}</span>
-                    <span>Sender: {detail.inbox.sender || '—'}</span>
-                    <span>Subject: {detail.inbox.subject || '—'}</span>
-                    <span>Received: {formatDate(detail.inbox.receivedAt)}</span>
-                  </div>
-                  <div className="mailbox-body">{detail.inbox.plainText || 'No email yet. Use the generated account, then refresh the inbox.'}</div>
-                  <div className="collapsible-area">
-                    <button className="ghost-button" onClick={async () => {
-                      const next = !showRawProfile;
-                      setShowRawProfile(next);
-                    }}>{showRawProfile ? 'Hide raw profile' : 'View raw profile'}</button>
-                    <button className="ghost-button" onClick={async () => {
-                      const next = !showRawHtml;
-                      setShowRawHtml(next);
-                      if (next && detail && !detail.inbox.rawHtml) {
-                        await loadDebugDetail(detail.id);
-                      }
-                    }}>{showRawHtml ? 'Hide raw HTML' : 'View raw HTML'}</button>
-                  </div>
-                  {showRawProfile ? <pre className="debug-block">{detail.fullProfileText}</pre> : null}
-                  {showRawHtml ? <pre className="debug-block">{detail.inbox.rawHtml ?? 'No HTML loaded.'}</pre> : null}
                 </section>
               </div>
             )}
@@ -642,14 +574,29 @@ export default function AppShell() {
 
           <aside className="panel panel-side">
             <div className="panel-header">
-              <div>
-                <div className="section-kicker">Operations</div>
-                <h2>Run settings</h2>
-              </div>
+              <h2>Recent activity</h2>
+              <button className="micro-button" onClick={() => setActiveNav('activity')}>View all</button>
             </div>
 
-            <section className="side-card">
-              <h3>Generation parameters</h3>
+            <div className="timeline">
+              {detail ? [
+                { label: 'Verification code captured', value: detail.inbox.codes[0] ? formatCompactDate(detail.inbox.receivedAt) : 'Pending', tone: detail.inbox.codes.length ? 'success' : 'warning' },
+                { label: 'Inbox refreshed', value: inboxStatusLabel || statusLabel(selectedStatus), tone: selectedStatus === 'email_received' ? 'success' : 'active' },
+                { label: 'Account generated', value: formatCompactDate(detail.createdAt), tone: 'success' },
+                { label: 'Mailbox created', value: formatCompactDate(detail.createdAt), tone: 'success' },
+                { label: 'Profile generated', value: detail.geoLabel, tone: 'success' },
+              ].map((event) => (
+                <div key={event.label} className="timeline-item">
+                  <span className={cn('status-dot', `tone-${event.tone}`)} />
+                  <strong>{event.label}</strong>
+                  <time>{event.value}</time>
+                </div>
+              )) : <div className="empty-state compact">Select an account to see live activity.</div>}
+            </div>
+
+            <section className="side-card bulk-card">
+              <h3>Bulk generation</h3>
+              <p>Generate multiple accounts with custom settings.</p>
               <div className="form-stack">
                 <Field label="GEO">
                   <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
@@ -677,54 +624,73 @@ export default function AppShell() {
                     onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
                   />
                 </Field>
-                <Field label="Role">
-                  <select className="input-field compact" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
-                  </select>
-                </Field>
-                <div className="shortcut-strip">
-                  <span><kbd>G</kbd> create</span>
-                  <span><kbd>B</kbd> bulk</span>
-                  <span><kbd>R</kbd> inbox</span>
-                </div>
+                <button className="secondary-button w-full" onClick={generateBulk} disabled={isGenerateDisabled}>Open bulk generator <kbd>B</kbd></button>
               </div>
-            </section>
-
-            <section className="side-card">
-              <h3>Activity feed</h3>
-              <div className="timeline">
-                {detail ? [
-                  { label: 'Account generated', value: formatDate(detail.createdAt), tone: 'active' },
-                  { label: 'Mailbox created', value: detail.email, tone: 'active' },
-                  { label: 'Email received', value: detail.inbox.receivedAt || 'Pending', tone: detail.inbox.receivedAt ? 'success' : 'warning' },
-                  { label: 'Code captured', value: detail.inbox.codes[0] || 'Pending', tone: detail.inbox.codes.length ? 'success' : 'warning' },
-                  { label: 'Link captured', value: detail.inbox.primaryVerificationLink?.label || 'Pending', tone: detail.inbox.primaryVerificationLink ? 'success' : 'warning' },
-                ].map((event) => (
-                  <div key={event.label} className="timeline-item">
-                    <span className={cn('status-dot', `tone-${event.tone}`)} />
-                    <div>
-                      <strong>{event.label}</strong>
-                      <p>{event.value}</p>
-                    </div>
-                  </div>
-                )) : <div className="empty-state compact">Select an account to see live activity.</div>}
-              </div>
-            </section>
-
-            <section className="side-card compact-metrics">
-              <Metric label="History" value={String(history.length)} />
-              <Metric label="GEOs" value={String(geoItems.length)} />
-              <Metric label="Codes" value={String(detail?.inbox.codes.length ?? 0)} />
-              <Metric label="Links" value={String(detail?.inbox.links.length ?? 0)} />
             </section>
 
             {detail ? (
-              <section className="side-card utility-actions">
+              <section className="side-card mailbox-card">
+                <div className="detail-card-header">
+                  <h3>Mailbox</h3>
+                  <button className="micro-button" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting...' : 'Wait 60s'}</button>
+                </div>
+                <div className="mailbox-meta">
+                  <span>{detail.inbox.sender || 'No sender'}</span>
+                  <span>{detail.inbox.subject || 'No subject'}</span>
+                </div>
+                <div className="collapsible-area">
+                  <button className="ghost-button" onClick={() => setShowRawProfile((next) => !next)}>{showRawProfile ? 'Hide raw profile' : 'Raw profile'}</button>
+                  <button className="ghost-button" onClick={async () => {
+                    const next = !showRawHtml;
+                    setShowRawHtml(next);
+                    if (next && detail && !detail.inbox.rawHtml) {
+                      await loadDebugDetail(detail.id);
+                    }
+                  }}>{showRawHtml ? 'Hide raw HTML' : 'Raw HTML'}</button>
+                </div>
+                {showRawProfile ? <pre className="debug-block">{detail.fullProfileText}</pre> : null}
+                {showRawHtml ? <pre className="debug-block">{detail.inbox.rawHtml ?? 'No HTML loaded.'}</pre> : null}
                 <button className="secondary-button w-full" onClick={() => remove(detail.id)}>Delete selected account</button>
               </section>
             ) : null}
           </aside>
+
+          <section className="panel panel-links">
+            <div className="panel-header">
+              <h2>Verification links <span>({detail?.inbox.links.length ?? 0})</span></h2>
+              <button className="micro-button" disabled>+ Add link</button>
+            </div>
+            <div className="link-list">
+              {detail?.inbox.links.length ? detail.inbox.links.map((link) => (
+                <div key={link.url} className="link-row">
+                  <span className="status-dot tone-success" />
+                  <div className="link-row-main">
+                    <div className="link-row-title">{link.label || (link.isPrimary ? 'Email verification' : 'Verification link')}</div>
+                    <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 64)}</div>
+                  </div>
+                  <button className="copy-icon" onClick={() => copyValue(`link:${link.url}`, link.url)}>CP</button>
+                  <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
+                </div>
+              )) : <div className="empty-state compact">No verification links captured yet.</div>}
+            </div>
+          </section>
+
+          <section className="panel panel-codes">
+            <div className="panel-header">
+              <h2>Codes <span>({detail?.inbox.codes.length ?? 0})</span></h2>
+              <button className="micro-button" disabled>+ Add code</button>
+            </div>
+            <div className="codes-list">
+              {detail?.inbox.codes.length ? detail.inbox.codes.map((code, index) => (
+                <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
+                  <span>{index === 0 ? 'Email code' : 'SMS code'}</span>
+                  <strong>{code}</strong>
+                  <small>{copiedField === `code:${code}` ? 'Copied' : 'CP'}</small>
+                  <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
+                </button>
+              )) : <div className="empty-state compact">No verification codes found.</div>}
+            </div>
+          </section>
         </div>
       </section>
     </main>
@@ -751,6 +717,16 @@ function Metric({ label, value }: { label: string; value: string }) {
       <span>{label}</span>
       <strong>{value}</strong>
     </div>
+  );
+}
+
+function InfoTile({ label, value, action, onClick }: { label: string; value: string; action: string; onClick: () => void }) {
+  return (
+    <button type="button" className="info-tile" onClick={onClick}>
+      <span>{label}</span>
+      <strong>{value}</strong>
+      <small>{action}</small>
+    </button>
   );
 }
 
