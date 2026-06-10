@@ -420,17 +420,28 @@ export default function AppShell() {
       </aside>
 
       <section className="workspace-shell">
-        <div className="topbar">
-          <div>
-            <div className="section-kicker">Operational console</div>
-            <h1>Accounts workspace</h1>
-            <p>{history.length} total accounts, {recentCount} created in the last 24h.</p>
+        <div className="topbar command-bar">
+          <div className="command-context">
+            <div className="section-kicker">Accounts</div>
+            <h1>Operator workspace</h1>
+            <div className="command-meta">
+              <span>{history.length} accounts</span>
+              <span>{recentCount} last 24h</span>
+              <span>{geoItems.length} GEO rules</span>
+              {detail ? <span>Selected: {detail.username}</span> : <span>No selection</span>}
+            </div>
           </div>
-          <div className="topbar-actions">
-            <button className="primary-button" onClick={generate} disabled={isGenerateDisabled} title="G">{isGenerating ? 'Creating...' : 'Create Account'}</button>
-            <button className="secondary-button" onClick={generateBulk} disabled={isGenerateDisabled} title="B">{isBulkGenerating ? `Generating ${bulkCount}...` : 'Generate Bulk'}</button>
-            <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox}>Refresh Inbox</button>
-            <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy Identity Pack</button>
+          <div className="topbar-actions" aria-label="Primary account actions">
+            <button className="primary-button" onClick={generate} disabled={isGenerateDisabled} title="G">
+              <kbd>G</kbd>{isGenerating ? 'Creating...' : 'Create'}
+            </button>
+            <button className="secondary-button" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
+              <kbd>B</kbd>{isBulkGenerating ? `Generating ${bulkCount}` : `Bulk ${bulkCount}`}
+            </button>
+            <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
+              <kbd>R</kbd>{isRefreshingInbox ? 'Refreshing' : 'Refresh inbox'}
+            </button>
+            <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy pack</button>
           </div>
         </div>
 
@@ -510,11 +521,11 @@ export default function AppShell() {
               </div>
             ) : (
               <div className="detail-stack">
-                <section className="detail-card quick-summary">
-                  <div className="detail-card-header">
+                <section className="inspector-card">
+                  <div className="inspector-head">
                     <div>
-                      <h3>Account details</h3>
-                      <p>Core account fields with one-click copy and reveal controls.</p>
+                      <div className="section-kicker">Inspector</div>
+                      <h3>{detail.firstName} {detail.lastName}</h3>
                     </div>
                     <div className="summary-metrics">
                       <Metric label="GEO" value={detail.geoLabel} />
@@ -522,43 +533,43 @@ export default function AppShell() {
                       <Metric label="Mailbox" value={statusLabel(selectedStatus)} />
                     </div>
                   </div>
-                  <div className="info-grid two-col">
-                    <InfoItem label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
-                    <InfoItem label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
-                    <InfoItem label="Full Name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
-                    <InfoItem label="Date of Birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
-                    <InfoItem label="GEO" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
-                    <InfoItem label="Status" value={statusLabel(selectedStatus)} onCopy={() => copyValue(`status:${detail.id}`, statusLabel(selectedStatus))} copied={copiedField === `status:${detail.id}`} />
-                    <InfoItem label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+
+                  <div className="inspector-grid">
+                    <InspectorGroup title="Credentials">
+                      <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
+                      <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                      <InspectorRow label="Mailbox password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
+                      <InspectorRow label="Role" value={detail.role} onCopy={() => copyValue(`role:${detail.id}`, detail.role)} copied={copiedField === `role:${detail.id}`} />
+                    </InspectorGroup>
+
+                    <InspectorGroup title="Person">
+                      <InspectorRow label="Full name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
+                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
+                      <InspectorRow label="Gender" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
+                      <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    </InspectorGroup>
+
+                    <InspectorGroup title="Location">
+                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
+                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
+                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
+                      <InspectorRow label="Address" value={detail.addressLine} onCopy={() => copyValue(`addr:${detail.id}`, detail.addressLine)} copied={copiedField === `addr:${detail.id}`} />
+                      <InspectorRow label="Postal code" value={detail.postalCode} onCopy={() => copyValue(`postal:${detail.id}`, detail.postalCode)} copied={copiedField === `postal:${detail.id}`} />
+                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
+                    </InspectorGroup>
+
+                    <InspectorGroup title="Document">
+                      <InspectorRow label="Type" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
+                      <InspectorRow label="Value" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
+                      <InspectorRow label="Issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue:${detail.id}`} />
+                      <InspectorRow label="Quality" value={detail.documentQuality} onCopy={() => copyValue(`quality:${detail.id}`, detail.documentQuality)} copied={copiedField === `quality:${detail.id}`} />
+                    </InspectorGroup>
                   </div>
                 </section>
 
                 <section className="detail-card">
                   <div className="detail-card-header">
-                    <div>
-                      <h3>Identity pack</h3>
-                      <p>Reusable profile blocks for QA and verification.</p>
-                    </div>
-                    <button className="ghost-button" onClick={copyIdentityPack}>{copiedField === `identity-pack:${detail.id}` ? 'Copied' : 'Copy all'}</button>
-                  </div>
-                  <div className="identity-grid">
-                    <InfoItem label="Passport / Document" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
-                    <InfoItem label="Address" value={detail.addressLine} onCopy={() => copyValue(`addr:${detail.id}`, detail.addressLine)} copied={copiedField === `addr:${detail.id}`} />
-                    <InfoItem label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
-                    <InfoItem label="Email" value={detail.email} onCopy={() => copyValue(`email-pack:${detail.id}`, detail.email)} copied={copiedField === `email-pack:${detail.id}`} />
-                    <InfoItem label="Place of Birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
-                    <InfoItem label="Issue Date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue:${detail.id}`} />
-                    <InfoItem label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
-                    <InfoItem label="Postal Code" value={detail.postalCode} onCopy={() => copyValue(`postal:${detail.id}`, detail.postalCode)} copied={copiedField === `postal:${detail.id}`} />
-                  </div>
-                </section>
-
-                <section className="detail-card">
-                  <div className="detail-card-header">
-                    <div>
-                      <h3>Verification links</h3>
-                      <p>Primary link first, with fast open and copy actions.</p>
-                    </div>
+                    <h3>Verification links</h3>
                   </div>
                   <div className="link-list">
                     {detail.inbox.links.length ? detail.inbox.links.map((link) => (
@@ -583,10 +594,7 @@ export default function AppShell() {
 
                 <section className="detail-card">
                   <div className="detail-card-header">
-                    <div>
-                      <h3>Verification codes</h3>
-                      <p>Large, readable values with one-click copy.</p>
-                    </div>
+                    <h3>Verification codes</h3>
                   </div>
                   <div className="code-grid">
                     {detail.inbox.codes.length ? detail.inbox.codes.map((code) => (
@@ -600,12 +608,8 @@ export default function AppShell() {
 
                 <section className="detail-card">
                   <div className="detail-card-header">
-                    <div>
-                      <h3>Mailbox data</h3>
-                      <p>Latest sender, subject, body, and raw payload access.</p>
-                    </div>
+                    <h3>Mailbox</h3>
                     <div className="inline-actions">
-                      <button className="micro-button" onClick={() => refreshInboxForDetail(0)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Refreshing…' : 'Refresh'}</button>
                       <button className="micro-button" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting…' : 'Wait 60s'}</button>
                     </div>
                   </div>
@@ -639,13 +643,13 @@ export default function AppShell() {
           <aside className="panel panel-side">
             <div className="panel-header">
               <div>
-                <div className="section-kicker">Activity</div>
-                <h2>Quick actions and status</h2>
+                <div className="section-kicker">Operations</div>
+                <h2>Run settings</h2>
               </div>
             </div>
 
             <section className="side-card">
-              <h3>Create / generate</h3>
+              <h3>Generation parameters</h3>
               <div className="form-stack">
                 <Field label="GEO">
                   <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
@@ -679,8 +683,11 @@ export default function AppShell() {
                     <option value="admin">admin</option>
                   </select>
                 </Field>
-                <button className="primary-button w-full" onClick={generate} disabled={isGenerateDisabled}>{isGenerating ? 'Generating...' : 'Create account'}</button>
-                <button className="secondary-button w-full" onClick={generateBulk} disabled={isGenerateDisabled}>{isBulkGenerating ? `Generating ${bulkCount}...` : 'Generate bulk'}</button>
+                <div className="shortcut-strip">
+                  <span><kbd>G</kbd> create</span>
+                  <span><kbd>B</kbd> bulk</span>
+                  <span><kbd>R</kbd> inbox</span>
+                </div>
               </div>
             </section>
 
@@ -747,7 +754,16 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function InfoItem({
+function InspectorGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="inspector-group">
+      <div className="inspector-group-title">{title}</div>
+      <div className="inspector-rows">{children}</div>
+    </section>
+  );
+}
+
+function InspectorRow({
   label,
   value,
   onCopy,
@@ -769,10 +785,10 @@ function InfoItem({
   const display = sensitive ? (hidden ? '••••••••••••' : value) : value;
 
   return (
-    <div className="info-item">
-      <div className="info-item-label">{label}</div>
-      <div className="info-item-value">{display || '—'}</div>
-      <div className="info-item-actions">
+    <div className="inspector-row">
+      <div className="inspector-label">{label}</div>
+      <div className="inspector-value">{display || '—'}</div>
+      <div className="inspector-actions">
         {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Reveal' : 'Hide'}</button> : null}
         {action}
         <button className="micro-button" onClick={onCopy}>{copied ? 'Copied' : 'Copy'}</button>
