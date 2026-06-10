@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
+type NavKey = 'accounts' | 'mailboxes' | 'profiles' | 'codes' | 'activity' | 'settings';
+type HistoryStatus = 'generated' | 'email_received' | 'waiting';
 
 interface Detail {
   id: number;
@@ -55,35 +57,54 @@ const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
   { value: 'female_user', label: 'Female User' },
 ];
 
-const FLOW_STEPS = [
-  'Generate account',
-  'Open product registration',
-  'Use profile fields',
-  'Refresh or wait inbox',
-  'Confirm by code or link',
+const NAV_ITEMS: Array<{ key: NavKey; label: string; short: string }> = [
+  { key: 'accounts', label: 'Accounts', short: 'AC' },
+  { key: 'mailboxes', label: 'Mailboxes', short: 'MB' },
+  { key: 'profiles', label: 'Profiles', short: 'PF' },
+  { key: 'codes', label: 'Verification Codes', short: 'VC' },
+  { key: 'activity', label: 'Activity Log', short: 'AL' },
+  { key: 'settings', label: 'Settings', short: 'ST' },
 ];
-
-function registrationStatusCopy(status: 'real' | 'placeholder') {
-  if (status === 'placeholder') {
-    return {
-      badge: 'Placeholder registration URL',
-      hint: 'This GEO is usable for local profile generation and inbox testing, but not for real sign-up. Replace the placeholder in backend/src/geo-rules.json before QA or production registration testing.',
-      cta: 'Registration URL placeholder',
-    };
-  }
-
-  return {
-    badge: 'Real registration URL configured',
-    hint: 'This GEO has a non-placeholder registration URL configured, so you can open the product registration page and continue sign-up testing.',
-    cta: 'Open product registration',
-  };
-}
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
 }
 
+function formatDate(value?: string) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString();
+}
+
+function formatCompactDate(value?: string) {
+  if (!value) return '—';
+  return new Date(value).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function mapHistoryStatus(item: HistoryItem): HistoryStatus {
+  return 'generated';
+}
+
+function mapDetailStatus(detail: Detail | null): HistoryStatus {
+  if (!detail) return 'waiting';
+  if (detail.inbox.status === 'email_received') return 'email_received';
+  if (detail.inbox.status === 'no_email_found') return 'waiting';
+  return 'generated';
+}
+
+function statusTone(status: HistoryStatus) {
+  if (status === 'email_received') return 'success';
+  if (status === 'generated') return 'active';
+  return 'warning';
+}
+
+function statusLabel(status: HistoryStatus) {
+  if (status === 'email_received') return 'Email received';
+  if (status === 'generated') return 'Generated';
+  return 'Waiting';
+}
+
 export default function AppShell() {
+  const [activeNav, setActiveNav] = useState<NavKey>('accounts');
   const [token, setToken] = useState<string>('');
   const [user, setUser] = useState<UserInfo | null>(null);
   const [login, setLogin] = useState('');
@@ -97,14 +118,17 @@ export default function AppShell() {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showFullProfile, setShowFullProfile] = useState(false);
-  const [showHistory, setShowHistory] = useState(true);
-  const [showDebug, setShowDebug] = useState(false);
-  const [expandedLink, setExpandedLink] = useState<string>('');
-  const [copiedField, setCopiedField] = useState<string>('');
+  const [showRawProfile, setShowRawProfile] = useState(false);
+  const [showRawHtml, setShowRawHtml] = useState(false);
+  const [showFilters, setShowFilters] = useState(true);
+  const [expandedLink, setExpandedLink] = useState('');
+  const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
+  const [accountSearch, setAccountSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
+  const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
 
   useEffect(() => {
     const storedToken = window.localStorage.getItem('tag-token') ?? '';
@@ -131,17 +155,34 @@ export default function AppShell() {
   }, [token]);
 
   const currentGeo = useMemo(() => geoItems.find((item) => item.key === selectedGeo), [geoItems, selectedGeo]);
-  const currentStep = detail ? (detail.inbox.status === 'email_received' ? 5 : 4) : 1;
-  const selectedGeoRegistrationMeta = currentGeo ? registrationStatusCopy(currentGeo.registrationUrlStatus) : null;
-  const detailRegistrationMeta = detail ? registrationStatusCopy(detail.registrationUrlStatus) : null;
-  const realRegistrationGeoCount = useMemo(() => geoItems.filter((item) => item.registrationUrlStatus === 'real').length, [geoItems]);
-  const allRegistrationUrlsPlaceholder = geoItems.length > 0 && realRegistrationGeoCount === 0;
 
   useEffect(() => {
     if (currentGeo?.documentTypes.length) {
       setDocumentType(currentGeo.documentTypes[0]);
     }
   }, [currentGeo?.key]);
+
+  const filteredHistory = useMemo(() => {
+    const term = accountSearch.trim().toLowerCase();
+    const next = history.filter((item) => {
+      const status = mapHistoryStatus(item);
+      const matchesSearch = !term || [item.username, item.email, item.geoLabel].some((value) => value.toLowerCase().includes(term));
+      const matchesStatus = statusFilter === 'all' || status === statusFilter;
+      return matchesSearch && matchesStatus;
+    });
+
+    next.sort((a, b) => sortMode === 'newest'
+      ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    return next;
+  }, [accountSearch, history, sortMode, statusFilter]);
+
+  const selectedStatus = mapDetailStatus(detail);
+  const primaryActionsDisabled = !detail;
+  const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
+  const realRegistrationGeoCount = geoItems.filter((item) => item.registrationUrlStatus === 'real').length;
+  const canOpenRegistration = detail?.registrationUrlStatus === 'real';
 
   async function refresh(authToken = token) {
     const [geo, historyRes] = await Promise.all([
@@ -177,7 +218,9 @@ export default function AppShell() {
         body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
       });
       setDetail(res);
-      setShowFullProfile(false);
+      setActiveNav('accounts');
+      setShowRawProfile(false);
+      setShowRawHtml(false);
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate account');
@@ -188,12 +231,12 @@ export default function AppShell() {
 
   async function loadDetail(id: number) {
     setDetail(await apiFetch<Detail>(`/history/${id}`, token));
+    setActiveNav('accounts');
   }
 
   async function loadDebugDetail(id: number) {
     const next = await apiFetch<Detail>(`/history/${id}?debug=1`, token);
     setDetail(next);
-    setShowDebug(true);
   }
 
   async function refreshInboxForDetail(waitMs = 0) {
@@ -229,444 +272,431 @@ export default function AppShell() {
     window.setTimeout(() => setCopiedField((current) => current === key ? '' : current), 1500);
   }
 
-  function QuickValue({ label, value, hidden = false }: { label: string; value: string; hidden?: boolean }) {
-    const display = hidden && !showPassword ? '••••••••••••' : value;
-    const key = `${label}:${value}`;
-    return (
-      <div className="group rounded-[26px] border border-[rgba(20,47,4,0.08)] bg-white/95 p-4 shadow-[0_18px_48px_rgba(20,47,4,0.08)] transition-transform duration-200 hover:-translate-y-0.5">
-        <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5b7d4f]">{label}</div>
-        <div className="mb-4 break-all text-[15px] font-medium text-[#142f04]">{display}</div>
-        <div className="flex gap-2">
-          {hidden ? (
-            <button type="button" className="rounded-full border border-[rgba(41,147,163,0.2)] px-3 py-2 text-xs font-medium text-[#1d7481]" onClick={() => setShowPassword((v) => !v)}>
-              {showPassword ? 'Hide' : 'Reveal'}
-            </button>
-          ) : null}
-          <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => copyValue(key, value)}>
-            {copiedField === key ? 'Copied' : 'Copy'}
-          </button>
-        </div>
-      </div>
-    );
+  function copyIdentityPack() {
+    if (!detail) return;
+    const identityPack = [
+      `Username: ${detail.username}`,
+      `Email: ${detail.email}`,
+      `Mailbox Password: ${detail.emailPassword}`,
+      `Full Name: ${detail.firstName} ${detail.lastName}`,
+      `Date of Birth: ${detail.dateOfBirth}`,
+      `Phone: ${detail.phone}`,
+      `Address: ${detail.addressLine}`,
+      `City: ${detail.city}`,
+      `Region: ${detail.region}`,
+      `Country: ${detail.country}`,
+      `Postal Code: ${detail.postalCode}`,
+      `Place of Birth: ${detail.placeOfBirth}`,
+      `Document Type: ${detail.documentType}`,
+      `Document Value: ${detail.documentValue}`,
+      `Issue Date: ${detail.documentIssueDate}`,
+      `Registration URL: ${detail.registrationUrl}`,
+    ].join('\n');
+    void copyValue(`identity-pack:${detail.id}`, identityPack);
   }
 
   if (!user) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden px-6 py-12">
-        <div className="panel-glow absolute left-[10%] top-[12%] h-48 w-48 rounded-full bg-[rgba(41,147,163,0.18)] blur-3xl" />
-        <div className="panel-glow absolute bottom-[8%] right-[12%] h-56 w-56 rounded-full bg-[rgba(85,206,16,0.14)] blur-3xl" />
-        <form className="surface-panel relative w-full max-w-md rounded-[34px] p-8" onSubmit={doLogin}>
-          <div className="mb-8">
-            <div className="eyebrow mb-3">QA account cockpit</div>
-            <h1 className="display-title text-4xl text-[#142f04]">Test Account Generator</h1>
-            <p className="mt-3 text-sm leading-6 text-[#5f7755]">Sign in to generate registration-ready identities, work mailbox checks, and finish verification flows from one place.</p>
-          </div>
-          <div className="space-y-4">
+      <main className="login-shell">
+        <form className="login-card" onSubmit={doLogin}>
+          <div className="login-badge">Internal QA console</div>
+          <h1>Test Account Generator</h1>
+          <p>Sign in to generate accounts, inspect inbox activity, and capture verification data from one workspace.</p>
+          <div className="login-fields">
             <input className="input-field" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
             <input className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
           </div>
-          {error ? <p className="mt-4 rounded-[22px] border border-[rgba(173,55,37,0.2)] bg-[rgba(173,55,37,0.08)] p-3 text-sm text-[#ad3725]">{error}</p> : null}
-          <button className="primary-button mt-6 w-full">Sign in</button>
+          {error ? <p className="alert alert-error">{error}</p> : null}
+          <button className="primary-button w-full">Sign in</button>
         </form>
       </main>
     );
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden px-4 py-6 sm:px-6 lg:px-8">
-      <div className="panel-glow absolute left-[-4rem] top-10 h-72 w-72 rounded-full bg-[rgba(41,147,163,0.14)] blur-3xl" />
-      <div className="panel-glow absolute right-[-6rem] top-[30rem] h-80 w-80 rounded-full bg-[rgba(85,206,16,0.12)] blur-3xl" />
-      <div className="mx-auto max-w-7xl">
-        <header className="surface-panel mb-6 rounded-[36px] px-6 py-6 sm:px-8 lg:px-10">
-          <div className="flex flex-wrap items-start justify-between gap-6">
-            <div className="max-w-3xl">
-              <div className="eyebrow mb-4">PMO / QA verification rig</div>
-              <h1 className="display-title text-4xl text-[#142f04] sm:text-5xl">Registration flow, but operator-grade.</h1>
-              <p className="mt-4 max-w-2xl text-sm leading-6 text-[#5f7755]">Generate a usable profile, launch the real signup when available, then harvest codes or verification links without losing the thread.</p>
-            </div>
-            <div className="grid gap-3 sm:min-w-[280px]">
-              <div className="rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-white/80 px-5 py-4 text-sm text-[#4f6a43] shadow-[0_12px_28px_rgba(20,47,4,0.06)]">
-                <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6a8561]">Operator</div>
-                <div className="mt-2 flex items-center justify-between gap-3 text-[#142f04]">
-                  <span className="font-medium">{user.login}</span>
-                  <span className="rounded-full bg-[rgba(41,147,163,0.12)] px-3 py-1 text-xs font-semibold text-[#1d7481]">{user.role}</span>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <details className="rounded-full border border-[rgba(20,47,4,0.08)] bg-white/80 px-4 py-3 text-xs text-[#5f7755] shadow-[0_12px_28px_rgba(20,47,4,0.06)]">
-                  <summary className="cursor-pointer font-medium text-[#355c18]">Technical</summary>
-                  <div className="mt-3 space-y-1 pr-4">
-                    <div>User: {user.login}</div>
-                    <div>Role: {user.role}</div>
-                  </div>
-                </details>
-                <button className="rounded-full border border-[rgba(20,47,4,0.08)] bg-white/80 px-4 py-3 text-sm font-medium text-[#142f04] shadow-[0_12px_28px_rgba(20,47,4,0.06)]" onClick={() => { window.localStorage.clear(); setUser(null); setToken(''); }}>
-                  Logout
-                </button>
-              </div>
-            </div>
-          </div>
-        </header>
-
-        {error ? <div className="mb-6 rounded-[24px] border border-[rgba(173,55,37,0.2)] bg-[rgba(173,55,37,0.08)] p-4 text-sm text-[#ad3725] shadow-[0_10px_24px_rgba(173,55,37,0.08)]">{error}</div> : null}
-
-        <section className="surface-panel mb-6 rounded-[34px] p-6 sm:p-8">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+    <main className="console-shell">
+      <aside className="sidebar">
+        <div>
+          <div className="sidebar-brand">
+            <div className="sidebar-brand-mark">TG</div>
             <div>
-              <div className="eyebrow mb-2">Core flow</div>
-              <h2 className="text-2xl font-semibold text-[#142f04]">Keep the signup thread visible at all times</h2>
-            </div>
-            <div className="rounded-full border border-[rgba(20,47,4,0.08)] bg-white/80 px-4 py-2 text-sm text-[#355c18]">
-              Step <span className="font-semibold text-[#142f04]">{currentStep}</span> of {FLOW_STEPS.length}
+              <strong>Test Generator</strong>
+              <span>QA operations</span>
             </div>
           </div>
-          <div className="grid gap-3 lg:grid-cols-5">
-            {FLOW_STEPS.map((step, index) => {
-              const stepNumber = index + 1;
-              const active = stepNumber === currentStep;
-              const done = stepNumber < currentStep;
-              return (
-                <div
-                  key={step}
-                  className={cn(
-                    'relative overflow-hidden rounded-[28px] border p-4 transition-all',
-                    done && 'border-[rgba(85,206,16,0.25)] bg-[linear-gradient(135deg,rgba(85,206,16,0.18),rgba(255,255,255,0.88))]',
-                    active && 'border-[rgba(41,147,163,0.28)] bg-[linear-gradient(135deg,rgba(41,147,163,0.16),rgba(255,255,255,0.92))] shadow-[0_18px_44px_rgba(41,147,163,0.12)]',
-                    !done && !active && 'border-[rgba(20,47,4,0.08)] bg-white/70'
-                  )}
-                >
-                  <div className="mb-3 flex items-center justify-between gap-3">
-                    <span className={cn('flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold', done && 'bg-[#55ce10] text-[#142f04]', active && 'bg-[#2993A3] text-white', !done && !active && 'bg-[#eef2ea] text-[#6b8360]')}>
-                      {stepNumber}
-                    </span>
-                    <span className={cn('text-[11px] font-semibold uppercase tracking-[0.24em]', done && 'text-[#355c18]', active && 'text-[#1d7481]', !done && !active && 'text-[#82987a]')}>
-                      {done ? 'Done' : active ? 'Live' : 'Queued'}
-                    </span>
-                  </div>
-                  <div className={cn('text-sm font-medium leading-6', done || active ? 'text-[#142f04]' : 'text-[#607757]')}>{step}</div>
-                </div>
-              );
-            })}
+
+          <nav className="sidebar-nav">
+            {NAV_ITEMS.map((item) => (
+              <button
+                key={item.key}
+                type="button"
+                className={cn('sidebar-nav-item', activeNav === item.key && 'is-active')}
+                onClick={() => setActiveNav(item.key)}
+              >
+                <span className="sidebar-nav-short">{item.short}</span>
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <div className="sidebar-footer">
+          <div className="sidebar-user">
+            <strong>{user.login}</strong>
+            <span>{user.role}</span>
           </div>
-        </section>
+          <button className="sidebar-logout" onClick={() => { window.localStorage.clear(); setUser(null); setToken(''); }}>Logout</button>
+        </div>
+      </aside>
 
-        <div className="grid gap-6 xl:grid-cols-[370px_minmax(0,1fr)]">
-          <aside className="space-y-6">
-            <section className="surface-panel rounded-[34px] p-6">
-              <div className="mb-6">
-                <div className="eyebrow mb-2">Step 1</div>
-                <h2 className="text-2xl font-semibold text-[#142f04]">Generate account</h2>
-                <p className="mt-2 text-sm leading-6 text-[#5f7755]">Shape the persona first, then create mailbox credentials and the identity pack you’ll use during registration.</p>
-              </div>
-              {allRegistrationUrlsPlaceholder ? (
-                <div className="mb-5 rounded-[24px] border border-[rgba(173,55,37,0.16)] bg-[linear-gradient(135deg,rgba(173,55,37,0.08),rgba(255,255,255,0.92))] p-4 text-sm text-[#ad3725]">
-                  <div className="font-semibold">Local/dev ready, not real-signup ready</div>
-                  <div className="mt-1">All configured GEO registration URLs are placeholders right now. You can still generate profiles and test mailbox behavior, but live signup launch stays intentionally blocked.</div>
-                </div>
-              ) : null}
-              <div className="space-y-4">
-                <Field label="GEO">
-                  <select className="input-field" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
-                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}{item.registrationUrlStatus === 'placeholder' ? ' · placeholder URL' : ''}</option>)}
-                  </select>
-                  {selectedGeoRegistrationMeta ? (
-                    <div className={cn('mt-3 rounded-[22px] border p-3 text-sm leading-6', currentGeo?.registrationUrlStatus === 'placeholder' ? 'border-[rgba(173,55,37,0.16)] bg-[rgba(173,55,37,0.08)] text-[#ad3725]' : 'border-[rgba(85,206,16,0.18)] bg-[rgba(85,206,16,0.1)] text-[#355c18]')}>
-                      <div className="font-semibold">{selectedGeoRegistrationMeta.badge}</div>
-                      <div className="mt-1">{selectedGeoRegistrationMeta.hint}</div>
-                    </div>
-                  ) : null}
-                </Field>
-                <Field label="Persona">
-                  <select className="input-field" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Document type">
-                  <select className="input-field" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
-                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
-                    <option value="missing_rule_probe">missing_rule_probe</option>
-                  </select>
-                </Field>
-                <Field label="Account role">
-                  <select className="input-field" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
-                    <option value="user">user</option>
-                    <option value="admin">admin</option>
-                  </select>
-                </Field>
-                <button className="primary-button w-full" onClick={generate} disabled={isGenerating}>
-                  {isGenerating ? 'Generating profile...' : 'Generate account'}
-                </button>
-                {isGenerating ? <div className="rounded-[22px] border border-[rgba(41,147,163,0.14)] bg-[rgba(41,147,163,0.08)] p-3 text-sm text-[#4f6a43]">Creating mailbox, generating credentials, and checking the inbox. Please wait.</div> : null}
-              </div>
-            </section>
+      <section className="workspace-shell">
+        <div className="topbar">
+          <div>
+            <div className="section-kicker">Operational console</div>
+            <h1>Accounts workspace</h1>
+            <p>{history.length} total accounts, {recentCount} created in the last 24h, {realRegistrationGeoCount} GEOs with live registration URLs.</p>
+          </div>
+          <div className="topbar-actions">
+            <button className="primary-button" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Creating…' : 'Create Account'}</button>
+            <button className="secondary-button" onClick={() => generate()} disabled={isGenerating}>Generate Bulk</button>
+            <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox}>Refresh Inbox</button>
+            <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy Identity Pack</button>
+            <button className="secondary-button" onClick={() => detail && window.open(detail.registrationUrl, '_blank')} disabled={!canOpenRegistration}>Open Registration URL</button>
+          </div>
+        </div>
 
-            <section className="surface-panel rounded-[34px] p-6">
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div>
-                  <div className="eyebrow mb-2">Reopen work</div>
-                  <h2 className="text-xl font-semibold text-[#142f04]">History</h2>
-                  <p className="text-sm text-[#5f7755]">Pull an old generated account back into the workspace.</p>
-                </div>
-                <button type="button" className="rounded-full border border-[rgba(20,47,4,0.08)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => setShowHistory((v) => !v)}>
-                  {showHistory ? 'Hide' : 'Show'}
-                </button>
+        {error ? <div className="alert alert-error slim">{error}</div> : null}
+        {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
+
+        <div className="workspace-grid">
+          <section className="panel panel-list">
+            <div className="panel-header">
+              <div>
+                <div className="section-kicker">Accounts</div>
+                <h2>Recent generated accounts</h2>
               </div>
-              {showHistory ? (
-                <div className="space-y-3">
-                  {history.map((item) => (
-                    <div key={item.id} className="rounded-[26px] border border-[rgba(20,47,4,0.08)] bg-white/75 p-4 shadow-[0_10px_24px_rgba(20,47,4,0.05)]">
-                      <div className="mb-2 flex items-start justify-between gap-3">
-                        <div className="text-sm font-semibold text-[#142f04]">{item.geoLabel}</div>
-                        <span className="rounded-full bg-[rgba(41,147,163,0.1)] px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[#1d7481]">{item.documentType}</span>
+              <button type="button" className="ghost-button" onClick={() => setShowFilters((value) => !value)}>{showFilters ? 'Hide controls' : 'Show controls'}</button>
+            </div>
+
+            {showFilters ? (
+              <div className="list-controls">
+                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search username, email, GEO" />
+                <div className="control-row">
+                  <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
+                    <option value="all">All statuses</option>
+                    <option value="generated">Generated</option>
+                    <option value="email_received">Email received</option>
+                    <option value="waiting">Waiting</option>
+                  </select>
+                  <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                  </select>
+                </div>
+              </div>
+            ) : null}
+
+            <div className="account-list-meta">
+              <span>{filteredHistory.length} visible</span>
+              <span>{recentCount} recent</span>
+            </div>
+
+            <div className="account-list">
+              {filteredHistory.length ? filteredHistory.map((item) => {
+                const rowStatus = mapHistoryStatus(item);
+                const selected = detail?.id === item.id;
+                return (
+                  <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
+                    <div className="account-row-main">
+                      <div>
+                        <div className="account-row-title">{item.username}</div>
+                        <div className="account-row-subtitle">{item.email}</div>
                       </div>
-                      <div className="break-all text-sm text-[#355c18]">{item.email}</div>
-                      <div className="mt-2 text-xs text-[#7d9273]">{new Date(item.createdAt).toLocaleString()}</div>
-                      <div className="mt-4 flex gap-2">
-                        <button className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => loadDetail(item.id)}>Open</button>
-                        <button className="rounded-full border border-[rgba(173,55,37,0.18)] px-3 py-2 text-xs font-medium text-[#ad3725]" onClick={() => remove(item.id)}>Delete</button>
-                      </div>
+                      <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
                     </div>
-                  ))}
-                </div>
-              ) : <div className="rounded-[24px] border border-[rgba(20,47,4,0.08)] bg-white/70 p-4 text-sm text-[#5f7755]">Recent generated accounts live here.</div>}
-            </section>
-          </aside>
+                    <div className="account-row-meta">
+                      <span>{statusLabel(rowStatus)}</span>
+                      <span>{formatCompactDate(item.createdAt)}</span>
+                    </div>
+                  </button>
+                );
+              }) : <div className="empty-state">No accounts match the current filters.</div>}
+            </div>
+          </section>
 
-          <section>
+          <section className="panel panel-detail">
+            <div className="panel-header sticky">
+              <div>
+                <div className="section-kicker">Selected account</div>
+                <h2>{detail ? detail.username : 'No account selected'}</h2>
+              </div>
+              {detail ? <div className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</div> : null}
+            </div>
+
             {!detail ? (
-              <div className="surface-panel rounded-[36px] p-8 sm:p-12">
-                <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
-                  <div>
-                    <div className="eyebrow mb-3">Current account workspace</div>
-                    <h2 className="display-title text-3xl text-[#142f04] sm:text-4xl">Generate an account and the operator console comes alive.</h2>
-                    <p className="mt-4 max-w-xl text-sm leading-7 text-[#5f7755]">This is where credentials, profile fields, mailbox refresh, verification codes, and direct confirmation links will line up in one working surface.</p>
-                  </div>
-                  <div className="grid gap-3">
-                    {['Generate account', 'Open real signup or inspect readiness', 'Copy fields', 'Refresh inbox', 'Confirm via code or link'].map((item, index) => (
-                      <div key={item} className="rounded-[24px] border border-[rgba(20,47,4,0.08)] bg-white/80 p-4">
-                        <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#7b9271]">0{index + 1}</div>
-                        <div className="mt-2 text-sm font-medium text-[#142f04]">{item}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+              <div className="empty-workspace">
+                <h3>Generate an account or open one from the list</h3>
+                <p>The center panel keeps credentials, identity data, verification links, and codes on a single working surface.</p>
               </div>
             ) : (
-              <div className="space-y-6">
-                <section className="surface-panel rounded-[36px] p-6 sm:p-8">
-                  <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                    <div className="max-w-2xl">
-                      <div className="eyebrow mb-2">Current account workspace</div>
-                      <h2 className="text-2xl font-semibold text-[#142f04]">Use these details on the registration form</h2>
-                      <p className="mt-2 text-sm leading-6 text-[#5f7755]">Everything needed for registration is grouped below for fast copy/paste, without losing visibility on live signup readiness.</p>
+              <div className="detail-stack">
+                <section className="detail-card quick-summary">
+                  <div className="detail-card-header">
+                    <div>
+                      <h3>Account details</h3>
+                      <p>Core registration fields with one-click copy and reveal controls.</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-4 py-3 text-sm font-medium text-[#355c18]" onClick={() => copyValue(`full-profile:${detail.id}`, detail.fullProfileText)}>{copiedField === `full-profile:${detail.id}` ? 'Copied full profile' : 'Copy Full Profile'}</button>
-                      {detail.registrationUrlStatus === 'real' ? (
-                        <a href={detail.registrationUrl} target="_blank" rel="noreferrer" className="rounded-full bg-[#2993a3] px-5 py-3 text-sm font-semibold text-white shadow-[0_16px_32px_rgba(41,147,163,0.2)]">{detailRegistrationMeta?.cta ?? 'Open product registration'}</a>
-                      ) : (
-                        <button type="button" disabled className="rounded-full bg-[#b8c3b0] px-5 py-3 text-sm font-semibold text-white">{detailRegistrationMeta?.cta ?? 'Registration URL placeholder'}</button>
-                      )}
+                    <div className="summary-metrics">
+                      <Metric label="GEO" value={detail.geoLabel} />
+                      <Metric label="Created" value={formatCompactDate(detail.createdAt)} />
+                      <Metric label="Status" value={detail.registrationUrlStatus} />
                     </div>
                   </div>
-
-                  {detailRegistrationMeta ? (
-                    <div className={cn('mb-6 rounded-[26px] border p-4 text-sm leading-6', detail.registrationUrlStatus === 'placeholder' ? 'border-[rgba(173,55,37,0.16)] bg-[rgba(173,55,37,0.08)] text-[#ad3725]' : 'border-[rgba(85,206,16,0.2)] bg-[rgba(85,206,16,0.1)] text-[#355c18]')}>
-                      <div className="font-semibold">{detailRegistrationMeta.badge}</div>
-                      <div className="mt-1">{detailRegistrationMeta.hint}</div>
-                    </div>
-                  ) : null}
-
-                  <div className="mb-6 grid gap-4 lg:grid-cols-3">
-                    <StatTile label="GEO" value={detail.geoLabel} tone="accent" />
-                    <StatTile label="Persona" value={detail.persona.replaceAll('_', ' ')} tone="neutral" />
-                    <StatTile label="Document quality" value={detail.documentQuality.replaceAll('_', ' ')} tone={detail.documentQuality === 'verified' ? 'success' : detail.documentQuality === 'missing_rules' ? 'danger' : 'neutral'} />
+                  <div className="info-grid two-col">
+                    <InfoItem label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
+                    <InfoItem label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
+                    <InfoItem label="Full Name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
+                    <InfoItem label="Date of Birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
+                    <InfoItem label="GEO" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
+                    <InfoItem label="Registration URL" value={detail.registrationUrl} onCopy={() => copyValue(`reg:${detail.id}`, detail.registrationUrl)} copied={copiedField === `reg:${detail.id}`} action={canOpenRegistration ? <button className="micro-button" onClick={() => window.open(detail.registrationUrl, '_blank')}>Open</button> : undefined} />
+                    <InfoItem label="Status" value={detail.registrationUrlStatus} onCopy={() => copyValue(`url-status:${detail.id}`, detail.registrationUrlStatus)} copied={copiedField === `url-status:${detail.id}`} />
+                    <InfoItem label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
-
-                  <div className="grid gap-5 xl:grid-cols-2">
-                    <DetailGroup title="Account access" description="Use these credentials for the mailbox and registration flow.">
-                      <QuickValue label="Email" value={detail.email} />
-                      <QuickValue label="Mailbox password" value={detail.emailPassword} hidden />
-                      <QuickValue label="Phone" value={detail.phone} />
-                      <QuickValue label="Role" value={detail.role} />
-                    </DetailGroup>
-
-                    <DetailGroup title="Personal info" description="Basic identity details for profile creation.">
-                      <QuickValue label="First name" value={detail.firstName} />
-                      <QuickValue label="Last name" value={detail.lastName} />
-                      <QuickValue label="Gender" value={detail.gender} />
-                      <QuickValue label="Date of Birth" value={detail.dateOfBirth} />
-                      <QuickValue label="Age" value={String(detail.age)} />
-                    </DetailGroup>
-
-                    <DetailGroup title="Address" description="Location fields commonly requested on the registration form.">
-                      <QuickValue label="Country" value={detail.country} />
-                      <QuickValue label="Region" value={detail.region} />
-                      <QuickValue label="City" value={detail.city} />
-                      <QuickValue label="Place of Birth" value={detail.placeOfBirth} />
-                      <QuickValue label="Address" value={detail.addressLine} />
-                      <QuickValue label="Postal Code" value={detail.postalCode} />
-                    </DetailGroup>
-
-                    <DetailGroup title="Identity" description="Document values used during verification.">
-                      <QuickValue label="Document Type" value={detail.documentType} />
-                      <QuickValue label="Document Value" value={detail.documentValue} />
-                      <QuickValue label="Document Issue Date" value={detail.documentIssueDate} />
-                      <QuickValue label="Document Quality" value={detail.documentQuality} />
-                      <QuickValue label="Geo" value={detail.geoLabel} />
-                    </DetailGroup>
-
-                    <DetailGroup title="Reference" description="Secondary values for operators, not primary registration fields.">
-                      <QuickValue label="Username" value={detail.username} />
-                      <QuickValue label="Registration URL" value={detail.registrationUrl} />
-                      <QuickValue label="Registration URL Status" value={detail.registrationUrlStatus} />
-                      <QuickValue label="Persona" value={detail.persona} />
-                    </DetailGroup>
-                  </div>
-
-                  <div className="mt-5">
-                    <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-4 py-3 text-sm font-medium text-[#355c18]" onClick={() => setShowFullProfile((v) => !v)}>{showFullProfile ? 'Hide raw full profile' : 'Show raw full profile'}</button>
-                  </div>
-
-                  {showFullProfile ? (
-                    <div className="mt-5 rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-white/75 p-5">
-                      <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">Full profile text</div>
-                      <pre className="whitespace-pre-wrap break-words text-sm leading-6 text-[#142f04]">{detail.fullProfileText}</pre>
-                    </div>
-                  ) : null}
                 </section>
 
-                <section className="surface-panel rounded-[36px] p-6 sm:p-8">
-                  <div className="mb-6 flex flex-wrap items-start justify-between gap-4">
-                    <div className="max-w-2xl">
-                      <div className="eyebrow mb-2">Inbox verification</div>
-                      <h2 className="text-2xl font-semibold text-[#142f04]">Refresh the mailbox and complete confirmation</h2>
-                      <p className="mt-2 text-sm leading-6 text-[#5f7755]">After signup, return here to detect the message, extract codes, and open the primary verification link fast.</p>
+                <section className="detail-card">
+                  <div className="detail-card-header">
+                    <div>
+                      <h3>Identity pack</h3>
+                      <p>Reusable profile blocks for registration and verification.</p>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-4 py-3 text-sm font-medium text-[#355c18]" onClick={() => refreshInboxForDetail(0)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Refreshing...' : 'Refresh Inbox'}</button>
-                      <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-4 py-3 text-sm font-medium text-[#355c18]" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting...' : 'Wait for Email (60s)'}</button>
+                    <button className="ghost-button" onClick={copyIdentityPack}>{copiedField === `identity-pack:${detail.id}` ? 'Copied' : 'Copy all'}</button>
+                  </div>
+                  <div className="identity-grid">
+                    <InfoItem label="Passport / Document" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
+                    <InfoItem label="Address" value={detail.addressLine} onCopy={() => copyValue(`addr:${detail.id}`, detail.addressLine)} copied={copiedField === `addr:${detail.id}`} />
+                    <InfoItem label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    <InfoItem label="Email" value={detail.email} onCopy={() => copyValue(`email-pack:${detail.id}`, detail.email)} copied={copiedField === `email-pack:${detail.id}`} />
+                    <InfoItem label="Place of Birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
+                    <InfoItem label="Issue Date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue:${detail.id}`} />
+                    <InfoItem label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
+                    <InfoItem label="Postal Code" value={detail.postalCode} onCopy={() => copyValue(`postal:${detail.id}`, detail.postalCode)} copied={copiedField === `postal:${detail.id}`} />
+                  </div>
+                </section>
+
+                <section className="detail-card">
+                  <div className="detail-card-header">
+                    <div>
+                      <h3>Verification links</h3>
+                      <p>Primary link first, with fast open and copy actions.</p>
                     </div>
                   </div>
-
-                  <div className="mb-6 grid gap-3 lg:grid-cols-[auto_auto_auto_1fr]">
-                    <span className={cn('w-fit rounded-full px-4 py-2 text-sm font-semibold', detail.inbox.status === 'email_received' ? 'bg-[rgba(85,206,16,0.16)] text-[#355c18]' : 'bg-[rgba(20,47,4,0.06)] text-[#607757]')}>
-                      {isRefreshingInbox ? 'Waiting for email' : inboxStatusLabel || (detail.inbox.status === 'email_received' ? 'Email received' : 'No email found')}
-                    </span>
-                    {detail.inbox.subject ? <span className="rounded-full bg-white/80 px-4 py-2 text-sm text-[#355c18]"><span className="font-semibold">Subject:</span> {detail.inbox.subject}</span> : null}
-                    {detail.inbox.sender ? <span className="rounded-full bg-white/80 px-4 py-2 text-sm text-[#355c18]"><span className="font-semibold">Sender:</span> {detail.inbox.sender}</span> : null}
-                    {detail.inbox.receivedAt ? <span className="rounded-full bg-white/80 px-4 py-2 text-sm text-[#355c18]"><span className="font-semibold">Received:</span> {new Date(detail.inbox.receivedAt).toLocaleString()}</span> : null}
-                  </div>
-
-                  {detail.inbox.primaryVerificationLink ? (
-                    <div className="mb-6 rounded-[30px] border border-[rgba(85,206,16,0.24)] bg-[linear-gradient(135deg,rgba(85,206,16,0.18),rgba(255,255,255,0.92))] p-5 shadow-[0_16px_36px_rgba(85,206,16,0.12)]">
-                      <div className="mb-2 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#5c7e4f]">Primary verification link</div>
-                      <div className="mb-4 break-all text-lg font-semibold text-[#142f04]">{detail.inbox.primaryVerificationLink.label || 'Verification link found'}</div>
-                      <div className="flex flex-wrap gap-2">
-                        <button type="button" className="primary-button" onClick={() => window.open(detail.inbox.primaryVerificationLink!.url, '_blank')}>Open Verification Link</button>
-                        <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-4 py-3 text-sm font-medium text-[#355c18]" onClick={() => copyValue(`primary:${detail.inbox.primaryVerificationLink!.url}`, detail.inbox.primaryVerificationLink!.url)}>{copiedField === `primary:${detail.inbox.primaryVerificationLink!.url}` ? 'Copied' : 'Copy link'}</button>
-                      </div>
-                    </div>
-                  ) : null}
-
-                  <div className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-                    <div className="rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-white/75 p-5">
-                      <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">Email text</div>
-                      <div className="overflow-x-auto whitespace-pre-wrap break-words text-sm leading-6 text-[#142f04]">{detail.inbox.plainText || 'No email yet. Register on the target site first, then use Refresh Inbox or Wait for Email.'}</div>
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-white/75 p-5">
-                        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">Verification codes</div>
-                        {detail.inbox.codes.length ? (
-                          <div className="space-y-3">
-                            {detail.inbox.codes.map((code) => (
-                              <div key={code} className="flex items-center justify-between gap-2 rounded-[22px] border border-[rgba(20,47,4,0.06)] bg-white p-3 shadow-[0_10px_22px_rgba(20,47,4,0.06)]">
-                                <span className="text-lg font-semibold tracking-[0.18em] text-[#142f04]">{code}</span>
-                                <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => copyValue(`code:${code}`, code)}>{copiedField === `code:${code}` ? 'Copied' : 'Copy'}</button>
-                              </div>
-                            ))}
-                          </div>
-                        ) : <div className="text-sm text-[#5f7755]">No verification codes found.</div>}
-                      </div>
-                    </div>
-                  </div>
-
-                  <details className="mt-6 rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-white/70 p-5" open={showDebug}>
-                    <summary className="cursor-pointer text-sm font-semibold text-[#355c18]" onClick={() => {
-                      const next = !showDebug;
-                      setShowDebug(next);
-                      if (next && detail && !detail.inbox.rawHtml) {
-                        void loadDebugDetail(detail.id);
-                      }
-                    }}>Advanced / Debug</summary>
-                    <div className="mt-5 space-y-5">
-                      <div>
-                        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">Links Found</div>
-                        <div className="space-y-3">
-                          {detail.inbox.links.length ? detail.inbox.links.map((link) => (
-                            <div key={link.url} className="rounded-[24px] border border-[rgba(20,47,4,0.08)] bg-white p-4 shadow-[0_10px_22px_rgba(20,47,4,0.05)]">
-                              <div className="mb-2 break-all text-sm font-semibold text-[#142f04]">{link.label || 'Link'}</div>
-                              <div className="flex flex-wrap gap-2">
-                                <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => window.open(link.url, '_blank')}>{link.isPrimary ? 'Open Verification Link' : 'Open Link'}</button>
-                                <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => copyValue(`link:${link.url}`, link.url)}>{copiedField === `link:${link.url}` ? 'Copied' : 'Copy'}</button>
-                                <button type="button" className="rounded-full border border-[rgba(20,47,4,0.1)] px-3 py-2 text-xs font-medium text-[#355c18]" onClick={() => setExpandedLink((current) => current === link.url ? '' : link.url)}>{expandedLink === link.url ? 'Hide URL' : 'Show URL'}</button>
-                              </div>
-                              {expandedLink === link.url ? <div className="mt-3 break-all text-xs text-[#6f8161]">{link.url}</div> : null}
-                            </div>
-                          )) : <div className="text-sm text-[#5f7755]">No links found yet.</div>}
+                  <div className="link-list">
+                    {detail.inbox.links.length ? detail.inbox.links.map((link) => (
+                      <div key={link.url} className="link-row">
+                        <div className="link-row-main">
+                          <div className="link-row-title">{link.label || (link.isPrimary ? 'Primary verification link' : 'Verification link')}</div>
+                          <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 72)}</div>
+                        </div>
+                        <div className="link-row-meta">
+                          <span>{formatCompactDate(detail.inbox.receivedAt)}</span>
+                          {link.isPrimary ? <span className="tag">Primary</span> : null}
+                        </div>
+                        <div className="link-row-actions">
+                          <button className="micro-button" onClick={() => window.open(link.url, '_blank')}>Open</button>
+                          <button className="micro-button" onClick={() => copyValue(`link:${link.url}`, link.url)}>{copiedField === `link:${link.url}` ? 'Copied' : 'Copy'}</button>
+                          <button className="micro-button" onClick={() => setExpandedLink((current) => current === link.url ? '' : link.url)}>{expandedLink === link.url ? 'Hide' : 'View'}</button>
                         </div>
                       </div>
+                    )) : <div className="empty-state compact">No verification links captured yet.</div>}
+                  </div>
+                </section>
 
-                      <div>
-                        <div className="mb-3 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">Raw HTML</div>
-                        <pre className="max-h-80 overflow-auto whitespace-pre-wrap break-words rounded-[24px] border border-[rgba(20,47,4,0.08)] bg-white p-4 text-xs text-[#6f8161]">{detail.inbox.rawHtml ?? 'No HTML message loaded. Expand debug to fetch it.'}</pre>
-                      </div>
+                <section className="detail-card">
+                  <div className="detail-card-header">
+                    <div>
+                      <h3>Verification codes</h3>
+                      <p>Large, readable values with one-click copy.</p>
                     </div>
-                  </details>
+                  </div>
+                  <div className="code-grid">
+                    {detail.inbox.codes.length ? detail.inbox.codes.map((code) => (
+                      <button key={code} type="button" className="code-tile" onClick={() => copyValue(`code:${code}`, code)}>
+                        <span>{code}</span>
+                        <small>{copiedField === `code:${code}` ? 'Copied' : 'Copy code'}</small>
+                      </button>
+                    )) : <div className="empty-state compact">No verification codes found.</div>}
+                  </div>
+                </section>
+
+                <section className="detail-card">
+                  <div className="detail-card-header">
+                    <div>
+                      <h3>Mailbox data</h3>
+                      <p>Latest sender, subject, body, and raw payload access.</p>
+                    </div>
+                    <div className="inline-actions">
+                      <button className="micro-button" onClick={() => refreshInboxForDetail(0)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Refreshing…' : 'Refresh'}</button>
+                      <button className="micro-button" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting…' : 'Wait 60s'}</button>
+                    </div>
+                  </div>
+                  <div className="mailbox-meta">
+                    <span className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{isRefreshingInbox ? 'Waiting for email' : inboxStatusLabel || statusLabel(selectedStatus)}</span>
+                    <span>Sender: {detail.inbox.sender || '—'}</span>
+                    <span>Subject: {detail.inbox.subject || '—'}</span>
+                    <span>Received: {formatDate(detail.inbox.receivedAt)}</span>
+                  </div>
+                  <div className="mailbox-body">{detail.inbox.plainText || 'No email yet. Complete registration first, then refresh the inbox.'}</div>
+                  <div className="collapsible-area">
+                    <button className="ghost-button" onClick={async () => {
+                      const next = !showRawProfile;
+                      setShowRawProfile(next);
+                    }}>{showRawProfile ? 'Hide raw profile' : 'View raw profile'}</button>
+                    <button className="ghost-button" onClick={async () => {
+                      const next = !showRawHtml;
+                      setShowRawHtml(next);
+                      if (next && detail && !detail.inbox.rawHtml) {
+                        await loadDebugDetail(detail.id);
+                      }
+                    }}>{showRawHtml ? 'Hide raw HTML' : 'View raw HTML'}</button>
+                  </div>
+                  {showRawProfile ? <pre className="debug-block">{detail.fullProfileText}</pre> : null}
+                  {showRawHtml ? <pre className="debug-block">{detail.inbox.rawHtml ?? 'No HTML loaded.'}</pre> : null}
                 </section>
               </div>
             )}
           </section>
+
+          <aside className="panel panel-side">
+            <div className="panel-header">
+              <div>
+                <div className="section-kicker">Activity</div>
+                <h2>Quick actions and status</h2>
+              </div>
+            </div>
+
+            <section className="side-card">
+              <h3>Create / generate</h3>
+              <div className="form-stack">
+                <Field label="GEO">
+                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Persona">
+                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Document type">
+                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+                    <option value="missing_rule_probe">missing_rule_probe</option>
+                  </select>
+                </Field>
+                <Field label="Role">
+                  <select className="input-field compact" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
+                    <option value="user">user</option>
+                    <option value="admin">admin</option>
+                  </select>
+                </Field>
+                <button className="primary-button w-full" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Generating…' : 'Create account'}</button>
+              </div>
+            </section>
+
+            <section className="side-card">
+              <h3>Activity feed</h3>
+              <div className="timeline">
+                {detail ? [
+                  { label: 'Account generated', value: formatDate(detail.createdAt), tone: 'active' },
+                  { label: 'Mailbox created', value: detail.email, tone: 'active' },
+                  { label: 'Email received', value: detail.inbox.receivedAt || 'Pending', tone: detail.inbox.receivedAt ? 'success' : 'warning' },
+                  { label: 'Code captured', value: detail.inbox.codes[0] || 'Pending', tone: detail.inbox.codes.length ? 'success' : 'warning' },
+                  { label: 'Link captured', value: detail.inbox.primaryVerificationLink?.label || 'Pending', tone: detail.inbox.primaryVerificationLink ? 'success' : 'warning' },
+                ].map((event) => (
+                  <div key={event.label} className="timeline-item">
+                    <span className={cn('status-dot', `tone-${event.tone}`)} />
+                    <div>
+                      <strong>{event.label}</strong>
+                      <p>{event.value}</p>
+                    </div>
+                  </div>
+                )) : <div className="empty-state compact">Select an account to see live activity.</div>}
+              </div>
+            </section>
+
+            <section className="side-card compact-metrics">
+              <Metric label="History" value={String(history.length)} />
+              <Metric label="Live GEOs" value={String(realRegistrationGeoCount)} />
+              <Metric label="Codes" value={String(detail?.inbox.codes.length ?? 0)} />
+              <Metric label="Links" value={String(detail?.inbox.links.length ?? 0)} />
+            </section>
+
+            {detail ? (
+              <section className="side-card utility-actions">
+                <button className="secondary-button w-full" onClick={() => remove(detail.id)}>Delete selected account</button>
+              </section>
+            ) : null}
+          </aside>
         </div>
-      </div>
+      </section>
     </main>
   );
 }
 
+function truncate(value: string, length: number) {
+  if (value.length <= length) return value;
+  return `${value.slice(0, length)}…`;
+}
+
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div>
-      <label className="mb-2 block text-sm font-semibold text-[#355c18]">{label}</label>
+    <label className="field-block">
+      <span>{label}</span>
       {children}
+    </label>
+  );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="metric-chip">
+      <span>{label}</span>
+      <strong>{value}</strong>
     </div>
   );
 }
 
-function DetailGroup({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
+function InfoItem({
+  label,
+  value,
+  onCopy,
+  copied,
+  hidden,
+  onToggleHidden,
+  sensitive,
+  action,
+}: {
+  label: string;
+  value: string;
+  onCopy: () => void;
+  copied: boolean;
+  hidden?: boolean;
+  onToggleHidden?: () => void;
+  sensitive?: boolean;
+  action?: React.ReactNode;
+}) {
+  const display = sensitive ? (hidden ? value : '••••••••••••') : value;
+
   return (
-    <section className="rounded-[28px] border border-[rgba(20,47,4,0.08)] bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(246,250,243,0.88))] p-5 shadow-[0_16px_36px_rgba(20,47,4,0.06)]">
-      <div className="mb-4">
-        <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[#6f8666]">{title}</div>
-        <p className="mt-1 text-sm leading-6 text-[#5f7755]">{description}</p>
+    <div className="info-item">
+      <div className="info-item-label">{label}</div>
+      <div className="info-item-value">{display || '—'}</div>
+      <div className="info-item-actions">
+        {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Hide' : 'Reveal'}</button> : null}
+        {action}
+        <button className="micro-button" onClick={onCopy}>{copied ? 'Copied' : 'Copy'}</button>
       </div>
-      <div className="grid gap-4 md:grid-cols-2">{children}</div>
-    </section>
-  );
-}
-
-function StatTile({ label, value, tone }: { label: string; value: string; tone: 'accent' | 'success' | 'danger' | 'neutral' }) {
-  const tones = {
-    accent: 'border-[rgba(41,147,163,0.18)] bg-[rgba(41,147,163,0.08)] text-[#1d7481]',
-    success: 'border-[rgba(85,206,16,0.2)] bg-[rgba(85,206,16,0.1)] text-[#355c18]',
-    danger: 'border-[rgba(173,55,37,0.16)] bg-[rgba(173,55,37,0.08)] text-[#ad3725]',
-    neutral: 'border-[rgba(20,47,4,0.08)] bg-white/75 text-[#4f6a43]',
-  } as const;
-
-  return (
-    <div className={cn('rounded-[24px] border p-4 shadow-[0_10px_24px_rgba(20,47,4,0.05)]', tones[tone])}>
-      <div className="text-[11px] font-semibold uppercase tracking-[0.24em] opacity-80">{label}</div>
-      <div className="mt-2 text-base font-semibold capitalize text-[#142f04]">{value}</div>
     </div>
   );
 }
