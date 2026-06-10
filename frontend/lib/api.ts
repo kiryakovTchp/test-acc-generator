@@ -1,4 +1,6 @@
-export const API_URL = process.env.NEXT_PUBLIC_API_URL ?? '/api';
+// Default to the frontend's /api path. In local dev, Next rewrites /api to the backend
+// unless NEXT_PUBLIC_API_URL points to an explicit external API.
+export const API_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || '/api';
 
 export interface UserInfo { login: string; role: 'admin' | 'user'; }
 export interface GeoItem {
@@ -21,14 +23,18 @@ export interface HistoryItem {
   gender: 'male' | 'female';
   dateOfBirth: string;
   country: string;
+  region: string;
   city: string;
+  placeOfBirth: string;
   addressLine: string;
   postalCode: string;
   persona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
   role: 'admin' | 'user';
   createdAt: string;
   documentType: string;
+  documentIssueDate: string;
   documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
+  inboxStatus?: 'waiting_for_email' | 'email_received' | 'no_email_found';
 }
 
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {

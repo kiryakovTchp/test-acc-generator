@@ -81,6 +81,8 @@ function formatCompactDate(value?: string) {
 }
 
 function mapHistoryStatus(item: HistoryItem): HistoryStatus {
+  if (item.inboxStatus === 'email_received') return 'email_received';
+  if (item.inboxStatus === 'waiting_for_email' || item.inboxStatus === 'no_email_found') return 'waiting';
   return 'generated';
 }
 
@@ -101,6 +103,18 @@ function statusLabel(status: HistoryStatus) {
   if (status === 'email_received') return 'Email received';
   if (status === 'generated') return 'Generated';
   return 'Waiting';
+}
+
+function getBrowserStorage(): Storage | null {
+  if (typeof window === 'undefined') return null;
+  const storage = window.localStorage;
+  if (!storage) return null;
+  return typeof storage.getItem === 'function'
+    && typeof storage.setItem === 'function'
+    && typeof storage.removeItem === 'function'
+    && typeof storage.clear === 'function'
+    ? storage
+    : null;
 }
 
 export default function AppShell() {
@@ -131,11 +145,19 @@ export default function AppShell() {
   const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
 
   useEffect(() => {
-    const storedToken = window.localStorage.getItem('tag-token') ?? '';
-    const storedUser = window.localStorage.getItem('tag-user');
-    if (storedToken && storedUser) {
+    const storage = getBrowserStorage();
+    if (!storage) return;
+
+    const storedToken = storage.getItem('tag-token') ?? '';
+    const storedUser = storage.getItem('tag-user');
+    if (!storedToken || !storedUser) return;
+
+    try {
       setToken(storedToken);
       setUser(JSON.parse(storedUser));
+    } catch {
+      storage.removeItem('tag-token');
+      storage.removeItem('tag-user');
     }
   }, []);
 
@@ -143,8 +165,9 @@ export default function AppShell() {
     if (!token) return;
     refresh(token).catch((err) => {
       if (err instanceof Error && /unauthorized/i.test(err.message)) {
-        window.localStorage.removeItem('tag-token');
-        window.localStorage.removeItem('tag-user');
+        const storage = getBrowserStorage();
+        storage?.removeItem('tag-token');
+        storage?.removeItem('tag-user');
         setToken('');
         setUser(null);
         setError('Session expired. Please sign in again.');
@@ -203,8 +226,9 @@ export default function AppShell() {
       method: 'POST',
       body: JSON.stringify({ login, password }),
     });
-    window.localStorage.setItem('tag-token', res.token);
-    window.localStorage.setItem('tag-user', JSON.stringify(res.user));
+    const storage = getBrowserStorage();
+    storage?.setItem('tag-token', res.token);
+    storage?.setItem('tag-user', JSON.stringify(res.user));
     setToken(res.token);
     setUser(res.user);
   }
@@ -345,7 +369,7 @@ export default function AppShell() {
             <strong>{user.login}</strong>
             <span>{user.role}</span>
           </div>
-          <button className="sidebar-logout" onClick={() => { window.localStorage.clear(); setUser(null); setToken(''); }}>Logout</button>
+          <button className="sidebar-logout" onClick={() => { getBrowserStorage()?.clear(); setUser(null); setToken(''); }}>Logout</button>
         </div>
       </aside>
 
@@ -358,7 +382,7 @@ export default function AppShell() {
           </div>
           <div className="topbar-actions">
             <button className="primary-button" onClick={generate} disabled={isGenerating}>{isGenerating ? 'Creating…' : 'Create Account'}</button>
-            <button className="secondary-button" onClick={() => generate()} disabled={isGenerating}>Generate Bulk</button>
+            <button className="secondary-button" disabled title="Bulk generation is not implemented yet">Bulk generation soon</button>
             <button className="secondary-button" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox}>Refresh Inbox</button>
             <button className="secondary-button" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>Copy Identity Pack</button>
             <button className="secondary-button" onClick={() => detail && window.open(detail.registrationUrl, '_blank')} disabled={!canOpenRegistration}>Open Registration URL</button>
@@ -686,14 +710,14 @@ function InfoItem({
   sensitive?: boolean;
   action?: React.ReactNode;
 }) {
-  const display = sensitive ? (hidden ? value : '••••••••••••') : value;
+  const display = sensitive ? (hidden ? '••••••••••••' : value) : value;
 
   return (
     <div className="info-item">
       <div className="info-item-label">{label}</div>
       <div className="info-item-value">{display || '—'}</div>
       <div className="info-item-actions">
-        {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Hide' : 'Reveal'}</button> : null}
+        {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Reveal' : 'Hide'}</button> : null}
         {action}
         <button className="micro-button" onClick={onCopy}>{copied ? 'Copied' : 'Copy'}</button>
       </div>

@@ -1,7 +1,7 @@
 import db from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
-import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
+import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, getRegistrationUrlStatus } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 
 const rules = geoRules as unknown as GeoRule[];
@@ -12,7 +12,7 @@ export function listGeoRules() {
     label: rule.label,
     registrationUrl: rule.registrationUrl,
     documentTypes: Object.keys(rule.documents),
-    registrationUrlStatus: rule.registrationUrl.includes('example.com') ? 'placeholder' : 'real',
+    registrationUrlStatus: getRegistrationUrlStatus(rule.registrationUrl),
   }));
 }
 
@@ -23,6 +23,7 @@ export async function generateAccount(input: {
   role: Role;
   persona: PersonaKey;
   emailProvider: EmailProvider;
+  includeDebug?: boolean;
 }) {
   cleanupOldHistory();
   const geo = rules.find((rule) => rule.key === input.geoKey);
@@ -44,11 +45,11 @@ export async function generateAccount(input: {
   const result = db.prepare(`
     INSERT INTO account_history (
       user_id, geo_key, geo_label, email, email_password, username,
-      first_name, last_name, phone, age, gender, date_of_birth, country, city, address_line, postal_code, persona,
-      account_role, document_type, document_value, document_quality, registration_url,
+      first_name, last_name, phone, age, gender, date_of_birth, country, region, city, place_of_birth, address_line, postal_code, persona,
+      account_role, document_type, document_value, document_issue_date, document_quality, registration_url,
       inbox_status, inbox_sender, inbox_subject, inbox_received_at,
       inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     input.userId,
     geo.key,
@@ -63,13 +64,16 @@ export async function generateAccount(input: {
     profile.gender,
     profile.dateOfBirth,
     profile.country,
+    profile.region,
     profile.city,
+    profile.placeOfBirth,
     profile.addressLine,
     profile.postalCode,
     profile.persona,
     input.role,
     input.documentType,
     documentValue,
+    profile.documentIssueDate,
     quality,
     geo.registrationUrl,
     hydratedInbox.status,
@@ -83,10 +87,10 @@ export async function generateAccount(input: {
   );
 
   trimHistoryForUser(input.userId);
-  return getHistoryDetail(Number(result.lastInsertRowid), input.userId);
+  return getHistoryDetail(Number(result.lastInsertRowid), input.userId, input.includeDebug);
 }
 
-export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0) {
+export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0, includeDebug = false) {
   const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
   if (!row) return null;
   const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
@@ -108,7 +112,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     id,
     userId,
   );
-  return getHistoryDetail(id, userId);
+  return getHistoryDetail(id, userId, includeDebug);
 }
 
 export function listHistory(userId: number) {
@@ -116,9 +120,11 @@ export function listHistory(userId: number) {
   return db.prepare(`
     SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username,
            first_name as firstName, last_name as lastName, phone, age, gender,
-           date_of_birth as dateOfBirth, country, city, address_line as addressLine, postal_code as postalCode,
+           date_of_birth as dateOfBirth, country, region, city, place_of_birth as placeOfBirth,
+           address_line as addressLine, postal_code as postalCode,
            persona, account_role as role, created_at as createdAt,
-           document_type as documentType, document_quality as documentQuality
+           document_type as documentType, document_issue_date as documentIssueDate, document_quality as documentQuality,
+           inbox_status as inboxStatus
     FROM account_history
     WHERE user_id = ?
     ORDER BY datetime(created_at) DESC
@@ -126,7 +132,7 @@ export function listHistory(userId: number) {
   `).all(userId);
 }
 
-export function getHistoryDetail(id: number, userId: number) {
+export function getHistoryDetail(id: number, userId: number, includeDebug = false) {
   const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
   if (!row) return null;
   return {
@@ -143,31 +149,37 @@ export function getHistoryDetail(id: number, userId: number) {
     gender: row.gender,
     dateOfBirth: row.date_of_birth,
     country: row.country,
+    region: row.region,
     city: row.city,
+    placeOfBirth: row.place_of_birth,
     addressLine: row.address_line,
     postalCode: row.postal_code,
     persona: row.persona,
     role: row.account_role,
     documentType: row.document_type,
     documentValue: row.document_value,
+    documentIssueDate: row.document_issue_date,
     documentQuality: row.document_quality,
     registrationUrl: row.registration_url,
-    registrationUrlStatus: row.registration_url.includes('example.com') ? 'placeholder' : 'real',
+    registrationUrlStatus: getRegistrationUrlStatus(row.registration_url),
     fullProfileText: [
       `Email: ${row.email}`,
-      `Password: ${row.email_password}`,
-      `Phone: ${row.phone}`,
+      `Mailbox Password: ${row.email_password}`,
       `First Name: ${row.first_name}`,
       `Last Name: ${row.last_name}`,
+      `Phone: ${row.phone}`,
       `Gender: ${row.gender}`,
       `Date of Birth: ${row.date_of_birth}`,
       `Age: ${row.age}`,
       `Country: ${row.country}`,
+      `Region: ${row.region}`,
       `City: ${row.city}`,
+      `Place of Birth: ${row.place_of_birth}`,
       `Address: ${row.address_line}`,
       `Postal Code: ${row.postal_code}`,
       `Document Type: ${row.document_type}`,
       `Document Number: ${row.document_value}`,
+      `Document Issue Date: ${row.document_issue_date}`,
     ].join('\n'),
     inbox: {
       status: row.inbox_status,
@@ -178,7 +190,7 @@ export function getHistoryDetail(id: number, userId: number) {
       links: JSON.parse(row.inbox_links_json),
       primaryVerificationLink: pickPrimaryVerificationLink(JSON.parse(row.inbox_links_json)),
       codes: JSON.parse(row.inbox_codes_json),
-      rawHtml: row.inbox_html,
+      rawHtml: includeDebug ? row.inbox_html : null,
     },
     createdAt: row.created_at,
   };
