@@ -117,7 +117,17 @@ export default function AppShell() {
 
   useEffect(() => {
     if (!token) return;
-    refresh(token).catch((err) => setError(err.message));
+    refresh(token).catch((err) => {
+      if (err instanceof Error && /unauthorized/i.test(err.message)) {
+        window.localStorage.removeItem('tag-token');
+        window.localStorage.removeItem('tag-user');
+        setToken('');
+        setUser(null);
+        setError('Session expired. Please sign in again.');
+        return;
+      }
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    });
   }, [token]);
 
   const currentGeo = useMemo(() => geoItems.find((item) => item.key === selectedGeo), [geoItems, selectedGeo]);
@@ -140,7 +150,9 @@ export default function AppShell() {
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
-    if (!selectedGeo && geo.items[0]) setSelectedGeo(geo.items[0].key);
+    if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
+      setSelectedGeo(geo.items[0].key);
+    }
   }
 
   async function doLogin(e: React.FormEvent) {
