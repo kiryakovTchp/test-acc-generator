@@ -6,7 +6,6 @@ export type Gender = 'male' | 'female';
 export interface GeoRule {
   key: string;
   label: string;
-  registrationUrl: string;
   documents: {
     [documentType: string]: {
       templates: string[];
@@ -29,9 +28,12 @@ export interface HistoryListItem {
   gender: Gender;
   dateOfBirth: string;
   country: string;
+  region: string;
   city: string;
+  placeOfBirth: string;
   addressLine: string;
   postalCode: string;
+  documentIssueDate: string;
   persona: PersonaKey;
   role: Role;
   createdAt: string;

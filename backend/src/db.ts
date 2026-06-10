@@ -31,13 +31,16 @@ CREATE TABLE IF NOT EXISTS account_history (
   gender TEXT NOT NULL DEFAULT 'male',
   date_of_birth TEXT NOT NULL DEFAULT '',
   country TEXT NOT NULL DEFAULT '',
+  region TEXT NOT NULL DEFAULT 'Not specified',
   city TEXT NOT NULL DEFAULT '',
+  place_of_birth TEXT NOT NULL DEFAULT '',
   address_line TEXT NOT NULL DEFAULT '',
   postal_code TEXT NOT NULL DEFAULT '',
   persona TEXT NOT NULL DEFAULT 'standard_user',
   account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
   document_type TEXT NOT NULL,
   document_value TEXT NOT NULL,
+  document_issue_date TEXT NOT NULL DEFAULT '',
   document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','synthetic_pattern','missing_rules')),
   registration_url TEXT NOT NULL,
   inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
@@ -61,10 +64,13 @@ ensureColumn('account_history', 'age', 'INTEGER NOT NULL DEFAULT 0');
 ensureColumn('account_history', 'gender', "TEXT NOT NULL DEFAULT 'male'");
 ensureColumn('account_history', 'date_of_birth', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'country', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'region', "TEXT NOT NULL DEFAULT 'Not specified'");
 ensureColumn('account_history', 'city', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'place_of_birth', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'address_line', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'postal_code', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'persona', "TEXT NOT NULL DEFAULT 'standard_user'");
+ensureColumn('account_history', 'document_issue_date', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_status', "TEXT NOT NULL DEFAULT 'no_email_found'");
 ensureColumn('account_history', 'inbox_sender', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_subject', "TEXT NOT NULL DEFAULT ''");
@@ -118,13 +124,16 @@ export interface HistoryRow {
   gender: Gender;
   date_of_birth: string;
   country: string;
+  region: string;
   city: string;
+  place_of_birth: string;
   address_line: string;
   postal_code: string;
   persona: PersonaKey;
   account_role: Role;
   document_type: string;
   document_value: string;
+  document_issue_date: string;
   document_quality: DocumentQuality;
   registration_url: string;
   inbox_status: 'waiting_for_email' | 'email_received' | 'no_email_found';

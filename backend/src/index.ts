@@ -90,6 +90,29 @@ app.post('/accounts/generate', auth, async (req, res) => {
   }
 });
 
+app.post('/accounts/generate-bulk', auth, async (req, res) => {
+  const { geoKey, documentType, role, persona } = req.body ?? {};
+  const requestedCount = Number(req.body?.count ?? 1);
+  const count = Number.isFinite(requestedCount) ? Math.min(25, Math.max(1, Math.floor(requestedCount))) : 1;
+  try {
+    const items = [];
+    for (let index = 0; index < count; index += 1) {
+      items.push(await generateAccount({
+        userId: (req as any).user.userId,
+        geoKey,
+        documentType,
+        role: role === 'admin' ? 'admin' : 'user',
+        persona: isPersona(persona) ? persona : 'standard_user',
+        emailProvider,
+        includeDebug: false,
+      }));
+    }
+    res.json({ items });
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to generate accounts' });
+  }
+});
+
 if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => console.log(`backend listening on ${port}`));
 }
