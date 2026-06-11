@@ -1167,7 +1167,7 @@ body {
 
 .action-card {
   display: grid;
-  grid-template-columns: 22px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
   min-height: 54px;
@@ -1186,7 +1186,8 @@ body {
 
 .action-icon {
   color: #334155;
-  font-size: 18px;
+  font-size: 16px;
+  font-weight: 700;
 }
 
 .action-card strong,
