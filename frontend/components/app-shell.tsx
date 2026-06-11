@@ -73,7 +73,6 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
   { key: 'main', label: 'Main', short: 'MN', href: '/main' },
   { key: 'accounts', label: 'Accounts', short: 'AC', href: '/accounts' },
   { key: 'mailboxes', label: 'Mailboxes', short: 'MB', href: '/mailboxes' },
-  { key: 'form_data', label: 'Form Data', short: 'FD', href: '/form-data' },
   { key: 'codes', label: 'Verification Codes', short: 'VC', href: '/codes' },
   { key: 'settings', label: 'Settings', short: 'ST', href: '/settings' },
 ];
