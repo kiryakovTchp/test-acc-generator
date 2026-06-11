@@ -4,7 +4,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
-type NavKey = 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
+type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
+type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
 
 interface Detail {
@@ -61,12 +62,13 @@ const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
   { value: 'female_user', label: 'Female User' },
 ];
 
-const NAV_ITEMS: Array<{ key: NavKey; label: string; short: string }> = [
-  { key: 'accounts', label: 'Accounts', short: 'AC' },
-  { key: 'mailboxes', label: 'Mailboxes', short: 'MB' },
-  { key: 'form_data', label: 'Form Data', short: 'FD' },
-  { key: 'codes', label: 'Verification Codes', short: 'VC' },
-  { key: 'settings', label: 'Settings', short: 'ST' },
+const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: string }> = [
+  { key: 'main', label: 'Main', short: 'MN', href: '/main' },
+  { key: 'accounts', label: 'Accounts', short: 'AC', href: '/accounts' },
+  { key: 'mailboxes', label: 'Mailboxes', short: 'MB', href: '/mailboxes' },
+  { key: 'form_data', label: 'Form Data', short: 'FD', href: '/form-data' },
+  { key: 'codes', label: 'Verification Codes', short: 'VC', href: '/codes' },
+  { key: 'settings', label: 'Settings', short: 'ST', href: '/settings' },
 ];
 
 function cn(...classes: Array<string | false | null | undefined>) {
@@ -125,8 +127,8 @@ function isEditableTarget(target: EventTarget | null) {
   return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable;
 }
 
-export default function AppShell() {
-  const [activeNav, setActiveNav] = useState<NavKey>('accounts');
+export default function AppShell({ view = 'main' }: { view?: AppView }) {
+  const activeNav = view;
   const [token, setToken] = useState<string>('');
   const [user, setUser] = useState<UserInfo | null>(null);
   const [login, setLogin] = useState('');
@@ -289,7 +291,6 @@ export default function AppShell() {
         body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
       });
       setDetail(res);
-      setActiveNav('accounts');
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate account');
@@ -308,7 +309,6 @@ export default function AppShell() {
       });
       const firstItem = res.items[0] ?? null;
       setDetail(firstItem ? await apiFetch<Detail>(`/history/${firstItem.id}?debug=1`, token) : null);
-      setActiveNav('accounts');
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate accounts');
@@ -319,7 +319,6 @@ export default function AppShell() {
 
   async function loadDetail(id: number) {
     setDetail(await apiFetch<Detail>(`/history/${id}?debug=1`, token));
-    setActiveNav('accounts');
   }
 
   async function refreshInboxForDetail(waitMs = 0) {
@@ -446,22 +445,22 @@ export default function AppShell() {
 
           <nav className="sidebar-nav">
             {NAV_ITEMS.map((item) => (
-              <button
+              <a
                 key={item.key}
-                type="button"
+                href={item.href}
                 className={cn('sidebar-nav-item', activeNav === item.key && 'is-active')}
-                onClick={() => setActiveNav(item.key)}
               >
                 <span className="sidebar-nav-short">{item.short}</span>
                 <span>{item.label}</span>
                 <span className="sidebar-count">
-                  {item.key === 'accounts' ? history.length
+                  {item.key === 'main' ? ''
+                    : item.key === 'accounts' ? history.length
                     : item.key === 'mailboxes' ? history.length
                       : item.key === 'form_data' ? recentCount
                         : item.key === 'codes' ? (detail?.inbox.codes.length ?? 0)
                           : ''}
                 </span>
-              </button>
+              </a>
             ))}
           </nav>
         </div>
@@ -523,8 +522,206 @@ export default function AppShell() {
           </div>
         </section>
 
-        <div className={cn('workspace-grid', activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
-          {activeNav === 'accounts' ? (
+        <div className={cn('workspace-grid', activeNav === 'main' ? undefined : activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
+          {activeNav === 'main' ? (
+          <>
+          <section className="panel panel-list">
+            <div className="panel-header">
+              <h2>Accounts <span>({history.length})</span></h2>
+              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
+            </div>
+
+            {showFilters ? (
+              <div className="list-controls">
+                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts..." />
+                <div className="control-row">
+                  <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
+                    <option value="all">All statuses</option>
+                    <option value="generated">Generated</option>
+                    <option value="email_received">Email received</option>
+                    <option value="waiting">Waiting</option>
+                  </select>
+                  <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
+                    <option value="newest">Newest first</option>
+                    <option value="oldest">Oldest first</option>
+                  </select>
+                </div>
+              </div>
+            ) : null}
+
+            <section className="accounts-settings bulk-card">
+              <h3>Generation settings</h3>
+              <p>Shared settings used by Create Account and Generate Bulk.</p>
+              <div className="form-stack">
+                <Field label="GEO">
+                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Form persona">
+                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Document type">
+                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+                    <option value="missing_rule_probe">missing_rule_probe</option>
+                  </select>
+                </Field>
+                <Field label="Bulk count">
+                  <input
+                    className="input-field compact"
+                    type="number"
+                    min="1"
+                    max="25"
+                    value={bulkCount}
+                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
+                  />
+                </Field>
+              </div>
+            </section>
+
+            <div className="account-list">
+              {filteredHistory.length ? filteredHistory.map((item) => {
+                const rowStatus = mapHistoryStatus(item);
+                const selected = detail?.id === item.id;
+                return (
+                  <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
+                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
+                    <strong>{item.siteAccountId || item.username}</strong>
+                    <time>{formatCompactDate(item.createdAt)}</time>
+                  </button>
+                );
+              }) : <div className="empty-state">No accounts match the current filters.</div>}
+            </div>
+            <a className="view-all-button" href="/accounts">View all accounts</a>
+          </section>
+
+          <section className="panel panel-detail">
+            <div className="panel-header">
+              <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
+            </div>
+
+            {!detail ? (
+              <div className="empty-workspace">
+                <h3>Generate an account or open one from the list</h3>
+                <p>The selected account appears here without navigating away from the account list.</p>
+              </div>
+            ) : (
+              <div className="detail-stack">
+                <section className="registration-form-grid">
+                  <div className="form-section">
+                    <h3>Account</h3>
+                    <label className="account-id-field">
+                      <span>Account ID</span>
+                      <div>
+                        <input
+                          className="input-field compact"
+                          value={siteAccountIdDraft}
+                          onBlur={saveSiteAccountId}
+                          onChange={(e) => setSiteAccountIdDraft(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.currentTarget.blur();
+                            }
+                          }}
+                          placeholder="Paste site account ID"
+                        />
+                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
+                      </div>
+                    </label>
+                    <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
+                    <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
+                    <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
+                    <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                  </div>
+
+                  <div className="form-section form-section-wide">
+                    <h3>Personal info</h3>
+                    <div className="personal-info-grid">
+                      <InspectorRow label="Last name" value={detail.lastName} onCopy={() => copyValue(`last-name:${detail.id}`, detail.lastName)} copied={copiedField === `last-name:${detail.id}`} />
+                      <InspectorRow label="Document issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue-date:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue-date:${detail.id}`} />
+                      <InspectorRow label="First name" value={detail.firstName} onCopy={() => copyValue(`first-name:${detail.id}`, detail.firstName)} copied={copiedField === `first-name:${detail.id}`} />
+                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
+                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
+                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
+                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
+                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
+                      <InspectorRow label="Type of document" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
+                      <InspectorRow label="Sex" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
+                      <InspectorRow label="Document number" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
+                      <InspectorRow label="Address" value={`${detail.addressLine}, ${detail.postalCode}`} onCopy={() => copyValue(`address:${detail.id}`, `${detail.addressLine}, ${detail.postalCode}`)} copied={copiedField === `address:${detail.id}`} />
+                    </div>
+                  </div>
+                </section>
+
+                <section className="identity-pack">
+                  <div className="identity-pack-header">
+                    <h3>Registration form data</h3>
+                    <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
+                  </div>
+                  <div className="identity-pack-grid">
+                    <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+                    <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
+                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, detail.phone)} />
+                    <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
+                  </div>
+                </section>
+
+                <EmailMessage
+                  detail={detail}
+                  activationLink={activationLink}
+                  onActivate={openActivationLink}
+                  onCopyEmail={() => copyValue(`email-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
+                  copied={copiedField === `email-message:${detail.id}`}
+                />
+              </div>
+            )}
+          </section>
+
+          {hasVerificationLinks ? (
+            <section className="panel panel-links">
+              <div className="panel-header">
+                <h2>Verification links <span>({verificationLinks.length})</span></h2>
+              </div>
+              <div className="link-list">
+                {verificationLinks.map((link) => (
+                <div key={link.url} className="link-row">
+                  <span className="status-dot tone-success" />
+                  <div className="link-row-main">
+                    <div className="link-row-title">{link.label || (link.isPrimary ? 'Email verification' : 'Verification link')}</div>
+                    <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 64)}</div>
+                  </div>
+                  <button className="copy-icon" onClick={() => copyValue(`link:${link.url}`, link.url)}>CP</button>
+                  <time>{formatCompactDate(verificationReceivedAt)}</time>
+                </div>
+                ))}
+              </div>
+            </section>
+          ) : null}
+
+          {hasVerificationCodes ? (
+            <section className="panel panel-codes">
+              <div className="panel-header">
+                <h2>Codes <span>({verificationCodes.length})</span></h2>
+              </div>
+              <div className="codes-list">
+                {verificationCodes.map((code, index) => (
+                <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
+                  <span>{index === 0 ? 'Email code' : 'SMS code'}</span>
+                  <strong>{code}</strong>
+                  <small>{copiedField === `code:${code}` ? 'Copied' : 'CP'}</small>
+                  <time>{formatCompactDate(verificationReceivedAt)}</time>
+                </button>
+                ))}
+              </div>
+            </section>
+          ) : null}
+          </>
+          ) : activeNav === 'accounts' ? (
           <>
           <section className="panel panel-list">
             <div className="panel-header">
@@ -622,7 +819,7 @@ export default function AppShell() {
                 </table>
               ) : <div className="empty-state">No accounts match the current filters.</div>}
             </div>
-            <button type="button" className="view-all-button" onClick={() => setActiveNav('accounts')}>View all accounts</button>
+            <a className="view-all-button" href="/accounts">View all accounts</a>
           </section>
 
           <section className="panel panel-detail">
