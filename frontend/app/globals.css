@@ -55,6 +55,18 @@ button {
   background: rgba(59, 130, 246, 0.16);
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .login-shell {
   min-height: 100vh;
   display: grid;
@@ -1519,13 +1531,28 @@ body {
 }
 
 .info-tile small {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid #dfe4ea;
+  border-radius: 4px;
   color: #087a69;
-  font-weight: 800;
+}
+
+.info-tile small svg,
+.icon-copy-button svg {
+  width: 15px;
+  height: 15px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .panel-side {
-  display: grid;
-  gap: 14px;
+  display: block;
 }
 
 .timeline {
@@ -1675,6 +1702,16 @@ body {
 .micro-button {
   min-height: 28px;
   padding: 5px 9px;
+}
+
+.icon-copy-button {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0;
+  color: #334155;
 }
 
 .secondary-button,
