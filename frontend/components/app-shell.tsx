@@ -7,6 +7,13 @@ type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' |
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
+type WorkspaceSettings = {
+  selectedGeo: string;
+  documentType: string;
+  bulkCount: number;
+  persona: PersonaKey;
+  accountRole: 'admin' | 'user';
+};
 
 interface Detail {
   id: number;
@@ -71,6 +78,8 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
   { key: 'settings', label: 'Settings', short: 'ST', href: '/settings' },
 ];
 
+const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
+
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
 }
@@ -127,6 +136,14 @@ function isEditableTarget(target: EventTarget | null) {
   return ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName) || target.isContentEditable;
 }
 
+function isPersonaKey(value: unknown): value is PersonaKey {
+  return typeof value === 'string' && PERSONAS.some((item) => item.value === value);
+}
+
+function isRole(value: unknown): value is 'admin' | 'user' {
+  return value === 'admin' || value === 'user';
+}
+
 export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const activeNav = view;
   const [token, setToken] = useState<string>('');
@@ -157,6 +174,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
   const [tempMailbox, setTempMailbox] = useState<TempMailbox | null>(null);
   const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
+  const [settingsReady, setSettingsReady] = useState(false);
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -164,16 +182,40 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
     const storedToken = storage.getItem('tag-token') ?? '';
     const storedUser = storage.getItem('tag-user');
-    if (!storedToken || !storedUser) return;
 
-    try {
-      setToken(storedToken);
-      setUser(JSON.parse(storedUser));
-    } catch {
-      storage.removeItem('tag-token');
-      storage.removeItem('tag-user');
+    if (storedToken && storedUser) {
+      try {
+        setToken(storedToken);
+        setUser(JSON.parse(storedUser));
+      } catch {
+        storage.removeItem('tag-token');
+        storage.removeItem('tag-user');
+      }
     }
+
+    const storedSettings = storage.getItem(SETTINGS_STORAGE_KEY);
+    if (storedSettings) {
+      try {
+        const parsed = JSON.parse(storedSettings) as Partial<WorkspaceSettings>;
+        if (typeof parsed.selectedGeo === 'string') setSelectedGeo(parsed.selectedGeo);
+        if (typeof parsed.documentType === 'string') setDocumentType(parsed.documentType);
+        if (isPersonaKey(parsed.persona)) setPersona(parsed.persona);
+        if (isRole(parsed.accountRole)) setAccountRole(parsed.accountRole);
+        if (typeof parsed.bulkCount === 'number') setBulkCount(Math.min(25, Math.max(1, parsed.bulkCount)));
+      } catch {
+        storage.removeItem(SETTINGS_STORAGE_KEY);
+      }
+    }
+    setSettingsReady(true);
   }, []);
+
+  useEffect(() => {
+    if (!settingsReady) return;
+    const storage = getBrowserStorage();
+    if (!storage) return;
+    const settings: WorkspaceSettings = { selectedGeo, documentType, bulkCount, persona, accountRole };
+    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  }, [accountRole, bulkCount, documentType, persona, selectedGeo, settingsReady]);
 
   useEffect(() => {
     if (!token) return;
@@ -194,10 +236,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const currentGeo = useMemo(() => geoItems.find((item) => item.key === selectedGeo), [geoItems, selectedGeo]);
 
   useEffect(() => {
-    if (currentGeo?.documentTypes.length) {
+    if (currentGeo?.documentTypes.length && !currentGeo.documentTypes.includes(documentType)) {
       setDocumentType(currentGeo.documentTypes[0]);
     }
-  }, [currentGeo?.key]);
+  }, [currentGeo?.key, documentType]);
 
   const filteredHistory = useMemo(() => {
     const term = accountSearch.trim().toLowerCase();
@@ -1124,9 +1166,28 @@ function UtilityView({
             <InfoTile label="Contacts" value={`${detail.email}\n${detail.phone}`} action="Copy" onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${detail.phone}`)} />
           </div>
         ) : (
-          <div className="empty-workspace">
-            <h3>No account selected</h3>
-            <p>Open an account from Accounts to see its registration form values here.</p>
+          <div className="form-data-picker">
+            <div className="section-subhead">
+              <h3>Select account</h3>
+              <p>Open any generated account to display its exact registration fields on this page.</p>
+            </div>
+            <div className="account-table-wrap">
+              <table className="account-table">
+                <thead>
+                  <tr><th>Account</th><th>GEO</th><th>Email</th><th /></tr>
+                </thead>
+                <tbody>
+                  {filteredHistory.map((item) => (
+                    <tr key={item.id}>
+                      <td><strong>{item.siteAccountId || item.username}</strong><span>{item.firstName} {item.lastName}</span></td>
+                      <td>{item.geoLabel}</td>
+                      <td>{item.email}</td>
+                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open data</button></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         )}
       </section>
@@ -1199,6 +1260,7 @@ function UtilityView({
           <h2>Settings</h2>
           <p>Defaults used by generation and operational limits for this workspace.</p>
         </div>
+        <span className="status-pill tone-success">Saved locally</span>
       </div>
       <div className="settings-grid">
         <Field label="Default GEO">
@@ -1220,6 +1282,9 @@ function UtilityView({
         <Field label="Bulk count">
           <input className="input-field compact" type="number" min="1" max="25" value={bulkCount} onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))} />
         </Field>
+      </div>
+      <div className="settings-save-note">
+        These defaults are saved in this browser and reused by Create account, Generate bulk, Form Data, and Main after reload.
       </div>
       <div className="settings-notes">
         <InfoTile label="History retention" value="30 days" action="Read" onClick={() => undefined} />
