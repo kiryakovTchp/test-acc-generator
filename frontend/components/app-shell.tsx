@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
-type NavKey = 'accounts' | 'mailboxes' | 'profiles' | 'codes' | 'activity' | 'settings';
+type NavKey = 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'activity' | 'settings';
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
 
 interface Detail {
@@ -58,7 +58,7 @@ const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
 const NAV_ITEMS: Array<{ key: NavKey; label: string; short: string }> = [
   { key: 'accounts', label: 'Accounts', short: 'AC' },
   { key: 'mailboxes', label: 'Mailboxes', short: 'MB' },
-  { key: 'profiles', label: 'Profiles', short: 'PF' },
+  { key: 'form_data', label: 'Form Data', short: 'FD' },
   { key: 'codes', label: 'Verification Codes', short: 'VC' },
   { key: 'activity', label: 'Activity Log', short: 'AL' },
   { key: 'settings', label: 'Settings', short: 'ST' },
@@ -210,6 +210,11 @@ export default function AppShell() {
   const primaryActionsDisabled = !detail;
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
+  const verificationLinks = detail?.inbox.links ?? [];
+  const verificationCodes = detail?.inbox.codes ?? [];
+  const verificationReceivedAt = detail?.inbox.receivedAt;
+  const hasVerificationLinks = verificationLinks.length > 0;
+  const hasVerificationCodes = verificationCodes.length > 0;
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -370,8 +375,8 @@ export default function AppShell() {
       <main className="login-shell">
         <form className="login-card" onSubmit={doLogin}>
           <div className="login-badge">Internal QA console</div>
-          <h1>Test Account Generator</h1>
-          <p>Generate accounts, inspect mailbox activity, and capture verification data.</p>
+          <h1>Registration Testing Workspace</h1>
+          <p>Generate test accounts, fill registration forms, and capture mailbox verification data.</p>
           <div className="login-fields">
             <input className="input-field" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
             <input className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
@@ -390,8 +395,8 @@ export default function AppShell() {
           <div className="sidebar-brand">
             <div className="sidebar-brand-mark">QA</div>
             <div>
-              <strong>PMO / QA Rig</strong>
-              <span>Verification console</span>
+              <strong>Registration Testing</strong>
+              <span>Workspace console</span>
             </div>
           </div>
 
@@ -415,7 +420,7 @@ export default function AppShell() {
                 <span className="sidebar-count">
                   {item.key === 'accounts' ? history.length
                     : item.key === 'mailboxes' ? history.length
-                      : item.key === 'profiles' ? recentCount
+                      : item.key === 'form_data' ? recentCount
                         : item.key === 'codes' ? (detail?.inbox.codes.length ?? 0)
                           : ''}
                 </span>
@@ -472,15 +477,11 @@ export default function AppShell() {
             </button>
             <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
               <span className="action-icon">CP</span>
-              <span><strong>Copy identity pack</strong><small>Credentials and profile</small></span>
+              <span><strong>Copy identity pack</strong><small>Registration form fields</small></span>
             </button>
             <button className="action-card" disabled>
               <span className="action-icon">URL</span>
               <span><strong>Open registration URL</strong><small>Not configured</small></span>
-            </button>
-            <button className="action-card" onClick={() => setActiveNav('activity')}>
-              <span className="action-icon">LOG</span>
-              <span><strong>View full activity log</strong><small>{history.length} generated records</small></span>
             </button>
           </div>
         </section>
@@ -546,9 +547,8 @@ export default function AppShell() {
                   <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                   <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                   <InspectorRow label="Full name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
-                  <InspectorRow label="Persona" value={PERSONAS.find((item) => item.value === detail.persona)?.label ?? detail.persona} onCopy={() => copyValue(`persona:${detail.id}`, detail.persona)} copied={copiedField === `persona:${detail.id}`} />
+                  <InspectorRow label="Form persona" value={PERSONAS.find((item) => item.value === detail.persona)?.label ?? detail.persona} onCopy={() => copyValue(`persona:${detail.id}`, detail.persona)} copied={copiedField === `persona:${detail.id}`} />
                   <InspectorRow label="Geo" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
-                  <InspectorRow label="Registration URL" value="Not configured" onCopy={() => copyValue(`registration-url:${detail.id}`, 'Not configured')} copied={copiedField === `registration-url:${detail.id}`} />
                   <InspectorRow label="Status" value={statusLabel(selectedStatus)} onCopy={() => copyValue(`status:${detail.id}`, statusLabel(selectedStatus))} copied={copiedField === `status:${detail.id}`} />
                   <InspectorRow label="Created" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
                   <InspectorRow label="Mailbox" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
@@ -558,8 +558,8 @@ export default function AppShell() {
 
                 <section className="identity-pack">
                   <div className="identity-pack-header">
-                    <h3>Identity pack</h3>
-                    <button className="micro-button" onClick={copyIdentityPack}>View all</button>
+                    <h3>Registration form data</h3>
+                    <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
                   </div>
                   <div className="identity-pack-grid">
                     <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="View" onClick={() => copyValue(`doc:${detail.id}`, detail.documentValue)} />
@@ -584,7 +584,7 @@ export default function AppShell() {
                 { label: 'Inbox refreshed', value: inboxStatusLabel || statusLabel(selectedStatus), tone: selectedStatus === 'email_received' ? 'success' : 'active' },
                 { label: 'Account generated', value: formatCompactDate(detail.createdAt), tone: 'success' },
                 { label: 'Mailbox created', value: formatCompactDate(detail.createdAt), tone: 'success' },
-                { label: 'Profile generated', value: detail.geoLabel, tone: 'success' },
+                { label: 'Form data ready', value: detail.geoLabel, tone: 'success' },
               ].map((event) => (
                 <div key={event.label} className="timeline-item">
                   <span className={cn('status-dot', `tone-${event.tone}`)} />
@@ -595,15 +595,15 @@ export default function AppShell() {
             </div>
 
             <section className="side-card bulk-card">
-              <h3>Bulk generation</h3>
-              <p>Generate multiple accounts with custom settings.</p>
+              <h3>Generation settings</h3>
+              <p>Shared settings used by Create Account and Generate Bulk.</p>
               <div className="form-stack">
                 <Field label="GEO">
                   <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
                     {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
                   </select>
                 </Field>
-                <Field label="Persona">
+                <Field label="Form persona">
                   <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
                     {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
                   </select>
@@ -624,7 +624,6 @@ export default function AppShell() {
                     onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
                   />
                 </Field>
-                <button className="secondary-button w-full" onClick={generateBulk} disabled={isGenerateDisabled}>Open bulk generator <kbd>B</kbd></button>
               </div>
             </section>
 
@@ -639,7 +638,7 @@ export default function AppShell() {
                   <span>{detail.inbox.subject || 'No subject'}</span>
                 </div>
                 <div className="collapsible-area">
-                  <button className="ghost-button" onClick={() => setShowRawProfile((next) => !next)}>{showRawProfile ? 'Hide raw profile' : 'Raw profile'}</button>
+                  <button className="ghost-button" onClick={() => setShowRawProfile((next) => !next)}>{showRawProfile ? 'Hide raw payload' : 'Raw payload'}</button>
                   <button className="ghost-button" onClick={async () => {
                     const next = !showRawHtml;
                     setShowRawHtml(next);
@@ -655,13 +654,13 @@ export default function AppShell() {
             ) : null}
           </aside>
 
-          <section className="panel panel-links">
-            <div className="panel-header">
-              <h2>Verification links <span>({detail?.inbox.links.length ?? 0})</span></h2>
-              <button className="micro-button" disabled>+ Add link</button>
-            </div>
-            <div className="link-list">
-              {detail?.inbox.links.length ? detail.inbox.links.map((link) => (
+          {hasVerificationLinks ? (
+            <section className="panel panel-links">
+              <div className="panel-header">
+                <h2>Verification links <span>({verificationLinks.length})</span></h2>
+              </div>
+              <div className="link-list">
+                {verificationLinks.map((link) => (
                 <div key={link.url} className="link-row">
                   <span className="status-dot tone-success" />
                   <div className="link-row-main">
@@ -669,28 +668,30 @@ export default function AppShell() {
                     <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 64)}</div>
                   </div>
                   <button className="copy-icon" onClick={() => copyValue(`link:${link.url}`, link.url)}>CP</button>
-                  <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
+                  <time>{formatCompactDate(verificationReceivedAt)}</time>
                 </div>
-              )) : <div className="empty-state compact">No verification links captured yet.</div>}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
-          <section className="panel panel-codes">
-            <div className="panel-header">
-              <h2>Codes <span>({detail?.inbox.codes.length ?? 0})</span></h2>
-              <button className="micro-button" disabled>+ Add code</button>
-            </div>
-            <div className="codes-list">
-              {detail?.inbox.codes.length ? detail.inbox.codes.map((code, index) => (
+          {hasVerificationCodes ? (
+            <section className="panel panel-codes">
+              <div className="panel-header">
+                <h2>Codes <span>({verificationCodes.length})</span></h2>
+              </div>
+              <div className="codes-list">
+                {verificationCodes.map((code, index) => (
                 <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
                   <span>{index === 0 ? 'Email code' : 'SMS code'}</span>
                   <strong>{code}</strong>
                   <small>{copiedField === `code:${code}` ? 'Copied' : 'CP'}</small>
-                  <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
+                  <time>{formatCompactDate(verificationReceivedAt)}</time>
                 </button>
-              )) : <div className="empty-state compact">No verification codes found.</div>}
-            </div>
-          </section>
+                ))}
+              </div>
+            </section>
+          ) : null}
         </div>
       </section>
     </main>
