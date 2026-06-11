@@ -1367,6 +1367,8 @@ body {
 }
 
 .account-table-wrap {
+  max-width: 100%;
+  min-width: 0;
   overflow: auto;
   border: 1px solid #edf0f4;
   border-radius: 4px;
@@ -1446,6 +1448,7 @@ body {
   grid-area: utility;
   display: grid;
   gap: 16px;
+  min-width: 0;
   min-height: calc(100vh - 190px);
 }
 
@@ -1482,6 +1485,10 @@ body {
   display: grid;
   gap: 4px;
   margin-bottom: 12px;
+}
+
+.form-data-picker {
+  min-width: 0;
 }
 
 .section-subhead h3 {
