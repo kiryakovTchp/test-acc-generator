@@ -48,6 +48,11 @@ interface Detail {
   createdAt: string;
 }
 
+interface TempMailbox {
+  address: string;
+  password: string;
+}
+
 const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
   { value: 'standard_user', label: 'Standard User · 25–40' },
   { value: 'young_user', label: 'Young User · 18–24' },
@@ -146,7 +151,10 @@ export default function AppShell() {
   const [accountSearch, setAccountSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
   const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
+  const [accountGeoFilter, setAccountGeoFilter] = useState('all');
   const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
+  const [tempMailbox, setTempMailbox] = useState<TempMailbox | null>(null);
+  const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -195,7 +203,8 @@ export default function AppShell() {
       const status = mapHistoryStatus(item);
       const matchesSearch = !term || [item.username, item.email, item.geoLabel, item.siteAccountId].some((value) => value.toLowerCase().includes(term));
       const matchesStatus = statusFilter === 'all' || status === statusFilter;
-      return matchesSearch && matchesStatus;
+      const matchesGeo = accountGeoFilter === 'all' || item.geoKey === accountGeoFilter;
+      return matchesSearch && matchesStatus && matchesGeo;
     });
 
     next.sort((a, b) => sortMode === 'newest'
@@ -203,7 +212,7 @@ export default function AppShell() {
       : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     return next;
-  }, [accountSearch, history, sortMode, statusFilter]);
+  }, [accountGeoFilter, accountSearch, history, sortMode, statusFilter]);
 
   const selectedStatus = mapDetailStatus(detail);
   const primaryActionsDisabled = !detail;
@@ -331,6 +340,19 @@ export default function AppShell() {
       setInboxStatusLabel('No email found');
     } finally {
       setIsRefreshingInbox(false);
+    }
+  }
+
+  async function createTemporaryMailbox() {
+    setError('');
+    setIsCreatingMailbox(true);
+    try {
+      const mailbox = await apiFetch<TempMailbox>('/mailboxes/create', token, { method: 'POST' });
+      setTempMailbox(mailbox);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create mailbox');
+    } finally {
+      setIsCreatingMailbox(false);
     }
   }
 
@@ -501,7 +523,9 @@ export default function AppShell() {
           </div>
         </section>
 
-        <div className="workspace-grid">
+        <div className={cn('workspace-grid', activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
+          {activeNav === 'accounts' ? (
+          <>
           <section className="panel panel-list">
             <div className="panel-header">
               <h2>Accounts <span>({history.length})</span></h2>
@@ -517,6 +541,10 @@ export default function AppShell() {
                     <option value="generated">Generated</option>
                     <option value="email_received">Email received</option>
                     <option value="waiting">Waiting</option>
+                  </select>
+                  <select className="input-field compact" value={accountGeoFilter} onChange={(e) => setAccountGeoFilter(e.target.value)}>
+                    <option value="all">All GEOs</option>
+                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
                   </select>
                   <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
                     <option value="newest">Newest first</option>
@@ -559,20 +587,42 @@ export default function AppShell() {
               </div>
             </section>
 
-            <div className="account-list">
-              {filteredHistory.length ? filteredHistory.map((item) => {
-                const rowStatus = mapHistoryStatus(item);
-                const selected = detail?.id === item.id;
-                return (
-                  <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
-                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
-                    <strong>{item.siteAccountId || item.username}</strong>
-                    <time>{formatCompactDate(item.createdAt)}</time>
-                  </button>
-                );
-              }) : <div className="empty-state">No accounts match the current filters.</div>}
+            <div className="account-table-wrap">
+              {filteredHistory.length ? (
+                <table className="account-table">
+                  <thead>
+                    <tr>
+                      <th>Account</th>
+                      <th>GEO</th>
+                      <th>Email</th>
+                      <th>Status</th>
+                      <th>Created</th>
+                      <th />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredHistory.map((item) => {
+                      const rowStatus = mapHistoryStatus(item);
+                      const selected = detail?.id === item.id;
+                      return (
+                        <tr key={item.id} className={cn(selected && 'is-selected')}>
+                          <td>
+                            <strong>{item.siteAccountId || item.username}</strong>
+                            <span>{item.firstName} {item.lastName}</span>
+                          </td>
+                          <td>{item.geoLabel}</td>
+                          <td>{item.email}</td>
+                          <td><span className={cn('status-pill', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
+                          <td>{formatCompactDate(item.createdAt)}</td>
+                          <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>Details</button></td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              ) : <div className="empty-state">No accounts match the current filters.</div>}
             </div>
-            <button type="button" className="view-all-button">View all accounts</button>
+            <button type="button" className="view-all-button" onClick={() => setActiveNav('accounts')}>View all accounts</button>
           </section>
 
           <section className="panel panel-detail">
@@ -697,6 +747,33 @@ export default function AppShell() {
               </div>
             </section>
           ) : null}
+          </>
+          ) : (
+            <UtilityView
+              activeNav={activeNav}
+              detail={detail}
+              history={history}
+              filteredHistory={filteredHistory}
+              geoItems={geoItems}
+              selectedGeo={selectedGeo}
+              setSelectedGeo={setSelectedGeo}
+              currentGeo={currentGeo}
+              documentType={documentType}
+              setDocumentType={setDocumentType}
+              persona={persona}
+              setPersona={setPersona}
+              accountRole={accountRole}
+              setAccountRole={setAccountRole}
+              bulkCount={bulkCount}
+              setBulkCount={setBulkCount}
+              tempMailbox={tempMailbox}
+              isCreatingMailbox={isCreatingMailbox}
+              onCreateMailbox={createTemporaryMailbox}
+              onLoadDetail={loadDetail}
+              onCopy={copyValue}
+              copiedField={copiedField}
+            />
+          )}
         </div>
       </section>
     </main>
@@ -706,6 +783,254 @@ export default function AppShell() {
 function truncate(value: string, length: number) {
   if (value.length <= length) return value;
   return `${value.slice(0, length)}…`;
+}
+
+function UtilityView({
+  activeNav,
+  detail,
+  history,
+  filteredHistory,
+  geoItems,
+  selectedGeo,
+  setSelectedGeo,
+  currentGeo,
+  documentType,
+  setDocumentType,
+  persona,
+  setPersona,
+  accountRole,
+  setAccountRole,
+  bulkCount,
+  setBulkCount,
+  tempMailbox,
+  isCreatingMailbox,
+  onCreateMailbox,
+  onLoadDetail,
+  onCopy,
+  copiedField,
+}: {
+  activeNav: Exclude<NavKey, 'accounts'>;
+  detail: Detail | null;
+  history: HistoryItem[];
+  filteredHistory: HistoryItem[];
+  geoItems: GeoItem[];
+  selectedGeo: string;
+  setSelectedGeo: (value: string) => void;
+  currentGeo?: GeoItem;
+  documentType: string;
+  setDocumentType: (value: string) => void;
+  persona: PersonaKey;
+  setPersona: (value: PersonaKey) => void;
+  accountRole: 'admin' | 'user';
+  setAccountRole: (value: 'admin' | 'user') => void;
+  bulkCount: number;
+  setBulkCount: (value: number) => void;
+  tempMailbox: TempMailbox | null;
+  isCreatingMailbox: boolean;
+  onCreateMailbox: () => void;
+  onLoadDetail: (id: number) => void;
+  onCopy: (key: string, value: string) => void;
+  copiedField: string;
+}) {
+  if (activeNav === 'mailboxes') {
+    return (
+      <section className="panel utility-panel">
+        <div className="utility-header">
+          <div>
+            <h2>Mailboxes</h2>
+            <p>Create a standalone temporary mailbox, or inspect mailboxes tied to generated accounts.</p>
+          </div>
+          <button type="button" className="primary-button" onClick={onCreateMailbox} disabled={isCreatingMailbox}>
+            {isCreatingMailbox ? 'Creating mailbox' : 'Create temporary mailbox'}
+          </button>
+        </div>
+
+        {tempMailbox ? (
+          <div className="mailbox-current">
+            <InfoTile label="Temporary email" value={tempMailbox.address} action="Copy" onClick={() => onCopy('temp-mailbox-address', tempMailbox.address)} />
+            <InfoTile label="Mailbox password" value={tempMailbox.password} action="Copy" onClick={() => onCopy('temp-mailbox-password', tempMailbox.password)} />
+          </div>
+        ) : (
+          <div className="empty-state compact">No standalone mailbox created in this session yet.</div>
+        )}
+
+        <div className="account-table-wrap">
+          <table className="account-table">
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Account</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {history.map((item) => {
+                const status = mapHistoryStatus(item);
+                return (
+                  <tr key={item.id}>
+                    <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
+                    <td>{item.siteAccountId || item.username}</td>
+                    <td><span className={cn('status-pill', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
+                    <td>{formatCompactDate(item.createdAt)}</td>
+                    <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    );
+  }
+
+  if (activeNav === 'form_data') {
+    return (
+      <section className="panel utility-panel">
+        <div className="utility-header">
+          <div>
+            <h2>Registration form data</h2>
+            <p>Exact values to paste into the target registration form.</p>
+          </div>
+          <button type="button" className="secondary-button" onClick={() => detail ? onCopy(`form-data:${detail.id}`, detail.fullProfileText) : undefined} disabled={!detail}>
+            {copiedField === `form-data:${detail?.id}` ? 'Copied' : 'Copy selected data'}
+          </button>
+        </div>
+
+        <div className="settings-grid">
+          <Field label="Default GEO">
+            <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+              {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+            </select>
+          </Field>
+          <Field label="Persona">
+            <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
+          </Field>
+          <Field label="Document type">
+            <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+              {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+              <option value="missing_rule_probe">missing_rule_probe</option>
+            </select>
+          </Field>
+        </div>
+
+        {detail ? (
+          <div className="form-data-grid">
+            <InfoTile label="Account ID" value={detail.siteAccountId || 'Not set'} action="Copy" onClick={() => onCopy(`fd-account:${detail.id}`, detail.siteAccountId || '')} />
+            <InfoTile label="First / last name" value={`${detail.firstName}\n${detail.lastName}`} action="Copy" onClick={() => onCopy(`fd-name:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+            <InfoTile label="Birth / sex" value={`${detail.dateOfBirth}\n${detail.gender}`} action="Copy" onClick={() => onCopy(`fd-birth:${detail.id}`, `${detail.dateOfBirth}\n${detail.gender}`)} />
+            <InfoTile label="Country / region / city" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => onCopy(`fd-geo:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+            <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`} action="Copy" onClick={() => onCopy(`fd-doc:${detail.id}`, `${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`)} />
+            <InfoTile label="Contacts" value={`${detail.email}\n${detail.phone}`} action="Copy" onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${detail.phone}`)} />
+          </div>
+        ) : (
+          <div className="empty-workspace">
+            <h3>No account selected</h3>
+            <p>Open an account from Accounts to see its registration form values here.</p>
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  if (activeNav === 'codes') {
+    const codes = detail?.inbox.codes ?? [];
+    const links = detail?.inbox.links ?? [];
+    return (
+      <section className="panel utility-panel">
+        <div className="utility-header">
+          <div>
+            <h2>Verification codes</h2>
+            <p>Codes and verification links for the selected account.</p>
+          </div>
+          <span className={cn('status-pill', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No account selected'}</span>
+        </div>
+
+        {detail ? (
+          <div className="verification-page-grid">
+            <div>
+              <h3>Codes</h3>
+              {codes.length ? codes.map((code, index) => (
+                <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => onCopy(`codes-page:${code}`, code)}>
+                  <span>{index === 0 ? 'Email code' : 'Code'}</span>
+                  <strong>{code}</strong>
+                  <small>{copiedField === `codes-page:${code}` ? 'Copied' : 'CP'}</small>
+                  <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
+                </button>
+              )) : <div className="empty-state compact">No codes captured yet.</div>}
+            </div>
+            <div>
+              <h3>Links</h3>
+              {links.length ? links.map((link) => (
+                <button key={link.url} type="button" className="verification-link-card" onClick={() => onCopy(`codes-link:${link.url}`, link.url)}>
+                  <strong>{link.label || (link.isPrimary ? 'Primary verification link' : 'Verification link')}</strong>
+                  <span>{truncate(link.url, 92)}</span>
+                </button>
+              )) : <div className="empty-state compact">No links captured yet.</div>}
+            </div>
+          </div>
+        ) : (
+          <div className="account-table-wrap">
+            <table className="account-table">
+              <thead>
+                <tr><th>Account</th><th>GEO</th><th>Status</th><th /></tr>
+              </thead>
+              <tbody>
+                {filteredHistory.map((item) => (
+                  <tr key={item.id}>
+                    <td><strong>{item.siteAccountId || item.username}</strong><span>{item.email}</span></td>
+                    <td>{item.geoLabel}</td>
+                    <td>{statusLabel(mapHistoryStatus(item))}</td>
+                    <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </section>
+    );
+  }
+
+  return (
+    <section className="panel utility-panel">
+      <div className="utility-header">
+        <div>
+          <h2>Settings</h2>
+          <p>Defaults used by generation and operational limits for this workspace.</p>
+        </div>
+      </div>
+      <div className="settings-grid">
+        <Field label="Default GEO">
+          <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+            {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Default persona">
+          <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Default role">
+          <select className="input-field compact" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
+            <option value="user">user</option>
+            <option value="admin">admin</option>
+          </select>
+        </Field>
+        <Field label="Bulk count">
+          <input className="input-field compact" type="number" min="1" max="25" value={bulkCount} onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))} />
+        </Field>
+      </div>
+      <div className="settings-notes">
+        <InfoTile label="History retention" value="30 days" action="Read" onClick={() => undefined} />
+        <InfoTile label="History limit" value="50 accounts per user" action="Read" onClick={() => undefined} />
+        <InfoTile label="Debug email HTML" value="Enabled for detail view" action="Read" onClick={() => undefined} />
+      </div>
+    </section>
+  );
 }
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {

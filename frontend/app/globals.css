@@ -1232,6 +1232,20 @@ body {
   align-items: start;
 }
 
+.workspace-grid.accounts-view,
+.workspace-grid.single-view {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'list'
+    'detail'
+    'links'
+    'codes';
+}
+
+.workspace-grid.single-view {
+  grid-template-areas: 'utility';
+}
+
 .panel,
 .detail-card,
 .side-card,
@@ -1299,7 +1313,7 @@ body {
 
 .control-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
 }
 
@@ -1352,6 +1366,60 @@ body {
   font-size: 11px;
 }
 
+.account-table-wrap {
+  overflow: auto;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.account-table {
+  width: 100%;
+  min-width: 760px;
+  border-collapse: collapse;
+}
+
+.account-table th,
+.account-table td {
+  border-bottom: 1px solid #edf0f4;
+  padding: 10px 12px;
+  text-align: left;
+  vertical-align: middle;
+  font-size: 12px;
+}
+
+.account-table th {
+  background: #f8fafc;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.account-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.account-table tr.is-selected td {
+  background: #edf7ff;
+}
+
+.account-table td strong,
+.account-table td span {
+  display: block;
+}
+
+.account-table td strong {
+  color: #111827;
+  font-weight: 800;
+}
+
+.account-table td span {
+  margin-top: 2px;
+  color: var(--muted);
+}
+
 .view-all-button {
   width: 100%;
   height: 36px;
@@ -1372,6 +1440,79 @@ body {
 
 .accounts-settings .input-field.compact {
   width: 100%;
+}
+
+.utility-panel {
+  grid-area: utility;
+  display: grid;
+  gap: 16px;
+  min-height: calc(100vh - 190px);
+}
+
+.utility-header,
+.mailbox-current,
+.settings-grid,
+.settings-notes,
+.form-data-grid,
+.verification-page-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.utility-header {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  border-bottom: 1px solid #edf0f4;
+  padding-bottom: 14px;
+}
+
+.utility-header h2 {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.utility-header p {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.mailbox-current,
+.settings-notes,
+.form-data-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.settings-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.verification-page-grid {
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.3fr);
+}
+
+.verification-page-grid h3 {
+  margin: 0 0 10px;
+  font-size: 13px;
+}
+
+.verification-link-card {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  margin-bottom: 8px;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  padding: 10px;
+  background: #fff;
+  text-align: left;
+}
+
+.verification-link-card span {
+  color: var(--muted);
+  font-size: 12px;
+  word-break: break-all;
 }
 
 .detail-stack {
@@ -2099,6 +2240,15 @@ kbd {
 
   .panel-list {
     grid-template-columns: 1fr;
+  }
+
+  .utility-header,
+  .verification-page-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .account-table {
+    min-width: 680px;
   }
 
   .panel-list .panel-header,
