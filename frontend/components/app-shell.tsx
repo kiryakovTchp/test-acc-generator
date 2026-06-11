@@ -639,14 +639,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <a className="view-all-button" href="/accounts">View all accounts</a>
           </section>
 
-          {detail ? (
-            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Account details" onClick={() => setDetail(null)}>
-              <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
-                <div className="panel-header">
-                  <h2>Account details <span className="success-text">{statusLabel(selectedStatus)}</span></h2>
-                  <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
-                </div>
+          <section className="panel panel-detail">
+            <div className="panel-header">
+              <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
+            </div>
 
+            {!detail ? (
+              <div className="empty-workspace">
+                <h3>Generate an account or open one from the list</h3>
+                <p>The selected account appears here without navigating away from the account list.</p>
+              </div>
+            ) : (
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
@@ -717,9 +720,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   copied={copiedField === `email-message:${detail.id}`}
                 />
               </div>
-              </section>
-            </div>
-          ) : null}
+            )}
+          </section>
 
           {hasVerificationLinks ? (
             <section className="panel panel-links">
@@ -861,17 +863,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <a className="view-all-button" href="/accounts">View all accounts</a>
           </section>
 
-          <section className="panel panel-detail">
-            <div className="panel-header">
-              <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
-            </div>
+          {detail ? (
+            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Account details" onClick={() => setDetail(null)}>
+              <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
+                <div className="panel-header">
+                  <h2>Account details <span className="success-text">{statusLabel(selectedStatus)}</span></h2>
+                  <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
+                </div>
 
-            {!detail ? (
-              <div className="empty-workspace">
-                <h3>Generate an account or open one from the list</h3>
-                <p>The selected account appears here without navigating away from the account list.</p>
-              </div>
-            ) : (
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
@@ -942,8 +941,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   copied={copiedField === `email-message:${detail.id}`}
                 />
               </div>
-            )}
-          </section>
+              </section>
+            </div>
+          ) : null}
 
           {hasVerificationLinks ? (
             <section className="panel panel-links">
