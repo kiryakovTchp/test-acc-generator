@@ -55,6 +55,15 @@ app.get('/history/:id', auth, (req, res) => {
   res.json(item);
 });
 
+app.post('/mailboxes/create', auth, async (_req, res) => {
+  try {
+    const mailbox = await emailProvider.createAccount();
+    res.json(mailbox);
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to create mailbox' });
+  }
+});
+
 app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
   const includeDebug = req.query.debug === '1';
