@@ -1915,7 +1915,7 @@ kbd {
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1080px) {
   .console-shell {
     grid-template-columns: 1fr;
   }
@@ -1941,6 +1941,17 @@ kbd {
   .topbar {
     margin: 0 -12px;
     padding: 10px 12px;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace-grid {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      'list'
+      'detail'
+      'links'
+      'codes';
   }
 
   .quick-actions-panel {
