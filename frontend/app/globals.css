@@ -1380,7 +1380,7 @@ body {
 
 .personal-info-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(220px, 1fr));
   column-gap: 14px;
   row-gap: 8px;
 }
@@ -1417,13 +1417,34 @@ body {
 }
 
 .registration-form-grid .inspector-row {
-  grid-template-columns: 120px minmax(0, 1fr) auto;
-  min-height: 32px;
-  border-bottom: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'field-label field-actions'
+    'field-value field-actions';
+  gap: 2px 8px;
+  align-items: center;
+  min-height: 50px;
+  padding: 6px 8px;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  background: #fff;
 }
 
-.form-section:not(.form-section-wide) .inspector-row {
-  grid-template-columns: 112px minmax(0, 1fr) auto;
+.registration-form-grid .inspector-label {
+  grid-area: field-label;
+}
+
+.registration-form-grid .inspector-value {
+  grid-area: field-value;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  word-break: normal;
+}
+
+.registration-form-grid .inspector-actions {
+  grid-area: field-actions;
+  align-self: center;
 }
 
 .inspector-label {
@@ -1712,11 +1733,7 @@ kbd {
     min-height: auto;
   }
 
-  .workspace-grid,
-  .details-table,
-  .registration-form-grid,
-  .personal-info-grid,
-  .identity-pack-grid {
+  .workspace-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
       'list'
@@ -1724,6 +1741,13 @@ kbd {
       'side'
       'links'
       'codes';
+  }
+
+  .details-table,
+  .registration-form-grid,
+  .personal-info-grid,
+  .identity-pack-grid {
+    grid-template-columns: 1fr;
   }
 
   .quick-actions-grid {
