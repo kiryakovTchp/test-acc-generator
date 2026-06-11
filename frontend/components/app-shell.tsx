@@ -214,6 +214,10 @@ export default function AppShell() {
   const verificationReceivedAt = detail?.inbox.receivedAt;
   const hasVerificationLinks = verificationLinks.length > 0;
   const hasVerificationCodes = verificationCodes.length > 0;
+  const activationLink = detail?.inbox.primaryVerificationLink?.url
+    ?? detail?.inbox.links.find((link) => link.isPrimary)?.url
+    ?? detail?.inbox.links[0]?.url
+    ?? '';
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
@@ -376,6 +380,11 @@ export default function AppShell() {
     void copyValue(`identity-pack:${detail.id}`, identityPack);
   }
 
+  function openActivationLink() {
+    if (!activationLink) return;
+    window.open(activationLink, '_blank', 'noopener,noreferrer');
+  }
+
   if (!user) {
     return (
       <main className="login-shell">
@@ -531,13 +540,46 @@ export default function AppShell() {
               }) : <div className="empty-state">No accounts match the current filters.</div>}
             </div>
             <button type="button" className="view-all-button">View all accounts</button>
+
+            <section className="accounts-settings bulk-card">
+              <h3>Generation settings</h3>
+              <p>Shared settings used by Create Account and Generate Bulk.</p>
+              <div className="form-stack">
+                <Field label="GEO">
+                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Form persona">
+                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  </select>
+                </Field>
+                <Field label="Document type">
+                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+                    <option value="missing_rule_probe">missing_rule_probe</option>
+                  </select>
+                </Field>
+                <Field label="Bulk count">
+                  <input
+                    className="input-field compact"
+                    type="number"
+                    min="1"
+                    max="25"
+                    value={bulkCount}
+                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
+                  />
+                </Field>
+              </div>
+            </section>
           </section>
 
           <section className="panel panel-detail">
             <div className="panel-header">
               <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
               <div className="panel-actions">
-                <button className="micro-button" disabled>Open in site</button>
+                <button className="micro-button" onClick={openActivationLink} disabled={!activationLink}>Activate account</button>
                 <button className="micro-button">...</button>
               </div>
             </div>
@@ -612,41 +654,6 @@ export default function AppShell() {
               </div>
             )}
           </section>
-
-          <aside className="panel panel-side">
-            <section className="side-card bulk-card">
-              <h3>Generation settings</h3>
-              <p>Shared settings used by Create Account and Generate Bulk.</p>
-              <div className="form-stack">
-                <Field label="GEO">
-                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
-                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Form persona">
-                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Document type">
-                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
-                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
-                    <option value="missing_rule_probe">missing_rule_probe</option>
-                  </select>
-                </Field>
-                <Field label="Bulk count">
-                  <input
-                    className="input-field compact"
-                    type="number"
-                    min="1"
-                    max="25"
-                    value={bulkCount}
-                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
-                  />
-                </Field>
-              </div>
-            </section>
-          </aside>
 
           {hasVerificationLinks ? (
             <section className="panel panel-links">
