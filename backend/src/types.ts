@@ -21,6 +21,7 @@ export interface HistoryListItem {
   geoLabel: string;
   email: string;
   username: string;
+  siteAccountId: string;
   firstName: string;
   lastName: string;
   phone: string;

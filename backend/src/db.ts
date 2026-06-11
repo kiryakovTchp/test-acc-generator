@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS account_history (
   email TEXT NOT NULL,
   email_password TEXT NOT NULL,
   username TEXT NOT NULL,
+  site_account_id TEXT NOT NULL DEFAULT '',
   first_name TEXT NOT NULL DEFAULT '',
   last_name TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '',
@@ -58,6 +59,7 @@ CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_histor
 `);
 
 ensureColumn('account_history', 'first_name', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'site_account_id', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'last_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'phone', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'age', 'INTEGER NOT NULL DEFAULT 0');
@@ -117,6 +119,7 @@ export interface HistoryRow {
   email: string;
   email_password: string;
   username: string;
+  site_account_id: string;
   first_name: string;
   last_name: string;
   phone: string;
