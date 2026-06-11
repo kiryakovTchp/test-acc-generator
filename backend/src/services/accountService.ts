@@ -113,7 +113,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
   return getHistoryDetail(id, userId, includeDebug);
 }
 
-export function updateSiteAccountId(id: number, userId: number, siteAccountId: string) {
+export function updateSiteAccountId(id: number, userId: number, siteAccountId: string, includeDebug = false) {
   const trimmed = siteAccountId.trim().slice(0, 80);
   const result = db.prepare(`
     UPDATE account_history
@@ -121,7 +121,7 @@ export function updateSiteAccountId(id: number, userId: number, siteAccountId: s
     WHERE id = ? AND user_id = ?
   `).run(trimmed, id, userId);
   if (result.changes === 0) return null;
-  return getHistoryDetail(id, userId);
+  return getHistoryDetail(id, userId, includeDebug);
 }
 
 export function listHistory(userId: number) {
