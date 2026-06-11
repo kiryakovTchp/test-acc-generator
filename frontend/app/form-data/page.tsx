@@ -1,5 +1,5 @@
-import AppShell from '@/components/app-shell';
+import { redirect } from 'next/navigation';
 
 export default function FormDataPage() {
-  return <AppShell view="form_data" />;
+  redirect('/main');
 }
