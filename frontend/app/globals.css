@@ -1246,6 +1246,11 @@ body {
   grid-template-areas: 'utility';
 }
 
+.workspace-grid.accounts-view .panel-links,
+.workspace-grid.accounts-view .panel-codes {
+  display: none;
+}
+
 .panel,
 .detail-card,
 .side-card,
@@ -1269,6 +1274,26 @@ body {
 .panel-detail {
   grid-area: detail;
   padding: 16px;
+}
+
+.account-detail-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  align-items: start;
+  justify-items: center;
+  overflow-y: auto;
+  padding: 32px 18px;
+  background: rgba(15, 23, 42, 0.54);
+}
+
+.account-detail-modal {
+  width: min(1180px, 100%);
+  max-height: calc(100vh - 64px);
+  overflow: auto;
+  border-radius: 8px;
+  box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
 }
 
 .panel-side {
@@ -2210,6 +2235,14 @@ kbd {
 }
 
 @media (max-width: 640px) {
+  .account-detail-overlay {
+    padding: 10px;
+  }
+
+  .account-detail-modal {
+    max-height: calc(100vh - 20px);
+  }
+
   .sidebar {
     padding: 12px;
   }
