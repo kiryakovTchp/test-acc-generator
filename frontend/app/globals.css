@@ -1885,6 +1885,36 @@ kbd {
   }
 }
 
+@media (max-width: 1180px) {
+  .quick-actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .registration-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .personal-info-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .identity-pack-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .info-tile {
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .info-tile:nth-child(3n) {
+    border-right: 0;
+  }
+
+  .info-tile:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+}
+
 @media (max-width: 900px) {
   .console-shell {
     grid-template-columns: 1fr;
@@ -1904,12 +1934,67 @@ kbd {
       'codes';
   }
 
+  .workspace-shell {
+    padding: 0 12px 16px;
+  }
+
+  .topbar {
+    margin: 0 -12px;
+    padding: 10px 12px;
+  }
+
+  .quick-actions-panel {
+    margin: 12px 0;
+    padding: 12px;
+  }
+
+  .panel {
+    padding: 12px;
+  }
+
+  .panel-list {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(240px, 0.9fr);
+    gap: 12px;
+    align-items: start;
+  }
+
+  .panel-list .panel-header,
+  .panel-list .list-controls,
+  .panel-list .account-list,
+  .panel-list .view-all-button {
+    grid-column: 1;
+  }
+
+  .accounts-settings {
+    grid-column: 2;
+    grid-row: 1 / span 4;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .account-list {
+    max-height: 280px;
+  }
+
   .details-table,
   .registration-form-grid,
   .personal-info-grid,
   .identity-pack-grid,
   .email-message-meta {
     grid-template-columns: 1fr;
+  }
+
+  .info-tile,
+  .info-tile:nth-child(3n),
+  .info-tile:last-child {
+    border-right: 0;
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .info-tile:last-child {
+    border-bottom: 0;
   }
 
   .email-message-toolbar {
@@ -1938,5 +2023,150 @@ kbd {
   .topbar-admin {
     display: grid;
     justify-content: stretch;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    padding: 12px;
+  }
+
+  .flow-block {
+    margin: 0 -12px 12px;
+    padding: 14px 12px;
+  }
+
+  .sidebar-nav {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .sidebar-nav-item {
+    min-width: 0;
+  }
+
+  .sidebar-count {
+    min-width: 24px;
+    padding: 2px 5px;
+  }
+
+  .workspace-shell {
+    padding: 0 8px 12px;
+  }
+
+  .topbar {
+    margin: 0 -8px;
+    padding: 10px 8px;
+  }
+
+  .breadcrumb,
+  .topbar-admin {
+    gap: 8px;
+  }
+
+  .breadcrumb {
+    flex-wrap: wrap;
+  }
+
+  .icon-button,
+  .env-select,
+  .logout-button {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .quick-actions-panel,
+  .panel {
+    padding: 10px;
+  }
+
+  .action-card {
+    grid-template-columns: 28px minmax(0, 1fr);
+    min-height: 48px;
+    padding: 8px 10px;
+  }
+
+  .action-card kbd {
+    display: none;
+  }
+
+  .panel-list {
+    grid-template-columns: 1fr;
+  }
+
+  .panel-list .panel-header,
+  .panel-list .list-controls,
+  .panel-list .account-list,
+  .panel-list .view-all-button,
+  .accounts-settings {
+    grid-column: 1;
+  }
+
+  .accounts-settings {
+    grid-row: auto;
+    padding-top: 12px;
+    border-top: 1px solid #edf0f4;
+  }
+
+  .control-row,
+  .account-id-field > div {
+    grid-template-columns: 1fr;
+  }
+
+  .registration-form-grid .inspector-row {
+    min-height: 54px;
+    padding: 7px 8px;
+  }
+
+  .registration-form-grid .inspector-actions {
+    align-self: end;
+  }
+
+  .identity-pack-header,
+  .email-message-toolbar {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .identity-pack-grid,
+  .personal-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .info-tile,
+  .info-tile:nth-child(3n),
+  .info-tile:last-child {
+    border-right: 0;
+    border-bottom: 1px solid #edf0f4;
+  }
+
+  .info-tile:last-child {
+    border-bottom: 0;
+  }
+
+  .email-message-actions {
+    width: 100%;
+  }
+
+  .email-message-actions .micro-button:not(.icon-copy-button) {
+    flex: 1;
+  }
+
+  .email-message-frame {
+    min-height: 300px;
+  }
+
+  .link-row,
+  .code-row {
+    grid-template-columns: 12px minmax(0, 1fr) 30px;
+    gap: 8px;
+  }
+
+  .link-row time,
+  .code-row time {
+    grid-column: 2 / -1;
+  }
+
+  .code-row strong {
+    font-size: 16px;
   }
 }
