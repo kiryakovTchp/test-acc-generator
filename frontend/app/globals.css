@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -28,7 +28,7 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Inter', sans-serif;
+  font-family: 'IBM Plex Sans', sans-serif;
 }
 
 body {
@@ -1160,7 +1160,7 @@ body {
 
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(6, minmax(132px, 1fr));
+  grid-template-columns: repeat(5, minmax(148px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
