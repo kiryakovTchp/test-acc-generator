@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { listGeoRules, generateAccount, getHistoryDetail } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 
 const provider: EmailProvider = {
@@ -14,9 +14,24 @@ const provider: EmailProvider = {
 
 test('geo rules include required starter geos', () => {
   const labels = listGeoRules().map((item) => item.label);
-  for (const label of ['Zambia', 'Uganda', 'Nigeria', 'Guinea', 'Uzbekistan', 'Kazakhstan', 'Generic International']) {
+  for (const label of ['Zambia', 'Uganda', 'Nigeria', 'Guinea', 'Uzbekistan', 'Kazakhstan', 'South Sudan', 'Generic International']) {
     assert.ok(labels.includes(label));
   }
+});
+
+test('south sudan generation keeps country region and city as separate dependent fields', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'south_sudan', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(item?.country, 'South Sudan');
+  assert.ok(['Central Equatoria', 'Western Bahr el Ghazal', 'Upper Nile'].includes(item?.region ?? ''));
+  assert.ok(['Juba', 'Terekeka', 'Wau', 'Malakal'].includes(item?.city ?? ''));
+  assert.equal(item?.placeOfBirth, item?.city);
+});
+
+test('site account id can be manually set after registration', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const updated = updateSiteAccountId(item!.id, 1, ' 1695604249 ');
+  assert.equal(updated?.siteAccountId, '1695604249');
+  assert.match(updated?.fullProfileText ?? '', /Account ID: 1695604249/);
 });
 
 test('missing rules yield missing_rules quality', async () => {

@@ -1353,7 +1353,53 @@ body {
 
 .detail-stack {
   display: grid;
-  gap: 16px;
+  gap: 14px;
+}
+
+.registration-form-grid {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.82fr) minmax(0, 1.68fr);
+  gap: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
+}
+
+.form-section {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.form-section h3 {
+  margin: 0 0 2px;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.personal-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 14px;
+  row-gap: 8px;
+}
+
+.account-id-field {
+  display: grid;
+  gap: 5px;
+}
+
+.account-id-field > span {
+  color: #697386;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.account-id-field > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px;
 }
 
 .details-table {
@@ -1368,6 +1414,16 @@ body {
   grid-template-columns: 110px minmax(0, 1fr) auto;
   min-height: 35px;
   border-bottom: 0;
+}
+
+.registration-form-grid .inspector-row {
+  grid-template-columns: 120px minmax(0, 1fr) auto;
+  min-height: 32px;
+  border-bottom: 0;
+}
+
+.form-section:not(.form-section-wide) .inspector-row {
+  grid-template-columns: 112px minmax(0, 1fr) auto;
 }
 
 .inspector-label {
@@ -1407,7 +1463,7 @@ body {
 
 .identity-pack-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   border: 1px solid #edf0f4;
 }
 
@@ -1658,6 +1714,8 @@ kbd {
 
   .workspace-grid,
   .details-table,
+  .registration-form-grid,
+  .personal-info-grid,
   .identity-pack-grid {
     grid-template-columns: 1fr;
     grid-template-areas:

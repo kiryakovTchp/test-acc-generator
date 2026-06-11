@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox } from './services/accountService.js';
+import { deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db from './db.js';
 
@@ -65,6 +65,12 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to refresh inbox' });
   }
+});
+
+app.patch('/history/:id/account-id', auth, (req, res) => {
+  const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''));
+  if (!item) return res.status(404).json({ error: 'Not found' });
+  res.json(item);
 });
 
 app.delete('/history/:id', auth, (req, res) => {

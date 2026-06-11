@@ -14,6 +14,7 @@ interface Detail {
   email: string;
   emailPassword: string;
   username: string;
+  siteAccountId: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -128,7 +129,7 @@ export default function AppShell() {
   const [password, setPassword] = useState('');
   const [geoItems, setGeoItems] = useState<GeoItem[]>([]);
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [selectedGeo, setSelectedGeo] = useState('zambia');
+  const [selectedGeo, setSelectedGeo] = useState('south_sudan');
   const [documentType, setDocumentType] = useState('passport');
   const [bulkCount, setBulkCount] = useState(5);
   const [persona, setPersona] = useState<PersonaKey>('standard_user');
@@ -148,6 +149,7 @@ export default function AppShell() {
   const [accountSearch, setAccountSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
   const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
+  const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -194,7 +196,7 @@ export default function AppShell() {
     const term = accountSearch.trim().toLowerCase();
     const next = history.filter((item) => {
       const status = mapHistoryStatus(item);
-      const matchesSearch = !term || [item.username, item.email, item.geoLabel].some((value) => value.toLowerCase().includes(term));
+      const matchesSearch = !term || [item.username, item.email, item.geoLabel, item.siteAccountId].some((value) => value.toLowerCase().includes(term));
       const matchesStatus = statusFilter === 'all' || status === statusFilter;
       return matchesSearch && matchesStatus;
     });
@@ -215,6 +217,10 @@ export default function AppShell() {
   const verificationReceivedAt = detail?.inbox.receivedAt;
   const hasVerificationLinks = verificationLinks.length > 0;
   const hasVerificationCodes = verificationCodes.length > 0;
+
+  useEffect(() => {
+    setSiteAccountIdDraft(detail?.siteAccountId ?? '');
+  }, [detail?.id, detail?.siteAccountId]);
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -336,6 +342,21 @@ export default function AppShell() {
     }
   }
 
+  async function saveSiteAccountId() {
+    if (!detail || siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')) return;
+    setError('');
+    try {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/account-id`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ siteAccountId: siteAccountIdDraft }),
+      });
+      setDetail(updated);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save account ID');
+    }
+  }
+
   async function remove(id: number) {
     await apiFetch<void>(`/history/${id}`, token, { method: 'DELETE' });
     if (detail?.id === id) setDetail(null);
@@ -351,12 +372,15 @@ export default function AppShell() {
   function copyIdentityPack() {
     if (!detail) return;
     const identityPack = [
+      `Account ID: ${detail.siteAccountId || ''}`,
       `Username: ${detail.username}`,
       `Email: ${detail.email}`,
       `Mailbox Password: ${detail.emailPassword}`,
-      `Full Name: ${detail.firstName} ${detail.lastName}`,
+      `First Name: ${detail.firstName}`,
+      `Last Name: ${detail.lastName}`,
       `Date of Birth: ${detail.dateOfBirth}`,
       `Phone: ${detail.phone}`,
+      `Sex: ${detail.gender}`,
       `Address: ${detail.addressLine}`,
       `City: ${detail.city}`,
       `Region: ${detail.region}`,
@@ -518,7 +542,7 @@ export default function AppShell() {
                 return (
                   <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
                     <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
-                    <strong>{item.username}</strong>
+                    <strong>{item.siteAccountId || item.username}</strong>
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
@@ -543,17 +567,51 @@ export default function AppShell() {
               </div>
             ) : (
               <div className="detail-stack">
-                <section className="details-table">
-                  <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
-                  <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
-                  <InspectorRow label="Full name" value={`${detail.firstName} ${detail.lastName}`} onCopy={() => copyValue(`name:${detail.id}`, `${detail.firstName} ${detail.lastName}`)} copied={copiedField === `name:${detail.id}`} />
-                  <InspectorRow label="Form persona" value={PERSONAS.find((item) => item.value === detail.persona)?.label ?? detail.persona} onCopy={() => copyValue(`persona:${detail.id}`, detail.persona)} copied={copiedField === `persona:${detail.id}`} />
-                  <InspectorRow label="Geo" value={detail.geoLabel} onCopy={() => copyValue(`geo:${detail.id}`, detail.geoLabel)} copied={copiedField === `geo:${detail.id}`} />
-                  <InspectorRow label="Status" value={statusLabel(selectedStatus)} onCopy={() => copyValue(`status:${detail.id}`, statusLabel(selectedStatus))} copied={copiedField === `status:${detail.id}`} />
-                  <InspectorRow label="Created" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                  <InspectorRow label="Mailbox" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
-                  <InspectorRow label="Verification codes" value={String(detail.inbox.codes.length)} onCopy={() => copyValue(`codes-count:${detail.id}`, String(detail.inbox.codes.length))} copied={copiedField === `codes-count:${detail.id}`} />
-                  <InspectorRow label="Last activity" value={detail.inbox.receivedAt ? formatDate(detail.inbox.receivedAt) : 'Pending'} onCopy={() => copyValue(`activity:${detail.id}`, detail.inbox.receivedAt || 'Pending')} copied={copiedField === `activity:${detail.id}`} />
+                <section className="registration-form-grid">
+                  <div className="form-section">
+                    <h3>Account</h3>
+                    <label className="account-id-field">
+                      <span>Account ID</span>
+                      <div>
+                        <input
+                          className="input-field compact"
+                          value={siteAccountIdDraft}
+                          onBlur={saveSiteAccountId}
+                          onChange={(e) => setSiteAccountIdDraft(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.currentTarget.blur();
+                            }
+                          }}
+                          placeholder="Paste site account ID"
+                        />
+                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
+                      </div>
+                    </label>
+                    <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
+                    <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
+                    <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
+                    <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                  </div>
+
+                  <div className="form-section form-section-wide">
+                    <h3>Personal info</h3>
+                    <div className="personal-info-grid">
+                      <InspectorRow label="Last name" value={detail.lastName} onCopy={() => copyValue(`last-name:${detail.id}`, detail.lastName)} copied={copiedField === `last-name:${detail.id}`} />
+                      <InspectorRow label="Document issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue-date:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue-date:${detail.id}`} />
+                      <InspectorRow label="First name" value={detail.firstName} onCopy={() => copyValue(`first-name:${detail.id}`, detail.firstName)} copied={copiedField === `first-name:${detail.id}`} />
+                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
+                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
+                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
+                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
+                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
+                      <InspectorRow label="Type of document" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
+                      <InspectorRow label="Sex" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
+                      <InspectorRow label="Document number" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
+                      <InspectorRow label="Address" value={`${detail.addressLine}, ${detail.postalCode}`} onCopy={() => copyValue(`address:${detail.id}`, `${detail.addressLine}, ${detail.postalCode}`)} copied={copiedField === `address:${detail.id}`} />
+                    </div>
+                  </div>
                 </section>
 
                 <section className="identity-pack">
@@ -562,8 +620,9 @@ export default function AppShell() {
                     <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
                   </div>
                   <div className="identity-pack-grid">
-                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="View" onClick={() => copyValue(`doc:${detail.id}`, detail.documentValue)} />
-                    <InfoTile label="Address" value={`${detail.city}, ${detail.country}`} action="View" onClick={() => copyValue(`addr:${detail.id}`, detail.addressLine)} />
+                    <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+                    <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
                     <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, detail.phone)} />
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>

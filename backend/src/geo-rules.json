@@ -73,6 +73,20 @@
     }
   },
   {
+    "key": "south_sudan",
+    "label": "South Sudan",
+    "documents": {
+      "national_id": {
+        "templates": ["SSNID-{RAND9}"],
+        "quality": "synthetic_pattern"
+      },
+      "passport": {
+        "templates": ["SS-P-{RAND7}"],
+        "quality": "synthetic_pattern"
+      }
+    }
+  },
+  {
     "key": "generic_intl",
     "label": "Generic International",
     "documents": {

@@ -113,10 +113,21 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
   return getHistoryDetail(id, userId, includeDebug);
 }
 
+export function updateSiteAccountId(id: number, userId: number, siteAccountId: string) {
+  const trimmed = siteAccountId.trim().slice(0, 80);
+  const result = db.prepare(`
+    UPDATE account_history
+    SET site_account_id = ?
+    WHERE id = ? AND user_id = ?
+  `).run(trimmed, id, userId);
+  if (result.changes === 0) return null;
+  return getHistoryDetail(id, userId);
+}
+
 export function listHistory(userId: number) {
   cleanupOldHistory();
   return db.prepare(`
-    SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username,
+    SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username, site_account_id as siteAccountId,
            first_name as firstName, last_name as lastName, phone, age, gender,
            date_of_birth as dateOfBirth, country, region, city, place_of_birth as placeOfBirth,
            address_line as addressLine, postal_code as postalCode,
@@ -140,6 +151,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     email: row.email,
     emailPassword: row.email_password,
     username: row.username,
+    siteAccountId: row.site_account_id,
     firstName: row.first_name,
     lastName: row.last_name,
     phone: row.phone,
@@ -159,6 +171,8 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     documentIssueDate: row.document_issue_date,
     documentQuality: row.document_quality,
     fullProfileText: [
+      `Account ID: ${row.site_account_id || ''}`,
+      `Username: ${row.username}`,
       `Email: ${row.email}`,
       `Mailbox Password: ${row.email_password}`,
       `First Name: ${row.first_name}`,

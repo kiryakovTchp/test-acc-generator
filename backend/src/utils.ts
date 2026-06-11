@@ -62,6 +62,14 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Shymkent', cities: ['Shymkent'], postalPrefixes: ['160'], streetPrefixes: ['Tauke Khan', 'Baidibek Bi Avenue'] },
     ],
   },
+  south_sudan: {
+    country: 'South Sudan',
+    regions: [
+      { name: 'Central Equatoria', cities: ['Juba', 'Terekeka'], postalPrefixes: ['211'], streetPrefixes: ['Nimule Road', 'Airport Road'] },
+      { name: 'Western Bahr el Ghazal', cities: ['Wau'], postalPrefixes: ['212'], streetPrefixes: ['Suk Jou Road', 'Cathedral Road'] },
+      { name: 'Upper Nile', cities: ['Malakal'], postalPrefixes: ['213'], streetPrefixes: ['Nile Street', 'Sobat Road'] },
+    ],
+  },
   generic_intl: {
     country: 'United Kingdom',
     regions: [
@@ -198,6 +206,7 @@ export function randomPhone(geoKey: string) {
     guinea: '+22462',
     uzbekistan: '+9989',
     kazakhstan: '+770',
+    south_sudan: '+2119',
     generic_intl: '+447',
   };
 
