@@ -1965,28 +1965,25 @@ kbd {
 
   .panel-list {
     display: grid;
-    grid-template-columns: minmax(220px, 1fr) minmax(240px, 0.9fr);
+    grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
   }
 
   .panel-list .panel-header,
   .panel-list .list-controls,
+  .accounts-settings,
   .panel-list .account-list,
   .panel-list .view-all-button {
     grid-column: 1;
   }
 
   .accounts-settings {
-    grid-column: 2;
-    grid-row: 1 / span 4;
-    margin-top: 0;
-    padding-top: 0;
-    border-top: 0;
+    grid-row: auto;
   }
 
   .account-list {
-    max-height: 280px;
+    max-height: 320px;
   }
 
   .details-table,
