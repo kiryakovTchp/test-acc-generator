@@ -526,21 +526,6 @@ export default function AppShell() {
               </div>
             ) : null}
 
-            <div className="account-list">
-              {filteredHistory.length ? filteredHistory.map((item) => {
-                const rowStatus = mapHistoryStatus(item);
-                const selected = detail?.id === item.id;
-                return (
-                  <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
-                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
-                    <strong>{item.siteAccountId || item.username}</strong>
-                    <time>{formatCompactDate(item.createdAt)}</time>
-                  </button>
-                );
-              }) : <div className="empty-state">No accounts match the current filters.</div>}
-            </div>
-            <button type="button" className="view-all-button">View all accounts</button>
-
             <section className="accounts-settings bulk-card">
               <h3>Generation settings</h3>
               <p>Shared settings used by Create Account and Generate Bulk.</p>
@@ -573,6 +558,21 @@ export default function AppShell() {
                 </Field>
               </div>
             </section>
+
+            <div className="account-list">
+              {filteredHistory.length ? filteredHistory.map((item) => {
+                const rowStatus = mapHistoryStatus(item);
+                const selected = detail?.id === item.id;
+                return (
+                  <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
+                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
+                    <strong>{item.siteAccountId || item.username}</strong>
+                    <time>{formatCompactDate(item.createdAt)}</time>
+                  </button>
+                );
+              }) : <div className="empty-state">No accounts match the current filters.</div>}
+            </div>
+            <button type="button" className="view-all-button">View all accounts</button>
           </section>
 
           <section className="panel panel-detail">
