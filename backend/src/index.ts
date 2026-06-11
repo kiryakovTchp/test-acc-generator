@@ -68,7 +68,8 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
 });
 
 app.patch('/history/:id/account-id', auth, (req, res) => {
-  const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''));
+  const includeDebug = req.query.debug === '1';
+  const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''), includeDebug);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
 });

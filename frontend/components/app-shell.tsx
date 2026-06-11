@@ -275,7 +275,7 @@ export default function AppShell() {
     setError('');
     setIsGenerating(true);
     try {
-      const res = await apiFetch<Detail>('/accounts/generate', token, {
+      const res = await apiFetch<Detail>('/accounts/generate?debug=1', token, {
         method: 'POST',
         body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
       });
@@ -298,7 +298,7 @@ export default function AppShell() {
         body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona, count: bulkCount }),
       });
       const firstItem = res.items[0] ?? null;
-      setDetail(firstItem);
+      setDetail(firstItem ? await apiFetch<Detail>(`/history/${firstItem.id}?debug=1`, token) : null);
       setActiveNav('accounts');
       await refresh();
     } catch (err) {
@@ -309,7 +309,7 @@ export default function AppShell() {
   }
 
   async function loadDetail(id: number) {
-    setDetail(await apiFetch<Detail>(`/history/${id}`, token));
+    setDetail(await apiFetch<Detail>(`/history/${id}?debug=1`, token));
     setActiveNav('accounts');
   }
 
@@ -319,7 +319,7 @@ export default function AppShell() {
     setInboxStatusLabel(waitMs > 0 ? 'Waiting for email' : 'Checking inbox');
     setError('');
     try {
-      const updated = await apiFetch<Detail>(`/history/${detail.id}/refresh-inbox`, token, {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/refresh-inbox?debug=1`, token, {
         method: 'POST',
         body: JSON.stringify({ waitMs }),
       });
@@ -338,7 +338,7 @@ export default function AppShell() {
     if (!detail || siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')) return;
     setError('');
     try {
-      const updated = await apiFetch<Detail>(`/history/${detail.id}/account-id`, token, {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/account-id?debug=1`, token, {
         method: 'PATCH',
         body: JSON.stringify({ siteAccountId: siteAccountIdDraft }),
       });
@@ -578,10 +578,6 @@ export default function AppShell() {
           <section className="panel panel-detail">
             <div className="panel-header">
               <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
-              <div className="panel-actions">
-                <button className="micro-button" onClick={openActivationLink} disabled={!activationLink}>Activate account</button>
-                <button className="micro-button">...</button>
-              </div>
             </div>
 
             {!detail ? (
@@ -651,6 +647,14 @@ export default function AppShell() {
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
+
+                <EmailMessage
+                  detail={detail}
+                  activationLink={activationLink}
+                  onActivate={openActivationLink}
+                  onCopyEmail={() => copyValue(`email-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
+                  copied={copiedField === `email-message:${detail.id}`}
+                />
               </div>
             )}
           </section>
@@ -731,6 +735,95 @@ function InfoTile({ label, value, action, onClick }: { label: string; value: str
       <span className="sr-only">{action}</span>
     </button>
   );
+}
+
+function EmailMessage({
+  detail,
+  activationLink,
+  onActivate,
+  onCopyEmail,
+  copied,
+}: {
+  detail: Detail;
+  activationLink: string;
+  onActivate: () => void;
+  onCopyEmail: () => void;
+  copied: boolean;
+}) {
+  const hasEmail = detail.inbox.status === 'email_received' && Boolean(detail.inbox.subject || detail.inbox.plainText || detail.inbox.rawHtml);
+  const emailHtml = detail.inbox.rawHtml ? buildEmailSrcDoc(detail.inbox.rawHtml) : '';
+
+  return (
+    <section className="email-message-card">
+      <div className="email-message-toolbar">
+        <div>
+          <h3>Mailbox message</h3>
+          <p>{hasEmail ? 'Original inbox message' : 'No message captured yet'}</p>
+        </div>
+        <div className="email-message-actions">
+          <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Activate account</button>
+          <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
+            {copied ? <CheckIcon /> : <CopyIcon />}
+          </button>
+        </div>
+      </div>
+
+      {hasEmail ? (
+        <article className="email-message">
+          <div className="email-message-meta">
+            <div>
+              <span>From</span>
+              <strong>{detail.inbox.sender || 'Unknown sender'}</strong>
+            </div>
+            <div>
+              <span>Subject</span>
+              <strong>{detail.inbox.subject || 'No subject'}</strong>
+            </div>
+            <div>
+              <span>Received</span>
+              <strong>{formatDate(detail.inbox.receivedAt)}</strong>
+            </div>
+          </div>
+
+          {emailHtml ? (
+            <iframe
+              className="email-message-frame"
+              title={`Email message for ${detail.email}`}
+              sandbox=""
+              referrerPolicy="no-referrer"
+              srcDoc={emailHtml}
+            />
+          ) : (
+            <pre className="email-message-text">{detail.inbox.plainText}</pre>
+          )}
+        </article>
+      ) : (
+        <div className="email-empty-state">
+          <strong>{statusLabel(mapDetailStatus(detail))}</strong>
+          <span>Refresh inbox after the registration email is sent.</span>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function buildEmailSrcDoc(rawHtml: string) {
+  return `<!doctype html>
+<html>
+<head>
+  <base target="_blank">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    html, body { margin: 0; padding: 0; background: #fff; color: #111827; }
+    body { padding: 16px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.5; }
+    img { max-width: 100%; height: auto; }
+    table { max-width: 100%; }
+    a { color: #0f766e; }
+  </style>
+</head>
+<body>${rawHtml}</body>
+</html>`;
 }
 
 function InspectorGroup({ title, children }: { title: string; children: React.ReactNode }) {
