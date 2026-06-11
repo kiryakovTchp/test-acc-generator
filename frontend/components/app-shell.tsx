@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
-type NavKey = 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'activity' | 'settings';
+type NavKey = 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
 
 interface Detail {
@@ -61,7 +61,6 @@ const NAV_ITEMS: Array<{ key: NavKey; label: string; short: string }> = [
   { key: 'mailboxes', label: 'Mailboxes', short: 'MB' },
   { key: 'form_data', label: 'Form Data', short: 'FD' },
   { key: 'codes', label: 'Verification Codes', short: 'VC' },
-  { key: 'activity', label: 'Activity Log', short: 'AL' },
   { key: 'settings', label: 'Settings', short: 'ST' },
 ];
 
@@ -137,8 +136,6 @@ export default function AppShell() {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showRawProfile, setShowRawProfile] = useState(false);
-  const [showRawHtml, setShowRawHtml] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
   const [expandedLink, setExpandedLink] = useState('');
   const [copiedField, setCopiedField] = useState('');
@@ -280,8 +277,6 @@ export default function AppShell() {
       });
       setDetail(res);
       setActiveNav('accounts');
-      setShowRawProfile(false);
-      setShowRawHtml(false);
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate account');
@@ -301,8 +296,6 @@ export default function AppShell() {
       const firstItem = res.items[0] ?? null;
       setDetail(firstItem);
       setActiveNav('accounts');
-      setShowRawProfile(false);
-      setShowRawHtml(false);
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to generate accounts');
@@ -314,11 +307,6 @@ export default function AppShell() {
   async function loadDetail(id: number) {
     setDetail(await apiFetch<Detail>(`/history/${id}`, token));
     setActiveNav('accounts');
-  }
-
-  async function loadDebugDetail(id: number) {
-    const next = await apiFetch<Detail>(`/history/${id}?debug=1`, token);
-    setDetail(next);
   }
 
   async function refreshInboxForDetail(waitMs = 0) {
@@ -355,12 +343,6 @@ export default function AppShell() {
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to save account ID');
     }
-  }
-
-  async function remove(id: number) {
-    await apiFetch<void>(`/history/${id}`, token, { method: 'DELETE' });
-    if (detail?.id === id) setDetail(null);
-    await refresh();
   }
 
   async function copyValue(key: string, value: string) {
@@ -632,27 +614,6 @@ export default function AppShell() {
           </section>
 
           <aside className="panel panel-side">
-            <div className="panel-header">
-              <h2>Recent activity</h2>
-              <button className="micro-button" onClick={() => setActiveNav('activity')}>View all</button>
-            </div>
-
-            <div className="timeline">
-              {detail ? [
-                { label: 'Verification code captured', value: detail.inbox.codes[0] ? formatCompactDate(detail.inbox.receivedAt) : 'Pending', tone: detail.inbox.codes.length ? 'success' : 'warning' },
-                { label: 'Inbox refreshed', value: inboxStatusLabel || statusLabel(selectedStatus), tone: selectedStatus === 'email_received' ? 'success' : 'active' },
-                { label: 'Account generated', value: formatCompactDate(detail.createdAt), tone: 'success' },
-                { label: 'Mailbox created', value: formatCompactDate(detail.createdAt), tone: 'success' },
-                { label: 'Form data ready', value: detail.geoLabel, tone: 'success' },
-              ].map((event) => (
-                <div key={event.label} className="timeline-item">
-                  <span className={cn('status-dot', `tone-${event.tone}`)} />
-                  <strong>{event.label}</strong>
-                  <time>{event.value}</time>
-                </div>
-              )) : <div className="empty-state compact">Select an account to see live activity.</div>}
-            </div>
-
             <section className="side-card bulk-card">
               <h3>Generation settings</h3>
               <p>Shared settings used by Create Account and Generate Bulk.</p>
@@ -685,32 +646,6 @@ export default function AppShell() {
                 </Field>
               </div>
             </section>
-
-            {detail ? (
-              <section className="side-card mailbox-card">
-                <div className="detail-card-header">
-                  <h3>Mailbox</h3>
-                  <button className="micro-button" onClick={() => refreshInboxForDetail(60000)} disabled={isRefreshingInbox}>{isRefreshingInbox ? 'Waiting...' : 'Wait 60s'}</button>
-                </div>
-                <div className="mailbox-meta">
-                  <span>{detail.inbox.sender || 'No sender'}</span>
-                  <span>{detail.inbox.subject || 'No subject'}</span>
-                </div>
-                <div className="collapsible-area">
-                  <button className="ghost-button" onClick={() => setShowRawProfile((next) => !next)}>{showRawProfile ? 'Hide raw payload' : 'Raw payload'}</button>
-                  <button className="ghost-button" onClick={async () => {
-                    const next = !showRawHtml;
-                    setShowRawHtml(next);
-                    if (next && detail && !detail.inbox.rawHtml) {
-                      await loadDebugDetail(detail.id);
-                    }
-                  }}>{showRawHtml ? 'Hide raw HTML' : 'Raw HTML'}</button>
-                </div>
-                {showRawProfile ? <pre className="debug-block">{detail.fullProfileText}</pre> : null}
-                {showRawHtml ? <pre className="debug-block">{detail.inbox.rawHtml ?? 'No HTML loaded.'}</pre> : null}
-                <button className="secondary-button w-full" onClick={() => remove(detail.id)}>Delete selected account</button>
-              </section>
-            ) : null}
           </aside>
 
           {hasVerificationLinks ? (
@@ -785,7 +720,8 @@ function InfoTile({ label, value, action, onClick }: { label: string; value: str
     <button type="button" className="info-tile" onClick={onClick}>
       <span>{label}</span>
       <strong>{value}</strong>
-      <small>{action}</small>
+      <small aria-hidden="true"><CopyIcon /></small>
+      <span className="sr-only">{action}</span>
     </button>
   );
 }
@@ -827,8 +763,27 @@ function InspectorRow({
       <div className="inspector-actions">
         {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Reveal' : 'Hide'}</button> : null}
         {action}
-        <button className="micro-button" onClick={onCopy}>{copied ? 'Copied' : 'Copy'}</button>
+        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`Copy ${label}`} title={copied ? 'Copied' : 'Copy'}>
+          {copied ? <CheckIcon /> : <CopyIcon />}
+        </button>
       </div>
     </div>
+  );
+}
+
+function CopyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M8 8.75A2.75 2.75 0 0 1 10.75 6h6.5A2.75 2.75 0 0 1 20 8.75v8.5A2.75 2.75 0 0 1 17.25 20h-6.5A2.75 2.75 0 0 1 8 17.25v-8.5Z" />
+      <path d="M4 13.25v-6.5A2.75 2.75 0 0 1 6.75 4h7.5" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="m5 12.5 4.25 4.25L19 7" />
+    </svg>
   );
 }
