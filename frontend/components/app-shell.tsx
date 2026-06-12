@@ -61,6 +61,8 @@ interface TempMailbox {
   password: string;
 }
 
+type MailboxInbox = Detail['inbox'];
+
 const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
   { value: 'standard_user', label: 'Standard User · 25–40' },
   { value: 'young_user', label: 'Young User · 18–24' },
@@ -172,6 +174,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [accountGeoFilter, setAccountGeoFilter] = useState('all');
   const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
   const [tempMailbox, setTempMailbox] = useState<TempMailbox | null>(null);
+  const [tempMailboxInbox, setTempMailboxInbox] = useState<MailboxInbox | null>(null);
+  const [isRefreshingTempMailbox, setIsRefreshingTempMailbox] = useState(false);
   const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
 
@@ -270,6 +274,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     ?? detail?.inbox.links.find((link) => link.isPrimary)?.url
     ?? detail?.inbox.links[0]?.url
     ?? '';
+  const showQuickActions = activeNav === 'main' || activeNav === 'accounts';
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
@@ -389,10 +394,28 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     try {
       const mailbox = await apiFetch<TempMailbox>('/mailboxes/create', token, { method: 'POST' });
       setTempMailbox(mailbox);
+      setTempMailboxInbox(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create mailbox');
     } finally {
       setIsCreatingMailbox(false);
+    }
+  }
+
+  async function refreshTemporaryMailbox(waitMs = 0) {
+    if (!tempMailbox) return;
+    setError('');
+    setIsRefreshingTempMailbox(true);
+    try {
+      const inbox = await apiFetch<MailboxInbox>('/mailboxes/inbox', token, {
+        method: 'POST',
+        body: JSON.stringify({ ...tempMailbox, waitMs }),
+      });
+      setTempMailboxInbox(inbox);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch mailbox inbox');
+    } finally {
+      setIsRefreshingTempMailbox(false);
     }
   }
 
@@ -569,6 +592,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
         {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} accounts and mailbox snapshots.</div> : null}
 
+        {showQuickActions ? (
         <section className="quick-actions-panel">
           <div className="quick-actions-title">Quick actions</div>
           <div className="quick-actions-grid" aria-label="Primary account actions">
@@ -597,6 +621,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             </button>
           </div>
         </section>
+        ) : null}
 
         <div className={cn('workspace-grid', activeNav === 'main' ? undefined : activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
           {activeNav === 'main' ? (
@@ -976,8 +1001,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               bulkCount={bulkCount}
               setBulkCount={setBulkCount}
               tempMailbox={tempMailbox}
+              tempMailboxInbox={tempMailboxInbox}
               isCreatingMailbox={isCreatingMailbox}
+              isRefreshingTempMailbox={isRefreshingTempMailbox}
               onCreateMailbox={createTemporaryMailbox}
+              onRefreshTempMailbox={refreshTemporaryMailbox}
+              onRefreshInbox={() => refreshInboxForDetail(0)}
+              isRefreshingInbox={isRefreshingInbox}
               onLoadDetail={loadDetail}
               onCopy={copyValue}
               copiedField={copiedField}
@@ -1012,8 +1042,13 @@ function UtilityView({
   bulkCount,
   setBulkCount,
   tempMailbox,
+  tempMailboxInbox,
   isCreatingMailbox,
+  isRefreshingTempMailbox,
   onCreateMailbox,
+  onRefreshTempMailbox,
+  onRefreshInbox,
+  isRefreshingInbox,
   onLoadDetail,
   onCopy,
   copiedField,
@@ -1035,8 +1070,13 @@ function UtilityView({
   bulkCount: number;
   setBulkCount: (value: number) => void;
   tempMailbox: TempMailbox | null;
+  tempMailboxInbox: MailboxInbox | null;
   isCreatingMailbox: boolean;
+  isRefreshingTempMailbox: boolean;
   onCreateMailbox: () => void;
+  onRefreshTempMailbox: (waitMs?: number) => void;
+  onRefreshInbox: () => void;
+  isRefreshingInbox: boolean;
   onLoadDetail: (id: number) => void;
   onCopy: (key: string, value: string) => void;
   copiedField: string;
@@ -1047,48 +1087,95 @@ function UtilityView({
         <div className="utility-header">
           <div>
             <h2>Mailboxes</h2>
-            <p>Create a standalone temporary mailbox, or inspect mailboxes tied to generated accounts.</p>
+            <p>Open a mailbox and inspect the current inbox for registration emails.</p>
           </div>
           <button type="button" className="primary-button" onClick={onCreateMailbox} disabled={isCreatingMailbox}>
             {isCreatingMailbox ? 'Creating mailbox' : 'Create temporary mailbox'}
           </button>
         </div>
 
-        {tempMailbox ? (
-          <div className="mailbox-current">
-            <InfoTile label="Temporary email" value={tempMailbox.address} action="Copy" onClick={() => onCopy('temp-mailbox-address', tempMailbox.address)} />
-            <InfoTile label="Mailbox password" value={tempMailbox.password} action="Copy" onClick={() => onCopy('temp-mailbox-password', tempMailbox.password)} />
-          </div>
-        ) : (
-          <div className="empty-state compact">No standalone mailbox created in this session yet.</div>
-        )}
+        <div className="mailboxes-layout">
+          <section className="mailbox-reader">
+            <div className="mailbox-reader-header">
+              <div>
+                <h3>{detail ? detail.email : tempMailbox ? tempMailbox.address : 'Inbox'}</h3>
+                <p>{detail ? `Account: ${detail.siteAccountId || detail.username}` : tempMailbox ? 'Standalone temporary mailbox' : 'Open a generated mailbox or create a temporary one.'}</p>
+              </div>
+              <div className="mailbox-reader-actions">
+                {detail ? (
+                  <button type="button" className="micro-button" onClick={onRefreshInbox} disabled={isRefreshingInbox}>
+                    {isRefreshingInbox ? 'Refreshing' : 'Refresh inbox'}
+                  </button>
+                ) : tempMailbox ? (
+                  <button type="button" className="micro-button" onClick={() => onRefreshTempMailbox(0)} disabled={isRefreshingTempMailbox}>
+                    {isRefreshingTempMailbox ? 'Refreshing' : 'Refresh inbox'}
+                  </button>
+                ) : null}
+              </div>
+            </div>
 
-        <div className="account-table-wrap">
-          <table className="account-table">
-            <thead>
-              <tr>
-                <th>Email</th>
-                <th>Account</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th />
-              </tr>
-            </thead>
-            <tbody>
-              {history.map((item) => {
-                const status = mapHistoryStatus(item);
-                return (
-                  <tr key={item.id}>
-                    <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
-                    <td>{item.siteAccountId || item.username}</td>
-                    <td><span className={cn('status-pill', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
-                    <td>{formatCompactDate(item.createdAt)}</td>
-                    <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+            {detail ? (
+              <EmailMessage
+                detail={detail}
+                activationLink={detail.inbox.primaryVerificationLink?.url ?? detail.inbox.links[0]?.url ?? ''}
+                onActivate={() => {
+                  const url = detail.inbox.primaryVerificationLink?.url ?? detail.inbox.links[0]?.url;
+                  if (url) window.open(url, '_blank', 'noopener,noreferrer');
+                }}
+                onCopyEmail={() => onCopy(`mailboxes-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
+                copied={copiedField === `mailboxes-message:${detail.id}`}
+              />
+            ) : tempMailbox ? (
+              <>
+                <div className="mailbox-credentials">
+                  <button type="button" onClick={() => onCopy('temp-mailbox-address', tempMailbox.address)}>
+                    <span>Email</span>
+                    <strong>{tempMailbox.address}</strong>
+                    <small>{copiedField === 'temp-mailbox-address' ? 'Copied' : 'Copy'}</small>
+                  </button>
+                  <button type="button" onClick={() => onCopy('temp-mailbox-password', tempMailbox.password)}>
+                    <span>Password</span>
+                    <strong>{tempMailbox.password}</strong>
+                    <small>{copiedField === 'temp-mailbox-password' ? 'Copied' : 'Copy'}</small>
+                  </button>
+                </div>
+                <StandaloneInbox inbox={tempMailboxInbox} address={tempMailbox.address} />
+              </>
+            ) : (
+              <div className="email-empty-state">
+                <strong>No mailbox opened</strong>
+                <span>Select `Open` in the table below to view that mailbox inbox here.</span>
+              </div>
+            )}
+          </section>
+
+          <div className="account-table-wrap mailboxes-table-wrap">
+            <table className="account-table mailboxes-table">
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Account</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody>
+                {history.map((item) => {
+                  const status = mapHistoryStatus(item);
+                  return (
+                    <tr key={item.id} className={cn(detail?.id === item.id && 'is-selected')}>
+                      <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
+                      <td>{item.siteAccountId || item.username}</td>
+                      <td><span className={cn('status-chip', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
+                      <td>{formatCompactDate(item.createdAt)}</td>
+                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     );
@@ -1361,6 +1448,60 @@ function EmailMessage({
         </div>
       )}
     </section>
+  );
+}
+
+function StandaloneInbox({ inbox, address }: { inbox: MailboxInbox | null; address: string }) {
+  const hasEmail = inbox?.status === 'email_received' && Boolean(inbox.subject || inbox.plainText || inbox.rawHtml);
+  const emailHtml = inbox?.rawHtml ? buildEmailSrcDoc(inbox.rawHtml) : '';
+
+  if (!inbox) {
+    return (
+      <div className="email-empty-state">
+        <strong>Inbox ready</strong>
+        <span>Refresh after sending mail to {address}.</span>
+      </div>
+    );
+  }
+
+  if (!hasEmail) {
+    return (
+      <div className="email-empty-state">
+        <strong>{statusLabel(inbox.status === 'email_received' ? 'email_received' : 'waiting')}</strong>
+        <span>No messages in this temporary inbox yet.</span>
+      </div>
+    );
+  }
+
+  return (
+    <article className="email-message">
+      <div className="email-message-meta">
+        <div>
+          <span>From</span>
+          <strong>{inbox.sender || 'Unknown sender'}</strong>
+        </div>
+        <div>
+          <span>Subject</span>
+          <strong>{inbox.subject || 'No subject'}</strong>
+        </div>
+        <div>
+          <span>Received</span>
+          <strong>{formatDate(inbox.receivedAt)}</strong>
+        </div>
+      </div>
+
+      {emailHtml ? (
+        <iframe
+          className="email-message-frame"
+          title={`Email message for ${address}`}
+          sandbox=""
+          referrerPolicy="no-referrer"
+          srcDoc={emailHtml}
+        />
+      ) : (
+        <pre className="email-message-text">{inbox.plainText}</pre>
+      )}
+    </article>
   );
 }
 

@@ -30,7 +30,7 @@ export async function generateAccount(input: {
   const emailAccount = await input.emailProvider.createAccount();
   const profile = generatePersonaProfile(geo.key, input.persona);
   const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password);
-  const hydratedInbox = toInboxPayload(inbox);
+  const hydratedInbox = buildInboxPayload(inbox);
 
   let documentValue = 'Missing Rules';
   let quality: DocumentQuality = 'missing_rules';
@@ -92,7 +92,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
   const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
   if (!row) return null;
   const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
-  const hydratedInbox = toInboxPayload(inbox);
+  const hydratedInbox = buildInboxPayload(inbox);
   db.prepare(`
     UPDATE account_history
     SET inbox_status = ?, inbox_sender = ?, inbox_subject = ?, inbox_received_at = ?,
@@ -223,7 +223,7 @@ function trimHistoryForUser(userId: number) {
   `).run(userId, userId);
 }
 
-function toInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {
+export function buildInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {
   const firstMessage = inbox[0];
   const plainText = inbox.map((msg) => msg.cleanText ?? msg.plainText).filter(Boolean).join('\n\n');
   const rawHtml = inbox.map((msg) => msg.html).find(Boolean) ?? null;
