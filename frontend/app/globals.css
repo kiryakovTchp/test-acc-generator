@@ -1226,6 +1226,7 @@ body {
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   grid-template-areas:
+    'generation detail'
     'list detail'
     'links codes';
   gap: 14px;
@@ -1236,6 +1237,7 @@ body {
 .workspace-grid.single-view {
   grid-template-columns: minmax(0, 1fr);
   grid-template-areas:
+    'generation'
     'list'
     'detail'
     'links'
@@ -1269,6 +1271,10 @@ body {
 .panel-list {
   grid-area: list;
   padding: 16px;
+}
+
+.panel-generation {
+  grid-area: generation;
 }
 
 .panel-detail {
@@ -1460,9 +1466,8 @@ body {
 }
 
 .accounts-settings {
-  margin-bottom: 14px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid #edf0f4;
+  display: grid;
+  gap: 12px;
 }
 
 .accounts-settings .input-field.compact {
@@ -2080,6 +2085,7 @@ kbd {
   .workspace-grid {
     grid-template-columns: 260px minmax(0, 1fr);
     grid-template-areas:
+      'generation detail'
       'list detail'
       'links codes';
   }
@@ -2128,6 +2134,7 @@ kbd {
   .workspace-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
+      'generation'
       'list'
       'detail'
       'links'
@@ -2148,6 +2155,7 @@ kbd {
   .workspace-grid {
     grid-template-columns: 1fr;
     grid-template-areas:
+      'generation'
       'list'
       'detail'
       'links'
@@ -2168,18 +2176,6 @@ kbd {
     grid-template-columns: 1fr;
     gap: 12px;
     align-items: start;
-  }
-
-  .panel-list .panel-header,
-  .panel-list .list-controls,
-  .accounts-settings,
-  .panel-list .account-list,
-  .panel-list .view-all-button {
-    grid-column: 1;
-  }
-
-  .accounts-settings {
-    grid-row: auto;
   }
 
   .account-list {
@@ -2321,15 +2317,8 @@ kbd {
   .panel-list .panel-header,
   .panel-list .list-controls,
   .panel-list .account-list,
-  .panel-list .view-all-button,
-  .accounts-settings {
+  .panel-list .view-all-button {
     grid-column: 1;
-  }
-
-  .accounts-settings {
-    grid-row: auto;
-    padding-bottom: 12px;
-    border-bottom: 1px solid #edf0f4;
   }
 
   .control-row,
