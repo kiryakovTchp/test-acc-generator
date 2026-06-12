@@ -448,7 +448,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   const generationSettingsPanel = (
-    <section className="accounts-settings bulk-card">
+    <section className="panel panel-generation accounts-settings bulk-card">
       <h3>Generation settings</h3>
       <p>Shared settings used by Create Account and Generate Bulk.</p>
       <div className="form-stack">
@@ -601,9 +601,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         <div className={cn('workspace-grid', activeNav === 'main' ? undefined : activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
           {activeNav === 'main' ? (
           <>
-          <section className="panel panel-list">
-            {generationSettingsPanel}
+          {generationSettingsPanel}
 
+          <section className="panel panel-list">
             <div className="panel-header">
               <h2>Accounts <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
@@ -768,9 +768,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </>
           ) : activeNav === 'accounts' ? (
           <>
-          <section className="panel panel-list">
-            {generationSettingsPanel}
+          {generationSettingsPanel}
 
+          <section className="panel panel-list">
             <div className="panel-header">
               <h2>Accounts <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
