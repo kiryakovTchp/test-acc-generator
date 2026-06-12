@@ -73,9 +73,9 @@ const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
 
 const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: string }> = [
   { key: 'main', label: 'Main', short: 'MN', href: '/main' },
-  { key: 'accounts', label: 'Accounts', short: 'AC', href: '/accounts' },
+  { key: 'accounts', label: 'Test Users', short: 'TU', href: '/accounts' },
   { key: 'mailboxes', label: 'Mailboxes', short: 'MB', href: '/mailboxes' },
-  { key: 'codes', label: 'Verification Codes', short: 'VC', href: '/codes' },
+  { key: 'codes', label: 'Verification', short: 'VF', href: '/codes' },
   { key: 'settings', label: 'Settings', short: 'ST', href: '/settings' },
 ];
 
@@ -122,14 +122,19 @@ function statusLabel(status: HistoryStatus) {
 
 function getBrowserStorage(): Storage | null {
   if (typeof window === 'undefined') return null;
-  const storage = window.localStorage;
-  if (!storage) return null;
-  return typeof storage.getItem === 'function'
-    && typeof storage.setItem === 'function'
-    && typeof storage.removeItem === 'function'
-    && typeof storage.clear === 'function'
-    ? storage
-    : null;
+  if (typeof document === 'undefined') return null;
+  try {
+    const storage = window.localStorage;
+    if (!storage) return null;
+    return typeof storage.getItem === 'function'
+      && typeof storage.setItem === 'function'
+      && typeof storage.removeItem === 'function'
+      && typeof storage.clear === 'function'
+      ? storage
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 function isEditableTarget(target: EventTarget | null) {
@@ -274,7 +279,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     ?? detail?.inbox.links.find((link) => link.isPrimary)?.url
     ?? detail?.inbox.links[0]?.url
     ?? '';
-  const showQuickActions = activeNav === 'main' || activeNav === 'accounts';
+  const showQuickActions = activeNav === 'main';
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
@@ -339,7 +344,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setDetail(res);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate account');
+      setError(err instanceof Error ? err.message : 'Failed to generate identity');
     } finally {
       setIsGenerating(false);
     }
@@ -357,7 +362,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setDetail(firstItem ? await apiFetch<Detail>(`/history/${firstItem.id}?debug=1`, token) : null);
       await refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to generate accounts');
+      setError(err instanceof Error ? err.message : 'Failed to generate identities');
     } finally {
       setIsBulkGenerating(false);
     }
@@ -472,8 +477,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   const generationSettingsPanel = (
     <section className="panel panel-generation accounts-settings bulk-card">
-      <h3>Generation settings</h3>
-      <p>Shared settings used by Create Account and Generate Bulk.</p>
+      <h3>Generation panel</h3>
+      <p>Defaults used by Generate identity and Generate bulk.</p>
       <div className="form-stack">
         <Field label="GEO">
           <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
@@ -510,8 +515,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <main className="login-shell">
         <form className="login-card" onSubmit={doLogin}>
           <div className="login-badge">Internal QA console</div>
-          <h1>Registration Testing Workspace</h1>
-          <p>Generate test accounts, fill registration forms, and capture mailbox verification data.</p>
+          <h1>Test User Console</h1>
+          <p>Generate test identities, copy registration data, and inspect mailbox verification.</p>
           <div className="login-fields">
             <input className="input-field" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
             <input className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
@@ -530,15 +535,15 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <div className="sidebar-brand">
             <div className="sidebar-brand-mark">QA</div>
             <div>
-              <strong>Registration Testing</strong>
-              <span>Workspace console</span>
+              <strong>Test User Console</strong>
+              <span>Identity generation workspace</span>
             </div>
           </div>
 
           <div className="flow-block">
-            <div className="flow-label">Flow</div>
-            <div className="flow-title">Registration Flow</div>
-            <div className="flow-subtitle">Core registration with verification and inbox</div>
+            <div className="flow-label">Workspace</div>
+            <div className="flow-title">Identity Generation</div>
+            <div className="flow-subtitle">Test users, mailbox, and verification</div>
             <span className="flow-status">Active</span>
           </div>
 
@@ -576,9 +581,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <section className="workspace-shell">
         <div className="topbar">
           <div className="breadcrumb">
-            <span>Flows</span>
-            <span>Registration Flow</span>
-            <strong>Core Flow</strong>
+            <span>Workspace</span>
+            <span>Test Users</span>
+            <strong>Generation Console</strong>
           </div>
           <div className="topbar-admin">
             <button className="icon-button" title="Command menu">CMD K</button>
@@ -590,34 +595,30 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
         {error ? <div className="alert alert-error slim">{error}</div> : null}
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
-        {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} accounts and mailbox snapshots.</div> : null}
+        {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} identities and mailbox snapshots.</div> : null}
 
         {showQuickActions ? (
         <section className="quick-actions-panel">
           <div className="quick-actions-title">Quick actions</div>
-          <div className="quick-actions-grid" aria-label="Primary account actions">
+          <div className="quick-actions-grid" aria-label="Primary identity actions">
             <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
               <span className="action-icon">+</span>
-              <span><strong>{isGenerating ? 'Creating account' : 'Create account'}</strong><small>Single account</small></span>
+              <span><strong>{isGenerating ? 'Generating identity' : 'Generate identity'}</strong><small>Single test user</small></span>
               <kbd>G</kbd>
             </button>
             <button className="action-card" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
               <span className="action-icon">B</span>
-              <span><strong>{isBulkGenerating ? `Generating ${bulkCount}` : 'Generate bulk'}</strong><small>Multiple accounts</small></span>
+              <span><strong>{isBulkGenerating ? `Generating ${bulkCount}` : 'Generate bulk'}</strong><small>Multiple test users</small></span>
               <kbd>B</kbd>
             </button>
             <button className="action-card" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
               <span className="action-icon">R</span>
-              <span><strong>{isRefreshingInbox ? 'Refreshing inbox' : 'Refresh inbox'}</strong><small>Selected account</small></span>
+              <span><strong>{isRefreshingInbox ? 'Refreshing inbox' : 'Refresh inbox'}</strong><small>Selected test user</small></span>
               <kbd>R</kbd>
             </button>
             <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
               <span className="action-icon">CP</span>
-              <span><strong>Copy identity pack</strong><small>Registration form fields</small></span>
-            </button>
-            <button className="action-card" disabled>
-              <span className="action-icon">URL</span>
-              <span><strong>Open registration URL</strong><small>Not configured</small></span>
+              <span><strong>Copy pack</strong><small>Registration data</small></span>
             </button>
           </div>
         </section>
@@ -630,13 +631,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <section className="panel panel-list">
             <div className="panel-header">
-              <h2>Accounts <span>({history.length})</span></h2>
+              <h2>Recent identities <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
             </div>
 
             {showFilters ? (
               <div className="list-controls">
-                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts..." />
+                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
                 <div className="control-row">
                   <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
@@ -663,26 +664,26 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
-              }) : <div className="empty-state">No accounts match the current filters.</div>}
+              }) : <div className="empty-state">No test users match the current filters.</div>}
             </div>
-            <a className="view-all-button" href="/accounts">View all accounts</a>
+            <a className="view-all-button" href="/accounts">View all test users</a>
           </section>
 
           <section className="panel panel-detail">
             <div className="panel-header">
-              <h2>Account details {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
+              <h2>Identity workspace {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
             </div>
 
             {!detail ? (
               <div className="empty-workspace">
-                <h3>Generate an account or open one from the list</h3>
-                <p>The selected account appears here without navigating away from the account list.</p>
+                <h3>Generate an identity or open one from the list</h3>
+                <p>The selected test user appears here with registration data, mailbox, and verification.</p>
               </div>
             ) : (
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
-                    <h3>Account</h3>
+                    <h3>Test user</h3>
                     <label className="account-id-field">
                       <span>Account ID</span>
                       <div>
@@ -755,7 +756,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           {hasVerificationLinks ? (
             <section className="panel panel-links">
               <div className="panel-header">
-                <h2>Verification links <span>({verificationLinks.length})</span></h2>
+                <h2>Verification <span>({verificationLinks.length})</span></h2>
               </div>
               <div className="link-list">
                 {verificationLinks.map((link) => (
@@ -793,17 +794,15 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </>
           ) : activeNav === 'accounts' ? (
           <>
-          {generationSettingsPanel}
-
           <section className="panel panel-list">
             <div className="panel-header">
-              <h2>Accounts <span>({history.length})</span></h2>
+              <h2>Test Users <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
             </div>
 
             {showFilters ? (
               <div className="list-controls">
-                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search accounts..." />
+                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
                 <div className="control-row">
                   <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
@@ -828,7 +827,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 <table className="account-table">
                   <thead>
                     <tr>
-                      <th>Account</th>
+                      <th>Test user</th>
                       <th>GEO</th>
                       <th>Email</th>
                       <th>Status</th>
@@ -856,23 +855,23 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     })}
                   </tbody>
                 </table>
-              ) : <div className="empty-state">No accounts match the current filters.</div>}
+              ) : <div className="empty-state">No test users match the current filters.</div>}
             </div>
-            <a className="view-all-button" href="/accounts">View all accounts</a>
+            <a className="view-all-button" href="/accounts">View all test users</a>
           </section>
 
           {detail ? (
-            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Account details" onClick={() => setDetail(null)}>
+            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Test user details" onClick={() => setDetail(null)}>
               <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="panel-header">
-                  <h2>Account details <span className="success-text">{statusLabel(selectedStatus)}</span></h2>
+                  <h2>Test user details <span className="success-text">{statusLabel(selectedStatus)}</span></h2>
                   <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
                 </div>
 
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
-                    <h3>Account</h3>
+                    <h3>Test user</h3>
                     <label className="account-id-field">
                       <span>Account ID</span>
                       <div>
@@ -946,7 +945,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           {hasVerificationLinks ? (
             <section className="panel panel-links">
               <div className="panel-header">
-                <h2>Verification links <span>({verificationLinks.length})</span></h2>
+                <h2>Verification <span>({verificationLinks.length})</span></h2>
               </div>
               <div className="link-list">
                 {verificationLinks.map((link) => (
@@ -1087,7 +1086,7 @@ function UtilityView({
         <div className="utility-header">
           <div>
             <h2>Mailboxes</h2>
-            <p>Open a mailbox and inspect the current inbox for registration emails.</p>
+            <p>Open a mailbox, inspect the latest message, and copy parsed verification links or codes.</p>
           </div>
           <button type="button" className="primary-button" onClick={onCreateMailbox} disabled={isCreatingMailbox}>
             {isCreatingMailbox ? 'Creating mailbox' : 'Create temporary mailbox'}
@@ -1099,7 +1098,7 @@ function UtilityView({
             <div className="mailbox-reader-header">
               <div>
                 <h3>{detail ? detail.email : tempMailbox ? tempMailbox.address : 'Inbox'}</h3>
-                <p>{detail ? `Account: ${detail.siteAccountId || detail.username}` : tempMailbox ? 'Standalone temporary mailbox' : 'Open a generated mailbox or create a temporary one.'}</p>
+                <p>{detail ? `Test user: ${detail.siteAccountId || detail.username}` : tempMailbox ? 'Standalone temporary mailbox' : 'Open a generated mailbox or create a temporary one.'}</p>
               </div>
               <div className="mailbox-reader-actions">
                 {detail ? (
@@ -1154,7 +1153,7 @@ function UtilityView({
               <thead>
                 <tr>
                   <th>Email</th>
-                  <th>Account</th>
+                  <th>Test user</th>
                   <th>Status</th>
                   <th>Created</th>
                   <th />
@@ -1225,13 +1224,13 @@ function UtilityView({
         ) : (
           <div className="form-data-picker">
             <div className="section-subhead">
-              <h3>Select account</h3>
-              <p>Open any generated account to display its exact registration fields on this page.</p>
+              <h3>Select test user</h3>
+              <p>Open any generated test user to display its exact registration fields on this page.</p>
             </div>
             <div className="account-table-wrap">
               <table className="account-table">
                 <thead>
-                  <tr><th>Account</th><th>GEO</th><th>Email</th><th /></tr>
+                  <tr><th>Test user</th><th>GEO</th><th>Email</th><th /></tr>
                 </thead>
                 <tbody>
                   {filteredHistory.map((item) => (
@@ -1258,10 +1257,10 @@ function UtilityView({
       <section className="panel utility-panel">
         <div className="utility-header">
           <div>
-            <h2>Verification codes</h2>
-            <p>Codes and verification links for the selected account.</p>
+            <h2>Verification</h2>
+            <p>Codes and verification links for the selected test user.</p>
           </div>
-          <span className={cn('status-pill', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No account selected'}</span>
+          <span className={cn('status-pill', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No test user selected'}</span>
         </div>
 
         {detail ? (
@@ -1291,7 +1290,7 @@ function UtilityView({
           <div className="account-table-wrap">
             <table className="account-table">
               <thead>
-                <tr><th>Account</th><th>GEO</th><th>Status</th><th /></tr>
+                <tr><th>Test user</th><th>GEO</th><th>Status</th><th /></tr>
               </thead>
               <tbody>
                 {filteredHistory.map((item) => (
@@ -1315,38 +1314,67 @@ function UtilityView({
       <div className="utility-header">
         <div>
           <h2>Settings</h2>
-          <p>Defaults used by generation and operational limits for this workspace.</p>
+          <p>Personal defaults now, workspace and account controls ready for the backend roadmap.</p>
         </div>
         <span className="status-pill tone-success">Saved locally</span>
       </div>
-      <div className="settings-grid">
-        <Field label="Default GEO">
-          <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
-            {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Default persona">
-          <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-          </select>
-        </Field>
-        <Field label="Default role">
-          <select className="input-field compact" value={accountRole} onChange={(e) => setAccountRole(e.target.value as 'admin' | 'user')}>
-            <option value="user">user</option>
-            <option value="admin">admin</option>
-          </select>
-        </Field>
-        <Field label="Bulk count">
-          <input className="input-field compact" type="number" min="1" max="25" value={bulkCount} onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))} />
-        </Field>
-      </div>
+
+      <section className="settings-section">
+        <div className="section-subhead">
+          <h3>Personal Settings</h3>
+          <p>Generation defaults for this browser session. Backend-backed user settings are planned.</p>
+        </div>
+        <div className="settings-grid">
+          <Field label="Default GEO">
+            <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+              {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+            </select>
+          </Field>
+          <Field label="Default persona">
+            <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
+          </Field>
+          <Field label="Default document">
+            <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+              {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+              <option value="missing_rule_probe">missing_rule_probe</option>
+            </select>
+          </Field>
+          <Field label="Bulk count">
+            <input className="input-field compact" type="number" min="1" max="25" value={bulkCount} onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))} />
+          </Field>
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-subhead">
+          <h3>Workspace Settings</h3>
+          <p>Shared limits and retention will move here after workspace settings land on the backend.</p>
+        </div>
+        <div className="settings-notes">
+          <InfoTile label="History retention" value="30 days" action="Read" onClick={() => undefined} />
+          <InfoTile label="History limit" value="50 test users" action="Read" onClick={() => undefined} />
+          <InfoTile label="Max bulk count" value="25 identities" action="Read" onClick={() => undefined} />
+          <InfoTile label="Members" value="Planned" action="Read" onClick={() => undefined} />
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-subhead">
+          <h3>Account Settings</h3>
+          <p>Email, password, and active sessions will connect to the auth/session backend roadmap.</p>
+        </div>
+        <div className="settings-notes">
+          <InfoTile label="Email" value="Uses current login" action="Read" onClick={() => undefined} />
+          <InfoTile label="Password" value="Managed by seed now" action="Read" onClick={() => undefined} />
+          <InfoTile label="Sessions" value="Planned" action="Read" onClick={() => undefined} />
+          <InfoTile label="Logout" value="Clears local session" action="Read" onClick={() => undefined} />
+        </div>
+      </section>
+
       <div className="settings-save-note">
-        These defaults are saved in this browser and reused by Create account, Generate bulk, Form Data, and Main after reload.
-      </div>
-      <div className="settings-notes">
-        <InfoTile label="History retention" value="30 days" action="Read" onClick={() => undefined} />
-        <InfoTile label="History limit" value="50 accounts per user" action="Read" onClick={() => undefined} />
-        <InfoTile label="Debug email HTML" value="Enabled for detail view" action="Read" onClick={() => undefined} />
+        Personal defaults are currently saved in this browser and reused by Generate identity, Generate bulk, and Main after reload.
       </div>
     </section>
   );
@@ -1405,7 +1433,7 @@ function EmailMessage({
           <p>{hasEmail ? 'Original inbox message' : 'No message captured yet'}</p>
         </div>
         <div className="email-message-actions">
-          <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Activate account</button>
+          <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
           <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
             {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
