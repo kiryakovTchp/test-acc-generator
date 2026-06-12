@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
 import type { Role, DocumentQuality, Gender, PersonaKey } from './types.js';
+import { hashPassword } from './auth.js';
 
 const dataDir = path.resolve(process.cwd(), 'backend', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
@@ -143,6 +144,7 @@ CREATE TABLE IF NOT EXISTS sessions (
   ip_address TEXT NOT NULL DEFAULT '',
   expires_at TEXT NOT NULL,
   revoked_at TEXT,
+  last_seen_at TEXT,
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
@@ -163,15 +165,25 @@ CREATE INDEX IF NOT EXISTS idx_account_history_workspace_created_at ON account_h
 CREATE INDEX IF NOT EXISTS idx_account_history_created_by ON account_history(created_by_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_usage_events_workspace_type_created_at ON usage_events(workspace_id, event_type, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token_hash_unique ON sessions(token_hash);
 `);
+
+ensureColumn('sessions', 'last_seen_at', 'TEXT');
 
 const seedUsers = loadSeedUsers();
 for (const user of seedUsers) {
   db.prepare(`
-    INSERT INTO users (login, password, role)
-    VALUES (?, ?, ?)
-    ON CONFLICT(login) DO UPDATE SET password = excluded.password, role = excluded.role
-  `).run(user.login, user.password, user.role);
+    INSERT INTO users (login, password, password_hash, role, email, username, status, updated_at)
+    VALUES (?, '', ?, ?, ?, ?, 'active', CURRENT_TIMESTAMP)
+    ON CONFLICT(login) DO UPDATE SET
+      password = '',
+      password_hash = excluded.password_hash,
+      role = excluded.role,
+      email = COALESCE(NULLIF(users.email, ''), excluded.email),
+      username = COALESCE(NULLIF(users.username, ''), excluded.username),
+      status = COALESCE(NULLIF(users.status, ''), 'active'),
+      updated_at = CURRENT_TIMESTAMP
+  `).run(user.login, hashPassword(user.password), user.role, user.login, user.login);
 }
 
 backfillUserWorkspaceFoundation();
@@ -311,6 +323,23 @@ function ensureColumn(table: string, column: string, definition: string) {
 }
 
 function backfillUserWorkspaceFoundation() {
+  const legacyUsers = db.prepare(`
+    SELECT id, password
+    FROM users
+    WHERE (password_hash IS NULL OR password_hash = '') AND password IS NOT NULL AND password != ''
+  `).all() as Array<{ id: number; password: string }>;
+
+  const passwordTx = db.transaction(() => {
+    for (const user of legacyUsers) {
+      db.prepare(`
+        UPDATE users
+        SET password_hash = ?, password = '', updated_at = COALESCE(updated_at, CURRENT_TIMESTAMP)
+        WHERE id = ?
+      `).run(hashPassword(user.password), user.id);
+    }
+  });
+  passwordTx();
+
   db.prepare(`
     UPDATE users
     SET email = COALESCE(NULLIF(email, ''), login),
