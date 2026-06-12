@@ -1460,9 +1460,9 @@ body {
 }
 
 .accounts-settings {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid #edf0f4;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #edf0f4;
 }
 
 .accounts-settings .input-field.compact {
@@ -2328,8 +2328,8 @@ kbd {
 
   .accounts-settings {
     grid-row: auto;
-    padding-top: 12px;
-    border-top: 1px solid #edf0f4;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #edf0f4;
   }
 
   .control-row,
