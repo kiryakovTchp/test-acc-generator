@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { listGeoRules, generateAccount, getHistoryDetail, updateSiteAccountId } from './services/accountService.js';
+import db, { getDefaultWorkspaceForUser } from './db.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 
 const provider: EmailProvider = {
@@ -65,4 +66,43 @@ test('history detail hides raw html unless debug payload is explicitly requested
 
   const debugItem = getHistoryDetail(item!.id, 1, true);
   assert.equal(debugItem?.inbox.rawHtml, '<b>Code 123456</b>');
+});
+
+test('seed users receive default workspace settings and membership', () => {
+  const workspaceId = getDefaultWorkspaceForUser(1);
+  assert.ok(workspaceId > 0);
+
+  const member = db.prepare(`
+    SELECT role
+    FROM workspace_members
+    WHERE workspace_id = ? AND user_id = ?
+  `).get(workspaceId, 1) as { role: string } | undefined;
+  assert.equal(member?.role, 'owner');
+
+  const userSettings = db.prepare('SELECT user_id FROM user_settings WHERE user_id = ?').get(1);
+  const workspaceSettings = db.prepare('SELECT workspace_id FROM workspace_settings WHERE workspace_id = ?').get(workspaceId);
+  assert.ok(userSettings);
+  assert.ok(workspaceSettings);
+});
+
+test('generated history is linked to workspace and creator', async () => {
+  const workspaceId = getDefaultWorkspaceForUser(1);
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(item?.workspaceId, workspaceId);
+  assert.equal(item?.createdByUserId, 1);
+
+  const row = db.prepare(`
+    SELECT workspace_id, created_by_user_id
+    FROM account_history
+    WHERE id = ?
+  `).get(item!.id) as { workspace_id: number; created_by_user_id: number } | undefined;
+  assert.equal(row?.workspace_id, workspaceId);
+  assert.equal(row?.created_by_user_id, 1);
+});
+
+test('workspace scope keeps another seed user out of private history', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.ok(item);
+  assert.equal(getHistoryDetail(item!.id, 2), null);
+  assert.equal(listHistory(2).some((row: any) => row.id === item!.id), false);
 });
