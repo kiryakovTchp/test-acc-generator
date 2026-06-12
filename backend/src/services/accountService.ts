@@ -1,4 +1,4 @@
-import db from '../db.js';
+import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
@@ -16,6 +16,7 @@ export function listGeoRules() {
 
 export async function generateAccount(input: {
   userId: number;
+  workspaceId?: number;
   geoKey: string;
   documentType: string;
   role: Role;
@@ -24,6 +25,7 @@ export async function generateAccount(input: {
   includeDebug?: boolean;
 }) {
   cleanupOldHistory();
+  const workspaceId = resolveWorkspace(input.userId, input.workspaceId);
   const geo = rules.find((rule) => rule.key === input.geoKey);
   if (!geo) throw new Error('Unknown GEO');
   const docRule = geo.documents[input.documentType];
@@ -42,13 +44,15 @@ export async function generateAccount(input: {
   const username = `${geo.key}_${randomString(8)}`;
   const result = db.prepare(`
     INSERT INTO account_history (
-      user_id, geo_key, geo_label, email, email_password, username,
+      user_id, workspace_id, created_by_user_id, geo_key, geo_label, email, email_password, username,
       first_name, last_name, phone, age, gender, date_of_birth, country, region, city, place_of_birth, address_line, postal_code, persona,
       account_role, document_type, document_value, document_issue_date, document_quality, registration_url,
       inbox_status, inbox_sender, inbox_subject, inbox_received_at,
       inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
+    input.userId,
+    workspaceId,
     input.userId,
     geo.key,
     geo.label,
@@ -84,12 +88,18 @@ export async function generateAccount(input: {
     hydratedInbox.rawHtml ?? null,
   );
 
-  trimHistoryForUser(input.userId);
-  return getHistoryDetail(Number(result.lastInsertRowid), input.userId, input.includeDebug);
+  trimHistoryForWorkspace(input.userId, workspaceId);
+  return getHistoryDetail(Number(result.lastInsertRowid), input.userId, input.includeDebug, workspaceId);
 }
 
-export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0, includeDebug = false) {
-  const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
+export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const row = db.prepare(`
+    SELECT *
+    FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).get(id, resolvedWorkspaceId, userId) as any;
   if (!row) return null;
   const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
   const hydratedInbox = buildInboxPayload(inbox);
@@ -97,7 +107,8 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     UPDATE account_history
     SET inbox_status = ?, inbox_sender = ?, inbox_subject = ?, inbox_received_at = ?,
         inbox_plain_text = ?, inbox_links_json = ?, inbox_codes_json = ?, inbox_html = ?
-    WHERE id = ? AND user_id = ?
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
   `).run(
     hydratedInbox.status,
     hydratedInbox.sender,
@@ -108,24 +119,28 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     JSON.stringify(hydratedInbox.codes),
     hydratedInbox.rawHtml ?? null,
     id,
+    resolvedWorkspaceId,
     userId,
   );
-  return getHistoryDetail(id, userId, includeDebug);
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
-export function updateSiteAccountId(id: number, userId: number, siteAccountId: string, includeDebug = false) {
+export function updateSiteAccountId(id: number, userId: number, siteAccountId: string, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   const trimmed = siteAccountId.trim().slice(0, 80);
   const result = db.prepare(`
     UPDATE account_history
     SET site_account_id = ?
-    WHERE id = ? AND user_id = ?
-  `).run(trimmed, id, userId);
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).run(trimmed, id, resolvedWorkspaceId, userId);
   if (result.changes === 0) return null;
-  return getHistoryDetail(id, userId, includeDebug);
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
-export function listHistory(userId: number) {
+export function listHistory(userId: number, workspaceId?: number) {
   cleanupOldHistory();
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   return db.prepare(`
     SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username, site_account_id as siteAccountId,
            first_name as firstName, last_name as lastName, phone, age, gender,
@@ -135,17 +150,25 @@ export function listHistory(userId: number) {
            document_type as documentType, document_issue_date as documentIssueDate, document_quality as documentQuality,
            inbox_status as inboxStatus
     FROM account_history
-    WHERE user_id = ?
+    WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
     ORDER BY datetime(created_at) DESC
     LIMIT 50
-  `).all(userId);
+  `).all(resolvedWorkspaceId, userId);
 }
 
-export function getHistoryDetail(id: number, userId: number, includeDebug = false) {
-  const row = db.prepare('SELECT * FROM account_history WHERE id = ? AND user_id = ?').get(id, userId) as any;
+export function getHistoryDetail(id: number, userId: number, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const row = db.prepare(`
+    SELECT *
+    FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).get(id, resolvedWorkspaceId, userId) as any;
   if (!row) return null;
   return {
     id: row.id,
+    workspaceId: row.workspace_id,
+    createdByUserId: row.created_by_user_id,
     geoKey: row.geo_key,
     geoLabel: row.geo_label,
     email: row.email,
@@ -206,21 +229,38 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
   };
 }
 
-export function deleteHistory(id: number, userId: number) {
-  db.prepare('DELETE FROM account_history WHERE id = ? AND user_id = ?').run(id, userId);
+export function deleteHistory(id: number, userId: number, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  db.prepare(`
+    DELETE FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).run(id, resolvedWorkspaceId, userId);
 }
 
 function cleanupOldHistory() {
   db.prepare(`DELETE FROM account_history WHERE datetime(created_at) < datetime('now', '-30 days')`).run();
 }
 
-function trimHistoryForUser(userId: number) {
+function trimHistoryForWorkspace(userId: number, workspaceId: number) {
   db.prepare(`
     DELETE FROM account_history
-    WHERE user_id = ? AND id NOT IN (
-      SELECT id FROM account_history WHERE user_id = ? ORDER BY datetime(created_at) DESC LIMIT 50
+    WHERE (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND id NOT IN (
+      SELECT id
+      FROM account_history
+      WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
+      ORDER BY datetime(created_at) DESC
+      LIMIT 50
     )
-  `).run(userId, userId);
+  `).run(workspaceId, userId, workspaceId, userId);
+}
+
+function resolveWorkspace(userId: number, workspaceId?: number) {
+  if (workspaceId !== undefined) {
+    return assertWorkspaceAccess(userId, workspaceId);
+  }
+  return getDefaultWorkspaceForUser(userId);
 }
 
 export function buildInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {

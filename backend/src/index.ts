@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
 import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
-import db from './db.js';
+import db, { getDefaultWorkspaceForUser } from './db.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -23,7 +23,7 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    (req as any).user = { userId: user.id, login: user.login, role: user.role };
+    (req as any).user = { userId: user.id, login: user.login, role: user.role, workspaceId: getDefaultWorkspaceForUser(user.id) };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -34,23 +34,38 @@ app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/auth/login', (req, res) => {
   const { login, password } = req.body ?? {};
-  const user = db.prepare('SELECT id, login, password, role FROM users WHERE login = ?').get(login) as any;
+  const user = db.prepare('SELECT id, login, password, role, email, username, status FROM users WHERE login = ? OR email = ? OR username = ? LIMIT 1').get(login, login, login) as any;
   if (!user || user.password !== password) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   const token = jwt.sign({ userId: user.id, login: user.login, role: user.role }, jwtSecret, { expiresIn: '12h' });
-  res.json({ token, user: { login: user.login, role: user.role } });
+  res.json({
+    token,
+    user: {
+      login: user.login,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+      workspaceId: getDefaultWorkspaceForUser(user.id),
+    },
+  });
+});
+
+app.get('/auth/me', auth, (req, res) => {
+  const user = db.prepare('SELECT id, login, email, username, role, status, created_at as createdAt, updated_at as updatedAt FROM users WHERE id = ?').get((req as any).user.userId) as any;
+  res.json({ user: { ...user, workspaceId: (req as any).user.workspaceId } });
 });
 
 app.get('/geo-rules', auth, (_req, res) => res.json({ items: listGeoRules() }));
 
 app.get('/history', auth, (req, res) => {
-  res.json({ items: listHistory((req as any).user.userId) });
+  res.json({ items: listHistory((req as any).user.userId, (req as any).user.workspaceId) });
 });
 
 app.get('/history/:id', auth, (req, res) => {
   const includeDebug = req.query.debug === '1';
-  const item = getHistoryDetail(Number(req.params.id), (req as any).user.userId, includeDebug);
+  const item = getHistoryDetail(Number(req.params.id), (req as any).user.userId, includeDebug, (req as any).user.workspaceId);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
 });
@@ -83,7 +98,7 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
   const includeDebug = req.query.debug === '1';
   try {
-    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs, includeDebug);
+    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs, includeDebug, (req as any).user.workspaceId);
     if (!item) return res.status(404).json({ error: 'Not found' });
     res.json(item);
   } catch (error) {
@@ -93,13 +108,13 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
 
 app.patch('/history/:id/account-id', auth, (req, res) => {
   const includeDebug = req.query.debug === '1';
-  const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''), includeDebug);
+  const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''), includeDebug, (req as any).user.workspaceId);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
 });
 
 app.delete('/history/:id', auth, (req, res) => {
-  deleteHistory(Number(req.params.id), (req as any).user.userId);
+  deleteHistory(Number(req.params.id), (req as any).user.userId, (req as any).user.workspaceId);
   res.status(204).send();
 });
 
@@ -108,6 +123,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
   try {
     const item = await generateAccount({
       userId: (req as any).user.userId,
+      workspaceId: (req as any).user.workspaceId,
       geoKey,
       documentType,
       role: role === 'admin' ? 'admin' : 'user',
@@ -130,6 +146,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
     for (let index = 0; index < count; index += 1) {
       items.push(await generateAccount({
         userId: (req as any).user.userId,
+        workspaceId: (req as any).user.workspaceId,
         geoKey,
         documentType,
         role: role === 'admin' ? 'admin' : 'user',
