@@ -1172,7 +1172,7 @@ body {
 
 .quick-actions-grid {
   display: grid;
-  grid-template-columns: repeat(5, minmax(148px, 1fr));
+  grid-template-columns: repeat(4, minmax(148px, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
@@ -1524,6 +1524,16 @@ body {
 .section-subhead h3 {
   margin: 0;
   font-size: 13px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+  border: 1px solid #edf0f4;
+  border-radius: 6px;
+  padding: 14px;
+  background: #fff;
 }
 
 .section-subhead p,
