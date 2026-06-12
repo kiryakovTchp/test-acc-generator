@@ -1,29 +1,42 @@
 import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
+import type { SignOptions } from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
 import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
+import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
 const jwtSecret = process.env.JWT_SECRET ?? 'dev-secret';
+const accessTokenTtl = (process.env.ACCESS_TOKEN_TTL ?? '30m') as SignOptions['expiresIn'];
+const sessionDays = Number(process.env.SESSION_DAYS ?? 30);
+const registrationMode = process.env.REGISTRATION_MODE ?? 'disabled';
 const emailProvider = new MailTmProvider();
+const sessionCookieName = 'tag_session';
 
-app.use(cors());
+app.use(cors({ credentials: true, origin: true }));
 app.use(express.json());
 
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const decoded = jwt.verify(token, jwtSecret) as { userId: number; login: string; role: Role };
-    const user = db.prepare('SELECT id, login, role FROM users WHERE id = ? OR login = ? LIMIT 1').get(decoded.userId, decoded.login) as { id: number; login: string; role: Role } | undefined;
+    const decoded = jwt.verify(token, jwtSecret) as { userId: number; login: string; role: Role; sessionId?: number; workspaceId?: number };
+    const user = db.prepare('SELECT id, login, role, status FROM users WHERE id = ? OR login = ? LIMIT 1').get(decoded.userId, decoded.login) as { id: number; login: string; role: Role; status: string } | undefined;
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
     }
-    (req as any).user = { userId: user.id, login: user.login, role: user.role, workspaceId: getDefaultWorkspaceForUser(user.id) };
+    if (user.status !== 'active') {
+      return res.status(403).json({ error: 'User is not active' });
+    }
+    if (decoded.sessionId && !isSessionActive(decoded.sessionId, user.id)) {
+      return res.status(401).json({ error: 'Session expired' });
+    }
+    const workspaceId = decoded.workspaceId ?? getDefaultWorkspaceForUser(user.id);
+    (req as any).user = { userId: user.id, login: user.login, role: user.role, sessionId: decoded.sessionId ?? null, workspaceId };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -33,23 +46,78 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
 app.post('/auth/login', (req, res) => {
-  const { login, password } = req.body ?? {};
-  const user = db.prepare('SELECT id, login, password, role, email, username, status FROM users WHERE login = ? OR email = ? OR username = ? LIMIT 1').get(login, login, login) as any;
-  if (!user || user.password !== password) {
+  const login = String(req.body?.login ?? '').trim();
+  const password = String(req.body?.password ?? '');
+  const user = db.prepare('SELECT id, login, password, password_hash, role, email, username, status FROM users WHERE login = ? OR email = ? OR username = ? LIMIT 1').get(login, login, login) as any;
+  if (!user || !verifyPassword(password, user.password_hash, user.password)) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  const token = jwt.sign({ userId: user.id, login: user.login, role: user.role }, jwtSecret, { expiresIn: '12h' });
-  res.json({
-    token,
-    user: {
-      login: user.login,
-      email: user.email,
-      username: user.username,
-      role: user.role,
-      status: user.status,
-      workspaceId: getDefaultWorkspaceForUser(user.id),
-    },
-  });
+  if (user.status !== 'active') {
+    return res.status(403).json({ error: 'User is not active' });
+  }
+  if (!user.password_hash) {
+    db.prepare('UPDATE users SET password_hash = ?, password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(hashPassword(password), '', user.id);
+  }
+  const session = createSession(user.id, req);
+  setSessionCookie(res, session.token, session.expiresAt);
+  res.json(buildAuthResponse(user, session.id));
+});
+
+app.post('/auth/register', (req, res) => {
+  if (registrationMode === 'disabled') {
+    return res.status(403).json({ error: 'Registration is disabled', code: 'registration_disabled' });
+  }
+  if (registrationMode === 'invite_only') {
+    return res.status(403).json({ error: 'Invite token is required', code: 'invite_required' });
+  }
+
+  const email = String(req.body?.email ?? '').trim().toLowerCase();
+  const username = normalizeUsername(req.body?.username);
+  const password = String(req.body?.password ?? '');
+  if (!email || !email.includes('@') || !username || password.length < 8) {
+    return res.status(400).json({ error: 'Valid email, username, and 8+ character password are required', code: 'invalid_registration_payload' });
+  }
+
+  try {
+    const result = db.prepare(`
+      INSERT INTO users (login, password, password_hash, role, email, username, status, updated_at)
+      VALUES (?, '', ?, 'user', ?, ?, 'active', CURRENT_TIMESTAMP)
+    `).run(username, hashPassword(password), email, username);
+    const userId = Number(result.lastInsertRowid);
+    getDefaultWorkspaceForUser(userId);
+    const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(userId) as any;
+    const session = createSession(user.id, req);
+    setSessionCookie(res, session.token, session.expiresAt);
+    res.status(201).json(buildAuthResponse(user, session.id));
+  } catch (error) {
+    res.status(409).json({ error: 'User already exists', code: 'user_already_exists' });
+  }
+});
+
+app.post('/auth/refresh', (req, res) => {
+  const sessionToken = readCookie(req, sessionCookieName);
+  if (!sessionToken) return res.status(401).json({ error: 'No active session' });
+
+  const session = db.prepare(`
+    SELECT id, user_id
+    FROM sessions
+    WHERE token_hash = ? AND revoked_at IS NULL AND datetime(expires_at) > datetime('now')
+    LIMIT 1
+  `).get(hashSessionToken(sessionToken)) as { id: number; user_id: number } | undefined;
+  if (!session) return res.status(401).json({ error: 'Session expired' });
+
+  db.prepare('UPDATE sessions SET last_seen_at = CURRENT_TIMESTAMP WHERE id = ?').run(session.id);
+  const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(session.user_id) as any;
+  if (!user || user.status !== 'active') return res.status(401).json({ error: 'Unauthorized' });
+  res.json(buildAuthResponse(user, session.id));
+});
+
+app.post('/auth/logout', auth, (req, res) => {
+  if ((req as any).user.sessionId) {
+    db.prepare('UPDATE sessions SET revoked_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?').run((req as any).user.sessionId, (req as any).user.userId);
+  }
+  clearSessionCookie(res);
+  res.status(204).send();
 });
 
 app.get('/auth/me', auth, (req, res) => {
@@ -169,4 +237,76 @@ export default app;
 
 function isPersona(value: unknown): value is PersonaKey {
   return ['standard_user', 'young_user', 'senior_user', 'male_user', 'female_user'].includes(String(value));
+}
+
+function createSession(userId: number, req: express.Request) {
+  const token = newSessionToken();
+  const expiresAt = addDays(new Date(), Number.isFinite(sessionDays) ? sessionDays : 30);
+  const result = db.prepare(`
+    INSERT INTO sessions (user_id, token_hash, user_agent, ip_address, expires_at, last_seen_at)
+    VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `).run(
+    userId,
+    hashSessionToken(token),
+    String(req.headers['user-agent'] ?? '').slice(0, 240),
+    String(req.ip ?? '').slice(0, 80),
+    expiresAt.toISOString(),
+  );
+  return { id: Number(result.lastInsertRowid), token, expiresAt };
+}
+
+function buildAuthResponse(user: { id: number; login: string; role: Role; email?: string; username?: string; status?: string }, sessionId: number) {
+  const workspaceId = getDefaultWorkspaceForUser(user.id);
+  const token = jwt.sign({ userId: user.id, login: user.login, role: user.role, sessionId, workspaceId }, jwtSecret, { expiresIn: accessTokenTtl });
+  return {
+    token,
+    user: {
+      login: user.login,
+      email: user.email,
+      username: user.username,
+      role: user.role,
+      status: user.status,
+      workspaceId,
+    },
+  };
+}
+
+function isSessionActive(sessionId: number, userId: number) {
+  const session = db.prepare(`
+    SELECT id
+    FROM sessions
+    WHERE id = ? AND user_id = ? AND revoked_at IS NULL AND datetime(expires_at) > datetime('now')
+    LIMIT 1
+  `).get(sessionId, userId);
+  return Boolean(session);
+}
+
+function setSessionCookie(res: express.Response, token: string, expiresAt: Date) {
+  res.cookie(sessionCookieName, token, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    expires: expiresAt,
+    path: '/',
+  });
+}
+
+function clearSessionCookie(res: express.Response) {
+  res.clearCookie(sessionCookieName, {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    path: '/',
+  });
+}
+
+function readCookie(req: express.Request, name: string) {
+  const raw = req.headers.cookie ?? '';
+  const match = raw.split(';').map((item) => item.trim()).find((item) => item.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.slice(name.length + 1)) : '';
+}
+
+function normalizeUsername(value: unknown) {
+  const username = String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40);
+  return username.length >= 3 ? username : '';
 }

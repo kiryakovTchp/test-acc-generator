@@ -229,12 +229,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     if (!token) return;
     refresh(token).catch((err) => {
       if (err instanceof Error && /unauthorized/i.test(err.message)) {
-        const storage = getBrowserStorage();
-        storage?.removeItem('tag-token');
-        storage?.removeItem('tag-user');
-        setToken('');
-        setUser(null);
-        setError('Session expired. Please sign in again.');
+        refreshSession().catch(() => {
+          clearAuthState();
+          setError('Session expired. Please sign in again.');
+        });
         return;
       }
       setError(err instanceof Error ? err.message : 'Failed to load data');
@@ -326,11 +324,40 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       method: 'POST',
       body: JSON.stringify({ login, password }),
     });
+    persistAuthState(res.token, res.user);
+  }
+
+  async function refreshSession() {
+    const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/refresh', undefined, { method: 'POST' });
+    persistAuthState(res.token, res.user);
+    return res.token;
+  }
+
+  async function logout() {
+    try {
+      if (token) {
+        await apiFetch('/auth/logout', token, { method: 'POST' });
+      }
+    } catch {
+      // Local cleanup still wins if the server session was already gone.
+    }
+    clearAuthState();
+  }
+
+  function persistAuthState(nextToken: string, nextUser: UserInfo) {
     const storage = getBrowserStorage();
-    storage?.setItem('tag-token', res.token);
-    storage?.setItem('tag-user', JSON.stringify(res.user));
-    setToken(res.token);
-    setUser(res.user);
+    storage?.setItem('tag-token', nextToken);
+    storage?.setItem('tag-user', JSON.stringify(nextUser));
+    setToken(nextToken);
+    setUser(nextUser);
+  }
+
+  function clearAuthState() {
+    const storage = getBrowserStorage();
+    storage?.removeItem('tag-token');
+    storage?.removeItem('tag-user');
+    setToken('');
+    setUser(null);
   }
 
   async function generate() {
@@ -574,7 +601,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <strong>{user.login}</strong>
             <span>{user.role}</span>
           </div>
-          <button className="sidebar-logout" onClick={() => { getBrowserStorage()?.clear(); setUser(null); setToken(''); }}>Logout</button>
+          <button className="sidebar-logout" onClick={() => void logout()}>Logout</button>
         </div>
       </aside>
 
@@ -589,7 +616,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <button className="icon-button" title="Command menu">CMD K</button>
             <div className="env-select"><span /> Environment · admin-live</div>
             <div className="env-select">{user.login}</div>
-            <button className="logout-button" onClick={() => { getBrowserStorage()?.clear(); setUser(null); setToken(''); }}>Logout</button>
+            <button className="logout-button" onClick={() => void logout()}>Logout</button>
           </div>
         </div>
 

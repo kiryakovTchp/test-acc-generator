@@ -2,7 +2,14 @@
 // unless NEXT_PUBLIC_API_URL points to an explicit external API.
 export const API_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || '/api';
 
-export interface UserInfo { login: string; role: 'admin' | 'user'; }
+export interface UserInfo {
+  login: string;
+  role: 'admin' | 'user';
+  email?: string;
+  username?: string;
+  status?: string;
+  workspaceId?: number;
+}
 export interface GeoItem {
   key: string;
   label: string;
@@ -45,6 +52,7 @@ export async function apiFetch<T>(path: string, token?: string, init?: RequestIn
       ...(init?.headers ?? {}),
     },
     cache: 'no-store',
+    credentials: 'include',
   });
   if (!res.ok) {
     const error = await res.json().catch(() => ({ error: 'Request failed' }));
