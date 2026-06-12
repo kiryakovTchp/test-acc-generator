@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db from './db.js';
 
@@ -61,6 +61,21 @@ app.post('/mailboxes/create', auth, async (_req, res) => {
     res.json(mailbox);
   } catch (error) {
     res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to create mailbox' });
+  }
+});
+
+app.post('/mailboxes/inbox', auth, async (req, res) => {
+  const address = String(req.body?.address ?? '').trim();
+  const password = String(req.body?.password ?? '');
+  const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
+  if (!address || !password) {
+    return res.status(400).json({ error: 'Mailbox address and password are required' });
+  }
+  try {
+    const inbox = await emailProvider.fetchInbox(address, password, waitMs);
+    res.json(buildInboxPayload(inbox));
+  } catch (error) {
+    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to fetch mailbox inbox' });
   }
 });
 
