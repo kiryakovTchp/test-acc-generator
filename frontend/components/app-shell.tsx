@@ -447,6 +447,41 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     window.open(activationLink, '_blank', 'noopener,noreferrer');
   }
 
+  const generationSettingsPanel = (
+    <section className="accounts-settings bulk-card">
+      <h3>Generation settings</h3>
+      <p>Shared settings used by Create Account and Generate Bulk.</p>
+      <div className="form-stack">
+        <Field label="GEO">
+          <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+            {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Form persona">
+          <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+          </select>
+        </Field>
+        <Field label="Document type">
+          <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+            {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
+            <option value="missing_rule_probe">missing_rule_probe</option>
+          </select>
+        </Field>
+        <Field label="Bulk count">
+          <input
+            className="input-field compact"
+            type="number"
+            min="1"
+            max="25"
+            value={bulkCount}
+            onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
+          />
+        </Field>
+      </div>
+    </section>
+  );
+
   if (!user) {
     return (
       <main className="login-shell">
@@ -567,6 +602,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           {activeNav === 'main' ? (
           <>
           <section className="panel panel-list">
+            {generationSettingsPanel}
+
             <div className="panel-header">
               <h2>Accounts <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
@@ -589,39 +626,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 </div>
               </div>
             ) : null}
-
-            <section className="accounts-settings bulk-card">
-              <h3>Generation settings</h3>
-              <p>Shared settings used by Create Account and Generate Bulk.</p>
-              <div className="form-stack">
-                <Field label="GEO">
-                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
-                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Form persona">
-                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Document type">
-                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
-                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
-                    <option value="missing_rule_probe">missing_rule_probe</option>
-                  </select>
-                </Field>
-                <Field label="Bulk count">
-                  <input
-                    className="input-field compact"
-                    type="number"
-                    min="1"
-                    max="25"
-                    value={bulkCount}
-                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
-                  />
-                </Field>
-              </div>
-            </section>
 
             <div className="account-list">
               {filteredHistory.length ? filteredHistory.map((item) => {
@@ -765,6 +769,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           ) : activeNav === 'accounts' ? (
           <>
           <section className="panel panel-list">
+            {generationSettingsPanel}
+
             <div className="panel-header">
               <h2>Accounts <span>({history.length})</span></h2>
               <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
@@ -791,39 +797,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 </div>
               </div>
             ) : null}
-
-            <section className="accounts-settings bulk-card">
-              <h3>Generation settings</h3>
-              <p>Shared settings used by Create Account and Generate Bulk.</p>
-              <div className="form-stack">
-                <Field label="GEO">
-                  <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
-                    {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Form persona">
-                  <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-                    {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-                  </select>
-                </Field>
-                <Field label="Document type">
-                  <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
-                    {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
-                    <option value="missing_rule_probe">missing_rule_probe</option>
-                  </select>
-                </Field>
-                <Field label="Bulk count">
-                  <input
-                    className="input-field compact"
-                    type="number"
-                    min="1"
-                    max="25"
-                    value={bulkCount}
-                    onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
-                  />
-                </Field>
-              </div>
-            </section>
 
             <div className="account-table-wrap">
               {filteredHistory.length ? (
