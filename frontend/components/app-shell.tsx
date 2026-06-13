@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo } from '@/lib/api';
+import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
-type WorkspaceSettings = {
+type BrowserGenerationSettings = {
   selectedGeo: string;
   documentType: string;
   bulkCount: number;
@@ -184,6 +184,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
   const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
+  const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
+  const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
+  const [isSavingSettings, setIsSavingSettings] = useState(false);
+  const [settingsStatus, setSettingsStatus] = useState('Saved locally');
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -205,7 +209,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const storedSettings = storage.getItem(SETTINGS_STORAGE_KEY);
     if (storedSettings) {
       try {
-        const parsed = JSON.parse(storedSettings) as Partial<WorkspaceSettings>;
+        const parsed = JSON.parse(storedSettings) as Partial<BrowserGenerationSettings>;
         if (typeof parsed.selectedGeo === 'string') setSelectedGeo(parsed.selectedGeo);
         if (typeof parsed.documentType === 'string') setDocumentType(parsed.documentType);
         if (isPersonaKey(parsed.persona)) setPersona(parsed.persona);
@@ -222,7 +226,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     if (!settingsReady) return;
     const storage = getBrowserStorage();
     if (!storage) return;
-    const settings: WorkspaceSettings = { selectedGeo, documentType, bulkCount, persona, accountRole };
+    const settings: BrowserGenerationSettings = { selectedGeo, documentType, bulkCount, persona, accountRole };
     storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
   }, [accountRole, bulkCount, documentType, persona, selectedGeo, settingsReady]);
 
@@ -308,22 +312,84 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   });
 
   async function refresh(authToken = token) {
-    const [geo, historyRes, limitsRes] = await Promise.all([
+    const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
+    setUser(me.user);
+    const workspaceId = me.user.workspaceId;
+    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes] = await Promise.all([
       apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
       apiFetch<{ items: HistoryItem[] }>('/history', authToken),
       apiFetch<UsageSummary>('/limits', authToken),
+      apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
+      workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
     setUsageSummary(limitsRes);
-    setBulkCount((value) => Math.min(limitsRes.settings.maxBulkCount, Math.max(1, value)));
+    setUserSettings(userSettingsRes.settings);
+    setWorkspaceSettings(workspaceSettingsRes.settings);
+    if (!userSettings) {
+      setSelectedGeo(userSettingsRes.settings.defaultGeo);
+      setDocumentType(userSettingsRes.settings.defaultDocumentType);
+      setPersona(userSettingsRes.settings.defaultPersona);
+      setBulkCount(Math.min(limitsRes.settings.maxBulkCount, Math.max(1, userSettingsRes.settings.bulkCount)));
+    } else {
+      setBulkCount((value) => Math.min(limitsRes.settings.maxBulkCount, Math.max(1, value)));
+    }
     if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
       setSelectedGeo(geo.items[0].key);
     }
   }
 
   async function refreshUsage(authToken = token) {
-    setUsageSummary(await apiFetch<UsageSummary>('/limits', authToken));
+    const [limitsRes, workspaceSettingsRes] = await Promise.all([
+      apiFetch<UsageSummary>('/limits', authToken),
+      user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
+    ]);
+    setUsageSummary(limitsRes);
+    setWorkspaceSettings(workspaceSettingsRes.settings);
+  }
+
+  async function savePersonalSettings() {
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ settings: UserSettings }>('/user/settings', token, {
+        method: 'PATCH',
+        body: JSON.stringify({
+          defaultGeo: selectedGeo,
+          defaultPersona: persona,
+          defaultDocumentType: documentType,
+          bulkCount,
+        }),
+      });
+      setUserSettings(res.settings);
+      setSettingsStatus('Saved to backend');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to save personal settings');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function saveWorkspaceSettings() {
+    if (!user?.workspaceId || !workspaceSettings) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, token, {
+        method: 'PATCH',
+        body: JSON.stringify(workspaceSettings),
+      });
+      setWorkspaceSettings(res.settings);
+      setSettingsStatus('Saved to backend');
+      await refreshUsage();
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to save workspace settings');
+    } finally {
+      setIsSavingSettings(false);
+    }
   }
 
   async function doLogin(e: React.FormEvent) {
@@ -1051,6 +1117,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               onCopy={copyValue}
               copiedField={copiedField}
               usageSummary={usageSummary}
+              userSettings={userSettings}
+              workspaceSettings={workspaceSettings}
+              setWorkspaceSettings={setWorkspaceSettings}
+              onSavePersonalSettings={savePersonalSettings}
+              onSaveWorkspaceSettings={saveWorkspaceSettings}
+              isSavingSettings={isSavingSettings}
+              settingsStatus={settingsStatus}
             />
           )}
         </div>
@@ -1093,6 +1166,13 @@ function UtilityView({
   onCopy,
   copiedField,
   usageSummary,
+  userSettings,
+  workspaceSettings,
+  setWorkspaceSettings,
+  onSavePersonalSettings,
+  onSaveWorkspaceSettings,
+  isSavingSettings,
+  settingsStatus,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -1122,6 +1202,13 @@ function UtilityView({
   onCopy: (key: string, value: string) => void;
   copiedField: string;
   usageSummary: UsageSummary | null;
+  userSettings: UserSettings | null;
+  workspaceSettings: ServerWorkspaceSettings | null;
+  setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
+  onSavePersonalSettings: () => void;
+  onSaveWorkspaceSettings: () => void;
+  isSavingSettings: boolean;
+  settingsStatus: string;
 }) {
   if (activeNav === 'mailboxes') {
     return (
@@ -1352,20 +1439,34 @@ function UtilityView({
     );
   }
 
+  const editableWorkspaceSettings: ServerWorkspaceSettings = workspaceSettings ?? {
+    historyRetentionDays: usageSummary?.settings.historyRetentionDays ?? 30,
+    historyLimit: usageSummary?.settings.historyLimit ?? 50,
+    allowBulkGeneration: usageSummary?.settings.allowBulkGeneration ?? true,
+    maxBulkCount: usageSummary?.settings.maxBulkCount ?? 25,
+    mailboxProvider: 'mail_tm',
+    accountsPerDay: usageSummary?.limits.accountsPerDay.limit ?? 25,
+    mailboxCreatePerDay: usageSummary?.limits.mailboxesPerDay.limit ?? 25,
+    inboxRefreshPerMinute: usageSummary?.limits.inboxRefreshPerMinute.limit ?? 10,
+  };
+  const updateWorkspaceDraft = (patch: Partial<ServerWorkspaceSettings>) => {
+    setWorkspaceSettings((current) => ({ ...editableWorkspaceSettings, ...current, ...patch }));
+  };
+
   return (
     <section className="panel utility-panel">
       <div className="utility-header">
         <div>
           <h2>Settings</h2>
-          <p>Personal defaults now, workspace and account controls ready for the backend roadmap.</p>
+          <p>Personal defaults and workspace limits are saved on the backend.</p>
         </div>
-        <span className="status-pill tone-success">Saved locally</span>
+        <span className={cn('status-pill', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
       </div>
 
       <section className="settings-section">
         <div className="section-subhead">
           <h3>Personal Settings</h3>
-          <p>Generation defaults for this browser session. Backend-backed user settings are planned.</p>
+          <p>Generation defaults saved to your user profile.</p>
         </div>
         <div className="settings-grid">
           <Field label="Default GEO">
@@ -1388,20 +1489,55 @@ function UtilityView({
             <input className="input-field compact" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
           </Field>
         </div>
+        <div className="settings-actions">
+          <span>{userSettings ? `Server default: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType}` : 'Server defaults loading'}</span>
+          <button type="button" className="primary-button" onClick={onSavePersonalSettings} disabled={isSavingSettings}>
+            {isSavingSettings ? 'Saving' : 'Save personal settings'}
+          </button>
+        </div>
       </section>
 
       <section className="settings-section">
         <div className="section-subhead">
           <h3>Workspace Settings</h3>
-          <p>Shared limits and retention are loaded from workspace settings.</p>
+          <p>Shared retention and provider protection limits.</p>
         </div>
-        <div className="settings-notes">
-          <InfoTile label="History retention" value={`${usageSummary?.settings.historyRetentionDays ?? 30} days`} action="Read" onClick={() => undefined} />
-          <InfoTile label="History limit" value={`${usageSummary?.settings.historyLimit ?? 50} test users`} action="Read" onClick={() => undefined} />
-          <InfoTile label="Max bulk count" value={`${usageSummary?.settings.maxBulkCount ?? 25} identities`} action="Read" onClick={() => undefined} />
-          <InfoTile label="Members" value="Planned" action="Read" onClick={() => undefined} />
+        <div className="settings-grid">
+          <Field label="History retention days">
+            <input className="input-field compact" type="number" min="1" max="3650" value={editableWorkspaceSettings.historyRetentionDays} onChange={(e) => updateWorkspaceDraft({ historyRetentionDays: Number(e.target.value) || 1 })} />
+          </Field>
+          <Field label="History limit">
+            <input className="input-field compact" type="number" min="1" max="1000" value={editableWorkspaceSettings.historyLimit} onChange={(e) => updateWorkspaceDraft({ historyLimit: Number(e.target.value) || 1 })} />
+          </Field>
+          <Field label="Max bulk count">
+            <input className="input-field compact" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
+          </Field>
+          <Field label="Accounts per day">
+            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
+          </Field>
+          <Field label="Mailboxes per day">
+            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
+          </Field>
+          <Field label="Inbox refresh per minute">
+            <input className="input-field compact" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
+          </Field>
+          <Field label="Mailbox provider">
+            <select className="input-field compact" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value })}>
+              <option value="mail_tm">mail.tm</option>
+            </select>
+          </Field>
+          <label className="settings-toggle">
+            <input type="checkbox" checked={editableWorkspaceSettings.allowBulkGeneration} onChange={(e) => updateWorkspaceDraft({ allowBulkGeneration: e.target.checked })} />
+            <span>Allow bulk generation</span>
+          </label>
         </div>
         {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
+        <div className="settings-actions">
+          <span>Applies to everyone in this workspace.</span>
+          <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings}>
+            {isSavingSettings ? 'Saving' : 'Save workspace settings'}
+          </button>
+        </div>
       </section>
 
       <section className="settings-section">
@@ -1418,7 +1554,7 @@ function UtilityView({
       </section>
 
       <div className="settings-save-note">
-        Personal defaults are currently saved in this browser and reused by Generate identity, Generate bulk, and Main after reload.
+        Browser cache is still used for fast reloads, but backend settings are the source of truth after sign in.
       </div>
     </section>
   );

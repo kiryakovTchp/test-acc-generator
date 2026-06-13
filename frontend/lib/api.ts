@@ -63,6 +63,24 @@ export interface UsageLimit {
   remaining: number;
 }
 
+export interface UserSettings {
+  defaultGeo: string;
+  defaultPersona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
+  defaultDocumentType: string;
+  bulkCount: number;
+}
+
+export interface WorkspaceSettings {
+  historyRetentionDays: number;
+  historyLimit: number;
+  allowBulkGeneration: boolean;
+  maxBulkCount: number;
+  mailboxProvider: string;
+  accountsPerDay: number;
+  mailboxCreatePerDay: number;
+  inboxRefreshPerMinute: number;
+}
+
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,

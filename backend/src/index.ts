@@ -8,6 +8,7 @@ import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
 import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWorkspaceSettings, recordUsageEvent, USAGE_EVENTS } from './limits.js';
+import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -134,6 +135,33 @@ app.get('/history', auth, (req, res) => {
 
 app.get('/limits', auth, (req, res) => {
   res.json(getUsageSummary((req as any).user.workspaceId, (req as any).user.userId));
+});
+
+app.get('/user/settings', auth, (req, res) => {
+  res.json({ settings: getUserSettings((req as any).user.userId) });
+});
+
+app.patch('/user/settings', auth, (req, res) => {
+  res.json({ settings: updateUserSettings((req as any).user.userId, req.body ?? {}) });
+});
+
+app.get('/workspaces/:id/settings', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    assertCanReadWorkspaceSettings(workspaceId, (req as any).user.userId);
+    res.json({ settings: getWorkspaceSettingsForApi(workspaceId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to load workspace settings');
+  }
+});
+
+app.patch('/workspaces/:id/settings', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    res.json({ settings: updateWorkspaceSettings(workspaceId, (req as any).user.userId, req.body ?? {}) });
+  } catch (error) {
+    sendError(res, error, 'Failed to update workspace settings');
+  }
 });
 
 app.get('/history/:id', auth, (req, res) => {

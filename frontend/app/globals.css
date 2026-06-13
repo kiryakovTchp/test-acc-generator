@@ -1531,6 +1531,7 @@ body {
 .mailbox-current,
 .settings-grid,
 .settings-notes,
+.settings-actions,
 .form-data-grid,
 .verification-page-grid {
   display: grid;
@@ -1579,6 +1580,38 @@ body {
   border-radius: 6px;
   padding: 14px;
   background: #fff;
+}
+
+.settings-actions {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border-top: 1px solid #edf0f4;
+  padding-top: 12px;
+}
+
+.settings-actions span {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.settings-toggle {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 37px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 11px;
+  background: #fff;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.settings-toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--active);
 }
 
 .section-subhead p,
@@ -2396,6 +2429,10 @@ kbd {
   }
 
   .usage-strip {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-actions {
     grid-template-columns: 1fr;
   }
 
