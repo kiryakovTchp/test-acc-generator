@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch, type GeoItem, type HistoryItem, type UserInfo } from '@/lib/api';
+import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -183,6 +183,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [isRefreshingTempMailbox, setIsRefreshingTempMailbox] = useState(false);
   const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
+  const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -268,6 +269,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const primaryActionsDisabled = !detail;
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
+  const maxBulkCount = usageSummary?.settings.maxBulkCount ?? 25;
   const verificationLinks = detail?.inbox.links ?? [];
   const verificationCodes = detail?.inbox.codes ?? [];
   const verificationReceivedAt = detail?.inbox.receivedAt;
@@ -306,15 +308,22 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   });
 
   async function refresh(authToken = token) {
-    const [geo, historyRes] = await Promise.all([
+    const [geo, historyRes, limitsRes] = await Promise.all([
       apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
       apiFetch<{ items: HistoryItem[] }>('/history', authToken),
+      apiFetch<UsageSummary>('/limits', authToken),
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
+    setUsageSummary(limitsRes);
+    setBulkCount((value) => Math.min(limitsRes.settings.maxBulkCount, Math.max(1, value)));
     if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
       setSelectedGeo(geo.items[0].key);
     }
+  }
+
+  async function refreshUsage(authToken = token) {
+    setUsageSummary(await apiFetch<UsageSummary>('/limits', authToken));
   }
 
   async function doLogin(e: React.FormEvent) {
@@ -427,6 +436,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       const mailbox = await apiFetch<TempMailbox>('/mailboxes/create', token, { method: 'POST' });
       setTempMailbox(mailbox);
       setTempMailboxInbox(null);
+      await refreshUsage();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to create mailbox');
     } finally {
@@ -444,6 +454,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         body: JSON.stringify({ ...tempMailbox, waitMs }),
       });
       setTempMailboxInbox(inbox);
+      await refreshUsage();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch mailbox inbox');
     } finally {
@@ -528,9 +539,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             className="input-field compact"
             type="number"
             min="1"
-            max="25"
+            max={maxBulkCount}
             value={bulkCount}
-            onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))}
+            onChange={(e) => setBulkCount(Math.min(maxBulkCount, Math.max(1, Number(e.target.value) || 1)))}
           />
         </Field>
       </div>
@@ -613,6 +624,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <strong>Generation Console</strong>
           </div>
           <div className="topbar-admin">
+            {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : null}
             <button className="icon-button" title="Command menu">CMD K</button>
             <div className="env-select"><span /> Environment · admin-live</div>
             <div className="env-select">{user.login}</div>
@@ -627,6 +639,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         {showQuickActions ? (
         <section className="quick-actions-panel">
           <div className="quick-actions-title">Quick actions</div>
+          {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
           <div className="quick-actions-grid" aria-label="Primary identity actions">
             <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
               <span className="action-icon">+</span>
@@ -1037,6 +1050,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               onLoadDetail={loadDetail}
               onCopy={copyValue}
               copiedField={copiedField}
+              usageSummary={usageSummary}
             />
           )}
         </div>
@@ -1078,6 +1092,7 @@ function UtilityView({
   onLoadDetail,
   onCopy,
   copiedField,
+  usageSummary,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -1106,6 +1121,7 @@ function UtilityView({
   onLoadDetail: (id: number) => void;
   onCopy: (key: string, value: string) => void;
   copiedField: string;
+  usageSummary: UsageSummary | null;
 }) {
   if (activeNav === 'mailboxes') {
     return (
@@ -1369,7 +1385,7 @@ function UtilityView({
             </select>
           </Field>
           <Field label="Bulk count">
-            <input className="input-field compact" type="number" min="1" max="25" value={bulkCount} onChange={(e) => setBulkCount(Math.min(25, Math.max(1, Number(e.target.value) || 1)))} />
+            <input className="input-field compact" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
           </Field>
         </div>
       </section>
@@ -1377,14 +1393,15 @@ function UtilityView({
       <section className="settings-section">
         <div className="section-subhead">
           <h3>Workspace Settings</h3>
-          <p>Shared limits and retention will move here after workspace settings land on the backend.</p>
+          <p>Shared limits and retention are loaded from workspace settings.</p>
         </div>
         <div className="settings-notes">
-          <InfoTile label="History retention" value="30 days" action="Read" onClick={() => undefined} />
-          <InfoTile label="History limit" value="50 test users" action="Read" onClick={() => undefined} />
-          <InfoTile label="Max bulk count" value="25 identities" action="Read" onClick={() => undefined} />
+          <InfoTile label="History retention" value={`${usageSummary?.settings.historyRetentionDays ?? 30} days`} action="Read" onClick={() => undefined} />
+          <InfoTile label="History limit" value={`${usageSummary?.settings.historyLimit ?? 50} test users`} action="Read" onClick={() => undefined} />
+          <InfoTile label="Max bulk count" value={`${usageSummary?.settings.maxBulkCount ?? 25} identities`} action="Read" onClick={() => undefined} />
           <InfoTile label="Members" value="Planned" action="Read" onClick={() => undefined} />
         </div>
+        {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
       </section>
 
       <section className="settings-section">
@@ -1421,6 +1438,25 @@ function Metric({ label, value }: { label: string; value: string }) {
     <div className="metric-chip">
       <span>{label}</span>
       <strong>{value}</strong>
+    </div>
+  );
+}
+
+function UsagePill({ label, used, limit }: { label: string; used: number; limit: number }) {
+  return (
+    <div className="usage-pill">
+      <span>{label}</span>
+      <strong>{used} / {limit}</strong>
+    </div>
+  );
+}
+
+function UsageStrip({ usage }: { usage: UsageSummary }) {
+  return (
+    <div className="usage-strip">
+      <UsagePill label="Accounts today" used={usage.limits.accountsPerDay.used} limit={usage.limits.accountsPerDay.limit} />
+      <UsagePill label="Mailboxes today" used={usage.limits.mailboxesPerDay.used} limit={usage.limits.mailboxesPerDay.limit} />
+      <UsagePill label="Inbox / min" used={usage.limits.inboxRefreshPerMinute.used} limit={usage.limits.inboxRefreshPerMinute.limit} />
     </div>
   );
 }

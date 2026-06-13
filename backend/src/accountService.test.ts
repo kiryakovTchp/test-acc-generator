@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { listGeoRules, generateAccount, getHistoryDetail, listHistory, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
+import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -106,3 +107,39 @@ test('workspace scope keeps another seed user out of private history', async () 
   assert.equal(getHistoryDetail(item!.id, 2), null);
   assert.equal(listHistory(2).some((row: any) => row.id === item!.id), false);
 });
+
+test('workspace history limit trims generated identities per workspace setting', async () => {
+  const userId = createTestUser('history_limit');
+  const workspaceId = getDefaultWorkspaceForUser(userId);
+  db.prepare('UPDATE workspace_settings SET history_limit = ? WHERE workspace_id = ?').run(2, workspaceId);
+
+  await generateAccount({ userId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  await generateAccount({ userId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  await generateAccount({ userId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+
+  assert.equal(listHistory(userId, workspaceId).length, 2);
+});
+
+test('usage limits count quantity before allowing another provider call', () => {
+  const userId = createTestUser('usage_limit');
+  const workspaceId = getDefaultWorkspaceForUser(userId);
+  db.prepare('UPDATE workspace_settings SET accounts_per_day = ? WHERE workspace_id = ?').run(2, workspaceId);
+
+  recordUsageEvent(workspaceId, userId, USAGE_EVENTS.accountGenerated, 2);
+  const summary = getUsageSummary(workspaceId, userId);
+  assert.deepEqual(summary.limits.accountsPerDay, { used: 2, limit: 2, remaining: 0 });
+
+  assert.throws(
+    () => enforceDailyLimit(workspaceId, userId, USAGE_EVENTS.accountGenerated, 2, 'generation_limit_reached', 'Daily account generation limit reached'),
+    (error) => error instanceof ApiError && error.code === 'generation_limit_reached' && error.status === 429,
+  );
+});
+
+function createTestUser(prefix: string) {
+  const login = `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  const result = db.prepare(`
+    INSERT INTO users (login, password, role, email, username, status, updated_at)
+    VALUES (?, '', 'user', ?, ?, 'active', CURRENT_TIMESTAMP)
+  `).run(login, `${login}@example.test`, login);
+  return Number(result.lastInsertRowid);
+}
