@@ -8,6 +8,7 @@ const dataDir = path.resolve(process.cwd(), 'backend', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new Database(path.join(dataDir, 'app.db'));
 db.pragma('journal_mode = WAL');
+db.pragma('busy_timeout = 5000');
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
@@ -160,12 +161,31 @@ CREATE TABLE IF NOT EXISTS usage_events (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS workspace_invites (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id INTEGER NOT NULL,
+  invited_by_user_id INTEGER NOT NULL,
+  token_hash TEXT NOT NULL UNIQUE,
+  email TEXT,
+  role TEXT NOT NULL CHECK(role IN ('admin','member','viewer')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK(status IN ('pending','accepted','revoked','expired')),
+  expires_at TEXT NOT NULL,
+  accepted_by_user_id INTEGER,
+  accepted_at TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (workspace_id) REFERENCES workspaces(id),
+  FOREIGN KEY (invited_by_user_id) REFERENCES users(id),
+  FOREIGN KEY (accepted_by_user_id) REFERENCES users(id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_workspace_members_user ON workspace_members(user_id, workspace_id);
 CREATE INDEX IF NOT EXISTS idx_account_history_workspace_created_at ON account_history(workspace_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_account_history_created_by ON account_history(created_by_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_usage_events_workspace_type_created_at ON usage_events(workspace_id, event_type, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token_hash_unique ON sessions(token_hash);
+CREATE INDEX IF NOT EXISTS idx_workspace_invites_workspace_created_at ON workspace_invites(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_workspace_invites_status_expires_at ON workspace_invites(status, expires_at);
 `);
 
 ensureColumn('sessions', 'last_seen_at', 'TEXT');

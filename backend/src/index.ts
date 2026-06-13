@@ -11,6 +11,7 @@ import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWo
 import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
 import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
+import { createWorkspaceInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -75,9 +76,6 @@ app.post('/auth/register', (req, res) => {
   if (registrationMode === 'disabled') {
     return res.status(403).json({ error: 'Registration is disabled', code: 'registration_disabled' });
   }
-  if (registrationMode === 'invite_only') {
-    return res.status(403).json({ error: 'Invite token is required', code: 'invite_required' });
-  }
 
   const email = String(req.body?.email ?? '').trim().toLowerCase();
   const username = normalizeUsername(req.body?.username);
@@ -87,6 +85,17 @@ app.post('/auth/register', (req, res) => {
   }
 
   try {
+    if (registrationMode === 'invite_only') {
+      const inviteToken = String(req.body?.inviteToken ?? '').trim();
+      if (!inviteToken) {
+        return res.status(403).json({ error: 'Invite token is required', code: 'invite_required' });
+      }
+      const user = registerUserWithInvite({ inviteToken, email, username, passwordHash: hashPassword(password) });
+      const session = createSession(user.id, req);
+      setSessionCookie(res, session.token, session.expiresAt);
+      return res.status(201).json(buildAuthResponse(user, session.id));
+    }
+
     const result = db.prepare(`
       INSERT INTO users (login, password, password_hash, role, email, username, status, updated_at)
       VALUES (?, '', ?, 'user', ?, ?, 'active', CURRENT_TIMESTAMP)
@@ -98,6 +107,9 @@ app.post('/auth/register', (req, res) => {
     setSessionCookie(res, session.token, session.expiresAt);
     res.status(201).json(buildAuthResponse(user, session.id));
   } catch (error) {
+    if (error instanceof ApiError) {
+      return sendError(res, error, 'Registration failed');
+    }
     res.status(409).json({ error: 'User already exists', code: 'user_already_exists' });
   }
 });
@@ -205,6 +217,34 @@ app.delete('/workspaces/:id/members/:userId', auth, (req, res) => {
     res.json({ members: removeWorkspaceMember(workspaceId, (req as any).user.userId, targetUserId) });
   } catch (error) {
     sendError(res, error, 'Failed to remove workspace member');
+  }
+});
+
+app.get('/workspaces/:id/invites', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    res.json({ invites: listWorkspaceInvites(workspaceId, (req as any).user.userId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to load workspace invites');
+  }
+});
+
+app.post('/workspaces/:id/invites', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    res.status(201).json({ invite: createWorkspaceInvite(workspaceId, (req as any).user.userId, req.body ?? {}) });
+  } catch (error) {
+    sendError(res, error, 'Failed to create workspace invite');
+  }
+});
+
+app.delete('/workspaces/:id/invites/:inviteId', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    const inviteId = Number(req.params.inviteId);
+    res.json({ invites: revokeWorkspaceInvite(workspaceId, (req as any).user.userId, inviteId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to revoke workspace invite');
   }
 });
 
