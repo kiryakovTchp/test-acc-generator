@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
+import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -186,6 +186,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
+  const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
+  const [memberLookup, setMemberLookup] = useState('');
+  const [memberRole, setMemberRole] = useState<WorkspaceMember['workspaceRole']>('member');
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsStatus, setSettingsStatus] = useState('Saved locally');
 
@@ -315,18 +318,20 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
     setUser(me.user);
     const workspaceId = me.user.workspaceId;
-    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes] = await Promise.all([
+    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes] = await Promise.all([
       apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
       apiFetch<{ items: HistoryItem[] }>('/history', authToken),
       apiFetch<UsageSummary>('/limits', authToken),
       apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
       workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
+      workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
     setUsageSummary(limitsRes);
     setUserSettings(userSettingsRes.settings);
     setWorkspaceSettings(workspaceSettingsRes.settings);
+    setWorkspaceMembers(workspaceMembersRes.members);
     if (!userSettings) {
       setSelectedGeo(userSettingsRes.settings.defaultGeo);
       setDocumentType(userSettingsRes.settings.defaultDocumentType);
@@ -341,12 +346,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshUsage(authToken = token) {
-    const [limitsRes, workspaceSettingsRes] = await Promise.all([
+    const [limitsRes, workspaceSettingsRes, workspaceMembersRes] = await Promise.all([
       apiFetch<UsageSummary>('/limits', authToken),
       user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
+      user?.workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
     ]);
     setUsageSummary(limitsRes);
     setWorkspaceSettings(workspaceSettingsRes.settings);
+    setWorkspaceMembers(workspaceMembersRes.members);
   }
 
   async function savePersonalSettings() {
@@ -387,6 +394,62 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     } catch (err) {
       setSettingsStatus('Save failed');
       setError(err instanceof Error ? err.message : 'Failed to save workspace settings');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function addMember() {
+    if (!user?.workspaceId || !memberLookup.trim()) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, token, {
+        method: 'POST',
+        body: JSON.stringify({ login: memberLookup.trim(), role: memberRole }),
+      });
+      setWorkspaceMembers(res.members);
+      setMemberLookup('');
+      setMemberRole('member');
+      setSettingsStatus('Saved to backend');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to add workspace member');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function updateMemberRole(userId: number, role: WorkspaceMember['workspaceRole']) {
+    if (!user?.workspaceId) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members/${userId}`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ role }),
+      });
+      setWorkspaceMembers(res.members);
+      setSettingsStatus('Saved to backend');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to update workspace member');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function removeMember(userId: number) {
+    if (!user?.workspaceId) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members/${userId}`, token, { method: 'DELETE' });
+      setWorkspaceMembers(res.members);
+      setSettingsStatus('Saved to backend');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to remove workspace member');
     } finally {
       setIsSavingSettings(false);
     }
@@ -1119,9 +1182,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               usageSummary={usageSummary}
               userSettings={userSettings}
               workspaceSettings={workspaceSettings}
+              workspaceMembers={workspaceMembers}
+              memberLookup={memberLookup}
+              setMemberLookup={setMemberLookup}
+              memberRole={memberRole}
+              setMemberRole={setMemberRole}
               setWorkspaceSettings={setWorkspaceSettings}
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
+              onAddMember={addMember}
+              onUpdateMemberRole={updateMemberRole}
+              onRemoveMember={removeMember}
               isSavingSettings={isSavingSettings}
               settingsStatus={settingsStatus}
               canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
@@ -1169,9 +1240,17 @@ function UtilityView({
   usageSummary,
   userSettings,
   workspaceSettings,
+  workspaceMembers,
+  memberLookup,
+  setMemberLookup,
+  memberRole,
+  setMemberRole,
   setWorkspaceSettings,
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
+  onAddMember,
+  onUpdateMemberRole,
+  onRemoveMember,
   isSavingSettings,
   settingsStatus,
   canManageWorkspaceSettings,
@@ -1206,9 +1285,17 @@ function UtilityView({
   usageSummary: UsageSummary | null;
   userSettings: UserSettings | null;
   workspaceSettings: ServerWorkspaceSettings | null;
+  workspaceMembers: WorkspaceMember[];
+  memberLookup: string;
+  setMemberLookup: (value: string) => void;
+  memberRole: WorkspaceMember['workspaceRole'];
+  setMemberRole: (value: WorkspaceMember['workspaceRole']) => void;
   setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
+  onAddMember: () => void;
+  onUpdateMemberRole: (userId: number, role: WorkspaceMember['workspaceRole']) => void;
+  onRemoveMember: (userId: number) => void;
   isSavingSettings: boolean;
   settingsStatus: string;
   canManageWorkspaceSettings: boolean;
@@ -1540,6 +1627,69 @@ function UtilityView({
           <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings || !canManageWorkspaceSettings}>
             {isSavingSettings ? 'Saving' : 'Save workspace settings'}
           </button>
+        </div>
+      </section>
+
+      <section className="settings-section">
+        <div className="section-subhead">
+          <h3>Team Members</h3>
+          <p>Workspace access and role assignment for existing users.</p>
+        </div>
+
+        <div className="member-add-row">
+          <input
+            className="input-field compact"
+            value={memberLookup}
+            onChange={(e) => setMemberLookup(e.target.value)}
+            placeholder="login, email, or username"
+            disabled={!canManageWorkspaceSettings}
+          />
+          <select className="input-field compact" value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+            <option value="member">member</option>
+            <option value="viewer">viewer</option>
+            <option value="admin">admin</option>
+            <option value="owner">owner</option>
+          </select>
+          <button type="button" className="primary-button" onClick={onAddMember} disabled={isSavingSettings || !memberLookup.trim() || !canManageWorkspaceSettings}>Add member</button>
+        </div>
+
+        <div className="members-table-wrap">
+          <table className="account-table members-table">
+            <thead>
+              <tr>
+                <th>User</th>
+                <th>Workspace role</th>
+                <th>System role</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {workspaceMembers.map((member) => (
+                <tr key={member.userId}>
+                  <td><strong>{member.login}</strong><span>{member.email || member.username}</span></td>
+                  <td>
+                    <select
+                      className="input-field compact"
+                      value={member.workspaceRole}
+                      onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
+                      disabled={!canManageWorkspaceSettings || isSavingSettings}
+                    >
+                      <option value="owner">owner</option>
+                      <option value="admin">admin</option>
+                      <option value="member">member</option>
+                      <option value="viewer">viewer</option>
+                    </select>
+                  </td>
+                  <td>{member.userRole}</td>
+                  <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="settings-actions">
+          <span>{canManageWorkspaceSettings ? 'New members must already exist as users.' : 'Member management requires owner or admin access.'}</span>
         </div>
       </section>
 

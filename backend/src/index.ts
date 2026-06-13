@@ -10,6 +10,7 @@ import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPasswor
 import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWorkspaceSettings, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
 import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
+import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -166,6 +167,44 @@ app.patch('/workspaces/:id/settings', auth, (req, res) => {
     res.json({ settings: updateWorkspaceSettings(workspaceId, (req as any).user.userId, req.body ?? {}) });
   } catch (error) {
     sendError(res, error, 'Failed to update workspace settings');
+  }
+});
+
+app.get('/workspaces/:id/members', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    res.json({ members: listWorkspaceMembers(workspaceId, (req as any).user.userId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to load workspace members');
+  }
+});
+
+app.post('/workspaces/:id/members', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    res.status(201).json({ members: addWorkspaceMember(workspaceId, (req as any).user.userId, req.body ?? {}) });
+  } catch (error) {
+    sendError(res, error, 'Failed to add workspace member');
+  }
+});
+
+app.patch('/workspaces/:id/members/:userId', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    const targetUserId = Number(req.params.userId);
+    res.json({ members: updateWorkspaceMemberRole(workspaceId, (req as any).user.userId, targetUserId, req.body ?? {}) });
+  } catch (error) {
+    sendError(res, error, 'Failed to update workspace member');
+  }
+});
+
+app.delete('/workspaces/:id/members/:userId', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    const targetUserId = Number(req.params.userId);
+    res.json({ members: removeWorkspaceMember(workspaceId, (req as any).user.userId, targetUserId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to remove workspace member');
   }
 });
 

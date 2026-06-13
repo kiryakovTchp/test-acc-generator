@@ -1532,6 +1532,7 @@ body {
 .settings-grid,
 .settings-notes,
 .settings-actions,
+.member-add-row,
 .form-data-grid,
 .verification-page-grid {
   display: grid;
@@ -1612,6 +1613,20 @@ body {
   width: 16px;
   height: 16px;
   accent-color: var(--active);
+}
+
+.member-add-row {
+  grid-template-columns: minmax(220px, 1fr) 140px auto;
+  align-items: end;
+}
+
+.members-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.members-table .input-field.compact {
+  min-width: 118px;
 }
 
 .section-subhead p,
@@ -2433,6 +2448,10 @@ kbd {
   }
 
   .settings-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .member-add-row {
     grid-template-columns: 1fr;
   }
 
