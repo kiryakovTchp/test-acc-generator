@@ -9,6 +9,7 @@ import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
 import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWorkspaceSettings, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
+import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -38,7 +39,11 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
       return res.status(401).json({ error: 'Session expired' });
     }
     const workspaceId = decoded.workspaceId ?? getDefaultWorkspaceForUser(user.id);
-    (req as any).user = { userId: user.id, login: user.login, role: user.role, sessionId: decoded.sessionId ?? null, workspaceId };
+    const workspaceRole = getWorkspaceRole(user.id, workspaceId);
+    if (!workspaceRole) {
+      return res.status(403).json({ error: 'Workspace access denied', code: 'workspace_access_denied' });
+    }
+    (req as any).user = { userId: user.id, login: user.login, role: user.role, workspaceRole, sessionId: decoded.sessionId ?? null, workspaceId };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -124,7 +129,7 @@ app.post('/auth/logout', auth, (req, res) => {
 
 app.get('/auth/me', auth, (req, res) => {
   const user = db.prepare('SELECT id, login, email, username, role, status, created_at as createdAt, updated_at as updatedAt FROM users WHERE id = ?').get((req as any).user.userId) as any;
-  res.json({ user: { ...user, workspaceId: (req as any).user.workspaceId } });
+  res.json({ user: { ...user, workspaceId: (req as any).user.workspaceId, workspaceRole: (req as any).user.workspaceRole } });
 });
 
 app.get('/geo-rules', auth, (_req, res) => res.json({ items: listGeoRules() }));
@@ -174,6 +179,7 @@ app.get('/history/:id', auth, (req, res) => {
 app.post('/mailboxes/create', auth, async (req, res) => {
   const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
     enforceDailyLimit(
       (req as any).user.workspaceId,
       (req as any).user.userId,
@@ -199,6 +205,7 @@ app.post('/mailboxes/inbox', auth, async (req, res) => {
     return res.status(400).json({ error: 'Mailbox address and password are required' });
   }
   try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
     enforceMinuteLimit(
       (req as any).user.workspaceId,
       (req as any).user.userId,
@@ -220,6 +227,7 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
   const includeDebug = req.query.debug === '1';
   try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
     enforceMinuteLimit(
       (req as any).user.workspaceId,
       (req as any).user.userId,
@@ -238,6 +246,11 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
 });
 
 app.patch('/history/:id/account-id', auth, (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+  } catch (error) {
+    return sendError(res, error, 'Workspace permission denied');
+  }
   const includeDebug = req.query.debug === '1';
   const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''), includeDebug, (req as any).user.workspaceId);
   if (!item) return res.status(404).json({ error: 'Not found' });
@@ -245,6 +258,11 @@ app.patch('/history/:id/account-id', auth, (req, res) => {
 });
 
 app.delete('/history/:id', auth, (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+  } catch (error) {
+    return sendError(res, error, 'Workspace permission denied');
+  }
   deleteHistory(Number(req.params.id), (req as any).user.userId, (req as any).user.workspaceId);
   res.status(204).send();
 });
@@ -253,6 +271,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
   const { geoKey, documentType, role, persona } = req.body ?? {};
   const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
     enforceGenerationLimits((req as any).user.workspaceId, (req as any).user.userId, settings, 1);
     const item = await generateAccount({
       userId: (req as any).user.userId,
@@ -278,6 +297,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
   const maxBulkCount = Math.max(1, Math.min(100, Number(settings.max_bulk_count ?? 25)));
   const count = Number.isFinite(requestedCount) ? Math.min(maxBulkCount, Math.max(1, Math.floor(requestedCount))) : 1;
   try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
     if (!settings.allow_bulk_generation) {
       throw new ApiError('bulk_generation_disabled', 'Bulk generation is disabled for this workspace', 403);
     }
@@ -330,6 +350,7 @@ function createSession(userId: number, req: express.Request) {
 
 function buildAuthResponse(user: { id: number; login: string; role: Role; email?: string; username?: string; status?: string }, sessionId: number) {
   const workspaceId = getDefaultWorkspaceForUser(user.id);
+  const workspaceRole = getWorkspaceRole(user.id, workspaceId);
   const token = jwt.sign({ userId: user.id, login: user.login, role: user.role, sessionId, workspaceId }, jwtSecret, { expiresIn: accessTokenTtl });
   return {
     token,
@@ -340,6 +361,7 @@ function buildAuthResponse(user: { id: number; login: string; role: Role; email?
       role: user.role,
       status: user.status,
       workspaceId,
+      workspaceRole,
     },
   };
 }
@@ -415,4 +437,8 @@ function sendError(res: express.Response, error: unknown, fallback: string) {
     return res.status(error.status).json({ error: error.message, code: error.code });
   }
   return res.status(400).json({ error: error instanceof Error ? error.message : fallback });
+}
+
+function requireWorkspacePermission(req: express.Request, allowedRoles: WorkspaceRole[]) {
+  return assertWorkspaceRole((req as any).user.userId, (req as any).user.workspaceId, allowedRoles);
 }

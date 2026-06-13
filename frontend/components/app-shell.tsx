@@ -1124,6 +1124,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               onSaveWorkspaceSettings={saveWorkspaceSettings}
               isSavingSettings={isSavingSettings}
               settingsStatus={settingsStatus}
+              canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
             />
           )}
         </div>
@@ -1173,6 +1174,7 @@ function UtilityView({
   onSaveWorkspaceSettings,
   isSavingSettings,
   settingsStatus,
+  canManageWorkspaceSettings,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -1209,6 +1211,7 @@ function UtilityView({
   onSaveWorkspaceSettings: () => void;
   isSavingSettings: boolean;
   settingsStatus: string;
+  canManageWorkspaceSettings: boolean;
 }) {
   if (activeNav === 'mailboxes') {
     return (
@@ -1533,8 +1536,8 @@ function UtilityView({
         </div>
         {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
         <div className="settings-actions">
-          <span>Applies to everyone in this workspace.</span>
-          <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings}>
+          <span>{canManageWorkspaceSettings ? 'Applies to everyone in this workspace.' : 'Workspace settings require owner or admin access.'}</span>
+          <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings || !canManageWorkspaceSettings}>
             {isSavingSettings ? 'Saving' : 'Save workspace settings'}
           </button>
         </div>
