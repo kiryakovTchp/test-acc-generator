@@ -1620,6 +1620,35 @@ body {
   align-items: end;
 }
 
+.invite-create-row {
+  margin-bottom: 10px;
+}
+
+.invite-token-box {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #dbeafe;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.invite-token-box code {
+  min-width: 0;
+  overflow: hidden;
+  color: #111827;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .members-table-wrap {
   max-width: 100%;
   overflow-x: auto;

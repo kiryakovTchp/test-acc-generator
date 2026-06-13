@@ -92,6 +92,20 @@ export interface WorkspaceMember {
   joinedAt: string;
 }
 
+export interface WorkspaceInvite {
+  id: number;
+  workspaceId: number;
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  status: string;
+  expiresAt: string;
+  createdAt: string;
+  acceptedAt: string;
+  invitedByLogin: string;
+  acceptedByLogin: string;
+  token?: string;
+}
+
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,

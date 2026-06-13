@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
+import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -187,8 +187,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
+  const [workspaceInvites, setWorkspaceInvites] = useState<WorkspaceInvite[]>([]);
   const [memberLookup, setMemberLookup] = useState('');
   const [memberRole, setMemberRole] = useState<WorkspaceMember['workspaceRole']>('member');
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRole, setInviteRole] = useState<WorkspaceInvite['role']>('member');
+  const [lastInviteToken, setLastInviteToken] = useState('');
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsStatus, setSettingsStatus] = useState('Saved locally');
 
@@ -318,13 +322,15 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
     setUser(me.user);
     const workspaceId = me.user.workspaceId;
-    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes] = await Promise.all([
+    const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
+    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
       apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
       apiFetch<{ items: HistoryItem[] }>('/history', authToken),
       apiFetch<UsageSummary>('/limits', authToken),
       apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
       workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
+      workspaceId && canLoadInvites ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
@@ -332,6 +338,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setUserSettings(userSettingsRes.settings);
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
+    setWorkspaceInvites(workspaceInvitesRes.invites);
     if (!userSettings) {
       setSelectedGeo(userSettingsRes.settings.defaultGeo);
       setDocumentType(userSettingsRes.settings.defaultDocumentType);
@@ -346,14 +353,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshUsage(authToken = token) {
-    const [limitsRes, workspaceSettingsRes, workspaceMembersRes] = await Promise.all([
+    const [limitsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
       apiFetch<UsageSummary>('/limits', authToken),
       user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       user?.workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
+      user?.workspaceId && ['owner', 'admin'].includes(user.workspaceRole ?? '') ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${user.workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
     ]);
     setUsageSummary(limitsRes);
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
+    setWorkspaceInvites(workspaceInvitesRes.invites);
   }
 
   async function savePersonalSettings() {
@@ -450,6 +459,44 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     } catch (err) {
       setSettingsStatus('Save failed');
       setError(err instanceof Error ? err.message : 'Failed to remove workspace member');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function createInvite() {
+    if (!user?.workspaceId) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ invite: WorkspaceInvite }>(`/workspaces/${user.workspaceId}/invites`, token, {
+        method: 'POST',
+        body: JSON.stringify({ email: inviteEmail.trim(), role: inviteRole }),
+      });
+      setLastInviteToken(res.invite.token ?? '');
+      setWorkspaceInvites((current) => [res.invite, ...current.filter((item) => item.id !== res.invite.id)]);
+      setInviteEmail('');
+      setInviteRole('member');
+      setSettingsStatus('Invite created');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to create workspace invite');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function revokeInvite(inviteId: number) {
+    if (!user?.workspaceId) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Saving');
+    try {
+      const res = await apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${user.workspaceId}/invites/${inviteId}`, token, { method: 'DELETE' });
+      setWorkspaceInvites(res.invites);
+      setSettingsStatus('Invite revoked');
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to revoke workspace invite');
     } finally {
       setIsSavingSettings(false);
     }
@@ -1183,16 +1230,24 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               userSettings={userSettings}
               workspaceSettings={workspaceSettings}
               workspaceMembers={workspaceMembers}
+              workspaceInvites={workspaceInvites}
               memberLookup={memberLookup}
               setMemberLookup={setMemberLookup}
               memberRole={memberRole}
               setMemberRole={setMemberRole}
+              inviteEmail={inviteEmail}
+              setInviteEmail={setInviteEmail}
+              inviteRole={inviteRole}
+              setInviteRole={setInviteRole}
+              lastInviteToken={lastInviteToken}
               setWorkspaceSettings={setWorkspaceSettings}
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
               onAddMember={addMember}
               onUpdateMemberRole={updateMemberRole}
               onRemoveMember={removeMember}
+              onCreateInvite={createInvite}
+              onRevokeInvite={revokeInvite}
               isSavingSettings={isSavingSettings}
               settingsStatus={settingsStatus}
               canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
@@ -1241,16 +1296,24 @@ function UtilityView({
   userSettings,
   workspaceSettings,
   workspaceMembers,
+  workspaceInvites,
   memberLookup,
   setMemberLookup,
   memberRole,
   setMemberRole,
+  inviteEmail,
+  setInviteEmail,
+  inviteRole,
+  setInviteRole,
+  lastInviteToken,
   setWorkspaceSettings,
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
   onAddMember,
   onUpdateMemberRole,
   onRemoveMember,
+  onCreateInvite,
+  onRevokeInvite,
   isSavingSettings,
   settingsStatus,
   canManageWorkspaceSettings,
@@ -1286,16 +1349,24 @@ function UtilityView({
   userSettings: UserSettings | null;
   workspaceSettings: ServerWorkspaceSettings | null;
   workspaceMembers: WorkspaceMember[];
+  workspaceInvites: WorkspaceInvite[];
   memberLookup: string;
   setMemberLookup: (value: string) => void;
   memberRole: WorkspaceMember['workspaceRole'];
   setMemberRole: (value: WorkspaceMember['workspaceRole']) => void;
+  inviteEmail: string;
+  setInviteEmail: (value: string) => void;
+  inviteRole: WorkspaceInvite['role'];
+  setInviteRole: (value: WorkspaceInvite['role']) => void;
+  lastInviteToken: string;
   setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
   onAddMember: () => void;
   onUpdateMemberRole: (userId: number, role: WorkspaceMember['workspaceRole']) => void;
   onRemoveMember: (userId: number) => void;
+  onCreateInvite: () => void;
+  onRevokeInvite: (inviteId: number) => void;
   isSavingSettings: boolean;
   settingsStatus: string;
   canManageWorkspaceSettings: boolean;
@@ -1633,7 +1704,70 @@ function UtilityView({
       <section className="settings-section">
         <div className="section-subhead">
           <h3>Team Members</h3>
-          <p>Workspace access and role assignment for existing users.</p>
+          <p>Workspace access, invites, and role assignment.</p>
+        </div>
+
+        <div className="member-add-row invite-create-row">
+          <input
+            className="input-field compact"
+            value={inviteEmail}
+            onChange={(e) => setInviteEmail(e.target.value)}
+            placeholder="email for invite"
+            disabled={!canManageWorkspaceSettings}
+          />
+          <select className="input-field compact" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+            <option value="member">member</option>
+            <option value="viewer">viewer</option>
+            <option value="admin">admin</option>
+          </select>
+          <button type="button" className="primary-button" onClick={onCreateInvite} disabled={isSavingSettings || !canManageWorkspaceSettings}>Create invite</button>
+        </div>
+
+        {lastInviteToken ? (
+          <div className="invite-token-box">
+            <span>Invite token</span>
+            <code>{lastInviteToken}</code>
+            <button type="button" className="micro-button" onClick={() => onCopy('invite-token', lastInviteToken)}>
+              {copiedField === 'invite-token' ? 'Copied' : 'Copy'}
+            </button>
+          </div>
+        ) : null}
+
+        <div className="members-table-wrap">
+          <table className="account-table members-table">
+            <thead>
+              <tr>
+                <th>Invite</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {workspaceInvites.map((invite) => (
+                <tr key={invite.id}>
+                  <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
+                  <td>{invite.role}</td>
+                  <td>{invite.status}{invite.acceptedByLogin ? ` by ${invite.acceptedByLogin}` : ''}</td>
+                  <td>
+                    <button
+                      type="button"
+                      className="micro-button"
+                      onClick={() => onRevokeInvite(invite.id)}
+                      disabled={!canManageWorkspaceSettings || isSavingSettings || invite.status !== 'pending'}
+                    >
+                      Revoke
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {workspaceInvites.length === 0 ? (
+                <tr>
+                  <td colSpan={4}>No invites yet</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
         </div>
 
         <div className="member-add-row">
@@ -1689,7 +1823,7 @@ function UtilityView({
         </div>
 
         <div className="settings-actions">
-          <span>{canManageWorkspaceSettings ? 'New members must already exist as users.' : 'Member management requires owner or admin access.'}</span>
+          <span>{canManageWorkspaceSettings ? 'Invites create new users; add member attaches an existing user.' : 'Member management requires owner or admin access.'}</span>
         </div>
       </section>
 
