@@ -43,6 +43,26 @@ export interface HistoryItem {
   inboxStatus?: 'waiting_for_email' | 'email_received' | 'no_email_found';
 }
 
+export interface UsageSummary {
+  settings: {
+    historyRetentionDays: number;
+    historyLimit: number;
+    allowBulkGeneration: boolean;
+    maxBulkCount: number;
+  };
+  limits: {
+    accountsPerDay: UsageLimit;
+    mailboxesPerDay: UsageLimit;
+    inboxRefreshPerMinute: UsageLimit;
+  };
+}
+
+export interface UsageLimit {
+  used: number;
+  limit: number;
+  remaining: number;
+}
+
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,

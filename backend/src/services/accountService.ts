@@ -3,6 +3,7 @@ import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
+import { ApiError, getWorkspaceSettings } from '../limits.js';
 
 const rules = geoRules as unknown as GeoRule[];
 
@@ -27,7 +28,7 @@ export async function generateAccount(input: {
   cleanupOldHistory();
   const workspaceId = resolveWorkspace(input.userId, input.workspaceId);
   const geo = rules.find((rule) => rule.key === input.geoKey);
-  if (!geo) throw new Error('Unknown GEO');
+  if (!geo) throw new ApiError('unsupported_geo', 'Unsupported GEO');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
   const profile = generatePersonaProfile(geo.key, input.persona);
@@ -152,8 +153,8 @@ export function listHistory(userId: number, workspaceId?: number) {
     FROM account_history
     WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
     ORDER BY datetime(created_at) DESC
-    LIMIT 50
-  `).all(resolvedWorkspaceId, userId);
+    LIMIT ?
+  `).all(resolvedWorkspaceId, userId, getWorkspaceSettings(resolvedWorkspaceId).history_limit);
 }
 
 export function getHistoryDetail(id: number, userId: number, includeDebug = false, workspaceId?: number) {
@@ -239,10 +240,20 @@ export function deleteHistory(id: number, userId: number, workspaceId?: number) 
 }
 
 function cleanupOldHistory() {
-  db.prepare(`DELETE FROM account_history WHERE datetime(created_at) < datetime('now', '-30 days')`).run();
+  db.prepare(`
+    DELETE FROM account_history
+    WHERE workspace_id IS NOT NULL
+      AND workspace_id IN (
+        SELECT workspace_id
+        FROM workspace_settings
+        WHERE datetime(account_history.created_at) < datetime('now', '-' || history_retention_days || ' days')
+      )
+  `).run();
+  db.prepare(`DELETE FROM account_history WHERE workspace_id IS NULL AND datetime(created_at) < datetime('now', '-30 days')`).run();
 }
 
 function trimHistoryForWorkspace(userId: number, workspaceId: number) {
+  const historyLimit = getWorkspaceSettings(workspaceId).history_limit;
   db.prepare(`
     DELETE FROM account_history
     WHERE (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
@@ -251,9 +262,9 @@ function trimHistoryForWorkspace(userId: number, workspaceId: number) {
       FROM account_history
       WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
       ORDER BY datetime(created_at) DESC
-      LIMIT 50
+      LIMIT ?
     )
-  `).run(workspaceId, userId, workspaceId, userId);
+  `).run(workspaceId, userId, workspaceId, userId, historyLimit);
 }
 
 function resolveWorkspace(userId: number, workspaceId?: number) {

@@ -7,6 +7,7 @@ import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, li
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
+import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWorkspaceSettings, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -131,6 +132,10 @@ app.get('/history', auth, (req, res) => {
   res.json({ items: listHistory((req as any).user.userId, (req as any).user.workspaceId) });
 });
 
+app.get('/limits', auth, (req, res) => {
+  res.json(getUsageSummary((req as any).user.workspaceId, (req as any).user.userId));
+});
+
 app.get('/history/:id', auth, (req, res) => {
   const includeDebug = req.query.debug === '1';
   const item = getHistoryDetail(Number(req.params.id), (req as any).user.userId, includeDebug, (req as any).user.workspaceId);
@@ -138,16 +143,27 @@ app.get('/history/:id', auth, (req, res) => {
   res.json(item);
 });
 
-app.post('/mailboxes/create', auth, async (_req, res) => {
+app.post('/mailboxes/create', auth, async (req, res) => {
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
+    enforceDailyLimit(
+      (req as any).user.workspaceId,
+      (req as any).user.userId,
+      USAGE_EVENTS.mailboxCreated,
+      settings.mailbox_create_per_day,
+      'mailbox_limit_reached',
+      'Daily mailbox creation limit reached',
+    );
     const mailbox = await emailProvider.createAccount();
+    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.mailboxCreated);
     res.json(mailbox);
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to create mailbox' });
+    sendError(res, error, 'Failed to create mailbox');
   }
 });
 
 app.post('/mailboxes/inbox', auth, async (req, res) => {
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
   const address = String(req.body?.address ?? '').trim();
   const password = String(req.body?.password ?? '');
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
@@ -155,22 +171,41 @@ app.post('/mailboxes/inbox', auth, async (req, res) => {
     return res.status(400).json({ error: 'Mailbox address and password are required' });
   }
   try {
+    enforceMinuteLimit(
+      (req as any).user.workspaceId,
+      (req as any).user.userId,
+      USAGE_EVENTS.inboxRefreshed,
+      settings.inbox_refresh_per_minute,
+      'inbox_refresh_limit_reached',
+      'Inbox refresh limit reached',
+    );
     const inbox = await emailProvider.fetchInbox(address, password, waitMs);
+    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(buildInboxPayload(inbox));
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to fetch mailbox inbox' });
+    sendError(res, error, 'Failed to fetch mailbox inbox');
   }
 });
 
 app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
   const waitMs = Math.min(60000, Math.max(0, Number(req.body?.waitMs ?? 0)));
   const includeDebug = req.query.debug === '1';
   try {
+    enforceMinuteLimit(
+      (req as any).user.workspaceId,
+      (req as any).user.userId,
+      USAGE_EVENTS.inboxRefreshed,
+      settings.inbox_refresh_per_minute,
+      'inbox_refresh_limit_reached',
+      'Inbox refresh limit reached',
+    );
     const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs, includeDebug, (req as any).user.workspaceId);
     if (!item) return res.status(404).json({ error: 'Not found' });
+    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(item);
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to refresh inbox' });
+    sendError(res, error, 'Failed to refresh inbox');
   }
 });
 
@@ -188,7 +223,9 @@ app.delete('/history/:id', auth, (req, res) => {
 
 app.post('/accounts/generate', auth, async (req, res) => {
   const { geoKey, documentType, role, persona } = req.body ?? {};
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
+    enforceGenerationLimits((req as any).user.workspaceId, (req as any).user.userId, settings, 1);
     const item = await generateAccount({
       userId: (req as any).user.userId,
       workspaceId: (req as any).user.workspaceId,
@@ -199,17 +236,24 @@ app.post('/accounts/generate', auth, async (req, res) => {
       emailProvider,
       includeDebug: req.query.debug === '1',
     });
+    recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, 1);
     res.json(item);
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to generate account' });
+    sendError(res, error, 'Failed to generate account');
   }
 });
 
 app.post('/accounts/generate-bulk', auth, async (req, res) => {
   const { geoKey, documentType, role, persona } = req.body ?? {};
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
   const requestedCount = Number(req.body?.count ?? 1);
-  const count = Number.isFinite(requestedCount) ? Math.min(25, Math.max(1, Math.floor(requestedCount))) : 1;
+  const maxBulkCount = Math.max(1, Math.min(100, Number(settings.max_bulk_count ?? 25)));
+  const count = Number.isFinite(requestedCount) ? Math.min(maxBulkCount, Math.max(1, Math.floor(requestedCount))) : 1;
   try {
+    if (!settings.allow_bulk_generation) {
+      throw new ApiError('bulk_generation_disabled', 'Bulk generation is disabled for this workspace', 403);
+    }
+    enforceGenerationLimits((req as any).user.workspaceId, (req as any).user.userId, settings, count);
     const items = [];
     for (let index = 0; index < count; index += 1) {
       items.push(await generateAccount({
@@ -223,9 +267,10 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
         includeDebug: false,
       }));
     }
+    recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, count);
     res.json({ items });
   } catch (error) {
-    res.status(400).json({ error: error instanceof Error ? error.message : 'Failed to generate accounts' });
+    sendError(res, error, 'Failed to generate accounts');
   }
 });
 
@@ -309,4 +354,37 @@ function readCookie(req: express.Request, name: string) {
 function normalizeUsername(value: unknown) {
   const username = String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40);
   return username.length >= 3 ? username : '';
+}
+
+function enforceGenerationLimits(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>, quantity: number) {
+  enforceDailyLimit(
+    workspaceId,
+    userId,
+    USAGE_EVENTS.accountGenerated,
+    settings.accounts_per_day,
+    'generation_limit_reached',
+    'Daily account generation limit reached',
+    quantity,
+  );
+  enforceDailyLimit(
+    workspaceId,
+    userId,
+    USAGE_EVENTS.mailboxCreated,
+    settings.mailbox_create_per_day,
+    'mailbox_limit_reached',
+    'Daily mailbox creation limit reached',
+    quantity,
+  );
+}
+
+function recordGenerationUsage(workspaceId: number, userId: number, quantity: number) {
+  recordUsageEvent(workspaceId, userId, USAGE_EVENTS.accountGenerated, quantity);
+  recordUsageEvent(workspaceId, userId, USAGE_EVENTS.mailboxCreated, quantity);
+}
+
+function sendError(res: express.Response, error: unknown, fallback: string) {
+  if (error instanceof ApiError) {
+    return res.status(error.status).json({ error: error.message, code: error.code });
+  }
+  return res.status(400).json({ error: error instanceof Error ? error.message : fallback });
 }
