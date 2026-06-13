@@ -9,6 +9,7 @@ export interface UserInfo {
   username?: string;
   status?: string;
   workspaceId?: number;
+  workspaceRole?: 'owner' | 'admin' | 'member' | 'viewer';
 }
 export interface GeoItem {
   key: string;

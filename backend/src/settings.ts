@@ -1,5 +1,6 @@
 import db from './db.js';
 import { ApiError } from './limits.js';
+import { assertWorkspaceRole } from './permissions.js';
 import type { PersonaKey } from './types.js';
 
 const PERSONAS = ['standard_user', 'young_user', 'senior_user', 'male_user', 'female_user'];
@@ -125,15 +126,7 @@ export function updateWorkspaceSettings(workspaceId: number, userId: number, pay
 }
 
 export function assertCanReadWorkspaceSettings(workspaceId: number, userId: number) {
-  const row = db.prepare(`
-    SELECT role
-    FROM workspace_members
-    WHERE workspace_id = ? AND user_id = ?
-    LIMIT 1
-  `).get(workspaceId, userId);
-  if (!row) {
-    throw new ApiError('workspace_access_denied', 'Workspace access denied', 403);
-  }
+  assertWorkspaceRole(userId, workspaceId, ['owner', 'admin', 'member', 'viewer']);
 }
 
 function assertCanManageWorkspaceSettings(workspaceId: number, userId: number) {
