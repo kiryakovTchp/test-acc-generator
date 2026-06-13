@@ -82,6 +82,16 @@ export interface WorkspaceSettings {
   inboxRefreshPerMinute: number;
 }
 
+export interface WorkspaceMember {
+  userId: number;
+  login: string;
+  email: string;
+  username: string;
+  userRole: string;
+  workspaceRole: 'owner' | 'admin' | 'member' | 'viewer';
+  joinedAt: string;
+}
+
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,
