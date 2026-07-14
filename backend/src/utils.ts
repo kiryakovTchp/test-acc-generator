@@ -5,6 +5,12 @@ const MALE_FIRST_NAMES = ['John', 'Michael', 'David', 'Daniel', 'James', 'Alex',
 const FEMALE_FIRST_NAMES = ['Grace', 'Mary', 'Esther', 'Ruth', 'Anna', 'Joy', 'Alice', 'Sarah', 'Diana', 'Lydia'];
 const LAST_NAMES = ['Banda', 'Phiri', 'Zulu', 'Mwansa', 'Tembo', 'Okoro', 'Adebayo', 'Diallo', 'Camara', 'Toure', 'Kimani', 'Ndlovu', 'Moyo', 'Ibrahim', 'Khan', 'Aliyev', 'Sadykova', 'Bekov', 'Mendes', 'Costa'];
 
+interface GeoNameProfile {
+  maleFirstNames: string[];
+  femaleFirstNames: string[];
+  lastNames: string[];
+}
+
 interface GeoRegionProfile {
   name?: string;
   cities: string[];
@@ -16,6 +22,39 @@ interface GeoProfile {
   country: string;
   regions: GeoRegionProfile[];
 }
+
+const GEO_NAME_DEFAULTS: Record<string, GeoNameProfile> = {
+  angola: {
+    maleFirstNames: ['Joao', 'Manuel', 'Antonio', 'Paulo', 'Mateus', 'Nelson'],
+    femaleFirstNames: ['Maria', 'Ana', 'Esperanca', 'Isabel', 'Teresa', 'Lurdes'],
+    lastNames: ['Dos Santos', 'Manuel', 'Domingos', 'Ferreira', 'Afonso', 'Cunha', 'Pereira'],
+  },
+  gambia: {
+    maleFirstNames: ['Lamin', 'Ebrima', 'Omar', 'Momodou', 'Musa', 'Alieu'],
+    femaleFirstNames: ['Fatou', 'Awa', 'Mariama', 'Binta', 'Isatou', 'Aminata'],
+    lastNames: ['Jallow', 'Ceesay', 'Sarr', 'Njie', 'Touray', 'Darboe', 'Camara'],
+  },
+  malawi: {
+    maleFirstNames: ['Chikondi', 'Blessings', 'Patrick', 'Joseph', 'Thoko', 'Tadala'],
+    femaleFirstNames: ['Thandiwe', 'Chisomo', 'Mphatso', 'Tadala', 'Memory', 'Esnart'],
+    lastNames: ['Banda', 'Phiri', 'Mvula', 'Chirwa', 'Mbewe', 'Kachale', 'Tembo'],
+  },
+  sierra_leone: {
+    maleFirstNames: ['Mohamed', 'Ibrahim', 'Abdul', 'Alhaji', 'Sorie', 'Lamin'],
+    femaleFirstNames: ['Aminata', 'Mariama', 'Fatmata', 'Hawa', 'Kadiatu', 'Isatu'],
+    lastNames: ['Kamara', 'Koroma', 'Bangura', 'Kargbo', 'Sesay', 'Conteh', 'Turay'],
+  },
+  togo: {
+    maleFirstNames: ['Kossi', 'Komlan', 'Kodjo', 'Mensah', 'Sena', 'Koffi'],
+    femaleFirstNames: ['Afi', 'Ama', 'Akossiwa', 'Abla', 'Yawa', 'Adjo'],
+    lastNames: ['Adjovi', 'Agbeko', 'Mensah', 'Kokou', 'Ayite', 'Lawson', 'Kpeglo'],
+  },
+  gabon: {
+    maleFirstNames: ['Alain', 'Jean', 'Patrick', 'Brice', 'Cedric', 'Marc', 'Christian', 'Landry'],
+    femaleFirstNames: ['Marie', 'Chantal', 'Sandrine', 'Estelle', 'Prisca', 'Nadine', 'Ariane', 'Justine'],
+    lastNames: ['Mba', 'Ondo', 'Obame', 'Ndong', 'Nguema', 'Essono', 'Ebang', 'Moussavou', 'Oyono'],
+  },
+};
 
 const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
   nigeria: {
@@ -265,9 +304,11 @@ export function extractCodes(text: string) {
 
 export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
   const gender = pickGender(persona);
-  const firstNamePool = gender === 'male' ? MALE_FIRST_NAMES : FEMALE_FIRST_NAMES;
+  const nameProfile = GEO_NAME_DEFAULTS[geoKey];
+  const firstNamePool = gender === 'male' ? (nameProfile?.maleFirstNames ?? MALE_FIRST_NAMES) : (nameProfile?.femaleFirstNames ?? FEMALE_FIRST_NAMES);
+  const lastNamePool = nameProfile?.lastNames ?? LAST_NAMES;
   const firstName = firstNamePool[randomIndex(firstNamePool.length)];
-  const lastName = LAST_NAMES[randomIndex(LAST_NAMES.length)];
+  const lastName = lastNamePool[randomIndex(lastNamePool.length)];
   const age = randomAge(persona);
   const dateOfBirth = buildDateOfBirth(age);
   const geo = GEO_PROFILE_DEFAULTS[geoKey] ?? GEO_PROFILE_DEFAULTS.generic_intl;
