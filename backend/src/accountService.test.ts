@@ -44,6 +44,7 @@ test('geo rules include required starter geos', () => {
     'Malawi',
     'Sierra Leone',
     'Togo',
+    'Gabon',
     'Ethiopia',
     'Senegal',
     'Tanzania',
@@ -95,6 +96,13 @@ test('sierra leone and togo dataset follow provided document specimens', async (
 
   const togoDriverLicence = await generateAccount({ userId: 1, geoKey: 'togo', documentType: 'driver_license_number', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.match(togoDriverLicence?.documentValue ?? '', /^\d{8}$/);
+});
+
+test('gabon dataset follows provided PRADO passport specimen', async () => {
+  const passport = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(passport?.country, 'Gabon');
+  assert.equal(passport?.documentQuality, 'synthetic_pattern');
+  assert.match(passport?.documentValue ?? '', /^\d{10}$/);
 });
 
 test('site account id can be manually set after registration', async () => {

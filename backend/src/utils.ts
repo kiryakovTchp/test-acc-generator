@@ -104,6 +104,14 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Kara', cities: ['Kara'], postalPrefixes: ['400'], streetPrefixes: ['Avenue des Nations', 'Route de Niamtougou'] },
     ],
   },
+  gabon: {
+    country: 'Gabon',
+    regions: [
+      { name: 'Estuaire', cities: ['Libreville'], postalPrefixes: ['100'], streetPrefixes: ['Boulevard Triomphal', 'Avenue Leon Mba'] },
+      { name: 'Ogooue-Maritime', cities: ['Port-Gentil'], postalPrefixes: ['300'], streetPrefixes: ['Avenue Savorgnan de Brazza', 'Route de Sogara'] },
+      { name: 'Haut-Ogooue', cities: ['Franceville'], postalPrefixes: ['600'], streetPrefixes: ['Avenue de la Renovation', 'Route de Moanda'] },
+    ],
+  },
   ethiopia: {
     country: 'Ethiopia',
     regions: [
@@ -303,6 +311,7 @@ export function randomPhone(geoKey: string) {
     malawi: '+26588',
     sierra_leone: '+23276',
     togo: '+22890',
+    gabon: '+24106',
     ethiopia: '+25191',
     senegal: '+22170',
     tanzania: '+25562',

@@ -156,6 +156,17 @@
     }
   },
   {
+    "key": "gabon",
+    "label": "Gabon",
+    "documents": {
+      "passport": {
+        "templates": ["{RAND10}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO specimen image shows a ten-digit visible passport number, with GAB only as the country code."
+      }
+    }
+  },
+  {
     "key": "ethiopia",
     "label": "Ethiopia",
     "documents": {

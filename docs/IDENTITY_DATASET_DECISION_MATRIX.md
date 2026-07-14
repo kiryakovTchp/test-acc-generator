@@ -34,6 +34,7 @@ These are plausible but should not be promoted to verified yet.
 | --- | --- | --- | --- |
 | KE | passport | `^A\d{7}$` | Kenya Immigration confirms passport series, but exact number grammar needs a document/sample source. |
 | KE | national_id | `^\d{8}$` | Widely used, but exact official grammar still needs a better citation. |
+| GA | passport | `^\d{10}$` | PRADO specimen shows `Passport No` as ten digits, e.g. `0000000000`; `GAB` is the country code, not part of the visible number. |
 | GM | passport | `^PC\d{7}$` | Draft candidate is country-specific but not confirmed by official/sample-level source. |
 | GM | national_identification_number | `^\d{11}$` | Source review indicates Gambian NIN is 11 digits, replacing the draft 10-digit candidate; keep review-required until current official grammar is confirmed. |
 | MW | passport | `^\d{6}$` | PRADO specimen shows `Passport No` as six digits, e.g. `030025`; `MWI` is the country code, not part of the visible passport number. |
@@ -62,7 +63,6 @@ the current draft". It does not mean phone/geography data is useless.
 | BJ | Benin | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | BF | Burkina Faso | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | BI | Burundi | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
-| GA | Gabon | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GW | Guinea-Bissau | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GN | Guinea Conakry | Passport candidate is generic MRZ-like filler; current app pattern is also unsupported; city-region audit has many unresolved links. |
 | CI | Cote d'Ivoire | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
