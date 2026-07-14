@@ -102,7 +102,7 @@ test('gabon dataset follows provided PRADO passport specimen', async () => {
   const passport = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(passport?.country, 'Gabon');
   assert.equal(passport?.documentQuality, 'synthetic_pattern');
-  assert.match(passport?.documentValue ?? '', /^\d{10}$/);
+  assert.match(passport?.documentValue ?? '', /^\d{2}SP\d{5}$/);
 });
 
 test('site account id can be manually set after registration', async () => {
