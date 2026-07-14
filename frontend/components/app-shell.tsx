@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { apiFetch, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
@@ -1178,7 +1179,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <a className="view-all-button" href="/accounts">View all test users</a>
           </section>
 
-          {detail ? (
+          {detail && typeof document !== 'undefined' ? createPortal((
             <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Test user details" onClick={() => setDetail(null)}>
               <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="panel-header">
@@ -1260,7 +1261,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               </div>
               </section>
             </div>
-          ) : null}
+          ), document.body) : null}
 
           {hasVerificationLinks ? (
             <section className="panel panel-links">
