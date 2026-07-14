@@ -3,7 +3,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
@@ -435,6 +435,18 @@ app.patch('/history/:id/account-id', auth, (req, res) => {
   }
   const includeDebug = req.query.debug === '1';
   const item = updateSiteAccountId(Number(req.params.id), (req as any).user.userId, String(req.body?.siteAccountId ?? ''), includeDebug, (req as any).user.workspaceId);
+  if (!item) return res.status(404).json({ error: 'Not found' });
+  res.json(item);
+});
+
+app.post('/history/:id/regenerate-phone', auth, (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+  } catch (error) {
+    return sendError(res, error, 'Workspace permission denied');
+  }
+  const includeDebug = req.query.debug === '1';
+  const item = regeneratePhone(Number(req.params.id), (req as any).user.userId, includeDebug, (req as any).user.workspaceId);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
 });
