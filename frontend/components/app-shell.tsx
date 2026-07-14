@@ -176,7 +176,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showFilters, setShowFilters] = useState(true);
-  const [expandedLink, setExpandedLink] = useState('');
   const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
   const [isRegeneratingPhone, setIsRegeneratingPhone] = useState(false);
@@ -313,10 +312,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
   const maxBulkCount = usageSummary?.settings.maxBulkCount ?? 25;
-  const verificationLinks = detail?.inbox.links ?? [];
   const verificationCodes = detail?.inbox.codes ?? [];
   const verificationReceivedAt = detail?.inbox.receivedAt;
-  const hasVerificationLinks = verificationLinks.length > 0;
   const hasVerificationCodes = verificationCodes.length > 0;
   const activationLink = detail?.inbox.primaryVerificationLink?.url
     ?? detail?.inbox.links.find((link) => link.isPrimary)?.url
@@ -1157,27 +1154,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             )}
           </section>
 
-          {hasVerificationLinks ? (
-            <section className="panel panel-links">
-              <div className="panel-header">
-                <h2>Verification <span>({verificationLinks.length})</span></h2>
-              </div>
-              <div className="link-list">
-                {verificationLinks.map((link) => (
-                <div key={link.url} className="link-row">
-                  <span className="status-dot tone-success" />
-                  <div className="link-row-main">
-                    <div className="link-row-title">{link.label || (link.isPrimary ? 'Email verification' : 'Verification link')}</div>
-                    <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 64)}</div>
-                  </div>
-                  <button className="copy-icon" onClick={() => copyValue(`link:${link.url}`, link.url)}>CP</button>
-                  <time>{formatCompactDate(verificationReceivedAt)}</time>
-                </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           {hasVerificationCodes ? (
             <section className="panel panel-codes">
               <div className="panel-header">
@@ -1358,27 +1334,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               </section>
             </div>
           ), document.body) : null}
-
-          {hasVerificationLinks ? (
-            <section className="panel panel-links">
-              <div className="panel-header">
-                <h2>Verification <span>({verificationLinks.length})</span></h2>
-              </div>
-              <div className="link-list">
-                {verificationLinks.map((link) => (
-                <div key={link.url} className="link-row">
-                  <span className="status-dot tone-success" />
-                  <div className="link-row-main">
-                    <div className="link-row-title">{link.label || (link.isPrimary ? 'Email verification' : 'Verification link')}</div>
-                    <div className="link-row-url">{expandedLink === link.url ? link.url : truncate(link.url, 64)}</div>
-                  </div>
-                  <button className="copy-icon" onClick={() => copyValue(`link:${link.url}`, link.url)}>CP</button>
-                  <time>{formatCompactDate(verificationReceivedAt)}</time>
-                </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
 
           {hasVerificationCodes ? (
             <section className="panel panel-codes">
