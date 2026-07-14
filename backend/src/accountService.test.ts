@@ -32,16 +32,32 @@ test('generation waits briefly for first inbox snapshot', async () => {
 
 test('geo rules include required starter geos', () => {
   const labels = listGeoRules().map((item) => item.label);
-  for (const label of ['Zambia', 'Uganda', 'Nigeria', 'Guinea', 'Uzbekistan', 'Kazakhstan', 'South Sudan', 'Generic International']) {
+  for (const label of [
+    'Nigeria',
+    'Kazakhstan',
+    'Uzbekistan',
+    'Ghana',
+    'Georgia',
+    'Ireland',
+    'Angola',
+    'Ethiopia',
+    'Senegal',
+    'Tanzania',
+    'Zambia',
+    'Uganda',
+    'Kenya',
+    'Cameroon',
+    'Generic International',
+  ]) {
     assert.ok(labels.includes(label));
   }
 });
 
-test('south sudan generation keeps country region and city as separate dependent fields', async () => {
-  const item = await generateAccount({ userId: 1, geoKey: 'south_sudan', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });
-  assert.equal(item?.country, 'South Sudan');
-  assert.ok(['Central Equatoria', 'Western Bahr el Ghazal', 'Upper Nile'].includes(item?.region ?? ''));
-  assert.ok(['Juba', 'Terekeka', 'Wau', 'Malakal'].includes(item?.city ?? ''));
+test('verified dataset geos keep country region and city as separate dependent fields', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'ghana', documentType: 'ghana_card_pin', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(item?.country, 'Ghana');
+  assert.ok(['Greater Accra', 'Ashanti'].includes(item?.region ?? ''));
+  assert.ok(['Accra', 'Tema', 'Kumasi', 'Obuasi'].includes(item?.city ?? ''));
   assert.equal(item?.placeOfBirth, item?.city);
 });
 
@@ -63,10 +79,16 @@ test('missing rules yield missing_rules quality', async () => {
   assert.match(item?.documentIssueDate ?? '', /^\d{4}-\d{2}-\d{2}$/);
 });
 
+test('confirmed document rules are marked verified', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'nigeria', documentType: 'nin', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(item?.documentQuality, 'verified');
+  assert.match(item?.documentValue ?? '', /^\d{11}$/);
+});
+
 test('geo rules expose document options without registration URLs', async () => {
   const geoRule = listGeoRules().find((item) => item.key === 'zambia');
   assert.deepEqual(Object.keys(geoRule ?? {}).sort(), ['documentTypes', 'key', 'label']);
-  assert.deepEqual(geoRule?.documentTypes.sort(), ['national_id', 'passport']);
+  assert.deepEqual(geoRule?.documentTypes.sort(), ['national_registration_card_number', 'passport']);
 });
 
 test('generic geo fallback uses not specified region', async () => {

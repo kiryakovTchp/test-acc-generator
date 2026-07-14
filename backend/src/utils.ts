@@ -18,6 +18,84 @@ interface GeoProfile {
 }
 
 const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
+  nigeria: {
+    country: 'Nigeria',
+    regions: [
+      { name: 'Lagos', cities: ['Lagos', 'Ikeja'], postalPrefixes: ['100', '101'], streetPrefixes: ['Allen Avenue', 'Broad Street'] },
+      { name: 'Federal Capital Territory', cities: ['Abuja'], postalPrefixes: ['900'], streetPrefixes: ['Adetokunbo Ademola', 'Ahmadu Bello Way'] },
+      { name: 'Rivers', cities: ['Port Harcourt'], postalPrefixes: ['500'], streetPrefixes: ['Aba Road', 'Peter Odili Road'] },
+    ],
+  },
+  kazakhstan: {
+    country: 'Kazakhstan',
+    regions: [
+      { name: 'Almaty Region', cities: ['Almaty'], postalPrefixes: ['050'], streetPrefixes: ['Abay Avenue', 'Dostyk Street'] },
+      { name: 'Akmola Region', cities: ['Astana'], postalPrefixes: ['010'], streetPrefixes: ['Tauelsizdik Avenue', 'Kabanbay Batyr Avenue'] },
+      { name: 'Shymkent', cities: ['Shymkent'], postalPrefixes: ['160'], streetPrefixes: ['Tauke Khan', 'Baidibek Bi Avenue'] },
+    ],
+  },
+  uzbekistan: {
+    country: 'Uzbekistan',
+    regions: [
+      { name: 'Tashkent Region', cities: ['Tashkent'], postalPrefixes: ['100'], streetPrefixes: ['Amir Temur', 'Mustaqillik'] },
+      { name: 'Samarkand Region', cities: ['Samarkand', 'Bukhara'], postalPrefixes: ['140', '200'], streetPrefixes: ['Navoi Street', 'Registan Street'] },
+    ],
+  },
+  ghana: {
+    country: 'Ghana',
+    regions: [
+      { name: 'Greater Accra', cities: ['Accra', 'Tema'], postalPrefixes: ['00233', '00234'], streetPrefixes: ['Independence Avenue', 'Ring Road'] },
+      { name: 'Ashanti', cities: ['Kumasi', 'Obuasi'], postalPrefixes: ['00235', '00236'], streetPrefixes: ['Prempeh I Street', 'Harper Road'] },
+    ],
+  },
+  georgia: {
+    country: 'Georgia',
+    regions: [
+      { name: 'Tbilisi', cities: ['Tbilisi'], postalPrefixes: ['010'], streetPrefixes: ['Rustaveli Avenue', 'Aghmashenebeli Avenue'] },
+      { name: 'Adjara', cities: ['Batumi'], postalPrefixes: ['600'], streetPrefixes: ['Chavchavadze Street', 'Gorgiladze Street'] },
+      { name: 'Imereti', cities: ['Kutaisi'], postalPrefixes: ['460'], streetPrefixes: ['Tsereteli Street', 'Queen Tamar Avenue'] },
+    ],
+  },
+  ireland: {
+    country: 'Ireland',
+    regions: [
+      { name: 'County Dublin', cities: ['Dublin'], postalPrefixes: ['D01', 'D02'], streetPrefixes: ['OConnell Street', 'Dame Street'] },
+      { name: 'County Cork', cities: ['Cork'], postalPrefixes: ['T12'], streetPrefixes: ['Patrick Street', 'Oliver Plunkett Street'] },
+      { name: 'County Galway', cities: ['Galway'], postalPrefixes: ['H91'], streetPrefixes: ['Shop Street', 'Eyre Square'] },
+    ],
+  },
+  angola: {
+    country: 'Angola',
+    regions: [
+      { name: 'Luanda', cities: ['Luanda'], postalPrefixes: ['100'], streetPrefixes: ['Avenida 4 de Fevereiro', 'Rua Amilcar Cabral'] },
+      { name: 'Huila', cities: ['Lubango'], postalPrefixes: ['130'], streetPrefixes: ['Avenida da Independencia', 'Rua da Se'] },
+      { name: 'Benguela', cities: ['Benguela', 'Lobito'], postalPrefixes: ['120'], streetPrefixes: ['Avenida Aires de Almeida Santos', 'Rua 31 de Janeiro'] },
+    ],
+  },
+  ethiopia: {
+    country: 'Ethiopia',
+    regions: [
+      { name: 'Addis Ababa', cities: ['Addis Ababa'], postalPrefixes: ['100'], streetPrefixes: ['Bole Road', 'Africa Avenue'] },
+      { name: 'Dire Dawa', cities: ['Dire Dawa'], postalPrefixes: ['300'], streetPrefixes: ['Keira Road', 'Dechatu Street'] },
+      { name: 'Amhara', cities: ['Bahir Dar'], postalPrefixes: ['600'], streetPrefixes: ['Lake Avenue', 'Tana Road'] },
+    ],
+  },
+  senegal: {
+    country: 'Senegal',
+    regions: [
+      { name: 'Dakar', cities: ['Dakar', 'Pikine'], postalPrefixes: ['110'], streetPrefixes: ['Avenue Cheikh Anta Diop', 'Rue Carnot'] },
+      { name: 'Thies', cities: ['Thies'], postalPrefixes: ['210'], streetPrefixes: ['Avenue General de Gaulle', 'Route de Mbour'] },
+      { name: 'Diourbel', cities: ['Touba'], postalPrefixes: ['310'], streetPrefixes: ['Avenue Cheikh Ahmadou Bamba', 'Route de Darou'] },
+    ],
+  },
+  tanzania: {
+    country: 'Tanzania',
+    regions: [
+      { name: 'Dar es Salaam', cities: ['Dar es Salaam'], postalPrefixes: ['111'], streetPrefixes: ['Morogoro Road', 'Ali Hassan Mwinyi Road'] },
+      { name: 'Dodoma', cities: ['Dodoma'], postalPrefixes: ['411'], streetPrefixes: ['Nyerere Road', 'Uhuru Street'] },
+      { name: 'Mwanza', cities: ['Mwanza'], postalPrefixes: ['331'], streetPrefixes: ['Nyerere Road', 'Kenyatta Road'] },
+    ],
+  },
   zambia: {
     country: 'Zambia',
     regions: [
@@ -32,42 +110,20 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Eastern Region', cities: ['Jinja', 'Mbale'], postalPrefixes: ['27', '28'], streetPrefixes: ['Acacia Avenue', 'Republic Street'] },
     ],
   },
-  nigeria: {
-    country: 'Nigeria',
+  kenya: {
+    country: 'Kenya',
     regions: [
-      { name: 'Lagos', cities: ['Lagos', 'Ikeja'], postalPrefixes: ['100', '101'], streetPrefixes: ['Allen Avenue', 'Broad Street'] },
-      { name: 'Federal Capital Territory', cities: ['Abuja'], postalPrefixes: ['900'], streetPrefixes: ['Adetokunbo Ademola', 'Ahmadu Bello Way'] },
-      { name: 'Rivers', cities: ['Port Harcourt'], postalPrefixes: ['500'], streetPrefixes: ['Aba Road', 'Peter Odili Road'] },
+      { name: 'Nairobi County', cities: ['Nairobi'], postalPrefixes: ['001'], streetPrefixes: ['Kenyatta Avenue', 'Mombasa Road'] },
+      { name: 'Mombasa County', cities: ['Mombasa'], postalPrefixes: ['801'], streetPrefixes: ['Moi Avenue', 'Digo Road'] },
+      { name: 'Kisumu County', cities: ['Kisumu'], postalPrefixes: ['401'], streetPrefixes: ['Oginga Odinga Road', 'Jomo Kenyatta Highway'] },
     ],
   },
-  guinea: {
-    country: 'Guinea',
+  cameroon: {
+    country: 'Cameroon',
     regions: [
-      { name: 'Conakry Region', cities: ['Conakry'], postalPrefixes: ['001'], streetPrefixes: ['Rue KA', 'Avenue Republique'] },
-      { name: 'Kankan Region', cities: ['Kankan', 'Kindia'], postalPrefixes: ['101', '201'], streetPrefixes: ['Rue Niger', 'Route Nationale'] },
-    ],
-  },
-  uzbekistan: {
-    country: 'Uzbekistan',
-    regions: [
-      { name: 'Tashkent Region', cities: ['Tashkent'], postalPrefixes: ['100'], streetPrefixes: ['Amir Temur', 'Mustaqillik'] },
-      { name: 'Samarkand Region', cities: ['Samarkand', 'Bukhara'], postalPrefixes: ['140', '200'], streetPrefixes: ['Navoi Street', 'Registan Street'] },
-    ],
-  },
-  kazakhstan: {
-    country: 'Kazakhstan',
-    regions: [
-      { name: 'Almaty Region', cities: ['Almaty'], postalPrefixes: ['050'], streetPrefixes: ['Abay Avenue', 'Dostyk Street'] },
-      { name: 'Akmola Region', cities: ['Astana'], postalPrefixes: ['010'], streetPrefixes: ['Tauelsizdik Avenue', 'Kabanbay Batyr Avenue'] },
-      { name: 'Shymkent', cities: ['Shymkent'], postalPrefixes: ['160'], streetPrefixes: ['Tauke Khan', 'Baidibek Bi Avenue'] },
-    ],
-  },
-  south_sudan: {
-    country: 'South Sudan',
-    regions: [
-      { name: 'Central Equatoria', cities: ['Juba', 'Terekeka'], postalPrefixes: ['211'], streetPrefixes: ['Nimule Road', 'Airport Road'] },
-      { name: 'Western Bahr el Ghazal', cities: ['Wau'], postalPrefixes: ['212'], streetPrefixes: ['Suk Jou Road', 'Cathedral Road'] },
-      { name: 'Upper Nile', cities: ['Malakal'], postalPrefixes: ['213'], streetPrefixes: ['Nile Street', 'Sobat Road'] },
+      { name: 'Centre', cities: ['Yaounde'], postalPrefixes: ['100'], streetPrefixes: ['Avenue Kennedy', 'Boulevard du 20 Mai'] },
+      { name: 'Littoral', cities: ['Douala'], postalPrefixes: ['200'], streetPrefixes: ['Boulevard de la Liberte', 'Rue Joffre'] },
+      { name: 'Northwest', cities: ['Bamenda'], postalPrefixes: ['300'], streetPrefixes: ['Commercial Avenue', 'Hospital Road'] },
     ],
   },
   generic_intl: {
@@ -200,13 +256,20 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
 
 export function randomPhone(geoKey: string) {
   const prefixes: Record<string, string> = {
-    zambia: '+26097',
-    uganda: '+2567',
     nigeria: '+23480',
-    guinea: '+22462',
-    uzbekistan: '+9989',
     kazakhstan: '+770',
-    south_sudan: '+2119',
+    uzbekistan: '+99891',
+    ghana: '+23323',
+    georgia: '+995555',
+    ireland: '+35385',
+    angola: '+244923',
+    ethiopia: '+25191',
+    senegal: '+22170',
+    tanzania: '+25562',
+    zambia: '+26095',
+    uganda: '+25671',
+    kenya: '+254712',
+    cameroon: '+237671',
     generic_intl: '+447',
   };
 
