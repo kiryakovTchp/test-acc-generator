@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, updateSiteAccountId } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
@@ -123,6 +123,20 @@ test('site account id can be manually set after registration', async () => {
   const updated = updateSiteAccountId(item!.id, 1, ' 1695604249 ');
   assert.equal(updated?.siteAccountId, '1695604249');
   assert.match(updated?.fullProfileText ?? '', /Account ID: 1695604249/);
+});
+
+test('phone can be regenerated without changing the rest of the identity', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const updated = regeneratePhone(item!.id, 1);
+
+  assert.ok(updated);
+  assert.notEqual(updated?.phone, item?.phone);
+  assert.match(updated?.phone ?? '', /^\+24106\d{7}$/);
+  assert.equal(updated?.firstName, item?.firstName);
+  assert.equal(updated?.lastName, item?.lastName);
+  assert.equal(updated?.documentValue, item?.documentValue);
+  assert.equal(updated?.email, item?.email);
+  assert.match(updated?.fullProfileText ?? '', new RegExp(`Phone: ${updated?.phone.replace('+', '\\+')}`));
 });
 
 test('missing rules yield missing_rules quality', async () => {

@@ -1,7 +1,7 @@
 import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
-import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate } from '../utils.js';
+import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 
@@ -137,6 +137,30 @@ export function updateSiteAccountId(id: number, userId: number, siteAccountId: s
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
   `).run(trimmed, id, resolvedWorkspaceId, userId);
   if (result.changes === 0) return null;
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
+}
+
+export function regeneratePhone(id: number, userId: number, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const row = db.prepare(`
+    SELECT geo_key as geoKey, phone
+    FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).get(id, resolvedWorkspaceId, userId) as { geoKey: string; phone: string } | undefined;
+  if (!row) return null;
+
+  let nextPhone = randomPhone(row.geoKey);
+  for (let attempt = 0; attempt < 5 && nextPhone === row.phone; attempt += 1) {
+    nextPhone = randomPhone(row.geoKey);
+  }
+
+  db.prepare(`
+    UPDATE account_history
+    SET phone = ?
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).run(nextPhone, id, resolvedWorkspaceId, userId);
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 

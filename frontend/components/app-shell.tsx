@@ -179,6 +179,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [expandedLink, setExpandedLink] = useState('');
   const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
+  const [isRegeneratingPhone, setIsRegeneratingPhone] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
@@ -748,6 +749,21 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
   }
 
+  async function regeneratePhoneForDetail() {
+    if (!detail) return;
+    setIsRegeneratingPhone(true);
+    setError('');
+    try {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/regenerate-phone?debug=1`, token, { method: 'POST' });
+      setDetail(updated);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to regenerate phone');
+    } finally {
+      setIsRegeneratingPhone(false);
+    }
+  }
+
   async function createTemporaryMailbox() {
     setError('');
     setIsCreatingMailbox(true);
@@ -1080,7 +1096,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                    <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    <InspectorRow
+                      label="Phone"
+                      value={detail.phone}
+                      onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)}
+                      copied={copiedField === `phone:${detail.id}`}
+                      action={(
+                        <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
+                          <RefreshIcon />
+                        </button>
+                      )}
+                    />
                     <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
 
@@ -1271,7 +1297,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                    <InspectorRow label="Phone" value={detail.phone} onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)} copied={copiedField === `phone:${detail.id}`} />
+                    <InspectorRow
+                      label="Phone"
+                      value={detail.phone}
+                      onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)}
+                      copied={copiedField === `phone:${detail.id}`}
+                      action={(
+                        <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
+                          <RefreshIcon />
+                        </button>
+                      )}
+                    />
                     <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
 
@@ -2663,6 +2699,17 @@ function CheckIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="m5 12.5 4.25 4.25L19 7" />
+    </svg>
+  );
+}
+
+function RefreshIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M20 6v5h-5" />
+      <path d="M4 18v-5h5" />
+      <path d="M18.4 9A7 7 0 0 0 6.2 6.8L4 9" />
+      <path d="M5.6 15a7 7 0 0 0 12.2 2.2L20 15" />
     </svg>
   );
 }
