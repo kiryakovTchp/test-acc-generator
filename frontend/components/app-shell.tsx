@@ -192,6 +192,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [isRefreshingTempMailbox, setIsRefreshingTempMailbox] = useState(false);
   const [isCreatingMailbox, setIsCreatingMailbox] = useState(false);
   const [settingsReady, setSettingsReady] = useState(false);
+  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(false);
   const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
@@ -248,7 +249,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   useEffect(() => {
     if (!token) return;
-    refresh(token).catch((err) => {
+    refresh(token, { showLoading: true }).catch((err) => {
       if (err instanceof Error && /unauthorized/i.test(err.message)) {
         refreshSession().catch(() => {
           clearAuthState();
@@ -319,6 +320,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     ?? detail?.inbox.links[0]?.url
     ?? '';
   const showQuickActions = activeNav === 'main';
+  const isWorkspaceBootstrapping = Boolean(token && user && (isWorkspaceLoading || !usageSummary));
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
@@ -346,48 +348,53 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     return () => window.removeEventListener('keydown', handleShortcut);
   });
 
-  async function refresh(authToken = token) {
-    const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
-    setUser(me.user);
-    setAccountEmail(me.user.email ?? '');
-    setAccountUsername(me.user.username ?? me.user.login);
-    const workspaceId = me.user.workspaceId;
-    const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
-    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
-      apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
-      apiFetch<{ items: HistoryItem[] }>('/history', authToken),
-      apiFetch<UsageSummary>('/limits', authToken),
-      apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
-      workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
-      workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
-      workspaceId && canLoadInvites ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
-      apiFetch<{ sessions: AuthSession[] }>('/auth/sessions', authToken),
-    ]);
-    setGeoItems(geo.items);
-    setHistory(historyRes.items);
-    setUsageSummary(limitsRes);
-    setUserSettings(userSettingsRes.settings);
-    setWorkspaceSettings(workspaceSettingsRes.settings);
-    setWorkspaceMembers(workspaceMembersRes.members);
-    setWorkspaceInvites(workspaceInvitesRes.invites);
-    setAuthSessions(sessionsRes.sessions);
-    if (!userSettings) {
-      const defaultGeo = geo.items.some((item) => item.key === userSettingsRes.settings.defaultGeo)
-        ? userSettingsRes.settings.defaultGeo
-        : geo.items[0]?.key ?? userSettingsRes.settings.defaultGeo;
-      const defaultGeoItem = geo.items.find((item) => item.key === defaultGeo);
-      setSelectedGeo(defaultGeo);
-      setDocumentType(defaultGeoItem?.documentTypes.includes(userSettingsRes.settings.defaultDocumentType)
-        ? userSettingsRes.settings.defaultDocumentType
-        : defaultGeoItem?.documentTypes[0] ?? userSettingsRes.settings.defaultDocumentType);
-      setPersona(userSettingsRes.settings.defaultPersona);
-      setBulkCount(Math.min(limitsRes.settings.maxBulkCount, Math.max(1, userSettingsRes.settings.bulkCount)));
-    } else {
-      setBulkCount((value) => Math.min(limitsRes.settings.maxBulkCount, Math.max(1, value)));
-    }
-    if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
-      setSelectedGeo(geo.items[0].key);
-      setDocumentType(geo.items[0].documentTypes[0] ?? documentType);
+  async function refresh(authToken = token, options: { showLoading?: boolean } = {}) {
+    if (options.showLoading) setIsWorkspaceLoading(true);
+    try {
+      const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
+      setUser(me.user);
+      setAccountEmail(me.user.email ?? '');
+      setAccountUsername(me.user.username ?? me.user.login);
+      const workspaceId = me.user.workspaceId;
+      const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
+      const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
+        apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
+        apiFetch<{ items: HistoryItem[] }>('/history', authToken),
+        apiFetch<UsageSummary>('/limits', authToken),
+        apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
+        workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
+        workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
+        workspaceId && canLoadInvites ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
+        apiFetch<{ sessions: AuthSession[] }>('/auth/sessions', authToken),
+      ]);
+      setGeoItems(geo.items);
+      setHistory(historyRes.items);
+      setUsageSummary(limitsRes);
+      setUserSettings(userSettingsRes.settings);
+      setWorkspaceSettings(workspaceSettingsRes.settings);
+      setWorkspaceMembers(workspaceMembersRes.members);
+      setWorkspaceInvites(workspaceInvitesRes.invites);
+      setAuthSessions(sessionsRes.sessions);
+      if (!userSettings) {
+        const defaultGeo = geo.items.some((item) => item.key === userSettingsRes.settings.defaultGeo)
+          ? userSettingsRes.settings.defaultGeo
+          : geo.items[0]?.key ?? userSettingsRes.settings.defaultGeo;
+        const defaultGeoItem = geo.items.find((item) => item.key === defaultGeo);
+        setSelectedGeo(defaultGeo);
+        setDocumentType(defaultGeoItem?.documentTypes.includes(userSettingsRes.settings.defaultDocumentType)
+          ? userSettingsRes.settings.defaultDocumentType
+          : defaultGeoItem?.documentTypes[0] ?? userSettingsRes.settings.defaultDocumentType);
+        setPersona(userSettingsRes.settings.defaultPersona);
+        setBulkCount(Math.min(limitsRes.settings.maxBulkCount, Math.max(1, userSettingsRes.settings.bulkCount)));
+      } else {
+        setBulkCount((value) => Math.min(limitsRes.settings.maxBulkCount, Math.max(1, value)));
+      }
+      if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
+        setSelectedGeo(geo.items[0].key);
+        setDocumentType(geo.items[0].documentTypes[0] ?? documentType);
+      }
+    } finally {
+      if (options.showLoading) setIsWorkspaceLoading(false);
     }
   }
 
@@ -939,7 +946,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <strong>Generation Console</strong>
           </div>
           <div className="topbar-admin">
-            {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : null}
+            {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
             <button className="icon-button" title="Command menu">CMD K</button>
             <div className="env-select"><span /> Environment · admin-live</div>
             <div className="env-select">{user.login}</div>
@@ -952,9 +959,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} identities and mailbox snapshots.</div> : null}
 
         {showQuickActions ? (
-        <section className="quick-actions-panel">
+          <section className="quick-actions-panel">
           <div className="quick-actions-title">Quick actions</div>
-          {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
+          {usageSummary ? <UsageStrip usage={usageSummary} /> : <UsageStripSkeleton />}
           <div className="quick-actions-grid" aria-label="Primary identity actions">
             <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
               <span className="action-icon">+</span>
@@ -1009,7 +1016,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             ) : null}
 
             <div className="account-list">
-              {filteredHistory.length ? filteredHistory.map((item) => {
+              {isWorkspaceBootstrapping ? <ListSkeleton rows={6} /> : filteredHistory.length ? filteredHistory.map((item) => {
                 const rowStatus = mapHistoryStatus(item);
                 const selected = detail?.id === item.id;
                 return (
@@ -1029,7 +1036,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               <h2>Identity workspace {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
             </div>
 
-            {!detail ? (
+            {isWorkspaceBootstrapping && !detail ? (
+              <IdentityWorkspaceSkeleton />
+            ) : !detail ? (
               <div className="empty-workspace">
                 <h3>Generate an identity or open one from the list</h3>
                 <p>The selected test user appears here with registration data, mailbox, and verification.</p>
@@ -1181,7 +1190,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             ) : null}
 
             <div className="account-table-wrap">
-              {filteredHistory.length ? (
+              {isWorkspaceBootstrapping ? <TableSkeleton columns={6} rows={7} /> : filteredHistory.length ? (
                 <table className="account-table">
                   <thead>
                     <tr>
@@ -1413,6 +1422,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               settingsStatus={settingsStatus}
               accountStatus={accountStatus}
               canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
+              isWorkspaceLoading={isWorkspaceBootstrapping}
             />
           )}
         </div>
@@ -1424,6 +1434,109 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 function truncate(value: string, length: number) {
   if (value.length <= length) return value;
   return `${value.slice(0, length)}…`;
+}
+
+function SkeletonBox({ className }: { className?: string }) {
+  return <span className={cn('skeleton-box', className)} aria-hidden="true" />;
+}
+
+function ListSkeleton({ rows = 5 }: { rows?: number }) {
+  return (
+    <div className="skeleton-list" aria-label="Loading list">
+      {Array.from({ length: rows }).map((_, index) => (
+        <div className="skeleton-row" key={index}>
+          <SkeletonBox className="skeleton-dot" />
+          <div>
+            <SkeletonBox className="skeleton-line medium" />
+            <SkeletonBox className="skeleton-line short" />
+          </div>
+          <SkeletonBox className="skeleton-line tiny" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function TableSkeleton({ columns, rows = 5 }: { columns: number; rows?: number }) {
+  return (
+    <div className="skeleton-table" aria-label="Loading table">
+      {Array.from({ length: rows }).map((_, rowIndex) => (
+        <div className="skeleton-table-row" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }} key={rowIndex}>
+          {Array.from({ length: columns }).map((__, columnIndex) => (
+            <SkeletonBox className={cn('skeleton-line', columnIndex === 0 && 'wide', columnIndex > 2 && 'short')} key={columnIndex} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function UsageStripSkeleton() {
+  return (
+    <div className="usage-strip skeleton-usage" aria-label="Loading usage">
+      <SkeletonBox className="skeleton-line medium" />
+      <SkeletonBox className="skeleton-line medium" />
+      <SkeletonBox className="skeleton-line medium" />
+    </div>
+  );
+}
+
+function IdentityWorkspaceSkeleton() {
+  return (
+    <div className="identity-workspace-skeleton" aria-label="Loading identity workspace">
+      <div className="skeleton-form-grid">
+        {Array.from({ length: 10 }).map((_, index) => (
+          <div className="skeleton-field" key={index}>
+            <SkeletonBox className="skeleton-line tiny" />
+            <SkeletonBox className="skeleton-line wide" />
+          </div>
+        ))}
+      </div>
+      <UsageStripSkeleton />
+      <InboxSkeleton />
+    </div>
+  );
+}
+
+function InboxSkeleton() {
+  return (
+    <div className="inbox-skeleton" aria-label="Loading inbox">
+      <SkeletonBox className="skeleton-line medium" />
+      <SkeletonBox className="skeleton-line wide" />
+      <SkeletonBox className="skeleton-block" />
+    </div>
+  );
+}
+
+function SettingsTabsSkeleton() {
+  return (
+    <div className="settings-tabs skeleton-settings-tabs" aria-label="Loading settings tabs">
+      {Array.from({ length: 5 }).map((_, index) => <SkeletonBox className="skeleton-settings-tab" key={index} />)}
+    </div>
+  );
+}
+
+function SettingsSectionSkeleton() {
+  return (
+    <section className="settings-section settings-tab-panel" aria-label="Loading settings">
+      <div className="section-subhead">
+        <SkeletonBox className="skeleton-line medium" />
+        <SkeletonBox className="skeleton-line wide" />
+      </div>
+      <div className="settings-grid">
+        {Array.from({ length: 4 }).map((_, index) => (
+          <div className="skeleton-field" key={index}>
+            <SkeletonBox className="skeleton-line tiny" />
+            <SkeletonBox className="skeleton-input" />
+          </div>
+        ))}
+      </div>
+      <div className="settings-actions">
+        <SkeletonBox className="skeleton-line medium" />
+        <SkeletonBox className="skeleton-button" />
+      </div>
+    </section>
+  );
 }
 
 function DatasetNotice({ quality }: { quality: Detail['documentQuality'] }) {
@@ -1511,6 +1624,7 @@ function UtilityView({
   settingsStatus,
   accountStatus,
   canManageWorkspaceSettings,
+  isWorkspaceLoading,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -1581,6 +1695,7 @@ function UtilityView({
   settingsStatus: string;
   accountStatus: string;
   canManageWorkspaceSettings: boolean;
+  isWorkspaceLoading: boolean;
 }) {
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
 
@@ -1627,7 +1742,9 @@ function UtilityView({
               </div>
             </div>
 
-            {detail ? (
+            {isWorkspaceLoading && !detail && !tempMailbox ? (
+              <InboxSkeleton />
+            ) : detail ? (
               <EmailMessage
                 detail={detail}
                 activationLink={detail.inbox.primaryVerificationLink?.url ?? detail.inbox.links[0]?.url ?? ''}
@@ -1665,6 +1782,7 @@ function UtilityView({
           </section>
 
           <div className="account-table-wrap mailboxes-table-wrap">
+            {isWorkspaceLoading ? <TableSkeleton columns={5} rows={6} /> : (
             <table className="account-table mailboxes-table">
               <thead>
                 <tr>
@@ -1690,6 +1808,7 @@ function UtilityView({
                 })}
               </tbody>
             </table>
+            )}
           </div>
         </div>
       </section>
@@ -1744,6 +1863,7 @@ function UtilityView({
               <p>Open any generated test user to display its exact registration fields on this page.</p>
             </div>
             <div className="account-table-wrap">
+              {isWorkspaceLoading ? <TableSkeleton columns={4} rows={6} /> : (
               <table className="account-table">
                 <thead>
                   <tr><th>Test user</th><th>GEO</th><th>Email</th><th /></tr>
@@ -1759,6 +1879,7 @@ function UtilityView({
                   ))}
                 </tbody>
               </table>
+              )}
             </div>
           </div>
         )}
@@ -1804,6 +1925,7 @@ function UtilityView({
           </div>
         ) : (
           <div className="account-table-wrap">
+            {isWorkspaceLoading ? <TableSkeleton columns={4} rows={6} /> : (
             <table className="account-table">
               <thead>
                 <tr><th>Test user</th><th>GEO</th><th>Status</th><th /></tr>
@@ -1819,6 +1941,7 @@ function UtilityView({
                 ))}
               </tbody>
             </table>
+            )}
           </div>
         )}
       </section>
@@ -1860,6 +1983,7 @@ function UtilityView({
         <span className={cn('status-pill', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
       </div>
 
+      {isWorkspaceLoading ? <SettingsTabsSkeleton /> : (
       <div className="settings-tabs" role="tablist" aria-label="Settings sections">
         {settingsTabs.map((tab) => (
           <button
@@ -1875,8 +1999,11 @@ function UtilityView({
           </button>
         ))}
       </div>
+      )}
 
-      {settingsTab === 'defaults' ? (
+      {isWorkspaceLoading && !userSettings ? (
+      <SettingsSectionSkeleton />
+      ) : settingsTab === 'defaults' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
           <h3>Generation Defaults</h3>
