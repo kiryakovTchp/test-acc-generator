@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateSiteAccountId } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
@@ -123,6 +123,18 @@ test('site account id can be manually set after registration', async () => {
   const updated = updateSiteAccountId(item!.id, 1, ' 1695604249 ');
   assert.equal(updated?.siteAccountId, '1695604249');
   assert.match(updated?.fullProfileText ?? '', /Account ID: 1695604249/);
+});
+
+test('account balance status can be set after registration', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(item?.balanceStatus, 'unknown');
+
+  const updated = updateAccountBalanceStatus(item!.id, 1, 'has_balance');
+  assert.equal(updated?.balanceStatus, 'has_balance');
+  assert.match(updated?.fullProfileText ?? '', /Balance Status: Has balance/);
+
+  const listItem = (listHistory(1) as Array<{ id: number; balanceStatus: string }>).find((entry) => entry.id === item?.id);
+  assert.equal(listItem?.balanceStatus, 'has_balance');
 });
 
 test('phone can be regenerated without changing the rest of the identity', async () => {

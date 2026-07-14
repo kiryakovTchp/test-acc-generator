@@ -1777,6 +1777,18 @@ body {
   color: #334155;
 }
 
+.balance-status-select {
+  width: auto;
+  min-width: 128px;
+  max-width: 100%;
+  border-radius: 999px;
+  font-weight: 800;
+}
+
+.account-table .balance-status-select {
+  min-width: 118px;
+}
+
 .panel-header .status-pill {
   margin-left: 8px;
   vertical-align: middle;

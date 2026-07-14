@@ -23,6 +23,7 @@ export interface HistoryItem {
   email: string;
   username: string;
   siteAccountId: string;
+  balanceStatus: 'unknown' | 'no_balance' | 'has_balance';
   firstName: string;
   lastName: string;
   phone: string;

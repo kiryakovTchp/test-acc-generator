@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
-import type { Role, DocumentQuality, Gender, PersonaKey } from './types.js';
+import type { Role, DocumentQuality, Gender, PersonaKey, AccountBalanceStatus } from './types.js';
 import { hashPassword } from './auth.js';
 
 const dataDir = path.resolve(process.cwd(), 'backend', 'data');
@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS account_history (
   email_password TEXT NOT NULL,
   username TEXT NOT NULL,
   site_account_id TEXT NOT NULL DEFAULT '',
+  balance_status TEXT NOT NULL DEFAULT 'unknown',
   first_name TEXT NOT NULL DEFAULT '',
   last_name TEXT NOT NULL DEFAULT '',
   phone TEXT NOT NULL DEFAULT '',
@@ -70,6 +71,7 @@ ensureColumn('account_history', 'first_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'workspace_id', 'INTEGER');
 ensureColumn('account_history', 'created_by_user_id', 'INTEGER');
 ensureColumn('account_history', 'site_account_id', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'balance_status', "TEXT NOT NULL DEFAULT 'unknown'");
 ensureColumn('account_history', 'last_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'phone', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'age', 'INTEGER NOT NULL DEFAULT 0');
@@ -254,6 +256,7 @@ export interface HistoryRow {
   email_password: string;
   username: string;
   site_account_id: string;
+  balance_status: AccountBalanceStatus;
   first_name: string;
   last_name: string;
   phone: string;

@@ -2,6 +2,7 @@ export type Role = 'admin' | 'user';
 export type DocumentQuality = 'verified' | 'synthetic_pattern' | 'missing_rules';
 export type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 export type Gender = 'male' | 'female';
+export type AccountBalanceStatus = 'unknown' | 'no_balance' | 'has_balance';
 
 export interface GeoRule {
   key: string;
@@ -22,6 +23,7 @@ export interface HistoryListItem {
   email: string;
   username: string;
   siteAccountId: string;
+  balanceStatus: AccountBalanceStatus;
   firstName: string;
   lastName: string;
   phone: string;
