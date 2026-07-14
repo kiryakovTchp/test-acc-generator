@@ -119,6 +119,21 @@ button {
   margin: 20px 0 0;
 }
 
+.login-helper-link {
+  display: block;
+  margin-top: 14px;
+  color: var(--active);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}
+
+.login-helper-link:focus-visible {
+  border-radius: 4px;
+  outline: 3px solid rgba(59, 130, 246, 0.2);
+  outline-offset: 3px;
+}
+
 .console-shell {
   min-height: 100vh;
   display: grid;

@@ -836,6 +836,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </div>
           {error ? <p className="alert alert-error">{error}</p> : null}
           <button className="primary-button w-full">Sign in</button>
+          <a className="login-helper-link" href="/register">Have an invite token?</a>
         </form>
       </main>
     );
