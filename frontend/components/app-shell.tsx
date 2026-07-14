@@ -9,6 +9,7 @@ type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' |
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
+type AccountBalanceStatus = 'unknown' | 'no_balance' | 'has_balance';
 type SettingsTab = 'defaults' | 'workspace' | 'invites' | 'team' | 'security' | 'analytics';
 type BrowserGenerationSettings = {
   selectedGeo: string;
@@ -26,6 +27,7 @@ interface Detail {
   emailPassword: string;
   username: string;
   siteAccountId: string;
+  balanceStatus: AccountBalanceStatus;
   firstName: string;
   lastName: string;
   phone: string;
@@ -83,6 +85,11 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
 ];
 
 const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
+const BALANCE_STATUS_OPTIONS: Array<{ value: AccountBalanceStatus; label: string }> = [
+  { value: 'unknown', label: 'Unknown' },
+  { value: 'no_balance', label: 'No balance' },
+  { value: 'has_balance', label: 'Has balance' },
+];
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
@@ -161,6 +168,16 @@ function statusLabel(status: HistoryStatus) {
   return 'Waiting';
 }
 
+function balanceStatusLabel(status: AccountBalanceStatus) {
+  return BALANCE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? 'Unknown';
+}
+
+function balanceStatusTone(status: AccountBalanceStatus) {
+  if (status === 'has_balance') return 'success';
+  if (status === 'no_balance') return 'warning';
+  return 'active';
+}
+
 function getBrowserStorage(): Storage | null {
   if (typeof window === 'undefined') return null;
   if (typeof document === 'undefined') return null;
@@ -216,6 +233,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
+  const [balanceFilter, setBalanceFilter] = useState<'all' | AccountBalanceStatus>('all');
   const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
   const [accountGeoFilter, setAccountGeoFilter] = useState('all');
   const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
@@ -328,8 +346,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       const status = mapHistoryStatus(item);
       const matchesSearch = !term || [item.username, item.email, item.geoLabel, item.siteAccountId].some((value) => value.toLowerCase().includes(term));
       const matchesStatus = statusFilter === 'all' || status === statusFilter;
+      const matchesBalance = balanceFilter === 'all' || item.balanceStatus === balanceFilter;
       const matchesGeo = accountGeoFilter === 'all' || item.geoKey === accountGeoFilter;
-      return matchesSearch && matchesStatus && matchesGeo;
+      return matchesSearch && matchesStatus && matchesBalance && matchesGeo;
     });
 
     next.sort((a, b) => sortMode === 'newest'
@@ -337,7 +356,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       : new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
     return next;
-  }, [accountGeoFilter, accountSearch, history, sortMode, statusFilter]);
+  }, [accountGeoFilter, accountSearch, balanceFilter, history, sortMode, statusFilter]);
 
   const selectedStatus = mapDetailStatus(detail);
   const primaryActionsDisabled = !detail;
@@ -841,6 +860,30 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
   }
 
+  async function saveBalanceStatus(id: number, balanceStatus: AccountBalanceStatus) {
+    setError('');
+    setHistory((items) => items.map((item) => item.id === id ? { ...item, balanceStatus } : item));
+    if (detail?.id === id) {
+      setDetail((current) => current ? { ...current, balanceStatus } : current);
+    }
+    try {
+      const updated = await apiFetch<Detail>(`/history/${id}/balance-status?debug=1`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ balanceStatus }),
+      });
+      setHistory((items) => items.map((item) => item.id === id ? { ...item, balanceStatus: updated.balanceStatus } : item));
+      if (detail?.id === id) {
+        setDetail(updated);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save balance status');
+      void refresh();
+      if (detail?.id === id) {
+        void loadDetail(id);
+      }
+    }
+  }
+
   async function copyValue(key: string, value: string) {
     await navigator.clipboard.writeText(value);
     setCopiedField(key);
@@ -852,6 +895,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const phoneForCopy = localPhoneDigits(detail.phone, detail.geoKey);
     const identityPack = [
       `Account ID: ${detail.siteAccountId || ''}`,
+      `Balance Status: ${balanceStatusLabel(detail.balanceStatus)}`,
       `Username: ${detail.username}`,
       `Email: ${detail.email}`,
       `Mailbox Password: ${detail.emailPassword}`,
@@ -1064,6 +1108,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <option value="email_received">Email received</option>
                     <option value="waiting">Waiting</option>
                   </select>
+                  <select className="input-field compact" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
+                    <option value="all">All balances</option>
+                    {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  </select>
                   <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
                     <option value="newest">Newest first</option>
                     <option value="oldest">Oldest first</option>
@@ -1123,6 +1171,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                         <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
                       </div>
                     </label>
+                    <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
@@ -1223,6 +1272,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <option value="email_received">Email received</option>
                     <option value="waiting">Waiting</option>
                   </select>
+                  <select className="input-field compact" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
+                    <option value="all">All balances</option>
+                    {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                  </select>
                   <select className="input-field compact" value={accountGeoFilter} onChange={(e) => setAccountGeoFilter(e.target.value)}>
                     <option value="all">All GEOs</option>
                     {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
@@ -1236,7 +1289,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             ) : null}
 
             <div className="account-table-wrap">
-              {isWorkspaceBootstrapping ? <TableSkeleton columns={6} rows={7} /> : filteredHistory.length ? (
+              {isWorkspaceBootstrapping ? <TableSkeleton columns={7} rows={7} /> : filteredHistory.length ? (
                 <table className="account-table">
                   <thead>
                     <tr>
@@ -1244,6 +1297,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <th>GEO</th>
                       <th>Email</th>
                       <th>Status</th>
+                      <th>Balance</th>
                       <th>Created</th>
                       <th />
                     </tr>
@@ -1261,6 +1315,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                           <td>{item.geoLabel}</td>
                           <td>{item.email}</td>
                           <td><span className={cn('status-pill', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
+                          <td>
+                            <BalanceStatusSelect
+                              value={item.balanceStatus}
+                              onChange={(value) => void saveBalanceStatus(item.id, value)}
+                            />
+                          </td>
                           <td>{formatCompactDate(item.createdAt)}</td>
                           <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>Details</button></td>
                         </tr>
@@ -1303,6 +1363,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                         <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
                       </div>
                     </label>
+                    <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
@@ -2635,6 +2696,31 @@ function InspectorGroup({ title, children }: { title: string; children: React.Re
       <div className="inspector-group-title">{title}</div>
       <div className="inspector-rows">{children}</div>
     </section>
+  );
+}
+
+function BalanceStatusField({ value, onChange }: { value: AccountBalanceStatus; onChange: (value: AccountBalanceStatus) => void }) {
+  return (
+    <label className="account-id-field">
+      <span>Balance status</span>
+      <BalanceStatusSelect value={value} onChange={onChange} />
+    </label>
+  );
+}
+
+function BalanceStatusSelect({ value, onChange }: { value: AccountBalanceStatus; onChange: (value: AccountBalanceStatus) => void }) {
+  return (
+    <select
+      className={cn('input-field compact balance-status-select', `tone-${balanceStatusTone(value)}`)}
+      value={value}
+      aria-label="Balance status"
+      onClick={(event) => event.stopPropagation()}
+      onChange={(event) => onChange(event.target.value as AccountBalanceStatus)}
+    >
+      {BALANCE_STATUS_OPTIONS.map((item) => (
+        <option key={item.value} value={item.value}>{item.label}</option>
+      ))}
+    </select>
   );
 }
 

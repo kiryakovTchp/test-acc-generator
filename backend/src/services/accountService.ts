@@ -1,6 +1,6 @@
 import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
-import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
+import type { GeoRule, DocumentQuality, PersonaKey, Role, AccountBalanceStatus } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
@@ -140,6 +140,19 @@ export function updateSiteAccountId(id: number, userId: number, siteAccountId: s
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
+export function updateAccountBalanceStatus(id: number, userId: number, balanceStatus: string, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const normalized = normalizeBalanceStatus(balanceStatus);
+  const result = db.prepare(`
+    UPDATE account_history
+    SET balance_status = ?
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+  `).run(normalized, id, resolvedWorkspaceId, userId);
+  if (result.changes === 0) return null;
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
+}
+
 export function regeneratePhone(id: number, userId: number, includeDebug = false, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   const row = db.prepare(`
@@ -169,6 +182,7 @@ export function listHistory(userId: number, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   return db.prepare(`
     SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username, site_account_id as siteAccountId,
+           balance_status as balanceStatus,
            first_name as firstName, last_name as lastName, phone, age, gender,
            date_of_birth as dateOfBirth, country, region, city, place_of_birth as placeOfBirth,
            address_line as addressLine, postal_code as postalCode,
@@ -201,6 +215,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     emailPassword: row.email_password,
     username: row.username,
     siteAccountId: row.site_account_id,
+    balanceStatus: normalizeBalanceStatus(row.balance_status),
     firstName: row.first_name,
     lastName: row.last_name,
     phone: row.phone,
@@ -221,6 +236,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     documentQuality: row.document_quality,
     fullProfileText: [
       `Account ID: ${row.site_account_id || ''}`,
+      `Balance Status: ${balanceStatusLabel(normalizeBalanceStatus(row.balance_status))}`,
       `Username: ${row.username}`,
       `Email: ${row.email}`,
       `Mailbox Password: ${row.email_password}`,
@@ -253,6 +269,17 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     },
     createdAt: row.created_at,
   };
+}
+
+function normalizeBalanceStatus(value: string): AccountBalanceStatus {
+  if (value === 'has_balance' || value === 'no_balance') return value;
+  return 'unknown';
+}
+
+function balanceStatusLabel(value: AccountBalanceStatus) {
+  if (value === 'has_balance') return 'Has balance';
+  if (value === 'no_balance') return 'No balance';
+  return 'Unknown';
 }
 
 export function deleteHistory(id: number, userId: number, workspaceId?: number) {
