@@ -1531,6 +1531,12 @@ body {
   color: inherit;
 }
 
+.account-table .role-pill {
+  display: inline-flex;
+  margin-top: 0;
+  color: #334155;
+}
+
 .panel-header .status-pill {
   margin-left: 8px;
   vertical-align: middle;
@@ -1596,6 +1602,65 @@ body {
   font-size: 12px;
 }
 
+.settings-header {
+  align-items: center;
+}
+
+.settings-tabs {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.settings-tab {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  min-height: 58px;
+  border: 1px solid #e4e8ef;
+  border-radius: 8px;
+  padding: 10px 11px;
+  background: #fff;
+  color: #475569;
+  text-align: left;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.03);
+}
+
+.settings-tab strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 13px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-tab span {
+  overflow: hidden;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.settings-tab:hover {
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.settings-tab.is-active {
+  border-color: rgba(37, 99, 235, 0.26);
+  background: #edf4ff;
+  box-shadow: inset 3px 0 0 #2563eb;
+}
+
+.settings-tab.is-active strong,
+.settings-tab.is-active span {
+  color: #1e40af;
+}
+
 .section-subhead {
   display: grid;
   gap: 4px;
@@ -1619,6 +1684,10 @@ body {
   border-radius: 6px;
   padding: 14px;
   background: #fff;
+}
+
+.settings-tab-panel {
+  min-height: 360px;
 }
 
 .settings-actions {
@@ -1694,6 +1763,21 @@ body {
 
 .members-table .input-field.compact {
   min-width: 118px;
+}
+
+.role-pill {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 5px 9px;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
 }
 
 .section-subhead p,
@@ -2524,6 +2608,10 @@ kbd {
     grid-template-columns: 1fr;
   }
 
+  .settings-tabs {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .settings-actions {
     grid-template-columns: 1fr;
   }
@@ -2618,6 +2706,10 @@ kbd {
   .verification-page-grid,
   .mailbox-reader-header,
   .mailbox-credentials {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-tabs {
     grid-template-columns: 1fr;
   }
 
