@@ -246,14 +246,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }, []);
 
   useEffect(() => {
-    if (!settingsReady) return;
-    const storage = getBrowserStorage();
-    if (!storage) return;
-    const settings: BrowserGenerationSettings = { selectedGeo, documentType, bulkCount, persona, accountRole };
-    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-  }, [accountRole, bulkCount, documentType, persona, selectedGeo, settingsReady]);
-
-  useEffect(() => {
     if (!token) return;
     refresh(token).catch((err) => {
       if (err instanceof Error && /unauthorized/i.test(err.message)) {
@@ -268,6 +260,25 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }, [token]);
 
   const currentGeo = useMemo(() => geoItems.find((item) => item.key === selectedGeo), [geoItems, selectedGeo]);
+  const effectiveDocumentType = currentGeo?.documentTypes.includes(documentType)
+    ? documentType
+    : currentGeo?.documentTypes[0] ?? documentType;
+
+  useEffect(() => {
+    if (!settingsReady) return;
+    const storage = getBrowserStorage();
+    if (!storage) return;
+    const settings: BrowserGenerationSettings = { selectedGeo, documentType: effectiveDocumentType, bulkCount, persona, accountRole };
+    storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
+  }, [accountRole, bulkCount, documentType, effectiveDocumentType, persona, selectedGeo, settingsReady]);
+
+  function selectGeo(nextGeoKey: string) {
+    setSelectedGeo(nextGeoKey);
+    const nextGeo = geoItems.find((item) => item.key === nextGeoKey);
+    if (nextGeo?.documentTypes.length) {
+      setDocumentType(nextGeo.documentTypes[0]);
+    }
+  }
 
   useEffect(() => {
     if (currentGeo?.documentTypes.length && !currentGeo.documentTypes.includes(documentType)) {
@@ -360,8 +371,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setWorkspaceInvites(workspaceInvitesRes.invites);
     setAuthSessions(sessionsRes.sessions);
     if (!userSettings) {
-      setSelectedGeo(userSettingsRes.settings.defaultGeo);
-      setDocumentType(userSettingsRes.settings.defaultDocumentType);
+      const defaultGeo = geo.items.some((item) => item.key === userSettingsRes.settings.defaultGeo)
+        ? userSettingsRes.settings.defaultGeo
+        : geo.items[0]?.key ?? userSettingsRes.settings.defaultGeo;
+      const defaultGeoItem = geo.items.find((item) => item.key === defaultGeo);
+      setSelectedGeo(defaultGeo);
+      setDocumentType(defaultGeoItem?.documentTypes.includes(userSettingsRes.settings.defaultDocumentType)
+        ? userSettingsRes.settings.defaultDocumentType
+        : defaultGeoItem?.documentTypes[0] ?? userSettingsRes.settings.defaultDocumentType);
       setPersona(userSettingsRes.settings.defaultPersona);
       setBulkCount(Math.min(limitsRes.settings.maxBulkCount, Math.max(1, userSettingsRes.settings.bulkCount)));
     } else {
@@ -369,6 +386,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
     if ((!selectedGeo || !geo.items.some((item) => item.key === selectedGeo)) && geo.items[0]) {
       setSelectedGeo(geo.items[0].key);
+      setDocumentType(geo.items[0].documentTypes[0] ?? documentType);
     }
   }
 
@@ -399,7 +417,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         body: JSON.stringify({
           defaultGeo: selectedGeo,
           defaultPersona: persona,
-          defaultDocumentType: documentType,
+          defaultDocumentType: effectiveDocumentType,
           bulkCount,
         }),
       });
@@ -658,7 +676,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     try {
       const res = await apiFetch<Detail>('/accounts/generate?debug=1', token, {
         method: 'POST',
-        body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona }),
+        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona }),
       });
       setDetail(res);
       await refresh();
@@ -675,7 +693,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     try {
       const res = await apiFetch<{ items: Detail[] }>('/accounts/generate-bulk', token, {
         method: 'POST',
-        body: JSON.stringify({ geoKey: selectedGeo, documentType, role: accountRole, persona, count: bulkCount }),
+        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona, count: bulkCount }),
       });
       const firstItem = res.items[0] ?? null;
       setDetail(firstItem ? await apiFetch<Detail>(`/history/${firstItem.id}?debug=1`, token) : null);
@@ -802,7 +820,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <p>Defaults used by Generate identity and Generate bulk.</p>
       <div className="form-stack">
         <Field label="GEO">
-          <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+          <select className="input-field compact" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
             {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
           </select>
         </Field>
@@ -812,7 +830,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </select>
         </Field>
         <Field label="Document type">
-          <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+          <select className="input-field compact" value={effectiveDocumentType} onChange={(e) => setDocumentType(e.target.value)}>
             {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
             <option value="missing_rule_probe">missing_rule_probe</option>
           </select>
@@ -1317,9 +1335,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               filteredHistory={filteredHistory}
               geoItems={geoItems}
               selectedGeo={selectedGeo}
-              setSelectedGeo={setSelectedGeo}
+              setSelectedGeo={selectGeo}
               currentGeo={currentGeo}
-              documentType={documentType}
+              documentType={effectiveDocumentType}
               setDocumentType={setDocumentType}
               persona={persona}
               setPersona={setPersona}
