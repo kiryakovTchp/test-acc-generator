@@ -1183,7 +1183,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Test user details" onClick={() => setDetail(null)}>
               <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="panel-header">
-                  <h2>Test user details <span className="success-text">{statusLabel(selectedStatus)}</span></h2>
+                  <h2>Test user details <span className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span></h2>
                   <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
                 </div>
 
@@ -1756,7 +1756,7 @@ function UtilityView({
                   <tr key={item.id}>
                     <td><strong>{item.siteAccountId || item.username}</strong><span>{item.email}</span></td>
                     <td>{item.geoLabel}</td>
-                    <td>{statusLabel(mapHistoryStatus(item))}</td>
+                    <td><span className={cn('status-pill', `tone-${statusTone(mapHistoryStatus(item))}`)}>{statusLabel(mapHistoryStatus(item))}</span></td>
                     <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
                   </tr>
                 ))}
