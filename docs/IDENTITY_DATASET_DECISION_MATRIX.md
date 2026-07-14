@@ -36,6 +36,8 @@ These are plausible but should not be promoted to verified yet.
 | KE | national_id | `^\d{8}$` | Widely used, but exact official grammar still needs a better citation. |
 | GM | passport | `^PC\d{7}$` | Draft candidate is country-specific but not confirmed by official/sample-level source. |
 | GM | national_identification_number | `^\d{11}$` | Source review indicates Gambian NIN is 11 digits, replacing the draft 10-digit candidate; keep review-required until current official grammar is confirmed. |
+| MW | passport | `^\d{6}$` | PRADO specimen shows `Passport No` as six digits, e.g. `030025`; `MWI` is the country code, not part of the visible passport number. |
+| MW | personal_number | `^\d{7}/\d$` | PRADO specimen shows `Personal No` in slash form, e.g. `1212433/2`; keep review-required until confirmed across current documents. |
 | NG | passport | `^[A-Z]\d{8}$` | Probable, but exact visual grammar still needs sample-level source. |
 | UG | passport | `^B\d{7}$` | Passport document confirmed, exact visible grammar not confirmed. |
 | UG | national_id | `^C[MF]\d{12}$` | Plausible, but exact prefix and length need official source. |

@@ -103,6 +103,22 @@
     }
   },
   {
+    "key": "malawi",
+    "label": "Malawi",
+    "documents": {
+      "passport": {
+        "templates": ["{RAND6}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO specimen image shows a six-digit visible passport number, with MWI only as the country code."
+      },
+      "personal_number": {
+        "templates": ["{RAND7}/{RAND1}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO specimen image shows Personal No as seven digits, slash, one digit; keep review_required until confirmed across current documents."
+      }
+    }
+  },
+  {
     "key": "ethiopia",
     "label": "Ethiopia",
     "documents": {
