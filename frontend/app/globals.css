@@ -2098,6 +2098,45 @@ body {
   font-weight: 800;
 }
 
+.dataset-notice {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+  border: 1px solid #cfe1ff;
+  background: #f5f9ff;
+  padding: 9px 10px;
+  color: #254168;
+  font-size: 11px;
+}
+
+.dataset-notice strong {
+  color: #17345d;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.dataset-notice span {
+  min-width: 0;
+  color: #46617f;
+  line-height: 1.35;
+}
+
+.dataset-notice.is-review {
+  border-color: #f2d39b;
+  background: #fffaf0;
+  color: #704d16;
+}
+
+.dataset-notice.is-review strong {
+  color: #694511;
+}
+
+.dataset-notice.is-review span {
+  color: #805d24;
+}
+
 .identity-pack-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -2762,6 +2801,11 @@ kbd {
   .email-message-toolbar {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .dataset-notice {
+    grid-template-columns: 1fr;
+    gap: 3px;
   }
 
   .identity-pack-grid,
