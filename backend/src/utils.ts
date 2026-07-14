@@ -80,6 +80,14 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'West Coast', cities: ['Brikama'], postalPrefixes: ['222'], streetPrefixes: ['Brikama Highway', 'Kombo Coastal Road'] },
     ],
   },
+  malawi: {
+    country: 'Malawi',
+    regions: [
+      { name: 'Southern Region', cities: ['Blantyre', 'Zomba'], postalPrefixes: ['300', '310'], streetPrefixes: ['Victoria Avenue', 'Chileka Road'] },
+      { name: 'Central Region', cities: ['Lilongwe', 'Dedza'], postalPrefixes: ['200', '220'], streetPrefixes: ['M1 Road', 'Paul Kagame Road'] },
+      { name: 'Northern Region', cities: ['Mzuzu'], postalPrefixes: ['400'], streetPrefixes: ['Orton Chirwa Avenue', 'Katoto Road'] },
+    ],
+  },
   ethiopia: {
     country: 'Ethiopia',
     regions: [
@@ -272,6 +280,7 @@ export function randomPhone(geoKey: string) {
     ireland: '+35385',
     angola: '+244923',
     gambia: '+22030',
+    malawi: '+26588',
     ethiopia: '+25191',
     senegal: '+22170',
     tanzania: '+25562',

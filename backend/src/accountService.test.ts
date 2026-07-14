@@ -41,6 +41,7 @@ test('geo rules include required starter geos', () => {
     'Ireland',
     'Angola',
     'Gambia',
+    'Malawi',
     'Ethiopia',
     'Senegal',
     'Tanzania',
@@ -60,6 +61,17 @@ test('verified dataset geos keep country region and city as separate dependent f
   assert.ok(['Greater Accra', 'Ashanti'].includes(item?.region ?? ''));
   assert.ok(['Accra', 'Tema', 'Kumasi', 'Obuasi'].includes(item?.city ?? ''));
   assert.equal(item?.placeOfBirth, item?.city);
+});
+
+test('malawi dataset follows PRADO specimen passport shapes', async () => {
+  const passport = await generateAccount({ userId: 1, geoKey: 'malawi', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(passport?.country, 'Malawi');
+  assert.equal(passport?.documentQuality, 'synthetic_pattern');
+  assert.match(passport?.documentValue ?? '', /^\d{6}$/);
+
+  const personalNumber = await generateAccount({ userId: 1, geoKey: 'malawi', documentType: 'personal_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(personalNumber?.documentQuality, 'synthetic_pattern');
+  assert.match(personalNumber?.documentValue ?? '', /^\d{7}\/\d$/);
 });
 
 test('site account id can be manually set after registration', async () => {
