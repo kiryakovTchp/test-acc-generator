@@ -1,7 +1,7 @@
 import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js';
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role } from '../types.js';
-import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks } from '../utils.js';
+import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 
@@ -39,7 +39,7 @@ export async function generateAccount(input: {
   let documentValue = 'Missing Rules';
   let quality: DocumentQuality = 'missing_rules';
   if (docRule) {
-    documentValue = fillTemplate(docRule.templates[0]);
+    documentValue = fillTemplate(pickTemplate(docRule.templates));
     quality = docRule.quality;
   }
 

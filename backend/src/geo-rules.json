@@ -119,6 +119,43 @@
     }
   },
   {
+    "key": "sierra_leone",
+    "label": "Sierra Leone",
+    "documents": {
+      "passport": {
+        "templates": ["{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO specimen image shows a seven-digit visible passport number, with SLE only as the country code."
+      },
+      "personal_number": {
+        "templates": ["{RAND9}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO specimen image shows Personal No as nine digits; keep review_required until confirmed across current documents."
+      }
+    }
+  },
+  {
+    "key": "togo",
+    "label": "Togo",
+    "documents": {
+      "passport": {
+        "templates": ["XB{RAND6}", "XS{RAND6}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO ordinary passport specimens show X-series prefixes such as XB000072 and XS000288."
+      },
+      "diplomatic_passport": {
+        "templates": ["D{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "PRADO diplomatic passport specimen shows D plus seven digits, e.g. D9000426."
+      },
+      "driver_license_number": {
+        "templates": ["{RAND5}{RAND3}"],
+        "quality": "synthetic_pattern",
+        "notes": "Sample driving licence is partially redacted; only the trailing digits and a separate five-digit serial are visible, so this remains review_required."
+      }
+    }
+  },
+  {
     "key": "ethiopia",
     "label": "Ethiopia",
     "documents": {

@@ -88,6 +88,22 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Northern Region', cities: ['Mzuzu'], postalPrefixes: ['400'], streetPrefixes: ['Orton Chirwa Avenue', 'Katoto Road'] },
     ],
   },
+  sierra_leone: {
+    country: 'Sierra Leone',
+    regions: [
+      { name: 'Western Area', cities: ['Freetown'], postalPrefixes: ['100'], streetPrefixes: ['Siaka Stevens Street', 'Wilkinson Road'] },
+      { name: 'Eastern Province', cities: ['Kenema', 'Koidu'], postalPrefixes: ['300', '330'], streetPrefixes: ['Hangha Road', 'Kono Highway'] },
+      { name: 'Northern Province', cities: ['Makeni'], postalPrefixes: ['400'], streetPrefixes: ['Magburaka Road', 'Azzolini Highway'] },
+    ],
+  },
+  togo: {
+    country: 'Togo',
+    regions: [
+      { name: 'Maritime', cities: ['Lome', 'Aneho'], postalPrefixes: ['100', '110'], streetPrefixes: ['Boulevard du 13 Janvier', 'Avenue de la Liberation'] },
+      { name: 'Plateaux', cities: ['Kpalime', 'Atakpame'], postalPrefixes: ['200', '220'], streetPrefixes: ['Route de Kpalime', 'Avenue de la Gare'] },
+      { name: 'Kara', cities: ['Kara'], postalPrefixes: ['400'], streetPrefixes: ['Avenue des Nations', 'Route de Niamtougou'] },
+    ],
+  },
   ethiopia: {
     country: 'Ethiopia',
     regions: [
@@ -164,6 +180,10 @@ export function fillTemplate(template: string) {
   return template
     .replace('{YYYY}', String(new Date().getFullYear()))
     .replace(/\{RAND(\d+)\}/g, (_, digits) => randomDigits(Number(digits)));
+}
+
+export function pickTemplate(templates: string[]) {
+  return templates[crypto.randomInt(0, templates.length)];
 }
 
 export function extractLinks(text: string) {
@@ -281,6 +301,8 @@ export function randomPhone(geoKey: string) {
     angola: '+244923',
     gambia: '+22030',
     malawi: '+26588',
+    sierra_leone: '+23276',
+    togo: '+22890',
     ethiopia: '+25191',
     senegal: '+22170',
     tanzania: '+25562',
