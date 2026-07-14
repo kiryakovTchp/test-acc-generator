@@ -40,6 +40,7 @@ test('geo rules include required starter geos', () => {
     'Georgia',
     'Ireland',
     'Angola',
+    'Gambia',
     'Ethiopia',
     'Senegal',
     'Tanzania',

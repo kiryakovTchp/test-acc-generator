@@ -72,6 +72,14 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Benguela', cities: ['Benguela', 'Lobito'], postalPrefixes: ['120'], streetPrefixes: ['Avenida Aires de Almeida Santos', 'Rua 31 de Janeiro'] },
     ],
   },
+  gambia: {
+    country: 'Gambia',
+    regions: [
+      { name: 'Banjul', cities: ['Banjul'], postalPrefixes: ['220'], streetPrefixes: ['Independence Drive', 'Marina Parade'] },
+      { name: 'Kanifing', cities: ['Serekunda', 'Bakau'], postalPrefixes: ['221'], streetPrefixes: ['Kairaba Avenue', 'Pipeline Road'] },
+      { name: 'West Coast', cities: ['Brikama'], postalPrefixes: ['222'], streetPrefixes: ['Brikama Highway', 'Kombo Coastal Road'] },
+    ],
+  },
   ethiopia: {
     country: 'Ethiopia',
     regions: [
@@ -263,6 +271,7 @@ export function randomPhone(geoKey: string) {
     georgia: '+995555',
     ireland: '+35385',
     angola: '+244923',
+    gambia: '+22030',
     ethiopia: '+25191',
     senegal: '+22170',
     tanzania: '+25562',

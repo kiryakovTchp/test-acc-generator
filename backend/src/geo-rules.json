@@ -87,6 +87,22 @@
     }
   },
   {
+    "key": "gambia",
+    "label": "Gambia",
+    "documents": {
+      "passport": {
+        "templates": ["PC{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "Draft candidate is PC plus seven digits; official exact visual grammar still needs sample-level confirmation."
+      },
+      "national_identification_number": {
+        "templates": ["{RAND11}"],
+        "quality": "synthetic_pattern",
+        "notes": "Source review indicates Gambian NIN is 11 digits; keep review_required until refreshed official source confirms current card grammar."
+      }
+    }
+  },
+  {
     "key": "ethiopia",
     "label": "Ethiopia",
     "documents": {
