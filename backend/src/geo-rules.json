@@ -160,9 +160,9 @@
     "label": "Gabon",
     "documents": {
       "passport": {
-        "templates": ["{RAND10}"],
+        "templates": ["{RAND2}SP{RAND5}"],
         "quality": "synthetic_pattern",
-        "notes": "PRADO specimen image shows a ten-digit visible passport number, with GAB only as the country code."
+        "notes": "PRADO specimen image shows a passport number like 13SP01349, with GAB only as the country code."
       }
     }
   },
