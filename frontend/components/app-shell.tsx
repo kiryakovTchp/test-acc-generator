@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiFetch, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
@@ -849,6 +850,18 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     </section>
   );
 
+  if (!settingsReady) {
+    return (
+      <main className="auth-loading-shell" aria-label="Loading workspace">
+        <div className="auth-loading-panel">
+          <div className="sidebar-brand-mark">QA</div>
+          <strong>Test User Console</strong>
+          <span>Loading workspace</span>
+        </div>
+      </main>
+    );
+  }
+
   if (!user) {
     return (
       <main className="login-shell">
@@ -862,7 +875,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </div>
           {error ? <p className="alert alert-error">{error}</p> : null}
           <button className="primary-button w-full">Sign in</button>
-          <a className="login-helper-link" href="/register">Have an invite token?</a>
+          <Link className="login-helper-link" href="/register">Have an invite token?</Link>
         </form>
       </main>
     );
@@ -889,7 +902,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <nav className="sidebar-nav">
             {NAV_ITEMS.map((item) => (
-              <a
+              <Link
                 key={item.key}
                 href={item.href}
                 className={cn('sidebar-nav-item', activeNav === item.key && 'is-active')}
@@ -904,7 +917,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                         : item.key === 'codes' ? (detail?.inbox.codes.length ?? 0)
                           : ''}
                 </span>
-              </a>
+              </Link>
             ))}
           </nav>
         </div>
@@ -1008,7 +1021,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 );
               }) : <div className="empty-state">No test users match the current filters.</div>}
             </div>
-            <a className="view-all-button" href="/accounts">View all test users</a>
+            <Link className="view-all-button" href="/accounts">View all test users</Link>
           </section>
 
           <section className="panel panel-detail">
@@ -1202,7 +1215,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 </table>
               ) : <div className="empty-state">No test users match the current filters.</div>}
             </div>
-            <a className="view-all-button" href="/accounts">View all test users</a>
+            <Link className="view-all-button" href="/accounts">View all test users</Link>
           </section>
 
           {detail && typeof document !== 'undefined' ? createPortal((
