@@ -39,6 +39,11 @@ These are plausible but should not be promoted to verified yet.
 | MW | passport | `^\d{6}$` | PRADO specimen shows `Passport No` as six digits, e.g. `030025`; `MWI` is the country code, not part of the visible passport number. |
 | MW | personal_number | `^\d{7}/\d$` | PRADO specimen shows `Personal No` in slash form, e.g. `1212433/2`; keep review-required until confirmed across current documents. |
 | NG | passport | `^[A-Z]\d{8}$` | Probable, but exact visual grammar still needs sample-level source. |
+| SL | passport | `^\d{7}$` | PRADO specimen shows a seven-digit passport number, e.g. `0114439`; `SLE` is the country code, not part of the visible number. |
+| SL | personal_number | `^\d{9}$` | PRADO specimen shows Personal No as nine digits, e.g. `000119146`; keep review-required until confirmed across current documents. |
+| TG | passport | `^X[BS]\d{6}$` | PRADO ordinary passport specimens show X-series prefixes such as `XB000072` and `XS000288`. |
+| TG | diplomatic_passport | `^D\d{7}$` | PRADO diplomatic specimen shows `D9000426`; model separately from ordinary passport. |
+| TG | driver_license_number | `^\d{8}$` | Driving licence sample is partially redacted; only visible fragments support a synthetic placeholder, not verified grammar. |
 | UG | passport | `^B\d{7}$` | Passport document confirmed, exact visible grammar not confirmed. |
 | UG | national_id | `^C[MF]\d{12}$` | Plausible, but exact prefix and length need official source. |
 | UZ | passport | `^[A-Z]{2}\d{7}$` | Plausible from KYC references, not yet official-level. |
@@ -66,8 +71,6 @@ the current draft". It does not mean phone/geography data is useless.
 | ML | Mali | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | NE | Niger | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | CG | Republic of the Congo | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
-| SL | Sierra Leone | Passport/national ID candidates need source confirmation. |
-| TG | Togo | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | CF | Central African Republic | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | TD | Chad | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GQ | Equatorial Guinea | Passport candidate is generic MRZ-like filler; only 3 cities and 2 unresolved regions in audit. |

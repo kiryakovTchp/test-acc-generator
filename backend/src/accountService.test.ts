@@ -42,6 +42,8 @@ test('geo rules include required starter geos', () => {
     'Angola',
     'Gambia',
     'Malawi',
+    'Sierra Leone',
+    'Togo',
     'Ethiopia',
     'Senegal',
     'Tanzania',
@@ -72,6 +74,27 @@ test('malawi dataset follows PRADO specimen passport shapes', async () => {
   const personalNumber = await generateAccount({ userId: 1, geoKey: 'malawi', documentType: 'personal_number', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(personalNumber?.documentQuality, 'synthetic_pattern');
   assert.match(personalNumber?.documentValue ?? '', /^\d{7}\/\d$/);
+});
+
+test('sierra leone and togo dataset follow provided document specimens', async () => {
+  const sierraLeonePassport = await generateAccount({ userId: 1, geoKey: 'sierra_leone', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(sierraLeonePassport?.country, 'Sierra Leone');
+  assert.equal(sierraLeonePassport?.documentQuality, 'synthetic_pattern');
+  assert.match(sierraLeonePassport?.documentValue ?? '', /^\d{7}$/);
+
+  const sierraLeonePersonal = await generateAccount({ userId: 1, geoKey: 'sierra_leone', documentType: 'personal_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.match(sierraLeonePersonal?.documentValue ?? '', /^\d{9}$/);
+
+  const togoPassport = await generateAccount({ userId: 1, geoKey: 'togo', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(togoPassport?.country, 'Togo');
+  assert.equal(togoPassport?.documentQuality, 'synthetic_pattern');
+  assert.match(togoPassport?.documentValue ?? '', /^X[BS]\d{6}$/);
+
+  const togoDiplomatic = await generateAccount({ userId: 1, geoKey: 'togo', documentType: 'diplomatic_passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.match(togoDiplomatic?.documentValue ?? '', /^D\d{7}$/);
+
+  const togoDriverLicence = await generateAccount({ userId: 1, geoKey: 'togo', documentType: 'driver_license_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.match(togoDriverLicence?.documentValue ?? '', /^\d{8}$/);
 });
 
 test('site account id can be manually set after registration', async () => {
