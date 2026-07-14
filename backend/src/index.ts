@@ -12,6 +12,7 @@ import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsFo
 import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
 import { createWorkspaceInvite, getPublicInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
+import { getWorkspaceAlerts, getWorkspaceAnalytics } from './monitoring.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -247,6 +248,14 @@ app.get('/history', auth, (req, res) => {
 
 app.get('/limits', auth, (req, res) => {
   res.json(getUsageSummary((req as any).user.workspaceId, (req as any).user.userId));
+});
+
+app.get('/alerts', auth, (req, res) => {
+  res.json({ items: getWorkspaceAlerts((req as any).user.workspaceId, (req as any).user.userId) });
+});
+
+app.get('/analytics/summary', auth, (req, res) => {
+  res.json({ summary: getWorkspaceAnalytics((req as any).user.workspaceId, (req as any).user.userId) });
 });
 
 app.get('/user/settings', auth, (req, res) => {

@@ -64,6 +64,35 @@ export interface UsageLimit {
   remaining: number;
 }
 
+export interface AlertItem {
+  id: string;
+  tone: 'info' | 'warning' | 'critical';
+  title: string;
+  message: string;
+  metric?: string;
+}
+
+export interface AnalyticsSummary {
+  windowDays: number;
+  totals: {
+    generatedTotal: number;
+    generated24h: number;
+    emailReceived: number;
+    verifiedDocuments: number;
+    reviewDocuments: number;
+  };
+  usageByDay: Array<{
+    day: string;
+    eventType: string;
+    total: number;
+  }>;
+  topGeos: Array<{
+    geoKey: string;
+    geoLabel: string;
+    count: number;
+  }>;
+}
+
 export interface UserSettings {
   defaultGeo: string;
   defaultPersona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
