@@ -8,6 +8,7 @@ type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' |
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
+type SettingsTab = 'defaults' | 'workspace' | 'invites' | 'team' | 'security';
 type BrowserGenerationSettings = {
   selectedGeo: string;
   documentType: string;
@@ -112,6 +113,12 @@ function mapDetailStatus(detail: Detail | null): HistoryStatus {
 function statusTone(status: HistoryStatus) {
   if (status === 'email_received') return 'success';
   if (status === 'generated') return 'active';
+  return 'warning';
+}
+
+function inviteStatusTone(status: string) {
+  if (status === 'accepted') return 'success';
+  if (status === 'pending') return 'active';
   return 'warning';
 }
 
@@ -1527,6 +1534,8 @@ function UtilityView({
   accountStatus: string;
   canManageWorkspaceSettings: boolean;
 }) {
+  const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
+
   if (activeNav === 'mailboxes') {
     return (
       <section className="panel utility-panel">
@@ -1784,21 +1793,46 @@ function UtilityView({
   const inviteLink = lastInviteToken && typeof window !== 'undefined'
     ? `${window.location.origin}/invite?token=${encodeURIComponent(lastInviteToken)}`
     : '';
+  const pendingInviteCount = workspaceInvites.filter((invite) => invite.status === 'pending').length;
+  const settingsTabs: Array<{ key: SettingsTab; label: string; meta: string }> = [
+    { key: 'defaults', label: 'Defaults', meta: userSettings ? userSettings.defaultGeo : 'Loading' },
+    { key: 'workspace', label: 'Workspace', meta: `${editableWorkspaceSettings.accountsPerDay}/day` },
+    { key: 'invites', label: 'Invites', meta: `${pendingInviteCount} pending` },
+    { key: 'team', label: 'Team', meta: `${workspaceMembers.length} users` },
+    { key: 'security', label: 'Security', meta: `${authSessions.length} sessions` },
+  ];
 
   return (
     <section className="panel utility-panel">
-      <div className="utility-header">
+      <div className="utility-header settings-header">
         <div>
           <h2>Settings</h2>
-          <p>Personal defaults and workspace limits are saved on the backend.</p>
+          <p>Defaults, workspace limits, access, and account security are grouped by task.</p>
         </div>
         <span className={cn('status-pill', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
       </div>
 
-      <section className="settings-section">
+      <div className="settings-tabs" role="tablist" aria-label="Settings sections">
+        {settingsTabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            aria-selected={settingsTab === tab.key}
+            className={cn('settings-tab', settingsTab === tab.key && 'is-active')}
+            onClick={() => setSettingsTab(tab.key)}
+          >
+            <strong>{tab.label}</strong>
+            <span>{tab.meta}</span>
+          </button>
+        ))}
+      </div>
+
+      {settingsTab === 'defaults' ? (
+      <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Personal Settings</h3>
-          <p>Generation defaults saved to your user profile.</p>
+          <h3>Generation Defaults</h3>
+          <p>Your preferred GEO, persona, document type, and bulk count for new test users.</p>
         </div>
         <div className="settings-grid">
           <Field label="Default GEO">
@@ -1828,11 +1862,13 @@ function UtilityView({
           </button>
         </div>
       </section>
+      ) : null}
 
-      <section className="settings-section">
+      {settingsTab === 'workspace' ? (
+      <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Workspace Settings</h3>
-          <p>Shared retention and provider protection limits.</p>
+          <h3>Workspace Limits</h3>
+          <p>Shared retention, provider limits, and bulk-generation controls for the workspace.</p>
         </div>
         <div className="settings-grid">
           <Field label="History retention days">
@@ -1844,15 +1880,6 @@ function UtilityView({
           <Field label="Max bulk count">
             <input className="input-field compact" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
           </Field>
-          <Field label="Accounts per day">
-            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
-          </Field>
-          <Field label="Mailboxes per day">
-            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
-          </Field>
-          <Field label="Inbox refresh per minute">
-            <input className="input-field compact" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
-          </Field>
           <Field label="Mailbox provider">
             <select className="input-field compact" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value })}>
               <option value="mail_tm">mail.tm</option>
@@ -1863,6 +1890,17 @@ function UtilityView({
             <span>Allow bulk generation</span>
           </label>
         </div>
+        <div className="settings-grid quota-grid">
+          <Field label="Accounts per day">
+            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
+          </Field>
+          <Field label="Mailboxes per day">
+            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
+          </Field>
+          <Field label="Inbox refresh per minute">
+            <input className="input-field compact" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
+          </Field>
+        </div>
         {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
         <div className="settings-actions">
           <span>{canManageWorkspaceSettings ? 'Applies to everyone in this workspace.' : 'Workspace settings require owner or admin access.'}</span>
@@ -1871,11 +1909,13 @@ function UtilityView({
           </button>
         </div>
       </section>
+      ) : null}
 
-      <section className="settings-section">
+      {settingsTab === 'invites' ? (
+      <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Team Members</h3>
-          <p>Workspace access, invites, and role assignment.</p>
+          <h3>Invites</h3>
+          <p>Create invite-only registration links and revoke pending access.</p>
         </div>
 
         <div className="member-add-row invite-create-row">
@@ -1918,8 +1958,11 @@ function UtilityView({
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
                   <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
-                  <td>{invite.role}</td>
-                  <td>{invite.status}{invite.acceptedByLogin ? ` by ${invite.acceptedByLogin}` : ''}</td>
+                  <td><span className="role-pill">{invite.role}</span></td>
+                  <td>
+                    <span className={cn('status-chip', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
+                    {invite.acceptedByLogin ? <span>by {invite.acceptedByLogin}</span> : null}
+                  </td>
                   <td>
                     <button
                       type="button"
@@ -1939,6 +1982,19 @@ function UtilityView({
               ) : null}
             </tbody>
           </table>
+        </div>
+
+        <div className="settings-actions">
+          <span>{canManageWorkspaceSettings ? 'Invite links create new users directly inside this workspace.' : 'Invite management requires owner or admin access.'}</span>
+        </div>
+      </section>
+      ) : null}
+
+      {settingsTab === 'team' ? (
+      <section className="settings-section settings-tab-panel">
+        <div className="section-subhead">
+          <h3>Team Members</h3>
+          <p>Add existing users to the workspace and adjust their access level.</p>
         </div>
 
         <div className="member-add-row">
@@ -1985,7 +2041,7 @@ function UtilityView({
                       <option value="viewer">viewer</option>
                     </select>
                   </td>
-                  <td>{member.userRole}</td>
+                  <td><span className="role-pill">{member.userRole}</span></td>
                   <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
                 </tr>
               ))}
@@ -1997,11 +2053,13 @@ function UtilityView({
           <span>{canManageWorkspaceSettings ? 'Invites create new users; add member attaches an existing user.' : 'Member management requires owner or admin access.'}</span>
         </div>
       </section>
+      ) : null}
 
-      <section className="settings-section">
+      {settingsTab === 'security' ? (
+      <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Account Settings</h3>
-          <p>Email, password, and active sessions for your user account.</p>
+          <h3>Account Security</h3>
+          <p>Email, username, password, and active sessions for your user account.</p>
         </div>
 
         <div className="settings-grid account-settings-grid">
@@ -2075,6 +2133,7 @@ function UtilityView({
           <button type="button" className="secondary-button danger-button" onClick={onLogoutEverywhere} disabled={isSavingAccount}>Logout everywhere</button>
         </div>
       </section>
+      ) : null}
 
       <div className="settings-save-note">
         Browser cache is still used for fast reloads, but backend settings are the source of truth after sign in.
