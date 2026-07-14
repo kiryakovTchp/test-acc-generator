@@ -3,13 +3,13 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { apiFetch, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
+import { apiFetch, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
 type HistoryStatus = 'generated' | 'email_received' | 'waiting';
-type SettingsTab = 'defaults' | 'workspace' | 'invites' | 'team' | 'security';
+type SettingsTab = 'defaults' | 'workspace' | 'invites' | 'team' | 'security' | 'analytics';
 type BrowserGenerationSettings = {
   selectedGeo: string;
   documentType: string;
@@ -194,6 +194,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [settingsReady, setSettingsReady] = useState(false);
   const [isWorkspaceLoading, setIsWorkspaceLoading] = useState(false);
   const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
+  const [alertItems, setAlertItems] = useState<AlertItem[]>([]);
+  const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsSummary | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
@@ -357,10 +359,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setAccountUsername(me.user.username ?? me.user.login);
       const workspaceId = me.user.workspaceId;
       const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
-      const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
+      const [geo, historyRes, limitsRes, alertsRes, analyticsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
         apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
         apiFetch<{ items: HistoryItem[] }>('/history', authToken),
         apiFetch<UsageSummary>('/limits', authToken),
+        apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
+        apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
         apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
         workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
         workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
@@ -370,6 +374,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setGeoItems(geo.items);
       setHistory(historyRes.items);
       setUsageSummary(limitsRes);
+      setAlertItems(alertsRes.items);
+      setAnalyticsSummary(analyticsRes.summary);
       setUserSettings(userSettingsRes.settings);
       setWorkspaceSettings(workspaceSettingsRes.settings);
       setWorkspaceMembers(workspaceMembersRes.members);
@@ -399,13 +405,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshUsage(authToken = token) {
-    const [limitsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
+    const [limitsRes, alertsRes, analyticsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
       apiFetch<UsageSummary>('/limits', authToken),
+      apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
+      apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
       user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       user?.workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
       user?.workspaceId && ['owner', 'admin'].includes(user.workspaceRole ?? '') ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${user.workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
     ]);
     setUsageSummary(limitsRes);
+    setAlertItems(alertsRes.items);
+    setAnalyticsSummary(analyticsRes.summary);
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
     setWorkspaceInvites(workspaceInvitesRes.invites);
@@ -957,6 +967,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         {error ? <div className="alert alert-error slim">{error}</div> : null}
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
         {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} identities and mailbox snapshots.</div> : null}
+        <AlertsPanel items={alertItems} />
 
         {showQuickActions ? (
           <section className="quick-actions-panel">
@@ -1423,6 +1434,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               accountStatus={accountStatus}
               canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
               isWorkspaceLoading={isWorkspaceBootstrapping}
+              alertItems={alertItems}
+              analyticsSummary={analyticsSummary}
             />
           )}
         </div>
@@ -1539,6 +1552,24 @@ function SettingsSectionSkeleton() {
   );
 }
 
+function AlertsPanel({ items }: { items: AlertItem[] }) {
+  if (!items.length) return null;
+
+  return (
+    <section className="alerts-panel" aria-label="Workspace alerts">
+      {items.slice(0, 3).map((item) => (
+        <div key={item.id} className={cn('alert-card', `tone-${item.tone}`)}>
+          <div>
+            <strong>{item.title}</strong>
+            <span>{item.message}</span>
+          </div>
+          {item.metric ? <small>{item.metric}</small> : null}
+        </div>
+      ))}
+    </section>
+  );
+}
+
 function DatasetNotice({ quality }: { quality: Detail['documentQuality'] }) {
   const title = quality === 'verified'
     ? 'Verified format, synthetic data'
@@ -1625,6 +1656,8 @@ function UtilityView({
   accountStatus,
   canManageWorkspaceSettings,
   isWorkspaceLoading,
+  alertItems,
+  analyticsSummary,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -1696,6 +1729,8 @@ function UtilityView({
   accountStatus: string;
   canManageWorkspaceSettings: boolean;
   isWorkspaceLoading: boolean;
+  alertItems: AlertItem[];
+  analyticsSummary: AnalyticsSummary | null;
 }) {
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
 
@@ -1971,6 +2006,7 @@ function UtilityView({
     { key: 'invites', label: 'Invites', meta: `${pendingInviteCount} pending` },
     { key: 'team', label: 'Team', meta: `${workspaceMembers.length} users` },
     { key: 'security', label: 'Security', meta: `${authSessions.length} sessions` },
+    { key: 'analytics', label: 'Analytics', meta: analyticsSummary ? `${analyticsSummary.totals.generated24h}/24h` : 'Loading' },
   ];
 
   return (
@@ -2307,6 +2343,57 @@ function UtilityView({
           <span>Revokes every active session for this account, including this browser.</span>
           <button type="button" className="secondary-button danger-button" onClick={onLogoutEverywhere} disabled={isSavingAccount}>Logout everywhere</button>
         </div>
+      </section>
+      ) : null}
+
+      {settingsTab === 'analytics' ? (
+      <section className="settings-section settings-tab-panel">
+        <div className="section-subhead">
+          <h3>Workspace Analytics</h3>
+          <p>Operational counters from local generation, mailbox, and inbox usage events.</p>
+        </div>
+
+        {analyticsSummary ? (
+          <>
+            <div className="analytics-metric-grid">
+              <Metric label="Generated 7d" value={String(analyticsSummary.totals.generatedTotal)} />
+              <Metric label="Generated 24h" value={String(analyticsSummary.totals.generated24h)} />
+              <Metric label="Email received" value={String(analyticsSummary.totals.emailReceived)} />
+              <Metric label="Verified docs" value={String(analyticsSummary.totals.verifiedDocuments)} />
+              <Metric label="Review docs" value={String(analyticsSummary.totals.reviewDocuments)} />
+            </div>
+
+            <div className="analytics-grid">
+              <section className="analytics-card">
+                <h4>Usage events</h4>
+                {analyticsSummary.usageByDay.length ? analyticsSummary.usageByDay.map((item) => (
+                  <div key={`${item.day}:${item.eventType}`} className="analytics-row">
+                    <span>{item.day}</span>
+                    <strong>{item.eventType.replaceAll('_', ' ')}</strong>
+                    <small>{item.total}</small>
+                  </div>
+                )) : <div className="empty-state compact">No usage events yet.</div>}
+              </section>
+
+              <section className="analytics-card">
+                <h4>Top GEOs</h4>
+                {analyticsSummary.topGeos.length ? analyticsSummary.topGeos.map((item) => (
+                  <div key={item.geoKey} className="analytics-row">
+                    <span>{item.geoLabel}</span>
+                    <strong>{item.geoKey}</strong>
+                    <small>{item.count}</small>
+                  </div>
+                )) : <div className="empty-state compact">No generated GEOs yet.</div>}
+              </section>
+            </div>
+          </>
+        ) : <SettingsSectionSkeleton />}
+
+        <div className="section-subhead">
+          <h3>Active Alerts</h3>
+          <p>Limit and dataset warnings generated from the current workspace state.</p>
+        </div>
+        {alertItems.length ? <AlertsPanel items={alertItems} /> : <div className="empty-state compact">No active alerts.</div>}
       </section>
       ) : null}
 
