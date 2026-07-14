@@ -105,6 +105,19 @@ test('gabon dataset follows provided PRADO passport specimen', async () => {
   assert.match(passport?.documentValue ?? '', /^\d{2}SP\d{5}$/);
 });
 
+test('gabon generated names come from the Gabon profile pool', async () => {
+  const maleNames = new Set(['Alain', 'Jean', 'Patrick', 'Brice', 'Cedric', 'Marc', 'Christian', 'Landry']);
+  const femaleNames = new Set(['Marie', 'Chantal', 'Sandrine', 'Estelle', 'Prisca', 'Nadine', 'Ariane', 'Justine']);
+  const lastNames = new Set(['Mba', 'Ondo', 'Obame', 'Ndong', 'Nguema', 'Essono', 'Ebang', 'Moussavou', 'Oyono']);
+
+  for (let i = 0; i < 10; i += 1) {
+    const item = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+    assert.ok(maleNames.has(item?.firstName ?? '') || femaleNames.has(item?.firstName ?? ''));
+    assert.ok(lastNames.has(item?.lastName ?? ''));
+    assert.notEqual(item?.lastName, 'Bekov');
+  }
+});
+
 test('site account id can be manually set after registration', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   const updated = updateSiteAccountId(item!.id, 1, ' 1695604249 ');
