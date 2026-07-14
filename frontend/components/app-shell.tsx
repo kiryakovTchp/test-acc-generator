@@ -1075,6 +1075,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <h3>Registration form data</h3>
                     <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
                   </div>
+                  <DatasetNotice quality={detail.documentQuality} />
                   <div className="identity-pack-grid">
                     <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
                     <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
@@ -1265,6 +1266,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <h3>Registration form data</h3>
                     <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
                   </div>
+                  <DatasetNotice quality={detail.documentQuality} />
                   <div className="identity-pack-grid">
                     <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
                     <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
@@ -1409,6 +1411,21 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 function truncate(value: string, length: number) {
   if (value.length <= length) return value;
   return `${value.slice(0, length)}…`;
+}
+
+function DatasetNotice({ quality }: { quality: Detail['documentQuality'] }) {
+  const title = quality === 'verified'
+    ? 'Verified format, synthetic data'
+    : quality === 'missing_rules'
+      ? 'Dataset rule missing'
+      : 'Dataset under review';
+
+  return (
+    <div className={cn('dataset-notice', quality !== 'verified' && 'is-review')}>
+      <strong>{title}</strong>
+      <span>Identity data is still being reviewed and may not be 100% accurate. Use it as test data only.</span>
+    </div>
+  );
 }
 
 function UtilityView({
