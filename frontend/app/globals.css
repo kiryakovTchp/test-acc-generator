@@ -1348,8 +1348,7 @@ body {
   inset: 0;
   z-index: 60;
   display: grid;
-  align-items: start;
-  justify-items: center;
+  place-items: center;
   overflow-y: auto;
   padding: 32px 18px;
   background: rgba(15, 23, 42, 0.54);
