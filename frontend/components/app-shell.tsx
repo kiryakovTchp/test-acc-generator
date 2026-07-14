@@ -98,6 +98,38 @@ function formatCompactDate(value?: string) {
   return new Date(value).toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 }
 
+const PHONE_COUNTRY_CODES: Record<string, string> = {
+  nigeria: '234',
+  kazakhstan: '7',
+  uzbekistan: '998',
+  ghana: '233',
+  georgia: '995',
+  ireland: '353',
+  angola: '244',
+  gambia: '220',
+  malawi: '265',
+  sierra_leone: '232',
+  togo: '228',
+  gabon: '241',
+  ethiopia: '251',
+  senegal: '221',
+  tanzania: '255',
+  zambia: '260',
+  uganda: '256',
+  kenya: '254',
+  cameroon: '237',
+  generic_intl: '44',
+};
+
+function localPhoneDigits(phone: string, geoKey?: string) {
+  const digits = phone.replace(/\D/g, '');
+  const countryCode = geoKey ? PHONE_COUNTRY_CODES[geoKey] : undefined;
+  if (countryCode && digits.startsWith(countryCode)) {
+    return digits.slice(countryCode.length);
+  }
+  return digits;
+}
+
 function mapHistoryStatus(item: HistoryItem): HistoryStatus {
   if (item.inboxStatus === 'email_received') return 'email_received';
   if (item.inboxStatus === 'waiting_for_email' || item.inboxStatus === 'no_email_found') return 'waiting';
@@ -817,6 +849,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   function copyIdentityPack() {
     if (!detail) return;
+    const phoneForCopy = localPhoneDigits(detail.phone, detail.geoKey);
     const identityPack = [
       `Account ID: ${detail.siteAccountId || ''}`,
       `Username: ${detail.username}`,
@@ -825,7 +858,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       `First Name: ${detail.firstName}`,
       `Last Name: ${detail.lastName}`,
       `Date of Birth: ${detail.dateOfBirth}`,
-      `Phone: ${detail.phone}`,
+      `Phone: ${phoneForCopy}`,
       `Sex: ${detail.gender}`,
       `Address: ${detail.addressLine}`,
       `City: ${detail.city}`,
@@ -1096,7 +1129,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow
                       label="Phone"
                       value={detail.phone}
-                      onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)}
+                      onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
                       action={(
                         <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
@@ -1136,7 +1169,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
                     <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
                     <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
-                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, detail.phone)} />
+                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
@@ -1276,7 +1309,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow
                       label="Phone"
                       value={detail.phone}
-                      onCopy={() => copyValue(`phone:${detail.id}`, detail.phone)}
+                      onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
                       action={(
                         <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
@@ -1316,7 +1349,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
                     <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
                     <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
-                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, detail.phone)} />
+                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
@@ -1880,7 +1913,7 @@ function UtilityView({
             <InfoTile label="Birth / sex" value={`${detail.dateOfBirth}\n${detail.gender}`} action="Copy" onClick={() => onCopy(`fd-birth:${detail.id}`, `${detail.dateOfBirth}\n${detail.gender}`)} />
             <InfoTile label="Country / region / city" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => onCopy(`fd-geo:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
             <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`} action="Copy" onClick={() => onCopy(`fd-doc:${detail.id}`, `${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`)} />
-            <InfoTile label="Contacts" value={`${detail.email}\n${detail.phone}`} action="Copy" onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${detail.phone}`)} />
+            <InfoTile label="Contacts" value={`${detail.email}\n${detail.phone}`} action="Copy" onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${localPhoneDigits(detail.phone, detail.geoKey)}`)} />
           </div>
         ) : (
           <div className="form-data-picker">
