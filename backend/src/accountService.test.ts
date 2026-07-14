@@ -14,6 +14,22 @@ const provider: EmailProvider = {
   },
 };
 
+test('generation waits briefly for first inbox snapshot', async () => {
+  let observedWaitMs = 0;
+  const waitProvider: EmailProvider = {
+    async createAccount() {
+      return { address: 'wait@mail.tm', password: 'secret' };
+    },
+    async fetchInbox(_address, _password, waitMs) {
+      observedWaitMs = waitMs ?? 0;
+      return [];
+    },
+  };
+
+  await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: waitProvider });
+  assert.equal(observedWaitMs, 15000);
+});
+
 test('geo rules include required starter geos', () => {
   const labels = listGeoRules().map((item) => item.label);
   for (const label of ['Zambia', 'Uganda', 'Nigeria', 'Guinea', 'Uzbekistan', 'Kazakhstan', 'South Sudan', 'Generic International']) {

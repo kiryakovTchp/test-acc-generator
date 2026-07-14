@@ -22,6 +22,14 @@ export interface WorkspaceInviteResponse {
   acceptedByLogin: string;
 }
 
+export interface PublicInviteResponse {
+  email: string;
+  role: InviteRole;
+  status: string;
+  expiresAt: string;
+  workspaceName: string;
+}
+
 export function listWorkspaceInvites(workspaceId: number, actorUserId: number) {
   assertCanManageInvites(workspaceId, actorUserId);
   expirePendingInvites();
@@ -126,6 +134,25 @@ export function registerUserWithInvite(payload: { inviteToken: string; email: st
 
     return db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(userId) as any;
   })();
+}
+
+export function getPublicInvite(token: string): PublicInviteResponse {
+  expirePendingInvites();
+  const invite = db.prepare(`
+    SELECT COALESCE(wi.email, '') as email,
+           wi.role,
+           wi.status,
+           wi.expires_at as expiresAt,
+           w.name as workspaceName
+    FROM workspace_invites wi
+    JOIN workspaces w ON w.id = wi.workspace_id
+    WHERE wi.token_hash = ?
+    LIMIT 1
+  `).get(hashInviteToken(token)) as PublicInviteResponse | undefined;
+  if (!invite || invite.status !== 'pending') {
+    throw new ApiError('invite_invalid', 'Invite token is invalid or expired', 403);
+  }
+  return invite;
 }
 
 function getPendingInvite(token: string) {

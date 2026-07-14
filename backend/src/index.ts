@@ -11,7 +11,7 @@ import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWo
 import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
 import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
-import { createWorkspaceInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
+import { createWorkspaceInvite, getPublicInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -114,6 +114,18 @@ app.post('/auth/register', (req, res) => {
   }
 });
 
+app.get('/auth/invite', (req, res) => {
+  try {
+    const inviteToken = String(req.query.token ?? '').trim();
+    if (!inviteToken) {
+      throw new ApiError('invite_required', 'Invite token is required', 403);
+    }
+    res.json({ invite: getPublicInvite(inviteToken) });
+  } catch (error) {
+    sendError(res, error, 'Invite lookup failed');
+  }
+});
+
 app.post('/auth/refresh', (req, res) => {
   const sessionToken = readCookie(req, sessionCookieName);
   if (!sessionToken) return res.status(401).json({ error: 'No active session' });
@@ -140,9 +152,91 @@ app.post('/auth/logout', auth, (req, res) => {
   res.status(204).send();
 });
 
+app.post('/auth/logout-everywhere', auth, (req, res) => {
+  db.prepare(`
+    UPDATE sessions
+    SET revoked_at = CURRENT_TIMESTAMP
+    WHERE user_id = ? AND revoked_at IS NULL
+  `).run((req as any).user.userId);
+  clearSessionCookie(res);
+  res.status(204).send();
+});
+
 app.get('/auth/me', auth, (req, res) => {
   const user = db.prepare('SELECT id, login, email, username, role, status, created_at as createdAt, updated_at as updatedAt FROM users WHERE id = ?').get((req as any).user.userId) as any;
   res.json({ user: { ...user, workspaceId: (req as any).user.workspaceId, workspaceRole: (req as any).user.workspaceRole } });
+});
+
+app.get('/auth/sessions', auth, (req, res) => {
+  const sessions = db.prepare(`
+    SELECT id,
+           user_agent as userAgent,
+           ip_address as ipAddress,
+           expires_at as expiresAt,
+           created_at as createdAt,
+           last_seen_at as lastSeenAt,
+           CASE WHEN id = ? THEN 1 ELSE 0 END as isCurrent
+    FROM sessions
+    WHERE user_id = ? AND revoked_at IS NULL AND datetime(expires_at) > datetime('now')
+    ORDER BY datetime(COALESCE(last_seen_at, created_at)) DESC
+    LIMIT 50
+  `).all((req as any).user.sessionId ?? 0, (req as any).user.userId);
+  res.json({ sessions });
+});
+
+app.delete('/auth/sessions/:id', auth, (req, res) => {
+  const sessionId = Number(req.params.id);
+  db.prepare(`
+    UPDATE sessions
+    SET revoked_at = CURRENT_TIMESTAMP
+    WHERE id = ? AND user_id = ?
+  `).run(sessionId, (req as any).user.userId);
+  if (sessionId === (req as any).user.sessionId) {
+    clearSessionCookie(res);
+  }
+  res.status(204).send();
+});
+
+app.patch('/auth/profile', auth, (req, res) => {
+  const email = normalizeEmail(req.body?.email);
+  const username = normalizeUsername(req.body?.username);
+  if (!email || !username) {
+    return res.status(400).json({ error: 'Valid email and username are required', code: 'invalid_profile_payload' });
+  }
+  try {
+    db.prepare(`
+      UPDATE users
+      SET email = ?, username = ?, login = ?, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ?
+    `).run(email, username, username, (req as any).user.userId);
+    const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
+    res.json(buildAuthResponse(user, (req as any).user.sessionId ?? 0));
+  } catch {
+    res.status(409).json({ error: 'Email or username is already in use', code: 'user_already_exists' });
+  }
+});
+
+app.patch('/auth/password', auth, (req, res) => {
+  const currentPassword = String(req.body?.currentPassword ?? '');
+  const nextPassword = String(req.body?.newPassword ?? '');
+  if (nextPassword.length < 8) {
+    return res.status(400).json({ error: 'New password must be at least 8 characters', code: 'invalid_password_payload' });
+  }
+  const user = db.prepare('SELECT id, password, password_hash FROM users WHERE id = ?').get((req as any).user.userId) as any;
+  if (!user || !verifyPassword(currentPassword, user.password_hash, user.password)) {
+    return res.status(403).json({ error: 'Current password is incorrect', code: 'current_password_invalid' });
+  }
+  db.prepare(`
+    UPDATE users
+    SET password_hash = ?, password = '', updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(hashPassword(nextPassword), (req as any).user.userId);
+  db.prepare(`
+    UPDATE sessions
+    SET revoked_at = CURRENT_TIMESTAMP
+    WHERE user_id = ? AND id != ? AND revoked_at IS NULL
+  `).run((req as any).user.userId, (req as any).user.sessionId ?? 0);
+  res.status(204).send();
 });
 
 app.get('/geo-rules', auth, (_req, res) => res.json({ items: listGeoRules() }));
@@ -483,6 +577,11 @@ function readCookie(req: express.Request, name: string) {
 function normalizeUsername(value: unknown) {
   const username = String(value ?? '').trim().toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 40);
   return username.length >= 3 ? username : '';
+}
+
+function normalizeEmail(value: unknown) {
+  const email = String(value ?? '').trim().toLowerCase();
+  return email && email.includes('@') ? email : '';
 }
 
 function enforceGenerationLimits(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>, quantity: number) {

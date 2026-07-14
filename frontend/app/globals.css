@@ -75,7 +75,8 @@ button {
 }
 
 .login-card {
-  width: min(100%, 420px);
+  width: min(calc(100vw - 48px), 420px);
+  max-width: 100%;
   background: var(--card);
   border: 1px solid var(--border);
   border-radius: 8px;
