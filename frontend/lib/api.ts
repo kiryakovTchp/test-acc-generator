@@ -106,6 +106,24 @@ export interface WorkspaceInvite {
   token?: string;
 }
 
+export interface PublicInvite {
+  email: string;
+  role: 'admin' | 'member' | 'viewer';
+  status: string;
+  expiresAt: string;
+  workspaceName: string;
+}
+
+export interface AuthSession {
+  id: number;
+  userAgent: string;
+  ipAddress: string;
+  expiresAt: string;
+  createdAt: string;
+  lastSeenAt: string;
+  isCurrent: number;
+}
+
 export async function apiFetch<T>(path: string, token?: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...init,

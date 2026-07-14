@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { apiFetch, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
+import { apiFetch, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -195,6 +195,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [lastInviteToken, setLastInviteToken] = useState('');
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsStatus, setSettingsStatus] = useState('Saved locally');
+  const [accountEmail, setAccountEmail] = useState('');
+  const [accountUsername, setAccountUsername] = useState('');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [authSessions, setAuthSessions] = useState<AuthSession[]>([]);
+  const [isSavingAccount, setIsSavingAccount] = useState(false);
+  const [accountStatus, setAccountStatus] = useState('Account ready');
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -310,7 +318,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       }
       if (key === 'r') {
         event.preventDefault();
-        if (!primaryActionsDisabled && !isRefreshingInbox) void refreshInboxForDetail(0);
+        if (!primaryActionsDisabled && !isRefreshingInbox) void refreshInboxForDetail(30000);
       }
     }
 
@@ -321,9 +329,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   async function refresh(authToken = token) {
     const me = await apiFetch<{ user: UserInfo }>('/auth/me', authToken);
     setUser(me.user);
+    setAccountEmail(me.user.email ?? '');
+    setAccountUsername(me.user.username ?? me.user.login);
     const workspaceId = me.user.workspaceId;
     const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
-    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
+    const [geo, historyRes, limitsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
       apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
       apiFetch<{ items: HistoryItem[] }>('/history', authToken),
       apiFetch<UsageSummary>('/limits', authToken),
@@ -331,6 +341,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
       workspaceId && canLoadInvites ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
+      apiFetch<{ sessions: AuthSession[] }>('/auth/sessions', authToken),
     ]);
     setGeoItems(geo.items);
     setHistory(historyRes.items);
@@ -339,6 +350,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
     setWorkspaceInvites(workspaceInvitesRes.invites);
+    setAuthSessions(sessionsRes.sessions);
     if (!userSettings) {
       setSelectedGeo(userSettingsRes.settings.defaultGeo);
       setDocumentType(userSettingsRes.settings.defaultDocumentType);
@@ -363,6 +375,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
     setWorkspaceInvites(workspaceInvitesRes.invites);
+  }
+
+  async function refreshAuthSessions(authToken = token) {
+    const res = await apiFetch<{ sessions: AuthSession[] }>('/auth/sessions', authToken);
+    setAuthSessions(res.sessions);
   }
 
   async function savePersonalSettings() {
@@ -499,6 +516,88 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setError(err instanceof Error ? err.message : 'Failed to revoke workspace invite');
     } finally {
       setIsSavingSettings(false);
+    }
+  }
+
+  async function saveAccountProfile() {
+    setIsSavingAccount(true);
+    setAccountStatus('Saving profile');
+    setError('');
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/profile', token, {
+        method: 'PATCH',
+        body: JSON.stringify({ email: accountEmail, username: accountUsername }),
+      });
+      persistAuthState(res.token, res.user);
+      setAccountEmail(res.user.email ?? '');
+      setAccountUsername(res.user.username ?? res.user.login);
+      setAccountStatus('Profile saved');
+    } catch (err) {
+      setAccountStatus('Profile save failed');
+      setError(err instanceof Error ? err.message : 'Failed to save account profile');
+    } finally {
+      setIsSavingAccount(false);
+    }
+  }
+
+  async function changeAccountPassword() {
+    setIsSavingAccount(true);
+    setAccountStatus('Changing password');
+    setError('');
+    try {
+      if (newPassword !== confirmNewPassword) {
+        throw new Error('New password confirmation does not match');
+      }
+      await apiFetch('/auth/password', token, {
+        method: 'PATCH',
+        body: JSON.stringify({ currentPassword, newPassword }),
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmNewPassword('');
+      setAccountStatus('Password changed');
+      await refreshAuthSessions();
+    } catch (err) {
+      setAccountStatus('Password change failed');
+      setError(err instanceof Error ? err.message : 'Failed to change password');
+    } finally {
+      setIsSavingAccount(false);
+    }
+  }
+
+  async function revokeSession(sessionId: number) {
+    setIsSavingAccount(true);
+    setAccountStatus('Revoking session');
+    setError('');
+    try {
+      await apiFetch(`/auth/sessions/${sessionId}`, token, { method: 'DELETE' });
+      const wasCurrent = authSessions.some((session) => session.id === sessionId && Boolean(session.isCurrent));
+      if (wasCurrent) {
+        clearAuthState();
+        return;
+      }
+      await refreshAuthSessions();
+      setAccountStatus('Session revoked');
+    } catch (err) {
+      setAccountStatus('Session revoke failed');
+      setError(err instanceof Error ? err.message : 'Failed to revoke session');
+    } finally {
+      setIsSavingAccount(false);
+    }
+  }
+
+  async function logoutEverywhere() {
+    setIsSavingAccount(true);
+    setAccountStatus('Logging out everywhere');
+    setError('');
+    try {
+      await apiFetch('/auth/logout-everywhere', token, { method: 'POST' });
+      clearAuthState();
+    } catch (err) {
+      setAccountStatus('Logout failed');
+      setError(err instanceof Error ? err.message : 'Failed to logout everywhere');
+    } finally {
+      setIsSavingAccount(false);
     }
   }
 
@@ -827,9 +926,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               <span><strong>{isBulkGenerating ? `Generating ${bulkCount}` : 'Generate bulk'}</strong><small>Multiple test users</small></span>
               <kbd>B</kbd>
             </button>
-            <button className="action-card" onClick={() => refreshInboxForDetail(0)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
+            <button className="action-card" onClick={() => refreshInboxForDetail(30000)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
               <span className="action-icon">R</span>
-              <span><strong>{isRefreshingInbox ? 'Refreshing inbox' : 'Refresh inbox'}</strong><small>Selected test user</small></span>
+              <span><strong>{isRefreshingInbox ? 'Waiting for inbox' : 'Wait & refresh'}</strong><small>Selected test user</small></span>
               <kbd>R</kbd>
             </button>
             <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
@@ -964,6 +1063,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   onActivate={openActivationLink}
                   onCopyEmail={() => copyValue(`email-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
                   copied={copiedField === `email-message:${detail.id}`}
+                  onWaitRefresh={() => refreshInboxForDetail(30000)}
+                  isRefreshing={isRefreshingInbox}
                 />
               </div>
             )}
@@ -1152,6 +1253,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   onActivate={openActivationLink}
                   onCopyEmail={() => copyValue(`email-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
                   copied={copiedField === `email-message:${detail.id}`}
+                  onWaitRefresh={() => refreshInboxForDetail(30000)}
+                  isRefreshing={isRefreshingInbox}
                 />
               </div>
               </section>
@@ -1221,7 +1324,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               isRefreshingTempMailbox={isRefreshingTempMailbox}
               onCreateMailbox={createTemporaryMailbox}
               onRefreshTempMailbox={refreshTemporaryMailbox}
-              onRefreshInbox={() => refreshInboxForDetail(0)}
+              onRefreshInbox={(waitMs = 30000) => refreshInboxForDetail(waitMs)}
               isRefreshingInbox={isRefreshingInbox}
               onLoadDetail={loadDetail}
               onCopy={copyValue}
@@ -1240,6 +1343,17 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               inviteRole={inviteRole}
               setInviteRole={setInviteRole}
               lastInviteToken={lastInviteToken}
+              accountEmail={accountEmail}
+              setAccountEmail={setAccountEmail}
+              accountUsername={accountUsername}
+              setAccountUsername={setAccountUsername}
+              currentPassword={currentPassword}
+              setCurrentPassword={setCurrentPassword}
+              newPassword={newPassword}
+              setNewPassword={setNewPassword}
+              confirmNewPassword={confirmNewPassword}
+              setConfirmNewPassword={setConfirmNewPassword}
+              authSessions={authSessions}
               setWorkspaceSettings={setWorkspaceSettings}
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
@@ -1248,8 +1362,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               onRemoveMember={removeMember}
               onCreateInvite={createInvite}
               onRevokeInvite={revokeInvite}
+              onSaveAccountProfile={saveAccountProfile}
+              onChangeAccountPassword={changeAccountPassword}
+              onRevokeSession={revokeSession}
+              onLogoutEverywhere={logoutEverywhere}
               isSavingSettings={isSavingSettings}
+              isSavingAccount={isSavingAccount}
               settingsStatus={settingsStatus}
+              accountStatus={accountStatus}
               canManageWorkspaceSettings={['owner', 'admin'].includes(user.workspaceRole ?? '')}
             />
           )}
@@ -1306,6 +1426,17 @@ function UtilityView({
   inviteRole,
   setInviteRole,
   lastInviteToken,
+  accountEmail,
+  setAccountEmail,
+  accountUsername,
+  setAccountUsername,
+  currentPassword,
+  setCurrentPassword,
+  newPassword,
+  setNewPassword,
+  confirmNewPassword,
+  setConfirmNewPassword,
+  authSessions,
   setWorkspaceSettings,
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
@@ -1314,8 +1445,14 @@ function UtilityView({
   onRemoveMember,
   onCreateInvite,
   onRevokeInvite,
+  onSaveAccountProfile,
+  onChangeAccountPassword,
+  onRevokeSession,
+  onLogoutEverywhere,
   isSavingSettings,
+  isSavingAccount,
   settingsStatus,
+  accountStatus,
   canManageWorkspaceSettings,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
@@ -1340,7 +1477,7 @@ function UtilityView({
   isRefreshingTempMailbox: boolean;
   onCreateMailbox: () => void;
   onRefreshTempMailbox: (waitMs?: number) => void;
-  onRefreshInbox: () => void;
+  onRefreshInbox: (waitMs?: number) => void;
   isRefreshingInbox: boolean;
   onLoadDetail: (id: number) => void;
   onCopy: (key: string, value: string) => void;
@@ -1359,6 +1496,17 @@ function UtilityView({
   inviteRole: WorkspaceInvite['role'];
   setInviteRole: (value: WorkspaceInvite['role']) => void;
   lastInviteToken: string;
+  accountEmail: string;
+  setAccountEmail: (value: string) => void;
+  accountUsername: string;
+  setAccountUsername: (value: string) => void;
+  currentPassword: string;
+  setCurrentPassword: (value: string) => void;
+  newPassword: string;
+  setNewPassword: (value: string) => void;
+  confirmNewPassword: string;
+  setConfirmNewPassword: (value: string) => void;
+  authSessions: AuthSession[];
   setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
@@ -1367,8 +1515,14 @@ function UtilityView({
   onRemoveMember: (userId: number) => void;
   onCreateInvite: () => void;
   onRevokeInvite: (inviteId: number) => void;
+  onSaveAccountProfile: () => void;
+  onChangeAccountPassword: () => void;
+  onRevokeSession: (sessionId: number) => void;
+  onLogoutEverywhere: () => void;
   isSavingSettings: boolean;
+  isSavingAccount: boolean;
   settingsStatus: string;
+  accountStatus: string;
   canManageWorkspaceSettings: boolean;
 }) {
   if (activeNav === 'mailboxes') {
@@ -1393,13 +1547,23 @@ function UtilityView({
               </div>
               <div className="mailbox-reader-actions">
                 {detail ? (
-                  <button type="button" className="micro-button" onClick={onRefreshInbox} disabled={isRefreshingInbox}>
-                    {isRefreshingInbox ? 'Refreshing' : 'Refresh inbox'}
-                  </button>
+                  <>
+                    <button type="button" className="micro-button" onClick={() => onRefreshInbox(0)} disabled={isRefreshingInbox}>
+                      Check now
+                    </button>
+                    <button type="button" className="primary-button" onClick={() => onRefreshInbox(30000)} disabled={isRefreshingInbox}>
+                      {isRefreshingInbox ? 'Waiting' : 'Wait & refresh'}
+                    </button>
+                  </>
                 ) : tempMailbox ? (
-                  <button type="button" className="micro-button" onClick={() => onRefreshTempMailbox(0)} disabled={isRefreshingTempMailbox}>
-                    {isRefreshingTempMailbox ? 'Refreshing' : 'Refresh inbox'}
-                  </button>
+                  <>
+                    <button type="button" className="micro-button" onClick={() => onRefreshTempMailbox(0)} disabled={isRefreshingTempMailbox}>
+                      Check now
+                    </button>
+                    <button type="button" className="primary-button" onClick={() => onRefreshTempMailbox(30000)} disabled={isRefreshingTempMailbox}>
+                      {isRefreshingTempMailbox ? 'Waiting' : 'Wait & refresh'}
+                    </button>
+                  </>
                 ) : null}
               </div>
             </div>
@@ -1414,6 +1578,8 @@ function UtilityView({
                 }}
                 onCopyEmail={() => onCopy(`mailboxes-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
                 copied={copiedField === `mailboxes-message:${detail.id}`}
+                onWaitRefresh={() => onRefreshInbox(30000)}
+                isRefreshing={isRefreshingInbox}
               />
             ) : tempMailbox ? (
               <>
@@ -1613,6 +1779,9 @@ function UtilityView({
   const updateWorkspaceDraft = (patch: Partial<ServerWorkspaceSettings>) => {
     setWorkspaceSettings((current) => ({ ...editableWorkspaceSettings, ...current, ...patch }));
   };
+  const inviteLink = lastInviteToken && typeof window !== 'undefined'
+    ? `${window.location.origin}/invite?token=${encodeURIComponent(lastInviteToken)}`
+    : '';
 
   return (
     <section className="panel utility-panel">
@@ -1725,10 +1894,10 @@ function UtilityView({
 
         {lastInviteToken ? (
           <div className="invite-token-box">
-            <span>Invite token</span>
-            <code>{lastInviteToken}</code>
-            <button type="button" className="micro-button" onClick={() => onCopy('invite-token', lastInviteToken)}>
-              {copiedField === 'invite-token' ? 'Copied' : 'Copy'}
+            <span>Invite link</span>
+            <code>{inviteLink || lastInviteToken}</code>
+            <button type="button" className="micro-button" onClick={() => onCopy('invite-link', inviteLink || lastInviteToken)}>
+              {copiedField === 'invite-link' ? 'Copied' : 'Copy'}
             </button>
           </div>
         ) : null}
@@ -1830,13 +1999,78 @@ function UtilityView({
       <section className="settings-section">
         <div className="section-subhead">
           <h3>Account Settings</h3>
-          <p>Email, password, and active sessions will connect to the auth/session backend roadmap.</p>
+          <p>Email, password, and active sessions for your user account.</p>
         </div>
-        <div className="settings-notes">
-          <InfoTile label="Email" value="Uses current login" action="Read" onClick={() => undefined} />
-          <InfoTile label="Password" value="Managed by seed now" action="Read" onClick={() => undefined} />
-          <InfoTile label="Sessions" value="Planned" action="Read" onClick={() => undefined} />
-          <InfoTile label="Logout" value="Clears local session" action="Read" onClick={() => undefined} />
+
+        <div className="settings-grid account-settings-grid">
+          <Field label="Email">
+            <input className="input-field compact" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} placeholder="email" />
+          </Field>
+          <Field label="Username">
+            <input className="input-field compact" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" />
+          </Field>
+        </div>
+        <div className="settings-actions">
+          <span>{accountStatus}</span>
+          <button type="button" className="primary-button" onClick={onSaveAccountProfile} disabled={isSavingAccount || !accountEmail.trim() || !accountUsername.trim()}>
+            {isSavingAccount ? 'Saving' : 'Save profile'}
+          </button>
+        </div>
+
+        <div className="settings-grid password-settings-grid">
+          <Field label="Current password">
+            <input className="input-field compact" type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
+          </Field>
+          <Field label="New password">
+            <input className="input-field compact" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" />
+          </Field>
+          <Field label="Confirm new password">
+            <input className="input-field compact" type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" />
+          </Field>
+        </div>
+        <div className="settings-actions">
+          <span>Changing password revokes other active sessions.</span>
+          <button type="button" className="primary-button" onClick={onChangeAccountPassword} disabled={isSavingAccount || !currentPassword || !newPassword || !confirmNewPassword}>
+            {isSavingAccount ? 'Saving' : 'Change password'}
+          </button>
+        </div>
+
+        <div className="members-table-wrap">
+          <table className="account-table sessions-table">
+            <thead>
+              <tr>
+                <th>Session</th>
+                <th>IP</th>
+                <th>Last seen</th>
+                <th>Expires</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {authSessions.map((session) => (
+                <tr key={session.id}>
+                  <td><strong>{session.isCurrent ? 'Current session' : 'Active session'}</strong><span>{session.userAgent || 'Unknown client'}</span></td>
+                  <td>{session.ipAddress || '—'}</td>
+                  <td>{formatCompactDate(session.lastSeenAt || session.createdAt)}</td>
+                  <td>{formatCompactDate(session.expiresAt)}</td>
+                  <td>
+                    <button type="button" className="micro-button" onClick={() => onRevokeSession(session.id)} disabled={isSavingAccount}>
+                      {session.isCurrent ? 'Logout' : 'Revoke'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              {authSessions.length === 0 ? (
+                <tr>
+                  <td colSpan={5}>No active sessions</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+        <div className="settings-actions danger-actions">
+          <span>Revokes every active session for this account, including this browser.</span>
+          <button type="button" className="secondary-button danger-button" onClick={onLogoutEverywhere} disabled={isSavingAccount}>Logout everywhere</button>
         </div>
       </section>
 
@@ -1901,12 +2135,16 @@ function EmailMessage({
   onActivate,
   onCopyEmail,
   copied,
+  onWaitRefresh,
+  isRefreshing,
 }: {
   detail: Detail;
   activationLink: string;
   onActivate: () => void;
   onCopyEmail: () => void;
   copied: boolean;
+  onWaitRefresh?: () => void;
+  isRefreshing?: boolean;
 }) {
   const hasEmail = detail.inbox.status === 'email_received' && Boolean(detail.inbox.subject || detail.inbox.plainText || detail.inbox.rawHtml);
   const emailHtml = detail.inbox.rawHtml ? buildEmailSrcDoc(detail.inbox.rawHtml) : '';
@@ -1919,6 +2157,11 @@ function EmailMessage({
           <p>{hasEmail ? 'Original inbox message' : 'No message captured yet'}</p>
         </div>
         <div className="email-message-actions">
+          {onWaitRefresh ? (
+            <button className="micro-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>
+              {isRefreshing ? 'Waiting' : 'Wait & refresh'}
+            </button>
+          ) : null}
           <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
           <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
             {copied ? <CheckIcon /> : <CopyIcon />}
@@ -1959,6 +2202,7 @@ function EmailMessage({
         <div className="email-empty-state">
           <strong>{statusLabel(mapDetailStatus(detail))}</strong>
           <span>Refresh inbox after the registration email is sent.</span>
+          {onWaitRefresh ? <button className="primary-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>{isRefreshing ? 'Waiting for email' : 'Wait & refresh inbox'}</button> : null}
         </div>
       )}
     </section>

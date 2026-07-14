@@ -6,6 +6,7 @@ import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 
 const rules = geoRules as unknown as GeoRule[];
+const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
 
 export function listGeoRules() {
   return rules.map((rule) => ({
@@ -32,7 +33,7 @@ export async function generateAccount(input: {
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
   const profile = generatePersonaProfile(geo.key, input.persona);
-  const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password);
+  const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password, generationInboxWaitMs);
   const hydratedInbox = buildInboxPayload(inbox);
 
   let documentValue = 'Missing Rules';
