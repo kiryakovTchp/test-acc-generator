@@ -1607,45 +1607,44 @@ body {
 }
 
 .settings-tabs {
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 3px;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  gap: 2px;
   border: 1px solid #e4e8ef;
-  border-radius: 10px;
-  padding: 4px;
-  background: #f3f6fa;
+  border-radius: 9px;
+  padding: 3px;
+  overflow-x: auto;
+  background: #f6f8fb;
 }
 
 .settings-tab {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: max-content;
+  min-height: 30px;
   border: 1px solid transparent;
-  border-radius: 7px;
-  padding: 7px 9px;
+  border-radius: 6px;
+  padding: 5px 10px;
   background: transparent;
   color: #475569;
-  text-align: left;
+  text-align: center;
   box-shadow: none;
 }
 
 .settings-tab strong {
-  overflow: hidden;
   color: #111827;
   font-size: 12px;
-  line-height: 1.1;
-  text-overflow: ellipsis;
+  line-height: 1;
   white-space: nowrap;
 }
 
 .settings-tab span {
-  overflow: hidden;
   color: #64748b;
   font-size: 10px;
   font-weight: 700;
-  line-height: 1.15;
-  text-overflow: ellipsis;
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -1654,9 +1653,9 @@ body {
 }
 
 .settings-tab.is-active {
-  border-color: #dbe4f0;
+  border-color: #d9e2ee;
   background: #fff;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
 }
 
 .settings-tab.is-active strong {
@@ -2615,7 +2614,7 @@ kbd {
   }
 
   .settings-tabs {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
   }
 
   .settings-actions {
@@ -2717,11 +2716,11 @@ kbd {
 
   .settings-tabs {
     display: flex;
-    overflow-x: auto;
+    width: 100%;
   }
 
   .settings-tab {
-    min-width: 124px;
+    min-width: max-content;
   }
 
   .mailbox-reader-actions {
