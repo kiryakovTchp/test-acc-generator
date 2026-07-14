@@ -1,64 +1,17 @@
 [
   {
-    "key": "zambia",
-    "label": "Zambia",
-    "documents": {
-      "passport": {
-        "templates": ["ZM-P-{YYYY}{RAND4}"],
-        "quality": "synthetic_pattern",
-        "notes": "Pattern only."
-      },
-      "national_id": {
-        "templates": ["ZMNID-{RAND8}"],
-        "quality": "synthetic_pattern"
-      }
-    }
-  },
-  {
-    "key": "uganda",
-    "label": "Uganda",
-    "documents": {
-      "passport": {
-        "templates": ["UG-P-{RAND2}{RAND6}"],
-        "quality": "synthetic_pattern"
-      }
-    }
-  },
-  {
     "key": "nigeria",
     "label": "Nigeria",
     "documents": {
       "nin": {
         "templates": ["{RAND11}"],
-        "quality": "synthetic_pattern"
+        "quality": "verified",
+        "notes": "NIMC confirms NIN is an 11-digit National Identification Number."
       },
       "passport": {
         "templates": ["A{RAND8}"],
-        "quality": "synthetic_pattern"
-      }
-    }
-  },
-  {
-    "key": "guinea",
-    "label": "Guinea",
-    "documents": {
-      "passport": {
-        "templates": ["GNA{RAND7}"],
-        "quality": "synthetic_pattern"
-      }
-    }
-  },
-  {
-    "key": "uzbekistan",
-    "label": "Uzbekistan",
-    "documents": {
-      "passport": {
-        "templates": ["AA{RAND7}"],
-        "quality": "synthetic_pattern"
-      },
-      "pinfl": {
-        "templates": ["{RAND14}"],
-        "quality": "synthetic_pattern"
+        "quality": "synthetic_pattern",
+        "notes": "Probable visual pattern; keep review_required until sample-level source confirms it."
       }
     }
   },
@@ -68,21 +21,160 @@
     "documents": {
       "iin": {
         "templates": ["{RAND12}"],
-        "quality": "synthetic_pattern"
+        "quality": "verified",
+        "notes": "eGov Kazakhstan confirms IIN is a 12-digit individual identification number."
       }
     }
   },
   {
-    "key": "south_sudan",
-    "label": "South Sudan",
+    "key": "uzbekistan",
+    "label": "Uzbekistan",
     "documents": {
-      "national_id": {
-        "templates": ["SSNID-{RAND9}"],
-        "quality": "synthetic_pattern"
+      "pinfl": {
+        "templates": ["{RAND14}"],
+        "quality": "verified",
+        "notes": "my.gov.uz confirms PINFL/JSHSHIR is a unique 14-digit number."
       },
       "passport": {
-        "templates": ["SS-P-{RAND7}"],
-        "quality": "synthetic_pattern"
+        "templates": ["AA{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable visual pattern; keep review_required until official sample confirms it."
+      }
+    }
+  },
+  {
+    "key": "ghana",
+    "label": "Ghana",
+    "documents": {
+      "ghana_card_pin": {
+        "templates": ["GHA-{RAND9}-{RAND1}"],
+        "quality": "verified",
+        "notes": "Ghana NIA FAQ gives Ghana Card PIN format GHA-000000000-0."
+      }
+    }
+  },
+  {
+    "key": "georgia",
+    "label": "Georgia",
+    "documents": {
+      "personal_number": {
+        "templates": ["{RAND11}"],
+        "quality": "verified",
+        "notes": "OECD Georgia TIN guidance confirms citizen personal number is 11 digits."
+      }
+    }
+  },
+  {
+    "key": "ireland",
+    "label": "Ireland",
+    "documents": {
+      "pps_number": {
+        "templates": ["{RAND7}A"],
+        "quality": "verified",
+        "notes": "PPS number format; this is not a national ID card number."
+      }
+    }
+  },
+  {
+    "key": "angola",
+    "label": "Angola",
+    "documents": {
+      "passport": {
+        "templates": ["N{RAND7}"],
+        "quality": "verified",
+        "notes": "Confirmed ordinary passport visual pattern from reviewed source."
+      }
+    }
+  },
+  {
+    "key": "ethiopia",
+    "label": "Ethiopia",
+    "documents": {
+      "fayda_identification_number": {
+        "templates": ["{RAND12}"],
+        "quality": "verified",
+        "notes": "Ethiopia National ID confirms Fayda is a 12-digit unique identification number."
+      }
+    }
+  },
+  {
+    "key": "senegal",
+    "label": "Senegal",
+    "documents": {
+      "ecowas_id_card_number": {
+        "templates": ["{RAND17}"],
+        "quality": "verified",
+        "notes": "Senegal decree states the ECOWAS identity card number contains 17 digits."
+      }
+    }
+  },
+  {
+    "key": "tanzania",
+    "label": "Tanzania",
+    "documents": {
+      "national_identification_number": {
+        "templates": ["{RAND8}-{RAND5}-{RAND5}-{RAND2}"],
+        "quality": "synthetic_pattern",
+        "notes": "NIDA examples confirm the 20-digit grouped display shape; generated value is random digits only."
+      }
+    }
+  },
+  {
+    "key": "zambia",
+    "label": "Zambia",
+    "documents": {
+      "passport": {
+        "templates": ["ZN{RAND6}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable visual pattern; keep review_required until official/sample source confirms it."
+      },
+      "national_registration_card_number": {
+        "templates": ["{RAND6}/{RAND2}/{RAND1}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable NRC visual form; keep review_required until official/sample source confirms it."
+      }
+    }
+  },
+  {
+    "key": "uganda",
+    "label": "Uganda",
+    "documents": {
+      "passport": {
+        "templates": ["B{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable visual pattern; keep review_required until official/sample source confirms it."
+      },
+      "national_identification_number": {
+        "templates": ["CM{RAND12}"],
+        "quality": "synthetic_pattern",
+        "notes": "Plausible NIN visual form; keep review_required until official source confirms prefix and length."
+      }
+    }
+  },
+  {
+    "key": "kenya",
+    "label": "Kenya",
+    "documents": {
+      "passport": {
+        "templates": ["A{RAND7}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable visual pattern; keep review_required until sample-level source confirms it."
+      },
+      "national_id_card_number": {
+        "templates": ["{RAND8}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable national ID visual form; keep review_required until official/sample source confirms it."
+      }
+    }
+  },
+  {
+    "key": "cameroon",
+    "label": "Cameroon",
+    "documents": {
+      "national_id_card_number": {
+        "templates": ["{RAND9}"],
+        "quality": "synthetic_pattern",
+        "notes": "Probable CNI visual form; keep review_required until official source confirms it."
       }
     }
   },

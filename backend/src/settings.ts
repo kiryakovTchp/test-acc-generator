@@ -32,9 +32,9 @@ export function getUserSettings(userId: number): UserSettingsResponse {
   `).get(userId) as any;
 
   return {
-    defaultGeo: row.default_geo || 'south_sudan',
+    defaultGeo: row.default_geo || 'nigeria',
     defaultPersona: isPersona(row.default_persona) ? row.default_persona : 'standard_user',
-    defaultDocumentType: row.default_document_type || 'passport',
+    defaultDocumentType: row.default_document_type || 'nin',
     bulkCount: clampInt(row.bulk_count, 1, 100, 5),
   };
 }
