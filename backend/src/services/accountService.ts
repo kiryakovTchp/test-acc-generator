@@ -159,6 +159,20 @@ export function updateAccountBalanceStatus(id: number, userId: number, balanceSt
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
+export function updatePhone(id: number, userId: number, phone: string, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const normalized = normalizeManualPhone(phone);
+  const result = db.prepare(`
+    UPDATE account_history
+    SET phone = ?
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(normalized, id, resolvedWorkspaceId, userId, userId, userId);
+  if (result.changes === 0) return null;
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
+}
+
 export function regeneratePhone(id: number, userId: number, includeDebug = false, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   const row = db.prepare(`
@@ -319,6 +333,15 @@ function balanceStatusLabel(value: AccountBalanceStatus) {
   if (value === 'has_balance') return 'Has balance';
   if (value === 'no_balance') return 'No balance';
   return 'Unknown';
+}
+
+function normalizeManualPhone(value: string) {
+  const phone = value.trim().replace(/\s+/g, ' ').slice(0, 40);
+  const digitCount = phone.replace(/\D/g, '').length;
+  if (digitCount < 6 || digitCount > 18) {
+    throw new ApiError('invalid_phone', 'Phone must contain 6 to 18 digits', 400);
+  }
+  return phone;
 }
 
 export function deleteHistory(id: number, userId: number, workspaceId?: number) {

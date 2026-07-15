@@ -362,9 +362,13 @@ export function randomPhone(geoKey: string) {
     cameroon: '+237671',
     generic_intl: '+447',
   };
+  const totalDigitsByGeo: Record<string, number> = {
+    nigeria: 13,
+  };
 
   const prefix = prefixes[geoKey] ?? '+999';
-  const digitsNeeded = Math.max(6, 12 - prefix.replace(/\D/g, '').length);
+  const totalDigits = totalDigitsByGeo[geoKey] ?? 12;
+  const digitsNeeded = Math.max(6, totalDigits - prefix.replace(/\D/g, '').length);
   return `${prefix}${randomDigits(digitsNeeded)}`;
 }
 

@@ -3,7 +3,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
@@ -477,6 +477,18 @@ app.patch('/history/:id/balance-status', auth, (req, res) => {
   const item = updateAccountBalanceStatus(Number(req.params.id), (req as any).user.userId, String(req.body?.balanceStatus ?? 'unknown'), includeDebug, (req as any).user.workspaceId);
   if (!item) return res.status(404).json({ error: 'Not found' });
   res.json(item);
+});
+
+app.patch('/history/:id/phone', auth, (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+    const includeDebug = req.query.debug === '1';
+    const item = updatePhone(Number(req.params.id), (req as any).user.userId, String(req.body?.phone ?? ''), includeDebug, (req as any).user.workspaceId);
+    if (!item) return res.status(404).json({ error: 'Not found' });
+    res.json(item);
+  } catch (error) {
+    sendError(res, error, 'Failed to save phone');
+  }
 });
 
 app.patch('/history/:id/sharing', auth, (req, res) => {

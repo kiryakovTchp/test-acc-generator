@@ -2452,6 +2452,12 @@ body {
   gap: 6px;
 }
 
+.inline-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .details-table {
   display: grid;
   grid-template-columns: 1fr 1fr;
