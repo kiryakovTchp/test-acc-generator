@@ -776,7 +776,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshSession() {
-    const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/refresh', undefined, { method: 'POST' });
+    const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/refresh', undefined, {
+      method: 'POST',
+      body: JSON.stringify({ workspaceId: user?.workspaceId }),
+    });
     persistAuthState(res.token, res.user);
     return res.token;
   }

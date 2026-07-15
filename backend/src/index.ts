@@ -17,14 +17,15 @@ import { createWorkspace, getWorkspaceForUser, listWorkspaces } from './workspac
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
-const jwtSecret = process.env.JWT_SECRET ?? 'dev-secret';
+const isProduction = process.env.NODE_ENV === 'production';
+const jwtSecret = resolveJwtSecret();
 const accessTokenTtl = (process.env.ACCESS_TOKEN_TTL ?? '30m') as SignOptions['expiresIn'];
 const sessionDays = Number(process.env.SESSION_DAYS ?? 30);
 const registrationMode = process.env.REGISTRATION_MODE ?? 'disabled';
 const emailProvider = new MailTmProvider();
 const sessionCookieName = 'tag_session';
 
-app.use(cors({ credentials: true, origin: true }));
+app.use(cors({ credentials: true, origin: resolveCorsOrigin }));
 app.use(express.json());
 
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -143,7 +144,8 @@ app.post('/auth/refresh', (req, res) => {
   db.prepare('UPDATE sessions SET last_seen_at = CURRENT_TIMESTAMP WHERE id = ?').run(session.id);
   const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(session.user_id) as any;
   if (!user || user.status !== 'active') return res.status(401).json({ error: 'Unauthorized' });
-  res.json(buildAuthResponse(user, session.id));
+  const preferredWorkspaceId = resolvePreferredWorkspaceId(user.id, req.body?.workspaceId);
+  res.json(buildAuthResponse(user, session.id, preferredWorkspaceId));
 });
 
 app.post('/auth/logout', auth, (req, res) => {
@@ -212,7 +214,7 @@ app.patch('/auth/profile', auth, (req, res) => {
       WHERE id = ?
     `).run(email, username, username, (req as any).user.userId);
     const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
-    res.json(buildAuthResponse(user, (req as any).user.sessionId ?? 0));
+    res.json(buildAuthResponse(user, (req as any).user.sessionId ?? 0, (req as any).user.workspaceId));
   } catch {
     res.status(409).json({ error: 'Email or username is already in use', code: 'user_already_exists' });
   }
@@ -628,7 +630,7 @@ function setSessionCookie(res: express.Response, token: string, expiresAt: Date)
   res.cookie(sessionCookieName, token, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     expires: expiresAt,
     path: '/',
   });
@@ -638,7 +640,7 @@ function clearSessionCookie(res: express.Response) {
   res.clearCookie(sessionCookieName, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure: isProduction,
     path: '/',
   });
 }
@@ -683,6 +685,45 @@ function enforceGenerationLimits(workspaceId: number, userId: number, settings: 
 function recordGenerationUsage(workspaceId: number, userId: number, quantity: number) {
   recordUsageEvent(workspaceId, userId, USAGE_EVENTS.accountGenerated, quantity);
   recordUsageEvent(workspaceId, userId, USAGE_EVENTS.mailboxCreated, quantity);
+}
+
+function resolveJwtSecret() {
+  const secret = process.env.JWT_SECRET?.trim();
+  if (secret) return secret;
+  if (isProduction) {
+    throw new Error('JWT_SECRET is required in production');
+  }
+  return 'dev-secret';
+}
+
+function parseAllowedOrigins() {
+  return new Set(
+    String(process.env.CORS_ORIGINS ?? process.env.ALLOWED_ORIGINS ?? '')
+      .split(',')
+      .map((origin) => origin.trim())
+      .filter(Boolean),
+  );
+}
+
+function resolveCorsOrigin(origin: string | undefined, callback: (error: Error | null, allow?: boolean | string) => void) {
+  if (!isProduction) {
+    callback(null, true);
+    return;
+  }
+  if (!origin) {
+    callback(null, true);
+    return;
+  }
+  const allowedOrigins = parseAllowedOrigins();
+  callback(null, allowedOrigins.has(origin) ? origin : false);
+}
+
+function resolvePreferredWorkspaceId(userId: number, candidate: unknown) {
+  const workspaceId = Number(candidate);
+  if (!Number.isInteger(workspaceId) || workspaceId <= 0) {
+    return undefined;
+  }
+  return getWorkspaceRole(userId, workspaceId) ? workspaceId : undefined;
 }
 
 function sendError(res: express.Response, error: unknown, fallback: string) {

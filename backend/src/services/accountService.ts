@@ -240,6 +240,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
       )
   `).get(id, resolvedWorkspaceId, userId, userId, userId) as any;
   if (!row) return null;
+  const isCreator = row.created_by_user_id === userId || row.user_id === userId;
   return {
     id: row.id,
     workspaceId: row.workspace_id,
@@ -303,7 +304,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
       links: JSON.parse(row.inbox_links_json),
       primaryVerificationLink: pickPrimaryVerificationLink(JSON.parse(row.inbox_links_json)),
       codes: JSON.parse(row.inbox_codes_json),
-      rawHtml: includeDebug ? row.inbox_html : null,
+      rawHtml: includeDebug && isCreator ? row.inbox_html : null,
     },
     createdAt: row.created_at,
   };

@@ -90,6 +90,47 @@ test('profile password and session management routes update only the authenticat
   }
 });
 
+test('refresh and profile updates preserve the selected workspace', async () => {
+  const password = 'workspace-session-password-123';
+  const userId = createTestUser('workspace_session_user', password);
+
+  const server = app.listen(0);
+  try {
+    const baseUrl = `http://127.0.0.1:${(server.address() as any).port}`;
+    const loginResponse = await rawRequest(baseUrl, '/auth/login', {
+      method: 'POST',
+      body: { login: getLogin(userId), password },
+    });
+    assert.equal(loginResponse.status, 200);
+    const cookie = loginResponse.headers.get('set-cookie')?.split(';')[0] ?? '';
+    assert.match(cookie, /^tag_session=/);
+    const login = await loginResponse.json() as { token: string; user: { workspaceId: number } };
+
+    const created = await requestJson<{ token: string; user: { workspaceId: number } }>(baseUrl, '/workspaces', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${login.token}` },
+      body: { name: 'Security review workspace' },
+    });
+    assert.notEqual(created.user.workspaceId, login.user.workspaceId);
+
+    const profile = await requestJson<{ token: string; user: { workspaceId: number; username: string } }>(baseUrl, '/auth/profile', {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${created.token}` },
+      body: { email: uniqueEmail('workspace-session-profile'), username: uniqueLogin('workspace_session_profile') },
+    });
+    assert.equal(profile.user.workspaceId, created.user.workspaceId);
+
+    const refreshed = await requestJson<{ token: string; user: { workspaceId: number } }>(baseUrl, '/auth/refresh', {
+      method: 'POST',
+      headers: { Cookie: cookie },
+      body: { workspaceId: created.user.workspaceId },
+    });
+    assert.equal(refreshed.user.workspaceId, created.user.workspaceId);
+  } finally {
+    await closeServer(server);
+  }
+});
+
 async function requestJson<T>(baseUrl: string, path: string, options: RequestOptions = {}) {
   const response = await rawRequest(baseUrl, path, options);
   if (!response.ok) {

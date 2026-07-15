@@ -29,6 +29,7 @@ Use env overrides only when you need a different backend target:
 ```bash
 # optional backend/frontend env
 JWT_SECRET=dev-secret
+CORS_ORIGINS=http://localhost:3000
 
 # default browser API path, usually leave unset in local dev
 NEXT_PUBLIC_API_URL=/api
