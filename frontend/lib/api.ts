@@ -3,6 +3,7 @@
 export const API_URL = process.env.NEXT_PUBLIC_API_URL?.trim() || '/api';
 
 export interface UserInfo {
+  id: number;
   login: string;
   role: 'admin' | 'user';
   email?: string;
@@ -18,6 +19,10 @@ export interface GeoItem {
 }
 export interface HistoryItem {
   id: number;
+  createdByUserId?: number;
+  createdByLogin?: string;
+  sharedWithWorkspace?: boolean | number;
+  sharedAt?: string | null;
   geoKey: string;
   geoLabel: string;
   email: string;
@@ -134,6 +139,17 @@ export interface WorkspaceInvite {
   invitedByLogin: string;
   acceptedByLogin: string;
   token?: string;
+}
+
+export interface WorkspaceSummary {
+  id: number;
+  name: string;
+  status: 'active' | 'archived';
+  ownerUserId: number;
+  workspaceRole: 'owner' | 'admin' | 'member' | 'viewer';
+  memberCount: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface PublicInvite {

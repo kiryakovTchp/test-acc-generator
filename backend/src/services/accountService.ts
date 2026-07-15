@@ -101,7 +101,8 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     FROM account_history
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).get(id, resolvedWorkspaceId, userId) as any;
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).get(id, resolvedWorkspaceId, userId, userId, userId) as any;
   if (!row) return null;
   const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
   const hydratedInbox = buildInboxPayload(inbox);
@@ -111,6 +112,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
         inbox_plain_text = ?, inbox_links_json = ?, inbox_codes_json = ?, inbox_html = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ?)
   `).run(
     hydratedInbox.status,
     hydratedInbox.sender,
@@ -122,6 +124,8 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     hydratedInbox.rawHtml ?? null,
     id,
     resolvedWorkspaceId,
+    userId,
+    userId,
     userId,
   );
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
@@ -135,7 +139,8 @@ export function updateSiteAccountId(id: number, userId: number, siteAccountId: s
     SET site_account_id = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).run(trimmed, id, resolvedWorkspaceId, userId);
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(trimmed, id, resolvedWorkspaceId, userId, userId, userId);
   if (result.changes === 0) return null;
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
@@ -148,7 +153,8 @@ export function updateAccountBalanceStatus(id: number, userId: number, balanceSt
     SET balance_status = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).run(normalized, id, resolvedWorkspaceId, userId);
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(normalized, id, resolvedWorkspaceId, userId, userId, userId);
   if (result.changes === 0) return null;
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
@@ -160,7 +166,8 @@ export function regeneratePhone(id: number, userId: number, includeDebug = false
     FROM account_history
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).get(id, resolvedWorkspaceId, userId) as { geoKey: string; phone: string } | undefined;
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).get(id, resolvedWorkspaceId, userId, userId, userId) as { geoKey: string; phone: string } | undefined;
   if (!row) return null;
 
   let nextPhone = randomPhone(row.geoKey);
@@ -173,7 +180,8 @@ export function regeneratePhone(id: number, userId: number, includeDebug = false
     SET phone = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).run(nextPhone, id, resolvedWorkspaceId, userId);
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(nextPhone, id, resolvedWorkspaceId, userId, userId, userId);
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
@@ -181,19 +189,43 @@ export function listHistory(userId: number, workspaceId?: number) {
   cleanupOldHistory();
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   return db.prepare(`
-    SELECT id, geo_key as geoKey, geo_label as geoLabel, email, username, site_account_id as siteAccountId,
-           balance_status as balanceStatus,
-           first_name as firstName, last_name as lastName, phone, age, gender,
-           date_of_birth as dateOfBirth, country, region, city, place_of_birth as placeOfBirth,
-           address_line as addressLine, postal_code as postalCode,
-           persona, account_role as role, created_at as createdAt,
-           document_type as documentType, document_issue_date as documentIssueDate, document_quality as documentQuality,
-           inbox_status as inboxStatus
-    FROM account_history
-    WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
-    ORDER BY datetime(created_at) DESC
+    SELECT ah.id,
+           ah.geo_key as geoKey,
+           ah.geo_label as geoLabel,
+           ah.email,
+           ah.username,
+           ah.site_account_id as siteAccountId,
+           ah.balance_status as balanceStatus,
+           ah.first_name as firstName,
+           ah.last_name as lastName,
+           ah.phone,
+           ah.age,
+           ah.gender,
+           ah.date_of_birth as dateOfBirth,
+           ah.country,
+           ah.region,
+           ah.city,
+           ah.place_of_birth as placeOfBirth,
+           ah.address_line as addressLine,
+           ah.postal_code as postalCode,
+           ah.persona,
+           ah.account_role as role,
+           ah.created_at as createdAt,
+           ah.document_type as documentType,
+           ah.document_issue_date as documentIssueDate,
+           ah.document_quality as documentQuality,
+           ah.inbox_status as inboxStatus,
+           ah.created_by_user_id as createdByUserId,
+           COALESCE(u.login, '') as createdByLogin,
+           ah.shared_with_workspace as sharedWithWorkspace,
+           ah.shared_at as sharedAt
+    FROM account_history ah
+    LEFT JOIN users u ON u.id = ah.created_by_user_id
+    WHERE (ah.workspace_id = ? AND (ah.created_by_user_id = ? OR ah.user_id = ? OR ah.shared_with_workspace = 1))
+       OR (ah.workspace_id IS NULL AND ah.user_id = ?)
+    ORDER BY datetime(ah.created_at) DESC
     LIMIT ?
-  `).all(resolvedWorkspaceId, userId, getWorkspaceSettings(resolvedWorkspaceId).history_limit);
+  `).all(resolvedWorkspaceId, userId, userId, userId, getWorkspaceSettings(resolvedWorkspaceId).history_limit);
 }
 
 export function getHistoryDetail(id: number, userId: number, includeDebug = false, workspaceId?: number) {
@@ -202,13 +234,19 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     SELECT *
     FROM account_history
     WHERE id = ?
-      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).get(id, resolvedWorkspaceId, userId) as any;
+      AND (
+        (workspace_id = ? AND (created_by_user_id = ? OR user_id = ? OR shared_with_workspace = 1))
+        OR (workspace_id IS NULL AND user_id = ?)
+      )
+  `).get(id, resolvedWorkspaceId, userId, userId, userId) as any;
   if (!row) return null;
   return {
     id: row.id,
     workspaceId: row.workspace_id,
     createdByUserId: row.created_by_user_id,
+    createdByLogin: getCreatedByLogin(row.created_by_user_id),
+    sharedWithWorkspace: Boolean(row.shared_with_workspace),
+    sharedAt: row.shared_at,
     geoKey: row.geo_key,
     geoLabel: row.geo_label,
     email: row.email,
@@ -288,7 +326,22 @@ export function deleteHistory(id: number, userId: number, workspaceId?: number) 
     DELETE FROM account_history
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-  `).run(id, resolvedWorkspaceId, userId);
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(id, resolvedWorkspaceId, userId, userId, userId);
+}
+
+export function updateHistorySharing(id: number, userId: number, sharedWithWorkspace: boolean, includeDebug = false, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const result = db.prepare(`
+    UPDATE account_history
+    SET shared_with_workspace = ?,
+        shared_at = CASE WHEN ? = 1 THEN CURRENT_TIMESTAMP ELSE NULL END
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(sharedWithWorkspace ? 1 : 0, sharedWithWorkspace ? 1 : 0, id, resolvedWorkspaceId, userId, userId, userId);
+  if (result.changes === 0) return null;
+  return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
 function cleanupOldHistory() {
@@ -308,15 +361,15 @@ function trimHistoryForWorkspace(userId: number, workspaceId: number) {
   const historyLimit = getWorkspaceSettings(workspaceId).history_limit;
   db.prepare(`
     DELETE FROM account_history
-    WHERE (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+    WHERE ((workspace_id = ? AND (created_by_user_id = ? OR user_id = ?)) OR (workspace_id IS NULL AND user_id = ?))
       AND id NOT IN (
       SELECT id
       FROM account_history
-      WHERE workspace_id = ? OR (workspace_id IS NULL AND user_id = ?)
+      WHERE (workspace_id = ? AND (created_by_user_id = ? OR user_id = ?)) OR (workspace_id IS NULL AND user_id = ?)
       ORDER BY datetime(created_at) DESC
       LIMIT ?
     )
-  `).run(workspaceId, userId, workspaceId, userId, historyLimit);
+  `).run(workspaceId, userId, userId, userId, workspaceId, userId, userId, userId, historyLimit);
 }
 
 function resolveWorkspace(userId: number, workspaceId?: number) {
@@ -324,6 +377,12 @@ function resolveWorkspace(userId: number, workspaceId?: number) {
     return assertWorkspaceAccess(userId, workspaceId);
   }
   return getDefaultWorkspaceForUser(userId);
+}
+
+function getCreatedByLogin(userId: number | null) {
+  if (!userId) return '';
+  const row = db.prepare('SELECT login FROM users WHERE id = ? LIMIT 1').get(userId) as { login: string } | undefined;
+  return row?.login ?? '';
 }
 
 export function buildInboxPayload(inbox: Awaited<ReturnType<EmailProvider['fetchInbox']>>) {

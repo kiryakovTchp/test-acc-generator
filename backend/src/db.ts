@@ -70,6 +70,8 @@ ensureColumn('users', 'updated_at', 'TEXT');
 ensureColumn('account_history', 'first_name', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'workspace_id', 'INTEGER');
 ensureColumn('account_history', 'created_by_user_id', 'INTEGER');
+ensureColumn('account_history', 'shared_with_workspace', 'INTEGER NOT NULL DEFAULT 0');
+ensureColumn('account_history', 'shared_at', 'TEXT');
 ensureColumn('account_history', 'site_account_id', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'balance_status', "TEXT NOT NULL DEFAULT 'unknown'");
 ensureColumn('account_history', 'last_name', "TEXT NOT NULL DEFAULT ''");
@@ -98,6 +100,7 @@ CREATE TABLE IF NOT EXISTS workspaces (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   owner_user_id INTEGER NOT NULL,
   name TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'active' CHECK(status IN ('active','archived')),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (owner_user_id) REFERENCES users(id)
@@ -183,6 +186,7 @@ CREATE TABLE IF NOT EXISTS workspace_invites (
 CREATE INDEX IF NOT EXISTS idx_workspace_members_user ON workspace_members(user_id, workspace_id);
 CREATE INDEX IF NOT EXISTS idx_account_history_workspace_created_at ON account_history(workspace_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_account_history_created_by ON account_history(created_by_user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_account_history_workspace_shared ON account_history(workspace_id, shared_with_workspace, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_usage_events_workspace_type_created_at ON usage_events(workspace_id, event_type, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token_hash_unique ON sessions(token_hash);
@@ -191,6 +195,7 @@ CREATE INDEX IF NOT EXISTS idx_workspace_invites_status_expires_at ON workspace_
 `);
 
 ensureColumn('sessions', 'last_seen_at', 'TEXT');
+ensureColumn('workspaces', 'status', "TEXT NOT NULL DEFAULT 'active'");
 
 const seedUsers = loadSeedUsers();
 for (const user of seedUsers) {
@@ -301,6 +306,7 @@ export function getDefaultWorkspaceForUser(userId: number): number {
     FROM workspaces w
     JOIN workspace_members wm ON wm.workspace_id = w.id
     WHERE wm.user_id = ?
+      AND w.status = 'active'
     ORDER BY
       CASE WHEN w.owner_user_id = ? THEN 0 ELSE 1 END,
       w.id ASC
@@ -314,6 +320,7 @@ export function getDefaultWorkspaceForUser(userId: number): number {
     FROM workspaces w
     JOIN workspace_members wm ON wm.workspace_id = w.id
     WHERE wm.user_id = ?
+      AND w.status = 'active'
     ORDER BY w.id ASC
     LIMIT 1
   `).get(userId) as { id: number } | undefined;
@@ -325,9 +332,10 @@ export function getDefaultWorkspaceForUser(userId: number): number {
 
 export function assertWorkspaceAccess(userId: number, workspaceId: number): number {
   const membership = db.prepare(`
-    SELECT workspace_id
-    FROM workspace_members
-    WHERE user_id = ? AND workspace_id = ?
+    SELECT wm.workspace_id
+    FROM workspace_members wm
+    JOIN workspaces w ON w.id = wm.workspace_id
+    WHERE wm.user_id = ? AND wm.workspace_id = ? AND w.status = 'active'
     LIMIT 1
   `).get(userId, workspaceId) as { workspace_id: number } | undefined;
   if (!membership) {

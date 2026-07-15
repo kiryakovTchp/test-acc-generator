@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateSiteAccountId } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
@@ -220,6 +220,29 @@ test('generated history is linked to workspace and creator', async () => {
   `).get(item!.id) as { workspace_id: number; created_by_user_id: number } | undefined;
   assert.equal(row?.workspace_id, workspaceId);
   assert.equal(row?.created_by_user_id, 1);
+});
+
+test('workspace members see only their own account history until an account is shared', async () => {
+  const ownerId = createTestUser('history_owner');
+  const memberId = createTestUser('history_member');
+  const workspaceId = getDefaultWorkspaceForUser(ownerId);
+  db.prepare('INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, ?)').run(workspaceId, memberId, 'member');
+
+  const item = await generateAccount({ userId: ownerId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.ok(item);
+  assert.equal(listHistory(memberId, workspaceId).some((row: any) => row.id === item!.id), false);
+  assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId), null);
+
+  const shared = updateHistorySharing(item!.id, ownerId, true, false, workspaceId);
+  assert.equal(shared?.sharedWithWorkspace, true);
+  assert.equal(listHistory(memberId, workspaceId).some((row: any) => row.id === item!.id && row.sharedWithWorkspace), true);
+  assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId)?.email, item?.email);
+
+  assert.equal(updateAccountBalanceStatus(item!.id, memberId, 'has_balance', false, workspaceId), null);
+
+  const privateAgain = updateHistorySharing(item!.id, ownerId, false, false, workspaceId);
+  assert.equal(privateAgain?.sharedWithWorkspace, false);
+  assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId), null);
 });
 
 test('workspace scope keeps another seed user out of private history', async () => {

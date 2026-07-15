@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { apiFetch, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings } from '@/lib/api';
+import { apiFetch, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -21,6 +21,10 @@ type BrowserGenerationSettings = {
 
 interface Detail {
   id: number;
+  createdByUserId?: number;
+  createdByLogin?: string;
+  sharedWithWorkspace?: boolean;
+  sharedAt?: string | null;
   geoKey: string;
   geoLabel: string;
   email: string;
@@ -184,6 +188,18 @@ function balanceStatusTone(status: AccountBalanceStatus) {
   return 'active';
 }
 
+function isWorkspaceShared(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
+  return item.sharedWithWorkspace === true || item.sharedWithWorkspace === 1;
+}
+
+function scopeTone(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
+  return isWorkspaceShared(item) ? 'success' : 'active';
+}
+
+function scopeLabel(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
+  return isWorkspaceShared(item) ? 'Shared' : 'Private';
+}
+
 function getBrowserStorage(): Storage | null {
   if (typeof window === 'undefined') return null;
   if (typeof document === 'undefined') return null;
@@ -254,6 +270,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsSummary | null>(null);
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
+  const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
+  const [newWorkspaceName, setNewWorkspaceName] = useState('');
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceMember[]>([]);
   const [workspaceInvites, setWorkspaceInvites] = useState<WorkspaceInvite[]>([]);
   const [memberLookup, setMemberLookup] = useState('');
@@ -365,6 +383,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }, [accountGeoFilter, accountSearch, balanceFilter, history, sortMode, statusFilter]);
 
   const selectedStatus = mapDetailStatus(detail);
+  const currentWorkspace = workspaces.find((item) => item.id === user?.workspaceId);
   const primaryActionsDisabled = !detail;
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
@@ -414,13 +433,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setAccountUsername(me.user.username ?? me.user.login);
       const workspaceId = me.user.workspaceId;
       const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
-      const [geo, historyRes, limitsRes, alertsRes, analyticsRes, userSettingsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
+      const [geo, historyRes, limitsRes, alertsRes, analyticsRes, userSettingsRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
         apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
         apiFetch<{ items: HistoryItem[] }>('/history', authToken),
         apiFetch<UsageSummary>('/limits', authToken),
         apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
         apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
         apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
+        apiFetch<{ workspaces: WorkspaceSummary[] }>('/workspaces', authToken),
         workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
         workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
         workspaceId && canLoadInvites ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
@@ -432,6 +452,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setAlertItems(alertsRes.items);
       setAnalyticsSummary(analyticsRes.summary);
       setUserSettings(userSettingsRes.settings);
+      setWorkspaces(workspacesRes.workspaces);
       setWorkspaceSettings(workspaceSettingsRes.settings);
       setWorkspaceMembers(workspaceMembersRes.members);
       setWorkspaceInvites(workspaceInvitesRes.invites);
@@ -460,10 +481,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshUsage(authToken = token) {
-    const [limitsRes, alertsRes, analyticsRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
+    const [limitsRes, alertsRes, analyticsRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
       apiFetch<UsageSummary>('/limits', authToken),
       apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
       apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
+      apiFetch<{ workspaces: WorkspaceSummary[] }>('/workspaces', authToken),
       user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       user?.workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
       user?.workspaceId && ['owner', 'admin'].includes(user.workspaceRole ?? '') ? apiFetch<{ invites: WorkspaceInvite[] }>(`/workspaces/${user.workspaceId}/invites`, authToken) : Promise.resolve({ invites: [] }),
@@ -471,6 +493,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setUsageSummary(limitsRes);
     setAlertItems(alertsRes.items);
     setAnalyticsSummary(analyticsRes.summary);
+    setWorkspaces(workspacesRes.workspaces);
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
     setWorkspaceInvites(workspaceInvitesRes.invites);
@@ -613,6 +636,48 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     } catch (err) {
       setSettingsStatus('Save failed');
       setError(err instanceof Error ? err.message : 'Failed to revoke workspace invite');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
+  async function switchWorkspace(workspaceId: number) {
+    if (workspaceId === user?.workspaceId) return;
+    setError('');
+    setIsWorkspaceLoading(true);
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo; workspaces: WorkspaceSummary[] }>(`/workspaces/${workspaceId}/switch`, token, { method: 'POST' });
+      setWorkspaces(res.workspaces);
+      setDetail(null);
+      persistAuthState(res.token, res.user);
+      await refresh(res.token, { showLoading: true });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to switch workspace');
+    } finally {
+      setIsWorkspaceLoading(false);
+    }
+  }
+
+  async function createNewWorkspace() {
+    const name = newWorkspaceName.trim();
+    if (!name) return;
+    setIsSavingSettings(true);
+    setSettingsStatus('Creating workspace');
+    setError('');
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo; workspaces: WorkspaceSummary[] }>('/workspaces', token, {
+        method: 'POST',
+        body: JSON.stringify({ name }),
+      });
+      setNewWorkspaceName('');
+      setWorkspaces(res.workspaces);
+      setDetail(null);
+      persistAuthState(res.token, res.user);
+      setSettingsStatus('Workspace created');
+      await refresh(res.token, { showLoading: true });
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to create workspace');
     } finally {
       setIsSavingSettings(false);
     }
@@ -890,6 +955,34 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
   }
 
+  async function saveSharing(id: number, sharedWithWorkspace: boolean) {
+    setError('');
+    setHistory((items) => items.map((item) => item.id === id ? { ...item, sharedWithWorkspace } : item));
+    if (detail?.id === id) {
+      setDetail((current) => current ? { ...current, sharedWithWorkspace } : current);
+    }
+    try {
+      const updated = await apiFetch<Detail>(`/history/${id}/sharing?debug=1`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ sharedWithWorkspace }),
+      });
+      setHistory((items) => items.map((item) => item.id === id ? {
+        ...item,
+        sharedWithWorkspace: updated.sharedWithWorkspace,
+        sharedAt: updated.sharedAt,
+      } : item));
+      if (detail?.id === id) {
+        setDetail(updated);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to update sharing');
+      void refresh();
+      if (detail?.id === id) {
+        void loadDetail(id);
+      }
+    }
+  }
+
   async function copyValue(key: string, value: string) {
     await navigator.clipboard.writeText(value);
     setCopiedField(key);
@@ -1008,9 +1101,19 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <div className="flow-block">
             <div className="flow-label">Workspace</div>
-            <div className="flow-title">Identity Generation</div>
-            <div className="flow-subtitle">Test users, mailbox, and verification</div>
-            <span className="flow-status">Active</span>
+            <select
+              className="workspace-switcher"
+              value={user.workspaceId ?? ''}
+              onChange={(event) => void switchWorkspace(Number(event.target.value))}
+              disabled={isWorkspaceLoading}
+              aria-label="Switch workspace"
+            >
+              {workspaces.map((workspace) => (
+                <option key={workspace.id} value={workspace.id}>{workspace.name}</option>
+              ))}
+            </select>
+            <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} users · {user.workspaceRole ?? 'member'}</div>
+            <span className={cn('flow-status', currentWorkspace?.status === 'archived' && 'is-archived')}>{currentWorkspace?.status ?? 'active'}</span>
           </div>
 
           <nav className="sidebar-nav">
@@ -1054,7 +1157,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <div className="topbar-admin">
             {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
             <button className="icon-button" title="Command menu">CMD K</button>
-            <div className="env-select"><span /> Environment · admin-live</div>
+            <div className="env-select"><span /> {currentWorkspace?.name ?? 'Workspace'}</div>
             <div className="env-select">{user.login}</div>
             <button className="logout-button" onClick={() => void logout()}>Logout</button>
           </div>
@@ -1136,6 +1239,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <span className={cn('badge-dot', `tone-${statusTone(rowStatus)}`)} />
                     </span>
                     <strong>{item.siteAccountId || item.username}</strong>
+                    <span className={cn('badge', `tone-${scopeTone(item)}`)}>{scopeLabel(item)}</span>
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
@@ -1180,6 +1284,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       </div>
                     </label>
                     <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <SharingField
+                      item={detail}
+                      canManage={detail.createdByUserId === user.id}
+                      onToggle={(shared) => void saveSharing(detail.id, shared)}
+                    />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
@@ -1297,7 +1406,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             ) : null}
 
             <div className="account-table-wrap">
-              {isWorkspaceBootstrapping ? <TableSkeleton columns={7} rows={7} /> : filteredHistory.length ? (
+              {isWorkspaceBootstrapping ? <TableSkeleton columns={8} rows={7} /> : filteredHistory.length ? (
                 <table className="account-table">
                   <thead>
                     <tr>
@@ -1306,6 +1415,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <th>Email</th>
                       <th>Status</th>
                       <th>Balance</th>
+                      <th>Scope</th>
                       <th>Created</th>
                       <th />
                     </tr>
@@ -1327,6 +1437,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                             <BalanceStatusSelect
                               value={item.balanceStatus}
                               onChange={(value) => void saveBalanceStatus(item.id, value)}
+                            />
+                          </td>
+                          <td>
+                            <SharingControl
+                              item={item}
+                              canManage={item.createdByUserId === user.id}
+                              onToggle={(shared) => void saveSharing(item.id, shared)}
                             />
                           </td>
                           <td>{formatCompactDate(item.createdAt)}</td>
@@ -1372,6 +1489,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       </div>
                     </label>
                     <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <SharingField
+                      item={detail}
+                      canManage={detail.createdByUserId === user.id}
+                      onToggle={(shared) => void saveSharing(detail.id, shared)}
+                    />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
@@ -1487,6 +1609,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               usageSummary={usageSummary}
               userSettings={userSettings}
               workspaceSettings={workspaceSettings}
+              workspaces={workspaces}
+              currentWorkspace={currentWorkspace}
+              newWorkspaceName={newWorkspaceName}
+              setNewWorkspaceName={setNewWorkspaceName}
               workspaceMembers={workspaceMembers}
               workspaceInvites={workspaceInvites}
               memberLookup={memberLookup}
@@ -1512,6 +1638,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               setWorkspaceSettings={setWorkspaceSettings}
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
+              onCreateWorkspace={createNewWorkspace}
               onAddMember={addMember}
               onUpdateMemberRole={updateMemberRole}
               onRemoveMember={removeMember}
@@ -1709,6 +1836,10 @@ function UtilityView({
   usageSummary,
   userSettings,
   workspaceSettings,
+  workspaces,
+  currentWorkspace,
+  newWorkspaceName,
+  setNewWorkspaceName,
   workspaceMembers,
   workspaceInvites,
   memberLookup,
@@ -1734,6 +1865,7 @@ function UtilityView({
   setWorkspaceSettings,
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
+  onCreateWorkspace,
   onAddMember,
   onUpdateMemberRole,
   onRemoveMember,
@@ -1782,6 +1914,10 @@ function UtilityView({
   usageSummary: UsageSummary | null;
   userSettings: UserSettings | null;
   workspaceSettings: ServerWorkspaceSettings | null;
+  workspaces: WorkspaceSummary[];
+  currentWorkspace?: WorkspaceSummary;
+  newWorkspaceName: string;
+  setNewWorkspaceName: (value: string) => void;
   workspaceMembers: WorkspaceMember[];
   workspaceInvites: WorkspaceInvite[];
   memberLookup: string;
@@ -1807,6 +1943,7 @@ function UtilityView({
   setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
+  onCreateWorkspace: () => void;
   onAddMember: () => void;
   onUpdateMemberRole: (userId: number, role: WorkspaceMember['workspaceRole']) => void;
   onRemoveMember: (userId: number) => void;
@@ -2173,6 +2310,21 @@ function UtilityView({
         <div className="section-subhead">
           <h3>Workspace Limits</h3>
           <p>Shared retention, provider limits, and bulk-generation controls for the workspace.</p>
+        </div>
+        <div className="workspace-create-row">
+          <div>
+            <strong>{currentWorkspace?.name ?? 'Current workspace'}</strong>
+            <span>{workspaces.length} workspaces available · active role {currentWorkspace?.workspaceRole ?? 'member'}</span>
+          </div>
+          <input
+            className="input-field compact"
+            value={newWorkspaceName}
+            onChange={(e) => setNewWorkspaceName(e.target.value)}
+            placeholder="New workspace name"
+          />
+          <button type="button" className="primary-button" onClick={onCreateWorkspace} disabled={isSavingSettings || !newWorkspaceName.trim()}>
+            Create workspace
+          </button>
         </div>
         <div className="settings-grid">
           <Field label="History retention days">
@@ -2729,6 +2881,44 @@ function BalanceStatusSelect({ value, onChange }: { value: AccountBalanceStatus;
         <option key={item.value} value={item.value}>{item.label}</option>
       ))}
     </select>
+  );
+}
+
+function SharingField({ item, canManage, onToggle }: { item: Detail; canManage: boolean; onToggle: (shared: boolean) => void }) {
+  return (
+    <label className="account-id-field">
+      <span>Workspace sharing</span>
+      <SharingControl item={item} canManage={canManage} onToggle={onToggle} />
+    </label>
+  );
+}
+
+function SharingControl({
+  item,
+  canManage,
+  onToggle,
+}: {
+  item: Pick<HistoryItem, 'createdByLogin' | 'sharedWithWorkspace'> | Pick<Detail, 'createdByLogin' | 'sharedWithWorkspace'>;
+  canManage: boolean;
+  onToggle: (shared: boolean) => void;
+}) {
+  const shared = isWorkspaceShared(item);
+  return (
+    <div className="sharing-control">
+      <span className={cn('badge', `tone-${scopeTone(item)}`)}>
+        {scopeLabel(item)}
+      </span>
+      {canManage ? (
+        <button type="button" className="micro-button" onClick={(event) => {
+          event.stopPropagation();
+          onToggle(!shared);
+        }}>
+          {shared ? 'Make private' : 'Share'}
+        </button>
+      ) : (
+        <span className="sharing-owner">{item.createdByLogin ? `by ${item.createdByLogin}` : 'read only'}</span>
+      )}
+    </div>
   );
 }
 
