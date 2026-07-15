@@ -403,6 +403,7 @@ Schema migrations are lightweight and run from `backend/src/db.ts` through `CREA
 Important env vars:
 
 - `JWT_SECRET`: required for production security;
+- `CORS_ORIGINS`: comma-separated frontend origins allowed to call the backend with credentials in production;
 - `ACCESS_TOKEN_TTL`: optional, default `30m`;
 - `SESSION_DAYS`: optional, default `30`;
 - `REGISTRATION_MODE`: `disabled` or `invite_only`;
@@ -488,4 +489,3 @@ Recommended authenticated smoke:
 - Frontend smoke test is currently minimal; most coverage is backend tests plus Next build type checking.
 - Workspace archive status exists in the model, but no UI/API for archiving is exposed yet.
 - There is no billing or organization-level admin model.
-

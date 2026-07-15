@@ -237,6 +237,8 @@ test('workspace members see only their own account history until an account is s
   assert.equal(shared?.sharedWithWorkspace, true);
   assert.equal(listHistory(memberId, workspaceId).some((row: any) => row.id === item!.id && row.sharedWithWorkspace), true);
   assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId)?.email, item?.email);
+  assert.equal(getHistoryDetail(item!.id, memberId, true, workspaceId)?.inbox.rawHtml, null);
+  assert.equal(getHistoryDetail(item!.id, ownerId, true, workspaceId)?.inbox.rawHtml, '<b>Code 123456</b>');
 
   assert.equal(updateAccountBalanceStatus(item!.id, memberId, 'has_balance', false, workspaceId), null);
 
