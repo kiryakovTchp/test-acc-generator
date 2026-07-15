@@ -162,6 +162,12 @@ function inviteStatusTone(status: string) {
   return 'warning';
 }
 
+function roleTone(role: string) {
+  if (role === 'owner' || role === 'admin') return 'success';
+  if (role === 'member' || role === 'user') return 'active';
+  return 'warning';
+}
+
 function statusLabel(status: HistoryStatus) {
   if (status === 'email_received') return 'Email received';
   if (status === 'generated') return 'Generated';
@@ -2222,7 +2228,7 @@ function UtilityView({
             placeholder="email for invite"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className="input-field compact" value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2254,7 +2260,7 @@ function UtilityView({
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
                   <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
-                  <td><span className="role-pill">{invite.role}</span></td>
+                  <td><span className={cn('role-pill', `tone-${roleTone(invite.role)}`)}>{invite.role}</span></td>
                   <td>
                     <span className={cn('status-chip', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
                     {invite.acceptedByLogin ? <span>by {invite.acceptedByLogin}</span> : null}
@@ -2301,7 +2307,7 @@ function UtilityView({
             placeholder="login, email, or username"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className="input-field compact" value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2326,7 +2332,7 @@ function UtilityView({
                   <td><strong>{member.login}</strong><span>{member.email || member.username}</span></td>
                   <td>
                     <select
-                      className="input-field compact"
+                      className={cn('input-field compact role-select', `tone-${roleTone(member.workspaceRole)}`)}
                       value={member.workspaceRole}
                       onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
                       disabled={!canManageWorkspaceSettings || isSavingSettings}
@@ -2337,7 +2343,7 @@ function UtilityView({
                       <option value="viewer">viewer</option>
                     </select>
                   </td>
-                  <td><span className="role-pill">{member.userRole}</span></td>
+                  <td><span className={cn('role-pill', `tone-${roleTone(member.userRole)}`)}>{member.userRole}</span></td>
                   <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
                 </tr>
               ))}
