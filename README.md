@@ -1,5 +1,13 @@
 # Test Account Generator V1
 
+## Documentation
+
+- [Current state](docs/CURRENT_STATE.md) - current product behavior, architecture, API, workspace/role/sharing model, env, and deployment notes.
+- [Product backlog](docs/PRODUCT_BACKLOG.md) - planned improvements and newly captured follow-ups.
+- [Backend roadmap](docs/BACKEND_ROADMAP.md) - older roadmap/planning notes.
+- [Frontend roadmap](docs/FRONTEND_ROADMAP.md) - older frontend/product planning notes.
+- [Project description](docs/PROJECT_DESCRIPTION.md) - older full project description with screenshots; use Current state as the source of truth for latest behavior.
+
 ## Stack
 - Frontend: Next.js + TypeScript + Tailwind
 - Backend: Node.js + Express + SQLite
