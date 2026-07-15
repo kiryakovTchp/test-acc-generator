@@ -1346,6 +1346,28 @@ body {
   font-weight: 800;
 }
 
+.workspace-switcher {
+  width: 100%;
+  max-width: 170px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.06);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+  padding: 8px 30px 8px 10px;
+  appearance: none;
+}
+
+.workspace-switcher:disabled {
+  opacity: 0.65;
+}
+
+.workspace-switcher option {
+  color: #0f1720;
+}
+
 .flow-subtitle {
   max-width: 170px;
   margin-top: 6px;
@@ -1361,6 +1383,10 @@ body {
   color: var(--success);
   font-size: 11px;
   font-weight: 700;
+}
+
+.flow-status.is-archived {
+  color: var(--warning);
 }
 
 .sidebar-nav {
@@ -1750,7 +1776,7 @@ body {
 
 .account-row {
   display: grid;
-  grid-template-columns: var(--badge-height) minmax(0, 1fr) auto;
+  grid-template-columns: var(--badge-height) minmax(0, 1fr) auto auto;
   gap: 9px;
   align-items: center;
   min-height: 39px;
@@ -1854,6 +1880,19 @@ body {
 
 .account-table .balance-status-select {
   min-width: 112px;
+}
+
+.sharing-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.sharing-owner {
+  color: var(--muted);
+  font-size: 11px;
+  white-space: nowrap;
 }
 
 .panel-header .badge,
@@ -2056,6 +2095,33 @@ body {
 .member-add-row {
   grid-template-columns: minmax(220px, 1fr) 140px auto;
   align-items: end;
+}
+
+.workspace-create-row {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(180px, 280px) auto;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+  border: 1px solid #edf0f4;
+  border-radius: 8px;
+  background: #fbfcfe;
+  padding: 12px;
+}
+
+.workspace-create-row strong,
+.workspace-create-row span {
+  display: block;
+}
+
+.workspace-create-row strong {
+  font-size: 13px;
+}
+
+.workspace-create-row span {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 12px;
 }
 
 .invite-create-row {
@@ -3007,6 +3073,10 @@ kbd {
   }
 
   .member-add-row {
+    grid-template-columns: 1fr;
+  }
+
+  .workspace-create-row {
     grid-template-columns: 1fr;
   }
 

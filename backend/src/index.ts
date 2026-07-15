@@ -3,7 +3,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
-import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
@@ -13,6 +13,7 @@ import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './per
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
 import { createWorkspaceInvite, getPublicInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
 import { getWorkspaceAlerts, getWorkspaceAnalytics } from './monitoring.js';
+import { createWorkspace, getWorkspaceForUser, listWorkspaces } from './workspaces.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -246,6 +247,31 @@ app.get('/history', auth, (req, res) => {
   res.json({ items: listHistory((req as any).user.userId, (req as any).user.workspaceId) });
 });
 
+app.get('/workspaces', auth, (req, res) => {
+  res.json({ workspaces: listWorkspaces((req as any).user.userId) });
+});
+
+app.post('/workspaces', auth, (req, res) => {
+  try {
+    const workspace = createWorkspace((req as any).user.userId, req.body ?? {});
+    const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
+    res.status(201).json({ workspace, workspaces: listWorkspaces(user.id), ...buildAuthResponse(user, (req as any).user.sessionId ?? 0, workspace.id) });
+  } catch (error) {
+    sendError(res, error, 'Failed to create workspace');
+  }
+});
+
+app.post('/workspaces/:id/switch', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    getWorkspaceForUser((req as any).user.userId, workspaceId);
+    const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
+    res.json({ workspaces: listWorkspaces(user.id), ...buildAuthResponse(user, (req as any).user.sessionId ?? 0, workspaceId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to switch workspace');
+  }
+});
+
 app.get('/limits', auth, (req, res) => {
   res.json(getUsageSummary((req as any).user.workspaceId, (req as any).user.userId));
 });
@@ -451,6 +477,18 @@ app.patch('/history/:id/balance-status', auth, (req, res) => {
   res.json(item);
 });
 
+app.patch('/history/:id/sharing', auth, (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+  } catch (error) {
+    return sendError(res, error, 'Workspace permission denied');
+  }
+  const includeDebug = req.query.debug === '1';
+  const item = updateHistorySharing(Number(req.params.id), (req as any).user.userId, Boolean(req.body?.sharedWithWorkspace), includeDebug, (req as any).user.workspaceId);
+  if (!item) return res.status(404).json({ error: 'Not found' });
+  res.json(item);
+});
+
 app.post('/history/:id/regenerate-phone', auth, (req, res) => {
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
@@ -554,13 +592,17 @@ function createSession(userId: number, req: express.Request) {
   return { id: Number(result.lastInsertRowid), token, expiresAt };
 }
 
-function buildAuthResponse(user: { id: number; login: string; role: Role; email?: string; username?: string; status?: string }, sessionId: number) {
-  const workspaceId = getDefaultWorkspaceForUser(user.id);
+function buildAuthResponse(user: { id: number; login: string; role: Role; email?: string; username?: string; status?: string }, sessionId: number, preferredWorkspaceId?: number) {
+  const workspaceId = preferredWorkspaceId ?? getDefaultWorkspaceForUser(user.id);
   const workspaceRole = getWorkspaceRole(user.id, workspaceId);
+  if (!workspaceRole) {
+    throw new ApiError('workspace_access_denied', 'Workspace access denied', 403);
+  }
   const token = jwt.sign({ userId: user.id, login: user.login, role: user.role, sessionId, workspaceId }, jwtSecret, { expiresIn: accessTokenTtl });
   return {
     token,
     user: {
+      id: user.id,
       login: user.login,
       email: user.email,
       username: user.username,
