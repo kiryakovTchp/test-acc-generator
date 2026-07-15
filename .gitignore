@@ -5,3 +5,8 @@ backend/data/app.db*
 data/
 *.log
 .DS_Store
+
+# local environment files
+.env.production
+.env.local
+.env.*.local
