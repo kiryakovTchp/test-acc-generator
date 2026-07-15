@@ -1059,6 +1059,13 @@ kbd {
   font-size: 13px;
 }
 
+select.input-field.badge-select {
+  display: inline-block;
+  width: fit-content;
+  min-width: 0;
+  padding-right: 28px;
+}
+
 .primary-button,
 .secondary-button,
 .ghost-button,
@@ -1842,11 +1849,11 @@ body {
 }
 
 .balance-status-select {
-  min-width: 128px;
+  min-width: 112px;
 }
 
 .account-table .balance-status-select {
-  min-width: 118px;
+  min-width: 112px;
 }
 
 .panel-header .badge,
