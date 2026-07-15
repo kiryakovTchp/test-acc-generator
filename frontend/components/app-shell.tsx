@@ -1132,7 +1132,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 const selected = detail?.id === item.id;
                 return (
                   <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
-                    <span className={cn('status-dot', `tone-${statusTone(rowStatus)}`)} />
+                    <span className={cn('badge status-marker', `tone-${statusTone(rowStatus)}`)} title={statusLabel(rowStatus)} aria-label={statusLabel(rowStatus)}>
+                      <span className={cn('badge-dot', `tone-${statusTone(rowStatus)}`)} />
+                    </span>
                     <strong>{item.siteAccountId || item.username}</strong>
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
@@ -1144,7 +1146,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <section className="panel panel-detail">
             <div className="panel-header">
-              <h2>Identity workspace {detail ? <span className="success-text">{statusLabel(selectedStatus)}</span> : null}</h2>
+              <h2>Identity workspace {detail ? <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span> : null}</h2>
             </div>
 
             {isWorkspaceBootstrapping && !detail ? (
@@ -1320,7 +1322,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                           </td>
                           <td>{item.geoLabel}</td>
                           <td>{item.email}</td>
-                          <td><span className={cn('status-pill', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
+                          <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
                           <td>
                             <BalanceStatusSelect
                               value={item.balanceStatus}
@@ -1343,7 +1345,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Test user details" onClick={() => setDetail(null)}>
               <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="panel-header">
-                  <h2>Test user details <span className={cn('status-pill', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span></h2>
+                  <h2>Test user details <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span></h2>
                   <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
                 </div>
 
@@ -1926,7 +1928,7 @@ function UtilityView({
                     <tr key={item.id} className={cn(detail?.id === item.id && 'is-selected')}>
                       <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
                       <td>{item.siteAccountId || item.username}</td>
-                      <td><span className={cn('status-chip', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
+                      <td><span className={cn('badge', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
                       <td>{formatCompactDate(item.createdAt)}</td>
                       <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
                     </tr>
@@ -2023,7 +2025,7 @@ function UtilityView({
             <h2>Verification</h2>
             <p>Codes and verification links for the selected test user.</p>
           </div>
-          <span className={cn('status-pill', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No test user selected'}</span>
+          <span className={cn('badge', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No test user selected'}</span>
         </div>
 
         {detail ? (
@@ -2061,7 +2063,7 @@ function UtilityView({
                   <tr key={item.id}>
                     <td><strong>{item.siteAccountId || item.username}</strong><span>{item.email}</span></td>
                     <td>{item.geoLabel}</td>
-                    <td><span className={cn('status-pill', `tone-${statusTone(mapHistoryStatus(item))}`)}>{statusLabel(mapHistoryStatus(item))}</span></td>
+                    <td><span className={cn('badge', `tone-${statusTone(mapHistoryStatus(item))}`)}>{statusLabel(mapHistoryStatus(item))}</span></td>
                     <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
                   </tr>
                 ))}
@@ -2107,7 +2109,7 @@ function UtilityView({
           <h2>Settings</h2>
           <p>Defaults, workspace limits, access, and account security are grouped by task.</p>
         </div>
-        <span className={cn('status-pill', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
+        <span className={cn('badge', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
       </div>
 
       {isWorkspaceLoading ? <SettingsTabsSkeleton /> : (
@@ -2228,7 +2230,7 @@ function UtilityView({
             placeholder="email for invite"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2260,9 +2262,9 @@ function UtilityView({
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
                   <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
-                  <td><span className={cn('role-pill', `tone-${roleTone(invite.role)}`)}>{invite.role}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)}>{invite.role}</span></td>
                   <td>
-                    <span className={cn('status-chip', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
+                    <span className={cn('badge', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
                     {invite.acceptedByLogin ? <span>by {invite.acceptedByLogin}</span> : null}
                   </td>
                   <td>
@@ -2307,7 +2309,7 @@ function UtilityView({
             placeholder="login, email, or username"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2332,7 +2334,7 @@ function UtilityView({
                   <td><strong>{member.login}</strong><span>{member.email || member.username}</span></td>
                   <td>
                     <select
-                      className={cn('input-field compact role-select', `tone-${roleTone(member.workspaceRole)}`)}
+                      className={cn('input-field compact badge-select role-select', `tone-${roleTone(member.workspaceRole)}`)}
                       value={member.workspaceRole}
                       onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
                       disabled={!canManageWorkspaceSettings || isSavingSettings}
@@ -2343,7 +2345,7 @@ function UtilityView({
                       <option value="viewer">viewer</option>
                     </select>
                   </td>
-                  <td><span className={cn('role-pill', `tone-${roleTone(member.userRole)}`)}>{member.userRole}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)}>{member.userRole}</span></td>
                   <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
                 </tr>
               ))}
@@ -2717,7 +2719,7 @@ function BalanceStatusField({ value, onChange }: { value: AccountBalanceStatus; 
 function BalanceStatusSelect({ value, onChange }: { value: AccountBalanceStatus; onChange: (value: AccountBalanceStatus) => void }) {
   return (
     <select
-      className={cn('input-field compact balance-status-select', `tone-${balanceStatusTone(value)}`)}
+      className={cn('input-field compact badge-select balance-status-select', `tone-${balanceStatusTone(value)}`)}
       value={value}
       aria-label="Balance status"
       onClick={(event) => event.stopPropagation()}

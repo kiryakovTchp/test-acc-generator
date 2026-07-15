@@ -16,6 +16,18 @@
   --active: #3b82f6;
   --warning: #f59e0b;
   --error: #ef4444;
+  --badge-height: 24px;
+  --badge-radius: 999px;
+  --badge-font-size: 11px;
+  --badge-success-bg: #edf8f2;
+  --badge-success-border: #c9ead7;
+  --badge-success-text: #17613a;
+  --badge-active-bg: #eef5ff;
+  --badge-active-border: #cfe0fb;
+  --badge-active-text: #1f4f9a;
+  --badge-warning-bg: #fff7e8;
+  --badge-warning-border: #f3dfb7;
+  --badge-warning-text: #80520f;
 }
 
 * {
@@ -795,55 +807,111 @@ button {
 }
 
 .tag,
-.status-pill {
+.badge,
+.status-pill,
+.status-chip,
+.role-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  border-radius: 999px;
+  justify-content: center;
+  gap: 5px;
+  min-height: var(--badge-height);
+  border-radius: var(--badge-radius);
   width: fit-content;
   max-width: 100%;
   border: 1px solid transparent;
-  padding: 5px 10px;
-  font-size: 12px;
+  padding: 3px 9px;
+  font-size: var(--badge-font-size);
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 1;
   white-space: nowrap;
+  vertical-align: middle;
 }
 
+.badge-dot,
 .status-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 999px;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: var(--badge-radius);
+  box-shadow: 0 0 0 3px currentColor;
+  opacity: 0.82;
 }
 
 .tone-success {
-  border-color: rgba(22, 163, 74, 0.2);
-  background: #eaf8ef;
-  color: #166534;
+  border-color: var(--badge-success-border);
+  background: var(--badge-success-bg);
+  color: var(--badge-success-text);
 }
 
+.badge-dot.tone-success,
 .status-dot.tone-success {
-  background: var(--success);
+  background: #22c55e;
+  color: rgba(34, 197, 94, 0.14);
 }
 
 .tone-active {
-  border-color: rgba(37, 99, 235, 0.2);
-  background: #edf4ff;
-  color: #1e40af;
+  border-color: var(--badge-active-border);
+  background: var(--badge-active-bg);
+  color: var(--badge-active-text);
 }
 
+.badge-dot.tone-active,
 .status-dot.tone-active {
-  background: var(--active);
+  background: #3b82f6;
+  color: rgba(59, 130, 246, 0.14);
 }
 
 .tone-warning {
-  border-color: rgba(217, 119, 6, 0.24);
-  background: #fff7df;
-  color: #92400e;
+  border-color: var(--badge-warning-border);
+  background: var(--badge-warning-bg);
+  color: var(--badge-warning-text);
 }
 
+.badge-dot.tone-warning,
 .status-dot.tone-warning {
-  background: var(--warning);
+  background: #f59e0b;
+  color: rgba(245, 158, 11, 0.16);
+}
+
+.status-marker {
+  width: var(--badge-height);
+  min-width: var(--badge-height);
+  padding: 0;
+}
+
+.badge-select {
+  appearance: none;
+  width: auto;
+  min-width: 112px;
+  max-width: 100%;
+  min-height: var(--badge-height);
+  border: 1px solid transparent;
+  border-radius: var(--badge-radius);
+  padding: 3px 28px 3px 10px;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 9px center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  font-size: var(--badge-font-size);
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.badge-select:hover {
+  filter: saturate(1.08);
+}
+
+.badge-select:focus {
+  border-color: currentColor;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+}
+
+.badge-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.68;
 }
 
 .code-grid {
@@ -1675,7 +1743,7 @@ body {
 
 .account-row {
   display: grid;
-  grid-template-columns: 12px minmax(0, 1fr) auto;
+  grid-template-columns: var(--badge-height) minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
   min-height: 39px;
@@ -1763,52 +1831,25 @@ body {
   color: var(--muted);
 }
 
+.account-table .badge,
 .account-table .status-pill,
 .account-table .status-chip,
+.account-table .role-pill,
+.panel-header .badge,
 .panel-header .status-pill {
   display: inline-flex;
   margin-top: 0;
-  color: inherit;
-}
-
-.account-table .role-pill {
-  display: inline-flex;
-  margin-top: 0;
-  color: inherit;
 }
 
 .balance-status-select {
-  appearance: none;
-  width: auto;
   min-width: 128px;
-  max-width: 100%;
-  min-height: 0;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 5px 28px 5px 10px;
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-position: right 9px center;
-  background-repeat: no-repeat;
-  background-size: 14px 14px;
-  font-weight: 800;
-  line-height: 1.15;
-  cursor: pointer;
-  box-shadow: none;
 }
 
 .account-table .balance-status-select {
   min-width: 118px;
 }
 
-.balance-status-select:hover {
-  filter: saturate(1.08);
-}
-
-.balance-status-select:focus {
-  border-color: currentColor;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
-}
-
+.panel-header .badge,
 .panel-header .status-pill {
   margin-left: 8px;
   vertical-align: middle;
@@ -2049,52 +2090,32 @@ body {
 }
 
 .role-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  width: fit-content;
-  max-width: 100%;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 5px 9px;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.15;
-  white-space: nowrap;
+  text-transform: none;
 }
 
 .role-select {
-  appearance: none;
-  width: auto;
   min-width: 112px;
-  max-width: 100%;
-  min-height: 0;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 5px 28px 5px 10px;
-  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23475569' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  background-position: right 9px center;
-  background-repeat: no-repeat;
-  background-size: 14px 14px;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.15;
-  cursor: pointer;
-  box-shadow: none;
 }
 
-.role-select:hover {
-  filter: saturate(1.08);
+.badge.tone-success,
+.badge-select.tone-success {
+  border-color: var(--badge-success-border);
+  background-color: var(--badge-success-bg);
+  color: var(--badge-success-text);
 }
 
-.role-select:focus {
-  border-color: currentColor;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+.badge.tone-active,
+.badge-select.tone-active {
+  border-color: var(--badge-active-border);
+  background-color: var(--badge-active-bg);
+  color: var(--badge-active-text);
 }
 
-.role-select:disabled {
-  cursor: not-allowed;
-  opacity: 0.68;
+.badge.tone-warning,
+.badge-select.tone-warning {
+  border-color: var(--badge-warning-border);
+  background-color: var(--badge-warning-bg);
+  color: var(--badge-warning-text);
 }
 
 .section-subhead p,
@@ -2274,39 +2295,6 @@ body {
 
 .mailboxes-table {
   min-width: 680px;
-}
-
-.status-chip {
-  display: inline-flex;
-  align-items: center;
-  width: fit-content;
-  max-width: 100%;
-  min-width: max-content;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  padding: 5px 9px;
-  font-size: 11px;
-  font-weight: 800;
-  line-height: 1.15;
-  white-space: nowrap;
-}
-
-.status-chip.tone-success {
-  border-color: rgba(22, 163, 74, 0.2);
-  background: #eaf8ef;
-  color: #166534;
-}
-
-.status-chip.tone-active {
-  border-color: rgba(37, 99, 235, 0.2);
-  background: #edf4ff;
-  color: #1e40af;
-}
-
-.status-chip.tone-warning {
-  border-color: rgba(217, 119, 6, 0.24);
-  background: #fff7df;
-  color: #92400e;
 }
 
 .settings-grid {
@@ -2787,41 +2775,6 @@ body {
 .code-row small {
   color: #64748b;
   font-size: 12px;
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-}
-
-.tone-success {
-  border-color: rgba(22, 163, 74, 0.2);
-  background: #eaf8ef;
-  color: #166534;
-}
-
-.status-dot.tone-success {
-  background: var(--success);
-}
-
-.tone-active {
-  border-color: rgba(37, 99, 235, 0.2);
-  background: #edf4ff;
-  color: #1e40af;
-}
-
-.status-dot.tone-active {
-  background: var(--active);
-}
-
-.tone-warning {
-  border-color: rgba(217, 119, 6, 0.24);
-  background: #fff7df;
-  color: #92400e;
-}
-
-.status-dot.tone-warning {
-  background: var(--warning);
 }
 
 .micro-button,
