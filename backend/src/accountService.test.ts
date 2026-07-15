@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updateSiteAccountId } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 
@@ -166,6 +166,16 @@ test('confirmed document rules are marked verified', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'nigeria', documentType: 'nin', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(item?.documentQuality, 'verified');
   assert.match(item?.documentValue ?? '', /^\d{11}$/);
+  assert.match(item?.phone ?? '', /^\+23480\d{8}$/);
+});
+
+test('phone can be manually edited after generation', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'nigeria', documentType: 'nin', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const updated = updatePhone(item!.id, 1, ' +234 812 345 6789 ');
+  assert.equal(updated?.phone, '+234 812 345 6789');
+  assert.match(updated?.fullProfileText ?? '', /Phone: \+234 812 345 6789/);
+
+  assert.throws(() => updatePhone(item!.id, 1, '123'), /Phone must contain 6 to 18 digits/);
 });
 
 test('geo rules expose document options without registration URLs', async () => {

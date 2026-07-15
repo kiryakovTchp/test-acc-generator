@@ -259,6 +259,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [sortMode, setSortMode] = useState<'newest' | 'oldest'>('newest');
   const [accountGeoFilter, setAccountGeoFilter] = useState('all');
   const [siteAccountIdDraft, setSiteAccountIdDraft] = useState('');
+  const [phoneDraft, setPhoneDraft] = useState('');
   const [tempMailbox, setTempMailbox] = useState<TempMailbox | null>(null);
   const [tempMailboxInbox, setTempMailboxInbox] = useState<MailboxInbox | null>(null);
   const [isRefreshingTempMailbox, setIsRefreshingTempMailbox] = useState(false);
@@ -401,6 +402,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
   }, [detail?.id, detail?.siteAccountId]);
+
+  useEffect(() => {
+    setPhoneDraft(detail?.phone ?? '');
+  }, [detail?.id, detail?.phone]);
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -934,6 +939,21 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
   }
 
+  async function savePhoneForDetail() {
+    if (!detail || phoneDraft.trim() === (detail.phone ?? '')) return;
+    setError('');
+    try {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/phone?debug=1`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ phone: phoneDraft }),
+      });
+      setDetail(updated);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to save phone');
+    }
+  }
+
   async function saveBalanceStatus(id: number, balanceStatus: AccountBalanceStatus) {
     setError('');
     setHistory((items) => items.map((item) => item.id === id ? { ...item, balanceStatus } : item));
@@ -1295,16 +1315,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                    <InspectorRow
-                      label="Phone"
-                      value={detail.phone}
+                    <PhoneEditField
+                      value={phoneDraft}
+                      canEdit={detail.createdByUserId === user.id}
+                      isSaving={phoneDraft.trim() !== (detail.phone ?? '')}
+                      isRegenerating={isRegeneratingPhone}
+                      onChange={setPhoneDraft}
+                      onSave={() => void savePhoneForDetail()}
+                      onRegenerate={() => void regeneratePhoneForDetail()}
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
-                      action={(
-                        <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
-                          <RefreshIcon />
-                        </button>
-                      )}
                     />
                     <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
@@ -1500,16 +1520,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                    <InspectorRow
-                      label="Phone"
-                      value={detail.phone}
+                    <PhoneEditField
+                      value={phoneDraft}
+                      canEdit={detail.createdByUserId === user.id}
+                      isSaving={phoneDraft.trim() !== (detail.phone ?? '')}
+                      isRegenerating={isRegeneratingPhone}
+                      onChange={setPhoneDraft}
+                      onSave={() => void savePhoneForDetail()}
+                      onRegenerate={() => void regeneratePhoneForDetail()}
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
-                      action={(
-                        <button className="micro-button icon-copy-button" onClick={regeneratePhoneForDetail} disabled={isRegeneratingPhone} aria-label="Regenerate phone" title="Regenerate phone">
-                          <RefreshIcon />
-                        </button>
-                      )}
                     />
                     <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
@@ -2884,6 +2904,62 @@ function BalanceStatusSelect({ value, onChange }: { value: AccountBalanceStatus;
         <option key={item.value} value={item.value}>{item.label}</option>
       ))}
     </select>
+  );
+}
+
+function PhoneEditField({
+  value,
+  canEdit,
+  isSaving,
+  isRegenerating,
+  onChange,
+  onSave,
+  onRegenerate,
+  onCopy,
+  copied,
+}: {
+  value: string;
+  canEdit: boolean;
+  isSaving: boolean;
+  isRegenerating: boolean;
+  onChange: (value: string) => void;
+  onSave: () => void;
+  onRegenerate: () => void;
+  onCopy: () => void;
+  copied: boolean;
+}) {
+  return (
+    <label className="account-id-field">
+      <span>Phone</span>
+      <div>
+        <input
+          className="input-field compact"
+          value={value}
+          onBlur={canEdit ? onSave : undefined}
+          onChange={(event) => onChange(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') {
+              event.currentTarget.blur();
+            }
+          }}
+          placeholder="Paste phone number"
+          readOnly={!canEdit}
+        />
+        <div className="inline-actions">
+          {canEdit ? (
+            <>
+              <button type="button" className="micro-button" onClick={onSave} disabled={!isSaving}>Save</button>
+              <button type="button" className="micro-button icon-copy-button" onClick={onRegenerate} disabled={isRegenerating} aria-label="Regenerate phone" title="Regenerate phone">
+                <RefreshIcon />
+              </button>
+            </>
+          ) : null}
+          <button type="button" className="micro-button icon-copy-button" onClick={onCopy} aria-label="Copy Phone" title={copied ? 'Copied' : 'Copy'}>
+            {copied ? <CheckIcon /> : <CopyIcon />}
+          </button>
+        </div>
+      </div>
+    </label>
   );
 }
 
