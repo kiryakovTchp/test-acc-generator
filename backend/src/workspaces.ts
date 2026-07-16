@@ -1,6 +1,7 @@
 import db, { assertWorkspaceAccess } from './db.js';
 import { ApiError } from './limits.js';
 import { getWorkspaceRole, type WorkspaceRole } from './permissions.js';
+import { recordActivity } from './activity.js';
 
 export interface WorkspaceResponse {
   id: number;
@@ -69,6 +70,16 @@ export function createWorkspace(userId: number, payload: any): WorkspaceResponse
     VALUES (?)
   `).run(workspaceId);
 
+  recordActivity({
+    workspaceId,
+    userId,
+    eventType: 'workspace_created',
+    entityType: 'workspace',
+    entityId: workspaceId,
+    summary: `Created workspace ${name}`,
+    metadata: { name },
+  });
+
   return getWorkspaceForUser(userId, workspaceId);
 }
 
@@ -124,6 +135,15 @@ export function updateWorkspaceStatus(userId: number, workspaceId: number, paylo
   if (!updated) {
     throw new ApiError('workspace_not_found', 'Workspace not found', 404);
   }
+  recordActivity({
+    workspaceId,
+    userId,
+    eventType: status === 'archived' ? 'workspace_archived' : 'workspace_restored',
+    entityType: 'workspace',
+    entityId: workspaceId,
+    summary: status === 'archived' ? `Archived workspace ${updated.name}` : `Restored workspace ${updated.name}`,
+    metadata: { status, name: updated.name },
+  });
   return updated;
 }
 

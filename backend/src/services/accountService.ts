@@ -4,6 +4,7 @@ import type { GeoRule, DocumentQuality, PersonaKey, Role, AccountBalanceStatus }
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
+import { recordActivity } from '../activity.js';
 
 const rules = geoRules as unknown as GeoRule[];
 const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
@@ -91,7 +92,23 @@ export async function generateAccount(input: {
   );
 
   trimHistoryForWorkspace(input.userId, workspaceId);
-  return getHistoryDetail(Number(result.lastInsertRowid), input.userId, input.includeDebug, workspaceId);
+  const accountId = Number(result.lastInsertRowid);
+  recordActivity({
+    workspaceId,
+    userId: input.userId,
+    eventType: 'account_generated',
+    entityType: 'account',
+    entityId: accountId,
+    summary: `Generated ${geo.label} ${input.documentType} test user`,
+    metadata: {
+      geoKey: geo.key,
+      geoLabel: geo.label,
+      documentType: input.documentType,
+      role: input.role,
+      inboxStatus: hydratedInbox.status,
+    },
+  });
+  return getHistoryDetail(accountId, input.userId, input.includeDebug, workspaceId);
 }
 
 export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0, includeDebug = false, workspaceId?: number) {
@@ -156,6 +173,15 @@ export function updateAccountBalanceStatus(id: number, userId: number, balanceSt
       AND (created_by_user_id = ? OR user_id = ?)
   `).run(normalized, id, resolvedWorkspaceId, userId, userId, userId);
   if (result.changes === 0) return null;
+  recordActivity({
+    workspaceId: resolvedWorkspaceId,
+    userId,
+    eventType: 'balance_status_changed',
+    entityType: 'account',
+    entityId: id,
+    summary: `Set balance status to ${balanceStatusLabel(normalized)}`,
+    metadata: { balanceStatus: normalized },
+  });
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
@@ -365,6 +391,15 @@ export function updateHistorySharing(id: number, userId: number, sharedWithWorks
       AND (created_by_user_id = ? OR user_id = ?)
   `).run(sharedWithWorkspace ? 1 : 0, sharedWithWorkspace ? 1 : 0, id, resolvedWorkspaceId, userId, userId, userId);
   if (result.changes === 0) return null;
+  recordActivity({
+    workspaceId: resolvedWorkspaceId,
+    userId,
+    eventType: sharedWithWorkspace ? 'account_shared' : 'account_unshared',
+    entityType: 'account',
+    entityId: id,
+    summary: sharedWithWorkspace ? 'Shared account with workspace' : 'Made account private',
+    metadata: { sharedWithWorkspace },
+  });
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 

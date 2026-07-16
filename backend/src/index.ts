@@ -14,6 +14,7 @@ import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, update
 import { createWorkspaceInvite, getPublicInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
 import { getWorkspaceAlerts, getWorkspaceAnalytics } from './monitoring.js';
 import { createWorkspace, getWorkspaceForUser, listWorkspaces, updateWorkspaceStatus } from './workspaces.js';
+import { listActivityEvents, recordActivity } from './activity.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -157,11 +158,19 @@ app.post('/auth/logout', auth, (req, res) => {
 });
 
 app.post('/auth/logout-everywhere', auth, (req, res) => {
-  db.prepare(`
+  const result = db.prepare(`
     UPDATE sessions
     SET revoked_at = CURRENT_TIMESTAMP
     WHERE user_id = ? AND revoked_at IS NULL
   `).run((req as any).user.userId);
+  recordActivity({
+    workspaceId: (req as any).user.workspaceId,
+    userId: (req as any).user.userId,
+    eventType: 'sessions_revoked',
+    entityType: 'session',
+    summary: 'Logged out everywhere',
+    metadata: { revokedCount: result.changes },
+  });
   clearSessionCookie(res);
   res.status(204).send();
 });
@@ -190,11 +199,22 @@ app.get('/auth/sessions', auth, (req, res) => {
 
 app.delete('/auth/sessions/:id', auth, (req, res) => {
   const sessionId = Number(req.params.id);
-  db.prepare(`
+  const result = db.prepare(`
     UPDATE sessions
     SET revoked_at = CURRENT_TIMESTAMP
     WHERE id = ? AND user_id = ?
   `).run(sessionId, (req as any).user.userId);
+  if (result.changes > 0) {
+    recordActivity({
+      workspaceId: (req as any).user.workspaceId,
+      userId: (req as any).user.userId,
+      eventType: 'session_revoked',
+      entityType: 'session',
+      entityId: sessionId,
+      summary: sessionId === (req as any).user.sessionId ? 'Revoked current session' : 'Revoked another session',
+      metadata: { sessionId, current: sessionId === (req as any).user.sessionId },
+    });
+  }
   if (sessionId === (req as any).user.sessionId) {
     clearSessionCookie(res);
   }
@@ -240,6 +260,14 @@ app.patch('/auth/password', auth, (req, res) => {
     SET revoked_at = CURRENT_TIMESTAMP
     WHERE user_id = ? AND id != ? AND revoked_at IS NULL
   `).run((req as any).user.userId, (req as any).user.sessionId ?? 0);
+  recordActivity({
+    workspaceId: (req as any).user.workspaceId,
+    userId: (req as any).user.userId,
+    eventType: 'password_changed',
+    entityType: 'user',
+    entityId: (req as any).user.userId,
+    summary: 'Changed account password',
+  });
   res.status(204).send();
 });
 
@@ -298,6 +326,14 @@ app.get('/alerts', auth, (req, res) => {
 
 app.get('/analytics/summary', auth, (req, res) => {
   res.json({ summary: getWorkspaceAnalytics((req as any).user.workspaceId, (req as any).user.userId) });
+});
+
+app.get('/activity', auth, (req, res) => {
+  try {
+    res.json({ items: listActivityEvents((req as any).user.workspaceId, (req as any).user.userId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to load activity');
+  }
 });
 
 app.get('/user/settings', auth, (req, res) => {
