@@ -16,11 +16,7 @@ export class FallbackEmailProvider implements EmailProvider {
   }
 
   async fetchInbox(address: string, password: string, waitMs = 0): Promise<InboxMessage[]> {
-    try {
-      return await this.primary.fetchInbox(address, password, waitMs);
-    } catch {
-      return this.fallback.fetchInbox(address, password, waitMs);
-    }
+    return this.primary.fetchInbox(address, password, waitMs);
   }
 
   async checkHealth() {

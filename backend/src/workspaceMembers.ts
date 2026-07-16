@@ -40,8 +40,9 @@ export function listWorkspaceMembers(workspaceId: number, userId: number) {
 }
 
 export function addWorkspaceMember(workspaceId: number, actorUserId: number, payload: any) {
-  assertCanManageMembers(workspaceId, actorUserId);
+  const actorRole = assertCanManageMembers(workspaceId, actorUserId);
   const role = normalizeWorkspaceRole(payload?.role, 'member');
+  assertCanAssignRole(actorRole, role);
   const lookup = String(payload?.login ?? payload?.email ?? payload?.username ?? '').trim();
   if (!lookup) {
     throw new ApiError('member_lookup_required', 'User login, email, or username is required', 400);
@@ -80,9 +81,11 @@ export function addWorkspaceMember(workspaceId: number, actorUserId: number, pay
 }
 
 export function updateWorkspaceMemberRole(workspaceId: number, actorUserId: number, targetUserId: number, payload: any) {
-  assertCanManageMembers(workspaceId, actorUserId);
+  const actorRole = assertCanManageMembers(workspaceId, actorUserId);
   const role = normalizeWorkspaceRole(payload?.role, 'member');
   assertMemberExists(workspaceId, targetUserId);
+  const targetRole = getMemberRole(workspaceId, targetUserId);
+  assertCanMutateRole(actorRole, targetRole, role);
   if (role !== 'owner') {
     assertNotLastOwner(workspaceId, targetUserId);
   }
@@ -106,8 +109,10 @@ export function updateWorkspaceMemberRole(workspaceId: number, actorUserId: numb
 }
 
 export function removeWorkspaceMember(workspaceId: number, actorUserId: number, targetUserId: number) {
-  assertCanManageMembers(workspaceId, actorUserId);
+  const actorRole = assertCanManageMembers(workspaceId, actorUserId);
   assertMemberExists(workspaceId, targetUserId);
+  const targetRole = getMemberRole(workspaceId, targetUserId);
+  assertCanMutateRole(actorRole, targetRole, null);
   assertNotLastOwner(workspaceId, targetUserId);
 
   db.prepare(`
@@ -128,7 +133,7 @@ export function removeWorkspaceMember(workspaceId: number, actorUserId: number, 
 }
 
 function assertCanManageMembers(workspaceId: number, userId: number) {
-  assertWorkspaceRole(userId, workspaceId, ['owner', 'admin'], 'workspace_members_forbidden', 'Workspace members require owner or admin access');
+  return assertWorkspaceRole(userId, workspaceId, ['owner', 'admin'], 'workspace_members_forbidden', 'Workspace members require owner or admin access');
 }
 
 function assertMemberExists(workspaceId: number, userId: number) {
@@ -154,6 +159,31 @@ function assertNotLastOwner(workspaceId: number, userId: number) {
 
   if (row.targetRole === 'owner' && row.ownerCount <= 1) {
     throw new ApiError('last_owner_required', 'Workspace must keep at least one owner', 400);
+  }
+}
+
+function getMemberRole(workspaceId: number, userId: number) {
+  const row = db.prepare(`
+    SELECT role
+    FROM workspace_members
+    WHERE workspace_id = ? AND user_id = ?
+    LIMIT 1
+  `).get(workspaceId, userId) as { role: WorkspaceRole } | undefined;
+  return row?.role ?? null;
+}
+
+function assertCanAssignRole(actorRole: WorkspaceRole, targetRole: WorkspaceRole) {
+  if (targetRole === 'owner' && actorRole !== 'owner') {
+    throw new ApiError('owner_role_required', 'Only workspace owners can assign the owner role', 403);
+  }
+}
+
+function assertCanMutateRole(actorRole: WorkspaceRole, currentTargetRole: WorkspaceRole | null, nextTargetRole: WorkspaceRole | null) {
+  if (actorRole === 'owner') {
+    return;
+  }
+  if (currentTargetRole === 'owner' || nextTargetRole === 'owner') {
+    throw new ApiError('owner_role_required', 'Only workspace owners can change owner membership', 403);
   }
 }
 

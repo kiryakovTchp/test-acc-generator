@@ -6,7 +6,7 @@ import { MailTmProvider } from './providers/mailTmProvider.js';
 import { MailGwProvider } from './providers/mailGwProvider.js';
 import { FallbackEmailProvider } from './providers/fallbackEmailProvider.js';
 import type { EmailProvider } from './providers/emailProvider.js';
-import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
@@ -24,6 +24,8 @@ const port = Number(process.env.PORT ?? 4000);
 const isProduction = process.env.NODE_ENV === 'production';
 const jwtSecret = resolveJwtSecret();
 const accessTokenTtl = (process.env.ACCESS_TOKEN_TTL ?? '30m') as SignOptions['expiresIn'];
+const jwtIssuer = process.env.JWT_ISSUER ?? 'test-account-generator';
+const jwtAudience = process.env.JWT_AUDIENCE ?? 'test-account-generator-ui';
 const sessionDays = Number(process.env.SESSION_DAYS ?? 30);
 const registrationMode = process.env.REGISTRATION_MODE ?? 'disabled';
 const mailTmProvider = new MailTmProvider();
@@ -38,7 +40,15 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
   const token = req.headers.authorization?.replace('Bearer ', '');
   if (!token) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    const decoded = jwt.verify(token, jwtSecret) as { userId: number; login: string; role: Role; sessionId?: number; workspaceId?: number };
+    const decoded = jwt.verify(token, jwtSecret, {
+      algorithms: ['HS256'],
+      issuer: jwtIssuer,
+      audience: jwtAudience,
+    }) as { userId: number; login: string; role: Role; sessionId?: number; workspaceId?: number };
+    if (!Number.isInteger(decoded.sessionId) || Number(decoded.sessionId) <= 0) {
+      return res.status(401).json({ error: 'Session required' });
+    }
+    const sessionId = Number(decoded.sessionId);
     const user = db.prepare('SELECT id, login, role, status FROM users WHERE id = ? OR login = ? LIMIT 1').get(decoded.userId, decoded.login) as { id: number; login: string; role: Role; status: string } | undefined;
     if (!user) {
       return res.status(401).json({ error: 'Unauthorized' });
@@ -46,7 +56,7 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
     if (user.status !== 'active') {
       return res.status(403).json({ error: 'User is not active' });
     }
-    if (decoded.sessionId && !isSessionActive(decoded.sessionId, user.id)) {
+    if (!isSessionActive(sessionId, user.id)) {
       return res.status(401).json({ error: 'Session expired' });
     }
     const workspaceId = decoded.workspaceId ?? getDefaultWorkspaceForUser(user.id);
@@ -54,7 +64,7 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
     if (!workspaceRole) {
       return res.status(403).json({ error: 'Workspace access denied', code: 'workspace_access_denied' });
     }
-    (req as any).user = { userId: user.id, login: user.login, role: user.role, workspaceRole, sessionId: decoded.sessionId ?? null, workspaceId };
+    (req as any).user = { userId: user.id, login: user.login, role: user.role, workspaceRole, sessionId, workspaceId };
     next();
   } catch {
     res.status(401).json({ error: 'Unauthorized' });
@@ -492,7 +502,8 @@ app.post('/mailboxes/inbox', auth, async (req, res) => {
       'inbox_refresh_limit_reached',
       'Inbox refresh limit reached',
     );
-    const inbox = await fallbackEmailProvider.fetchInbox(address, password, waitMs);
+    const provider = getMailboxReadProvider(req.body?.provider ?? req.body?.mailboxProvider ?? preciseMailboxProviderOrUndefined(settings.mailbox_provider));
+    const inbox = await provider.fetchInbox(address, password, waitMs);
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(buildInboxPayload(inbox));
   } catch (error) {
@@ -514,7 +525,10 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
       'inbox_refresh_limit_reached',
       'Inbox refresh limit reached',
     );
-    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, fallbackEmailProvider, waitMs, includeDebug, (req as any).user.workspaceId);
+    const historyId = Number(req.params.id);
+    const mailboxProvider = getRefreshMailboxProviderKey(historyId, (req as any).user.userId, (req as any).user.workspaceId);
+    if (!mailboxProvider) return res.status(404).json({ error: 'Not found' });
+    const item = await refreshInbox(historyId, (req as any).user.userId, getMailboxReadProvider(mailboxProvider), waitMs, includeDebug, (req as any).user.workspaceId);
     if (!item) return res.status(404).json({ error: 'Not found' });
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(item);
@@ -607,6 +621,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
       role: role === 'admin' ? 'admin' : 'user',
       persona: isPersona(persona) ? persona : 'standard_user',
       emailProvider: getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)),
+      emailProviderForAccount: getMailboxReadProvider,
       includeDebug: req.query.debug === '1',
     });
     recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, 1);
@@ -638,6 +653,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
         role: role === 'admin' ? 'admin' : 'user',
         persona: isPersona(persona) ? persona : 'standard_user',
         emailProvider: getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)),
+        emailProviderForAccount: getMailboxReadProvider,
         includeDebug: false,
       }));
     }
@@ -680,7 +696,11 @@ function buildAuthResponse(user: { id: number; login: string; role: Role; email?
   if (!workspaceRole) {
     throw new ApiError('workspace_access_denied', 'Workspace access denied', 403);
   }
-  const token = jwt.sign({ userId: user.id, login: user.login, role: user.role, sessionId, workspaceId }, jwtSecret, { expiresIn: accessTokenTtl });
+  const token = jwt.sign(
+    { userId: user.id, login: user.login, role: user.role, sessionId, workspaceId },
+    jwtSecret,
+    { expiresIn: accessTokenTtl, issuer: jwtIssuer, audience: jwtAudience, algorithm: 'HS256' },
+  );
   return {
     token,
     user: {
@@ -821,6 +841,16 @@ function getEmailProvider(providerKey: string | undefined): EmailProvider {
   if (providerKey === 'mail_gw') return mailGwProvider;
   if (providerKey === 'mail_tm_mail_gw_fallback') return fallbackEmailProvider;
   return mailTmProvider;
+}
+
+function getMailboxReadProvider(providerKey: string | undefined): EmailProvider {
+  if (providerKey === 'mail_gw') return mailGwProvider;
+  if (providerKey === 'mail_tm') return mailTmProvider;
+  throw new ApiError('mailbox_provider_required', 'Mailbox provider is required for inbox refresh', 400);
+}
+
+function preciseMailboxProviderOrUndefined(providerKey: string | undefined) {
+  return providerKey === 'mail_tm' || providerKey === 'mail_gw' ? providerKey : undefined;
 }
 
 function resolveMailboxProvider(candidate: unknown, fallback: string | undefined) {
