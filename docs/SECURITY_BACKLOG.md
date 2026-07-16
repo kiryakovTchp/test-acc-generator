@@ -115,21 +115,21 @@ Acceptance: fallback is used only during mailbox creation; refresh uses stored p
 
 ### SEC-103 - Add auth rate limiting and async password verification
 
-Status: planned
+Status: implemented in second security remediation pass
 Owner: Developer
 Impact: login/register/refresh can be brute-forced and synchronous `scryptSync` can block the event loop.
 Acceptance: rate limits by IP and normalized login; password length capped; password hashing/verification does not block the event loop; failed auth events are audited.
 
 ### SEC-104 - Make usage reservation atomic
 
-Status: planned
+Status: implemented in second security remediation pass
 Owner: Developer
 Impact: concurrent requests can bypass generation/mailbox limits.
-Acceptance: quota is reserved in a SQLite transaction before external calls; tests cover parallel requests.
+Acceptance: quota is reserved in a SQLite transaction before external calls; tests cover atomic reservation behavior.
 
 ### SEC-105 - Add security headers and no-store API caching
 
-Status: planned
+Status: implemented operationally and in backend
 Owner: Developer
 Impact: missing headers increase XSS/clickjacking/token leakage risk.
 Acceptance: Helmet or equivalent headers; `X-Powered-By` removed; auth/history/mailbox APIs return `Cache-Control: no-store`.

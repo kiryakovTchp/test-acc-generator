@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
-import { hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
+import { hashPassword, hashPasswordAsync, hashSessionToken, newSessionToken, verifyPassword, verifyPasswordAsync } from './auth.js';
 import db from './db.js';
 
 const require = createRequire(import.meta.url);
@@ -16,6 +16,13 @@ test('password hashing verifies the original password and rejects another one', 
   assert.match(hash, /^scrypt:v1:/);
   assert.equal(verifyPassword('correct horse battery staple', hash), true);
   assert.equal(verifyPassword('wrong password', hash), false);
+});
+
+test('async password hashing verifies without the synchronous request path', async () => {
+  const hash = await hashPasswordAsync('async correct horse battery staple');
+  assert.match(hash, /^scrypt:v1:/);
+  assert.equal(await verifyPasswordAsync('async correct horse battery staple', hash), true);
+  assert.equal(await verifyPasswordAsync('wrong password', hash), false);
 });
 
 test('seed users are stored with password hashes instead of plaintext passwords', () => {
