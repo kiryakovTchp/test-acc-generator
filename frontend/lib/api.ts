@@ -126,7 +126,7 @@ export interface WorkspaceSettings {
   historyLimit: number;
   allowBulkGeneration: boolean;
   maxBulkCount: number;
-  mailboxProvider: string;
+  mailboxProvider: 'mail_tm' | 'mail_gw' | 'mail_tm_mail_gw_fallback';
   sharedAccountEditing: 'creator_only' | 'owner_admin';
   workspaceCreationPolicy: 'active_users' | 'owner_admin';
   accountsPerDay: number;

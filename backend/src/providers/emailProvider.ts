@@ -17,6 +17,7 @@ export interface InboxMessage {
 export interface EmailAccount {
   address: string;
   password: string;
+  provider?: string;
 }
 
 export interface EmailProvider {

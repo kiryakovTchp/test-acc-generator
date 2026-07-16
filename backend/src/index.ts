@@ -3,6 +3,9 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import type { SignOptions } from 'jsonwebtoken';
 import { MailTmProvider } from './providers/mailTmProvider.js';
+import { MailGwProvider } from './providers/mailGwProvider.js';
+import { FallbackEmailProvider } from './providers/fallbackEmailProvider.js';
+import type { EmailProvider } from './providers/emailProvider.js';
 import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
@@ -23,7 +26,9 @@ const jwtSecret = resolveJwtSecret();
 const accessTokenTtl = (process.env.ACCESS_TOKEN_TTL ?? '30m') as SignOptions['expiresIn'];
 const sessionDays = Number(process.env.SESSION_DAYS ?? 30);
 const registrationMode = process.env.REGISTRATION_MODE ?? 'disabled';
-const emailProvider = new MailTmProvider();
+const mailTmProvider = new MailTmProvider();
+const mailGwProvider = new MailGwProvider();
+const fallbackEmailProvider = new FallbackEmailProvider(mailTmProvider, mailGwProvider);
 const sessionCookieName = 'tag_session';
 
 app.use(cors({ credentials: true, origin: resolveCorsOrigin }));
@@ -448,7 +453,7 @@ app.post('/mailboxes/create', auth, async (req, res) => {
       'mailbox_limit_reached',
       'Daily mailbox creation limit reached',
     );
-    const mailbox = await emailProvider.createAccount();
+    const mailbox = await getEmailProvider(settings.mailbox_provider).createAccount();
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.mailboxCreated);
     res.json(mailbox);
   } catch (error) {
@@ -459,10 +464,11 @@ app.post('/mailboxes/create', auth, async (req, res) => {
 app.get('/mailboxes/health', auth, async (req, res) => {
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
-    if (!emailProvider.checkHealth) {
+    const provider = getEmailProvider(getWorkspaceSettings((req as any).user.workspaceId).mailbox_provider);
+    if (!provider.checkHealth) {
       return res.json({ ok: true, provider: 'mail_tm', message: 'Health check is not implemented for this provider' });
     }
-    res.json(await emailProvider.checkHealth());
+    res.json(await provider.checkHealth());
   } catch (error) {
     sendError(res, error, 'Mailbox provider health check failed');
   }
@@ -486,7 +492,7 @@ app.post('/mailboxes/inbox', auth, async (req, res) => {
       'inbox_refresh_limit_reached',
       'Inbox refresh limit reached',
     );
-    const inbox = await emailProvider.fetchInbox(address, password, waitMs);
+    const inbox = await fallbackEmailProvider.fetchInbox(address, password, waitMs);
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(buildInboxPayload(inbox));
   } catch (error) {
@@ -508,7 +514,7 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
       'inbox_refresh_limit_reached',
       'Inbox refresh limit reached',
     );
-    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, emailProvider, waitMs, includeDebug, (req as any).user.workspaceId);
+    const item = await refreshInbox(Number(req.params.id), (req as any).user.userId, fallbackEmailProvider, waitMs, includeDebug, (req as any).user.workspaceId);
     if (!item) return res.status(404).json({ error: 'Not found' });
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(item);
@@ -600,7 +606,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
       documentType,
       role: role === 'admin' ? 'admin' : 'user',
       persona: isPersona(persona) ? persona : 'standard_user',
-      emailProvider,
+      emailProvider: getEmailProvider(settings.mailbox_provider),
       includeDebug: req.query.debug === '1',
     });
     recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, 1);
@@ -631,7 +637,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
         documentType,
         role: role === 'admin' ? 'admin' : 'user',
         persona: isPersona(persona) ? persona : 'standard_user',
-        emailProvider,
+        emailProvider: getEmailProvider(settings.mailbox_provider),
         includeDebug: false,
       }));
     }
@@ -809,4 +815,10 @@ function sendError(res: express.Response, error: unknown, fallback: string) {
 
 function requireWorkspacePermission(req: express.Request, allowedRoles: WorkspaceRole[]) {
   return assertWorkspaceRole((req as any).user.userId, (req as any).user.workspaceId, allowedRoles);
+}
+
+function getEmailProvider(providerKey: string | undefined): EmailProvider {
+  if (providerKey === 'mail_gw') return mailGwProvider;
+  if (providerKey === 'mail_tm_mail_gw_fallback') return fallbackEmailProvider;
+  return mailTmProvider;
 }
