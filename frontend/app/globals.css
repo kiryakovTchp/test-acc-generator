@@ -1073,7 +1073,10 @@ select.input-field.badge-select {
   display: inline-block;
   width: fit-content;
   min-width: 0;
-  padding-right: 28px;
+  min-height: var(--badge-height);
+  padding: 3px 28px 3px 10px;
+  font-size: var(--badge-font-size);
+  line-height: 1;
 }
 
 .primary-button,
@@ -1155,13 +1158,13 @@ select.input-field.badge-select {
 .alert-card {
   display: flex;
   justify-content: space-between;
-  gap: 14px;
-  align-items: flex-start;
-  padding: 12px 14px;
+  gap: 12px;
+  align-items: center;
+  padding: 9px 12px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 4px;
   background: #fff;
-  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.035);
+  box-shadow: none;
 }
 
 .alert-card strong,
@@ -1170,15 +1173,15 @@ select.input-field.badge-select {
 }
 
 .alert-card strong {
-  margin-bottom: 3px;
-  font-size: 13px;
+  margin-bottom: 2px;
+  font-size: 12px;
   font-weight: 800;
 }
 
 .alert-card span {
   color: var(--muted);
-  font-size: 12px;
-  line-height: 1.45;
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .alert-card small {
@@ -1759,7 +1762,7 @@ body {
 
 .panel-header {
   align-items: center;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .panel-actions {
@@ -1769,14 +1772,25 @@ body {
 
 .filter-button,
 .copy-icon {
-  display: inline-grid;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   place-items: center;
   width: 30px;
+  min-width: 30px;
   height: 30px;
   border: 1px solid var(--border);
   border-radius: 3px;
+  padding: 0;
   background: #fff;
   color: #667085;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.filter-button {
+  width: auto;
+  padding: 0 10px;
 }
 
 .list-controls {
@@ -1784,10 +1798,64 @@ body {
   margin-bottom: 12px;
 }
 
+.accounts-header {
+  margin-bottom: 8px;
+}
+
+.accounts-header h2 {
+  color: #111827;
+  font-size: 15px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  min-height: 20px;
+  margin-left: 8px;
+  border: 1px solid #d8dee8;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.panel-header h2 .count-badge {
+  color: #475569;
+  font-size: 11px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.accounts-controls {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  background: #fbfcfe;
+}
+
+.account-search-field {
+  min-width: 260px;
+}
+
 .control-row {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
   gap: 8px;
+}
+
+.accounts-filter-row {
+  grid-template-columns: repeat(4, minmax(118px, auto));
+  justify-content: end;
 }
 
 .input-field,
@@ -1850,8 +1918,41 @@ body {
 
 .account-table {
   width: 100%;
-  min-width: 760px;
+  min-width: 980px;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.account-col-user {
+  width: 17%;
+}
+
+.account-col-geo {
+  width: 11%;
+}
+
+.account-col-email {
+  width: 24%;
+}
+
+.account-col-status {
+  width: 13%;
+}
+
+.account-col-balance {
+  width: 13%;
+}
+
+.account-col-scope {
+  width: 9%;
+}
+
+.account-col-created {
+  width: 12%;
+}
+
+.account-col-actions {
+  width: 92px;
 }
 
 .account-table th,
@@ -1883,6 +1984,7 @@ body {
 .account-table td strong,
 .account-table td span {
   display: block;
+  min-width: 0;
 }
 
 .account-table td strong {
@@ -1893,6 +1995,20 @@ body {
 .account-table td span {
   margin-top: 2px;
   color: var(--muted);
+}
+
+.account-table td {
+  overflow-wrap: anywhere;
+}
+
+.account-table .email-cell {
+  color: #334155;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.account-table td:nth-child(7) {
+  white-space: nowrap;
 }
 
 .account-table .badge,
@@ -3487,5 +3603,24 @@ kbd {
 
   .topbar-admin .usage-pill {
     min-width: 82px;
+  }
+}
+
+.workspace-grid.accounts-view .account-table {
+  min-width: 980px;
+}
+
+@media (max-width: 980px) {
+  .accounts-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .account-search-field {
+    min-width: 0;
+  }
+
+  .accounts-filter-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-content: stretch;
   }
 }

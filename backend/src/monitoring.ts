@@ -36,9 +36,9 @@ export function getWorkspaceAlerts(workspaceId: number, userId: number): AlertIt
     alerts.push({
       id: 'dataset-review-24h',
       tone: 'info',
-      title: 'Dataset under review',
-      message: `${reviewDocuments.count} generated identities in the last 24h used review or missing-rule document formats.`,
-      metric: `${reviewDocuments.count} review`,
+      title: `${reviewDocuments.count} generated ${reviewDocuments.count === 1 ? 'identity needs' : 'identities need'} review`,
+      message: 'Missing or unverified document format.',
+      metric: 'Review',
     });
   }
 
