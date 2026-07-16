@@ -1473,9 +1473,9 @@ body {
   position: sticky;
   top: 0;
   z-index: 30;
-  min-height: 58px;
+  min-height: 52px;
   margin: 0 -18px;
-  padding: 10px 20px;
+  padding: 8px 18px;
   align-items: center;
   border-bottom: 1px solid #18212e;
   background: var(--topbar);
@@ -1507,35 +1507,52 @@ body {
   color: white;
 }
 
-.icon-button,
-.env-select,
+.topbar-chip,
 .logout-button {
-  height: 34px;
+  height: 30px;
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 6px;
-  background: #16202d;
+  background: transparent;
   color: #dfe7f0;
   font-size: 12px;
 }
 
-.icon-button,
 .logout-button {
-  padding: 0 14px;
+  padding: 0 12px;
+  color: #b9c3d0;
 }
 
-.env-select {
+.logout-button:hover {
+  background: #16202d;
+  color: #fff;
+}
+
+.topbar-chip {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  min-width: 132px;
-  padding: 0 12px;
+  max-width: 180px;
+  min-width: 0;
+  padding: 0 10px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.env-select span {
+.topbar-chip span {
+  flex: 0 0 auto;
   width: 7px;
   height: 7px;
   border-radius: 999px;
   background: var(--success);
+}
+
+.topbar-chip strong {
+  min-width: 0;
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .usage-strip {
@@ -1981,6 +1998,14 @@ body {
   background: #edf7ff;
 }
 
+.account-table tr.is-saving td {
+  background: #fbfdff;
+}
+
+.account-table tr.is-saving .balance-status-select {
+  cursor: wait;
+}
+
 .account-table td strong,
 .account-table td span {
   display: block;
@@ -2027,6 +2052,11 @@ body {
 
 .account-table .balance-status-select {
   min-width: 112px;
+}
+
+.balance-status-select:disabled {
+  cursor: wait;
+  opacity: 0.72;
 }
 
 .sharing-control {
@@ -3055,6 +3085,32 @@ kbd {
   min-height: 116px;
 }
 
+.table-empty-state {
+  gap: 8px;
+  min-height: 220px;
+  border: 1px dashed #d8dee8;
+  background: #fbfcfe;
+}
+
+.table-empty-state h3 {
+  margin: 0;
+  color: #111827;
+  font-size: 14px;
+}
+
+.table-empty-state p {
+  max-width: 360px;
+  margin: 0;
+  line-height: 1.45;
+}
+
+.table-empty-state .micro-button {
+  margin-top: 4px;
+  background: #fff;
+  color: #334155;
+  text-decoration: none;
+}
+
 .mailbox-meta {
   display: grid;
   gap: 6px;
@@ -3323,8 +3379,7 @@ kbd {
     flex-wrap: wrap;
   }
 
-  .icon-button,
-  .env-select,
+  .topbar-chip,
   .logout-button {
     width: 100%;
     min-width: 0;
@@ -3573,8 +3628,7 @@ kbd {
     display: none;
   }
 
-  .topbar-admin .icon-button,
-  .topbar-admin .env-select:nth-of-type(2),
+  .topbar-admin .user-chip,
   .topbar-admin .logout-button {
     display: none;
   }
@@ -3585,7 +3639,7 @@ kbd {
     padding: 6px 8px;
   }
 
-  .topbar-admin .env-select {
+  .topbar-admin .workspace-chip {
     width: auto;
     min-width: 0;
     max-width: 148px;
@@ -3597,7 +3651,7 @@ kbd {
 }
 
 @media (max-width: 520px) {
-  .topbar-admin .env-select {
+  .topbar-admin .workspace-chip {
     display: none;
   }
 

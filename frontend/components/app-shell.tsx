@@ -206,6 +206,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [isRegeneratingPhone, setIsRegeneratingPhone] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
+  const [savingBalanceId, setSavingBalanceId] = useState<number | null>(null);
+  const [savingSharingId, setSavingSharingId] = useState<number | null>(null);
   const [inboxStatusLabel, setInboxStatusLabel] = useState('');
   const [accountSearch, setAccountSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | HistoryStatus>('all');
@@ -364,6 +366,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     ?? '';
   const showQuickActions = activeNav === 'main';
   const isWorkspaceBootstrapping = Boolean(token && user && (isWorkspaceLoading || !usageSummary));
+  const hasActiveAccountFilters = accountSearch.trim() !== ''
+    || statusFilter !== 'all'
+    || balanceFilter !== 'all'
+    || accountGeoFilter !== 'all';
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
@@ -974,6 +980,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   async function saveBalanceStatus(id: number, balanceStatus: AccountBalanceStatus) {
     setError('');
+    setSavingBalanceId(id);
     setHistory((items) => items.map((item) => item.id === id ? { ...item, balanceStatus } : item));
     if (detail?.id === id) {
       setDetail((current) => current ? { ...current, balanceStatus } : current);
@@ -993,11 +1000,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       if (detail?.id === id) {
         void loadDetail(id);
       }
+    } finally {
+      setSavingBalanceId((current) => current === id ? null : current);
     }
   }
 
   async function saveSharing(id: number, sharedWithWorkspace: boolean) {
     setError('');
+    setSavingSharingId(id);
     setHistory((items) => items.map((item) => item.id === id ? { ...item, sharedWithWorkspace } : item));
     if (detail?.id === id) {
       setDetail((current) => current ? { ...current, sharedWithWorkspace } : current);
@@ -1021,7 +1031,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       if (detail?.id === id) {
         void loadDetail(id);
       }
+    } finally {
+      setSavingSharingId((current) => current === id ? null : current);
     }
+  }
+
+  function clearAccountFilters() {
+    setAccountSearch('');
+    setStatusFilter('all');
+    setBalanceFilter('all');
+    setAccountGeoFilter('all');
   }
 
   async function copyValue(key: string, value: string) {
@@ -1224,9 +1243,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           </div>
           <div className="topbar-admin">
             {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
-            <button className="icon-button" title="Command menu">CMD K</button>
-            <div className="env-select"><span /> {currentWorkspace?.name ?? 'Workspace'}</div>
-            <div className="env-select">{user.login}</div>
+            <div className="topbar-chip workspace-chip" title={`Current workspace: ${currentWorkspace?.name ?? 'Workspace'}`}>
+              <span />
+              <strong>{currentWorkspace?.name ?? 'Workspace'}</strong>
+            </div>
+            <div className="topbar-chip user-chip" title={`Signed in as ${user.login}`}>{user.login}</div>
             <button className="logout-button" onClick={() => void logout()}>Logout</button>
           </div>
         </div>
@@ -1311,7 +1332,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
-              }) : <div className="empty-state">No test users match the current filters.</div>}
+              }) : (
+                <AccountsEmptyState
+                  hasHistory={history.length > 0}
+                  hasFilters={hasActiveAccountFilters}
+                  onClearFilters={clearAccountFilters}
+                />
+              )}
             </div>
             <Link className="view-all-button" href="/accounts">View all test users</Link>
           </section>
@@ -1351,10 +1378,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                         <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
                       </div>
                     </label>
-                    <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <SharingField
                       item={detail}
                       canManage={detail.createdByUserId === user.id}
+                      isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
                     />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
@@ -1501,22 +1529,23 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       const rowStatus = mapHistoryStatus(item);
                       const selected = detail?.id === item.id;
                       return (
-                        <tr key={item.id} className={cn(selected && 'is-selected')}>
+                        <tr key={item.id} className={cn(selected && 'is-selected', savingBalanceId === item.id && 'is-saving')}>
                           <td>
                             <strong>{item.siteAccountId || item.username}</strong>
                             <span>{item.firstName} {item.lastName}</span>
                           </td>
                           <td>{item.geoLabel}</td>
                           <td className="email-cell">{item.email}</td>
-                          <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
+                          <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)} title={`Inbox status: ${statusLabel(rowStatus)}`}>{statusLabel(rowStatus)}</span></td>
                           <td>
                             <BalanceStatusSelect
                               value={item.balanceStatus}
+                              disabled={savingBalanceId === item.id}
                               onChange={(value) => void saveBalanceStatus(item.id, value)}
                             />
                           </td>
                           <td>
-                            <span className={cn('badge', `tone-${scopeTone(item)}`)}>{scopeLabel(item)}</span>
+                            <span className={cn('badge', `tone-${scopeTone(item)}`)} title={isWorkspaceShared(item) ? 'Visible to workspace members' : 'Visible only to creator'}>{scopeLabel(item)}</span>
                           </td>
                           <td>{formatCompactDate(item.createdAt)}</td>
                           <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>Details</button></td>
@@ -1525,7 +1554,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     })}
                   </tbody>
                 </table>
-              ) : <div className="empty-state">No test users match the current filters.</div>}
+              ) : (
+                <AccountsEmptyState
+                  hasHistory={history.length > 0}
+                  hasFilters={hasActiveAccountFilters}
+                  onClearFilters={clearAccountFilters}
+                />
+              )}
             </div>
           </section>
 
@@ -1559,10 +1594,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                         <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
                       </div>
                     </label>
-                    <BalanceStatusField value={detail.balanceStatus} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <SharingField
                       item={detail}
                       canManage={detail.createdByUserId === user.id}
+                      isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
                     />
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
@@ -2436,7 +2472,7 @@ function UtilityView({
                       <span>{workspace.id === currentWorkspace?.id ? 'Current workspace' : `Updated ${formatCompactDate(workspace.updatedAt)}`}</span>
                     </td>
                     <td><span className={cn('badge', isActive ? 'tone-success' : 'tone-warning')}>{workspace.status}</span></td>
-                    <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)}>{workspace.workspaceRole}</span></td>
+                    <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)} title={`Workspace role: ${workspace.workspaceRole}`}>{workspace.workspaceRole}</span></td>
                     <td>{workspace.memberCount}</td>
                     <td>
                       <button
@@ -2530,7 +2566,7 @@ function UtilityView({
             placeholder="email for invite"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} title={`Invite role: ${inviteRole}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2562,7 +2598,7 @@ function UtilityView({
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
                   <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
-                  <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)}>{invite.role}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)} title={`Invite role: ${invite.role}`}>{invite.role}</span></td>
                   <td>
                     <span className={cn('badge', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
                     {invite.acceptedByLogin ? <span>by {invite.acceptedByLogin}</span> : null}
@@ -2609,7 +2645,7 @@ function UtilityView({
             placeholder="login, email, or username"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} title={`Workspace role: ${memberRole}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2636,6 +2672,7 @@ function UtilityView({
                     <select
                       className={cn('input-field compact badge-select role-select', `tone-${roleTone(member.workspaceRole)}`)}
                       value={member.workspaceRole}
+                      title={`Workspace role: ${member.workspaceRole}`}
                       onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
                       disabled={!canManageWorkspaceSettings || isSavingSettings}
                     >
@@ -2645,7 +2682,7 @@ function UtilityView({
                       <option value="viewer">viewer</option>
                     </select>
                   </td>
-                  <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)}>{member.userRole}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)} title={`System role: ${member.userRole}`}>{member.userRole}</span></td>
                   <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
                 </tr>
               ))}
@@ -3050,21 +3087,68 @@ function InspectorGroup({ title, children }: { title: string; children: React.Re
   );
 }
 
-function BalanceStatusField({ value, onChange }: { value: AccountBalanceStatus; onChange: (value: AccountBalanceStatus) => void }) {
+function AccountsEmptyState({
+  hasHistory,
+  hasFilters,
+  onClearFilters,
+}: {
+  hasHistory: boolean;
+  hasFilters: boolean;
+  onClearFilters: () => void;
+}) {
+  if (hasHistory && hasFilters) {
+    return (
+      <div className="empty-state table-empty-state">
+        <h3>No matching test users</h3>
+        <p>Search or filters hide every account in this workspace.</p>
+        <button type="button" className="micro-button" onClick={onClearFilters}>Clear filters</button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="empty-state table-empty-state">
+      <h3>No test users yet</h3>
+      <p>Generate accounts from Main. They will appear here as table rows.</p>
+      <Link className="micro-button" href="/main">Open generator</Link>
+    </div>
+  );
+}
+
+function BalanceStatusField({
+  value,
+  onChange,
+  disabled = false,
+}: {
+  value: AccountBalanceStatus;
+  onChange: (value: AccountBalanceStatus) => void;
+  disabled?: boolean;
+}) {
   return (
     <label className="account-id-field">
       <span>Balance status</span>
-      <BalanceStatusSelect value={value} onChange={onChange} />
+      <BalanceStatusSelect value={value} disabled={disabled} onChange={onChange} />
     </label>
   );
 }
 
-function BalanceStatusSelect({ value, onChange }: { value: AccountBalanceStatus; onChange: (value: AccountBalanceStatus) => void }) {
+function BalanceStatusSelect({
+  value,
+  onChange,
+  disabled = false,
+}: {
+  value: AccountBalanceStatus;
+  onChange: (value: AccountBalanceStatus) => void;
+  disabled?: boolean;
+}) {
   return (
     <select
       className={cn('input-field compact badge-select balance-status-select', `tone-${balanceStatusTone(value)}`)}
       value={value}
       aria-label="Balance status"
+      aria-busy={disabled}
+      disabled={disabled}
+      title={`Balance status: ${balanceStatusLabel(value)}`}
       onClick={(event) => event.stopPropagation()}
       onChange={(event) => onChange(event.target.value as AccountBalanceStatus)}
     >
@@ -3131,11 +3215,21 @@ function PhoneEditField({
   );
 }
 
-function SharingField({ item, canManage, onToggle }: { item: Detail; canManage: boolean; onToggle: (shared: boolean) => void }) {
+function SharingField({
+  item,
+  canManage,
+  isSaving = false,
+  onToggle,
+}: {
+  item: Detail;
+  canManage: boolean;
+  isSaving?: boolean;
+  onToggle: (shared: boolean) => void;
+}) {
   return (
     <label className="account-id-field">
       <span>Workspace sharing</span>
-      <SharingControl item={item} canManage={canManage} onToggle={onToggle} />
+      <SharingControl item={item} canManage={canManage} isSaving={isSaving} onToggle={onToggle} />
     </label>
   );
 }
@@ -3143,24 +3237,26 @@ function SharingField({ item, canManage, onToggle }: { item: Detail; canManage: 
 function SharingControl({
   item,
   canManage,
+  isSaving = false,
   onToggle,
 }: {
   item: Pick<HistoryItem, 'createdByLogin' | 'sharedWithWorkspace'> | Pick<Detail, 'createdByLogin' | 'sharedWithWorkspace'>;
   canManage: boolean;
+  isSaving?: boolean;
   onToggle: (shared: boolean) => void;
 }) {
   const shared = isWorkspaceShared(item);
   return (
     <div className="sharing-control">
-      <span className={cn('badge', `tone-${scopeTone(item)}`)}>
+      <span className={cn('badge', `tone-${scopeTone(item)}`)} title={shared ? 'Visible to workspace members' : 'Visible only to creator'}>
         {scopeLabel(item)}
       </span>
       {canManage ? (
-        <button type="button" className="micro-button" onClick={(event) => {
+        <button type="button" className="micro-button" disabled={isSaving} onClick={(event) => {
           event.stopPropagation();
           onToggle(!shared);
         }}>
-          {shared ? 'Make private' : 'Share'}
+          {isSaving ? 'Saving' : shared ? 'Make private' : 'Share'}
         </button>
       ) : (
         <span className="sharing-owner">{item.createdByLogin ? `by ${item.createdByLogin}` : 'read only'}</span>

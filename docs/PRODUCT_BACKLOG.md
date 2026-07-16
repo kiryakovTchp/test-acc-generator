@@ -19,6 +19,7 @@ This file tracks product and engineering improvements that are not yet implement
 - Workspace creation policy setting: any active user or current workspace owner/admin only.
 - Granular shared account permission setting for owner/admin balance and inbox refresh on shared accounts.
 - Mailbox provider reliability pass: mail.tm/mail.gw provider selection, mail.tm -> mail.gw fallback mode, request timeout/retry, authenticated provider health check, and per-generation provider choice.
+- P3 UI polish pass for the console: removed the dead `CMD K` control, calmed topbar metadata, kept Test Users as a table with contained horizontal overflow, added account table empty states, badge tooltips, and row-level saving feedback.
 
 ## Not Planned
 
@@ -26,15 +27,11 @@ This file tracks product and engineering improvements that are not yet implement
 
 ## P3 - UI Polish
 
-Status: planned
+Status: mostly complete
 
 ### Candidate Improvements
 
-- replace text placeholders like `CMD K` with real command menu or remove it;
-- improve mobile table layout for Test Users;
-- add row-level loading state for Share/Make private;
-- add tooltips for scope badges and role badges;
-- add empty-state copy for first workspace creation.
+- continue visual refinement from real usage screenshots.
 
 ## P3 - Send Invite Emails
 
