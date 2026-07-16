@@ -146,11 +146,12 @@ Role summary:
 | Refresh inbox for own account | yes | yes | yes | no |
 | Change own account id / balance / phone | yes | yes | yes | no |
 | Share/unshare own account | yes | yes | yes | no |
+| Change balance / refresh inbox for shared accounts when enabled | yes | yes | no | no |
 | Manage workspace settings | yes | yes | no | no |
 | Manage members | yes | yes | no | no |
 | Manage invites | yes | yes | no | no |
 
-Note: a shared generated account is read-only for non-creators. A teammate can view and copy it, but cannot change account id, balance status, phone, inbox state, delete it, or unshare it.
+Note: a shared generated account is read-only for non-creators by default. When `workspace_settings.shared_account_editing` is `owner_admin`, workspace owners/admins can change balance status and refresh inbox for shared accounts. Account id, phone, delete, and share/unshare remain creator-only.
 
 ### Generated Account
 
@@ -176,6 +177,19 @@ The current user can see a generated account when:
 ```
 
 New generated accounts are private by default. The creator can share or make private again from the UI.
+
+### Workspace Settings
+
+Workspace settings include:
+
+- retention and history limits;
+- bulk generation limits;
+- usage quotas;
+- mailbox provider selection;
+- `shared_account_editing`: `creator_only` or `owner_admin`;
+- `workspace_creation_policy`: `active_users` or `owner_admin`.
+
+When workspace creation policy is `owner_admin`, only the current workspace owner/admin can create another workspace from that context.
 
 ### Invite
 
@@ -345,6 +359,7 @@ Authorization: Bearer <jwt>
 ### Mailboxes
 
 - `POST /mailboxes/create`
+- `GET /mailboxes/health`
 - `POST /mailboxes/inbox`
 
 ### Usage, Alerts, Analytics
@@ -439,6 +454,9 @@ Important env vars:
 - `MAIL_TM_BASE_URL`;
 - `MAIL_TM_INBOX_POLL_ATTEMPTS`;
 - `MAIL_TM_INBOX_POLL_DELAY_MS`;
+- `MAIL_TM_REQUEST_TIMEOUT_MS`;
+- `MAIL_TM_RETRY_ATTEMPTS`;
+- `MAIL_TM_RETRY_DELAY_MS`;
 - `GENERATION_INBOX_WAIT_MS`.
 
 ## Local Development
@@ -509,7 +527,7 @@ Recommended authenticated smoke:
 ## Known Constraints
 
 - Outbound invite email is not implemented yet; invite links must be copied manually.
-- Temporary mailbox delivery depends on `mail.tm` availability and may be flaky.
+- Temporary mailbox delivery depends on `mail.tm` availability; requests now use timeout/retry and expose an authenticated health check, but there is not yet a second fallback provider.
 - All generated identity data is synthetic and should be used only for QA/testing.
 - Some GEO datasets are verified while others are synthetic-pattern or missing-rule quality.
 - Frontend has focused Node unit tests for shared UI state helpers and Settings tab metadata; browser-level E2E coverage is still not implemented.

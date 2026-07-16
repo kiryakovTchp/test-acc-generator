@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import db from './db.js';
 import { createWorkspace, listWorkspaces, updateWorkspaceStatus } from './workspaces.js';
 import { listActivityEvents } from './activity.js';
+import { updateWorkspaceSettings } from './settings.js';
 
 test('active users can create and list additional workspaces', () => {
   const userId = createTestUser('workspace_create');
@@ -25,6 +26,22 @@ test('inactive users cannot create workspaces', () => {
     () => createWorkspace(userId, { name: 'Blocked' }),
     /Only active users can create workspaces/,
   );
+});
+
+test('workspace creation can be restricted to current workspace owner or admin', () => {
+  const ownerId = createTestUser('workspace_policy_owner');
+  const memberId = createTestUser('workspace_policy_member');
+  const workspace = createWorkspace(ownerId, { name: 'Policy Source' });
+  db.prepare('INSERT INTO workspace_members (workspace_id, user_id, role) VALUES (?, ?, ?)').run(workspace.id, memberId, 'member');
+  updateWorkspaceSettings(workspace.id, ownerId, { workspaceCreationPolicy: 'owner_admin' });
+
+  assert.throws(
+    () => createWorkspace(memberId, { name: 'Blocked child' }, workspace.id),
+    /Workspace creation requires owner or admin access/,
+  );
+
+  const created = createWorkspace(ownerId, { name: 'Allowed child' }, workspace.id);
+  assert.equal(created.workspaceRole, 'owner');
 });
 
 test('owners can archive and restore an extra workspace', () => {

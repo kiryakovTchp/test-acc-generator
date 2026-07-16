@@ -4,6 +4,11 @@ import { assertWorkspaceRole } from './permissions.js';
 import type { PersonaKey } from './types.js';
 
 const PERSONAS = ['standard_user', 'young_user', 'senior_user', 'male_user', 'female_user'];
+const SHARED_ACCOUNT_EDITING = ['creator_only', 'owner_admin'] as const;
+const WORKSPACE_CREATION_POLICIES = ['active_users', 'owner_admin'] as const;
+
+export type SharedAccountEditing = typeof SHARED_ACCOUNT_EDITING[number];
+export type WorkspaceCreationPolicy = typeof WORKSPACE_CREATION_POLICIES[number];
 
 export interface UserSettingsResponse {
   defaultGeo: string;
@@ -18,6 +23,8 @@ export interface WorkspaceSettingsResponse {
   allowBulkGeneration: boolean;
   maxBulkCount: number;
   mailboxProvider: string;
+  sharedAccountEditing: SharedAccountEditing;
+  workspaceCreationPolicy: WorkspaceCreationPolicy;
   accountsPerDay: number;
   mailboxCreatePerDay: number;
   inboxRefreshPerMinute: number;
@@ -66,6 +73,7 @@ export function getWorkspaceSettingsForApi(workspaceId: number): WorkspaceSettin
   ensureWorkspaceSettings(workspaceId);
   const row = db.prepare(`
     SELECT history_retention_days, history_limit, allow_bulk_generation, max_bulk_count, mailbox_provider,
+           shared_account_editing, workspace_creation_policy,
            accounts_per_day, mailbox_create_per_day, inbox_refresh_per_minute
     FROM workspace_settings
     WHERE workspace_id = ?
@@ -77,6 +85,8 @@ export function getWorkspaceSettingsForApi(workspaceId: number): WorkspaceSettin
     allowBulkGeneration: Boolean(row.allow_bulk_generation),
     maxBulkCount: clampInt(row.max_bulk_count, 1, 100, 25),
     mailboxProvider: row.mailbox_provider || 'mail_tm',
+    sharedAccountEditing: normalizeEnum(row.shared_account_editing, SHARED_ACCOUNT_EDITING, 'creator_only'),
+    workspaceCreationPolicy: normalizeEnum(row.workspace_creation_policy, WORKSPACE_CREATION_POLICIES, 'active_users'),
     accountsPerDay: clampInt(row.accounts_per_day, 0, 10000, 25),
     mailboxCreatePerDay: clampInt(row.mailbox_create_per_day, 0, 10000, 25),
     inboxRefreshPerMinute: clampInt(row.inbox_refresh_per_minute, 0, 1000, 10),
@@ -93,6 +103,8 @@ export function updateWorkspaceSettings(workspaceId: number, userId: number, pay
     allowBulkGeneration: typeof payload?.allowBulkGeneration === 'boolean' ? payload.allowBulkGeneration : current.allowBulkGeneration,
     maxBulkCount: clampInt(payload?.maxBulkCount, 1, 100, current.maxBulkCount),
     mailboxProvider: normalizeKey(payload?.mailboxProvider, current.mailboxProvider, 40),
+    sharedAccountEditing: normalizeEnum(payload?.sharedAccountEditing, SHARED_ACCOUNT_EDITING, current.sharedAccountEditing),
+    workspaceCreationPolicy: normalizeEnum(payload?.workspaceCreationPolicy, WORKSPACE_CREATION_POLICIES, current.workspaceCreationPolicy),
     accountsPerDay: clampInt(payload?.accountsPerDay, 0, 10000, current.accountsPerDay),
     mailboxCreatePerDay: clampInt(payload?.mailboxCreatePerDay, 0, 10000, current.mailboxCreatePerDay),
     inboxRefreshPerMinute: clampInt(payload?.inboxRefreshPerMinute, 0, 1000, current.inboxRefreshPerMinute),
@@ -105,6 +117,8 @@ export function updateWorkspaceSettings(workspaceId: number, userId: number, pay
         allow_bulk_generation = ?,
         max_bulk_count = ?,
         mailbox_provider = ?,
+        shared_account_editing = ?,
+        workspace_creation_policy = ?,
         accounts_per_day = ?,
         mailbox_create_per_day = ?,
         inbox_refresh_per_minute = ?,
@@ -116,6 +130,8 @@ export function updateWorkspaceSettings(workspaceId: number, userId: number, pay
     next.allowBulkGeneration ? 1 : 0,
     next.maxBulkCount,
     next.mailboxProvider,
+    next.sharedAccountEditing,
+    next.workspaceCreationPolicy,
     next.accountsPerDay,
     next.mailboxCreatePerDay,
     next.inboxRefreshPerMinute,
@@ -153,6 +169,10 @@ function ensureWorkspaceSettings(workspaceId: number) {
 function normalizeKey(value: unknown, fallback: string, maxLength: number) {
   const next = String(value ?? '').trim().slice(0, maxLength);
   return next || fallback;
+}
+
+function normalizeEnum<T extends readonly string[]>(value: unknown, allowed: T, fallback: T[number]): T[number] {
+  return allowed.includes(value as T[number]) ? value as T[number] : fallback;
 }
 
 function clampInt(value: unknown, min: number, max: number, fallback: number) {

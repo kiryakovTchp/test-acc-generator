@@ -225,6 +225,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [authSessions, setAuthSessions] = useState<AuthSession[]>([]);
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [accountStatus, setAccountStatus] = useState('Account ready');
+  const [mailProviderStatus, setMailProviderStatus] = useState('Provider not checked');
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -488,6 +489,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setError(err instanceof Error ? err.message : 'Failed to save workspace settings');
     } finally {
       setIsSavingSettings(false);
+    }
+  }
+
+  async function checkMailboxProviderHealth() {
+    setMailProviderStatus('Checking provider');
+    try {
+      const res = await apiFetch<{ ok: boolean; provider: string; message: string }>('/mailboxes/health', token);
+      setMailProviderStatus(res.ok ? res.message : `${res.provider} unavailable`);
+    } catch (err) {
+      setMailProviderStatus(err instanceof Error ? err.message : 'Provider check failed');
     }
   }
 
@@ -1626,9 +1637,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               confirmNewPassword={confirmNewPassword}
               setConfirmNewPassword={setConfirmNewPassword}
               authSessions={authSessions}
+              mailProviderStatus={mailProviderStatus}
               setWorkspaceSettings={setWorkspaceSettings}
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
+              onCheckMailboxProviderHealth={checkMailboxProviderHealth}
               onCreateWorkspace={createNewWorkspace}
               onUpdateWorkspaceLifecycle={updateWorkspaceLifecycle}
               onAddMember={addMember}
@@ -1855,9 +1868,11 @@ function UtilityView({
   confirmNewPassword,
   setConfirmNewPassword,
   authSessions,
+  mailProviderStatus,
   setWorkspaceSettings,
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
+  onCheckMailboxProviderHealth,
   onCreateWorkspace,
   onUpdateWorkspaceLifecycle,
   onAddMember,
@@ -1935,9 +1950,11 @@ function UtilityView({
   confirmNewPassword: string;
   setConfirmNewPassword: (value: string) => void;
   authSessions: AuthSession[];
+  mailProviderStatus: string;
   setWorkspaceSettings: (value: ServerWorkspaceSettings | null | ((current: ServerWorkspaceSettings | null) => ServerWorkspaceSettings | null)) => void;
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
+  onCheckMailboxProviderHealth: () => void;
   onCreateWorkspace: () => void;
   onUpdateWorkspaceLifecycle: (workspaceId: number, status: WorkspaceSummary['status']) => void;
   onAddMember: () => void;
@@ -2216,6 +2233,8 @@ function UtilityView({
     allowBulkGeneration: usageSummary?.settings.allowBulkGeneration ?? true,
     maxBulkCount: usageSummary?.settings.maxBulkCount ?? 25,
     mailboxProvider: 'mail_tm',
+    sharedAccountEditing: usageSummary?.settings.sharedAccountEditing === 'owner_admin' ? 'owner_admin' : 'creator_only',
+    workspaceCreationPolicy: usageSummary?.settings.workspaceCreationPolicy === 'owner_admin' ? 'owner_admin' : 'active_users',
     accountsPerDay: usageSummary?.limits.accountsPerDay.limit ?? 25,
     mailboxCreatePerDay: usageSummary?.limits.mailboxesPerDay.limit ?? 25,
     inboxRefreshPerMinute: usageSummary?.limits.inboxRefreshPerMinute.limit ?? 10,
@@ -2381,6 +2400,18 @@ function UtilityView({
               <option value="mail_tm">mail.tm</option>
             </select>
           </Field>
+          <Field label="Shared account editing">
+            <select className="input-field compact" value={editableWorkspaceSettings.sharedAccountEditing} onChange={(e) => updateWorkspaceDraft({ sharedAccountEditing: e.target.value as ServerWorkspaceSettings['sharedAccountEditing'] })}>
+              <option value="creator_only">Creator only</option>
+              <option value="owner_admin">Owner/admin can edit shared</option>
+            </select>
+          </Field>
+          <Field label="Workspace creation">
+            <select className="input-field compact" value={editableWorkspaceSettings.workspaceCreationPolicy} onChange={(e) => updateWorkspaceDraft({ workspaceCreationPolicy: e.target.value as ServerWorkspaceSettings['workspaceCreationPolicy'] })}>
+              <option value="active_users">Any active user</option>
+              <option value="owner_admin">Current owner/admin only</option>
+            </select>
+          </Field>
           <label className="settings-toggle">
             <input type="checkbox" checked={editableWorkspaceSettings.allowBulkGeneration} onChange={(e) => updateWorkspaceDraft({ allowBulkGeneration: e.target.checked })} />
             <span>Allow bulk generation</span>
@@ -2398,6 +2429,12 @@ function UtilityView({
           </Field>
         </div>
         {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
+        <div className="settings-actions">
+          <span>{mailProviderStatus}</span>
+          <button type="button" className="secondary-button" onClick={onCheckMailboxProviderHealth} disabled={isSavingSettings || !canManageWorkspaceSettings}>
+            Check mailbox provider
+          </button>
+        </div>
         <div className="settings-actions">
           <span>{canManageWorkspaceSettings ? 'Applies to everyone in this workspace.' : 'Workspace settings require owner or admin access.'}</span>
           <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings || !canManageWorkspaceSettings}>

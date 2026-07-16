@@ -1,5 +1,5 @@
 import db, { assertWorkspaceAccess } from './db.js';
-import { ApiError } from './limits.js';
+import { ApiError, getWorkspaceSettings } from './limits.js';
 import { getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 import { recordActivity } from './activity.js';
 
@@ -39,7 +39,7 @@ export function listWorkspaces(userId: number): WorkspaceResponse[] {
   `).all(userId, userId) as WorkspaceResponse[];
 }
 
-export function createWorkspace(userId: number, payload: any): WorkspaceResponse {
+export function createWorkspace(userId: number, payload: any, sourceWorkspaceId?: number): WorkspaceResponse {
   const name = normalizeWorkspaceName(payload?.name);
   if (!name) {
     throw new ApiError('workspace_name_required', 'Workspace name is required', 400);
@@ -54,6 +54,7 @@ export function createWorkspace(userId: number, payload: any): WorkspaceResponse
   if (!user || user.status !== 'active') {
     throw new ApiError('workspace_create_forbidden', 'Only active users can create workspaces', 403);
   }
+  assertWorkspaceCreationAllowed(userId, sourceWorkspaceId);
 
   const workspaceId = Number(db.prepare(`
     INSERT INTO workspaces (owner_user_id, name, status)
@@ -163,4 +164,14 @@ function normalizeWorkspaceName(value: unknown) {
 function normalizeWorkspaceStatus(value: unknown): 'active' | 'archived' {
   if (value === 'active' || value === 'archived') return value;
   throw new ApiError('invalid_workspace_status', 'Workspace status must be active or archived', 400);
+}
+
+function assertWorkspaceCreationAllowed(userId: number, sourceWorkspaceId?: number) {
+  if (!sourceWorkspaceId) return;
+  const settings = getWorkspaceSettings(sourceWorkspaceId);
+  if ((settings.workspace_creation_policy ?? 'active_users') !== 'owner_admin') return;
+  const role = getWorkspaceRole(userId, sourceWorkspaceId);
+  if (role !== 'owner' && role !== 'admin') {
+    throw new ApiError('workspace_create_forbidden', 'Workspace creation requires owner or admin access', 403);
+  }
 }

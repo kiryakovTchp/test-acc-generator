@@ -22,4 +22,5 @@ export interface EmailAccount {
 export interface EmailProvider {
   createAccount(): Promise<EmailAccount>;
   fetchInbox(address: string, password: string, waitMs?: number): Promise<InboxMessage[]>;
+  checkHealth?(): Promise<{ ok: boolean; provider: string; message: string }>;
 }
