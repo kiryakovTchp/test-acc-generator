@@ -235,6 +235,27 @@ test('generated history is linked to workspace and creator', async () => {
   assert.equal(row?.created_by_user_id, 1);
 });
 
+test('generated history records the mailbox provider used for creation', async () => {
+  const providerWithName: EmailProvider = {
+    async createAccount() {
+      return { address: 'stub@mail.gw', password: 'secret', provider: 'mail_gw' };
+    },
+    async fetchInbox() {
+      return [];
+    },
+  };
+
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: providerWithName });
+  assert.equal(item?.mailboxProvider, 'mail_gw');
+
+  const row = db.prepare(`
+    SELECT mailbox_provider
+    FROM account_history
+    WHERE id = ?
+  `).get(item!.id) as { mailbox_provider: string } | undefined;
+  assert.equal(row?.mailbox_provider, 'mail_gw');
+});
+
 test('workspace members see only their own account history until an account is shared', async () => {
   const ownerId = createTestUser('history_owner');
   const memberId = createTestUser('history_member');

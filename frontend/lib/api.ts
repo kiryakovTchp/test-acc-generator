@@ -47,6 +47,7 @@ export interface HistoryItem {
   documentType: string;
   documentIssueDate: string;
   documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
+  mailboxProvider?: 'mail_tm' | 'mail_gw' | 'mail_tm_mail_gw_fallback';
   inboxStatus?: 'waiting_for_email' | 'email_received' | 'no_email_found';
 }
 

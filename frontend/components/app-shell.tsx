@@ -15,7 +15,10 @@ type BrowserGenerationSettings = {
   bulkCount: number;
   persona: PersonaKey;
   accountRole: 'admin' | 'user';
+  mailboxProvider: MailboxProviderKey;
 };
+
+type MailboxProviderKey = 'mail_tm' | 'mail_gw' | 'mail_tm_mail_gw_fallback';
 
 interface Detail {
   id: number;
@@ -48,6 +51,7 @@ interface Detail {
   documentValue: string;
   documentIssueDate: string;
   documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
+  mailboxProvider?: MailboxProviderKey;
   fullProfileText: string;
   inbox: {
     status: 'waiting_for_email' | 'email_received' | 'no_email_found';
@@ -76,6 +80,12 @@ const PERSONAS: Array<{ value: PersonaKey; label: string }> = [
   { value: 'senior_user', label: 'Senior User · 55+' },
   { value: 'male_user', label: 'Male User' },
   { value: 'female_user', label: 'Female User' },
+];
+
+const MAILBOX_PROVIDER_OPTIONS: Array<{ value: MailboxProviderKey; label: string }> = [
+  { value: 'mail_tm', label: 'mail.tm' },
+  { value: 'mail_gw', label: 'mail.gw' },
+  { value: 'mail_tm_mail_gw_fallback', label: 'mail.tm -> mail.gw fallback' },
 ];
 
 const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: string }> = [
@@ -164,6 +174,14 @@ function isRole(value: unknown): value is 'admin' | 'user' {
   return value === 'admin' || value === 'user';
 }
 
+function isMailboxProviderKey(value: unknown): value is MailboxProviderKey {
+  return typeof value === 'string' && MAILBOX_PROVIDER_OPTIONS.some((item) => item.value === value);
+}
+
+function mailboxProviderLabel(value?: string) {
+  return MAILBOX_PROVIDER_OPTIONS.find((item) => item.value === value)?.label ?? 'mail.tm';
+}
+
 export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const activeNav = view;
   const [token, setToken] = useState<string>('');
@@ -177,6 +195,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [bulkCount, setBulkCount] = useState(5);
   const [persona, setPersona] = useState<PersonaKey>('standard_user');
   const [accountRole, setAccountRole] = useState<'admin' | 'user'>('user');
+  const [mailboxProvider, setMailboxProvider] = useState<MailboxProviderKey>('mail_tm');
+  const [hasStoredMailboxProvider, setHasStoredMailboxProvider] = useState(false);
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -252,6 +272,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         if (typeof parsed.documentType === 'string') setDocumentType(parsed.documentType);
         if (isPersonaKey(parsed.persona)) setPersona(parsed.persona);
         if (isRole(parsed.accountRole)) setAccountRole(parsed.accountRole);
+        if (isMailboxProviderKey(parsed.mailboxProvider)) {
+          setMailboxProvider(parsed.mailboxProvider);
+          setHasStoredMailboxProvider(true);
+        }
         if (typeof parsed.bulkCount === 'number') setBulkCount(Math.min(25, Math.max(1, parsed.bulkCount)));
       } catch {
         storage.removeItem(SETTINGS_STORAGE_KEY);
@@ -283,9 +307,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     if (!settingsReady) return;
     const storage = getBrowserStorage();
     if (!storage) return;
-    const settings: BrowserGenerationSettings = { selectedGeo, documentType: effectiveDocumentType, bulkCount, persona, accountRole };
+    const settings: BrowserGenerationSettings = { selectedGeo, documentType: effectiveDocumentType, bulkCount, persona, accountRole, mailboxProvider };
     storage.setItem(SETTINGS_STORAGE_KEY, JSON.stringify(settings));
-  }, [accountRole, bulkCount, documentType, effectiveDocumentType, persona, selectedGeo, settingsReady]);
+  }, [accountRole, bulkCount, documentType, effectiveDocumentType, mailboxProvider, persona, selectedGeo, settingsReady]);
 
   function selectGeo(nextGeoKey: string) {
     setSelectedGeo(nextGeoKey);
@@ -293,6 +317,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     if (nextGeo?.documentTypes.length) {
       setDocumentType(nextGeo.documentTypes[0]);
     }
+  }
+
+  function selectMailboxProvider(nextProvider: MailboxProviderKey) {
+    setMailboxProvider(nextProvider);
+    setHasStoredMailboxProvider(true);
   }
 
   useEffect(() => {
@@ -400,6 +429,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setWorkspaceMembers(workspaceMembersRes.members);
       setWorkspaceInvites(workspaceInvitesRes.invites);
       setAuthSessions(sessionsRes.sessions);
+      if (!hasStoredMailboxProvider && workspaceSettingsRes.settings?.mailboxProvider) {
+        setMailboxProvider(workspaceSettingsRes.settings?.mailboxProvider ?? 'mail_tm');
+      }
       if (!userSettings) {
         const defaultGeo = geo.items.some((item) => item.key === userSettingsRes.settings.defaultGeo)
           ? userSettingsRes.settings.defaultGeo
@@ -799,7 +831,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     try {
       const res = await apiFetch<Detail>('/accounts/generate?debug=1', token, {
         method: 'POST',
-        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona }),
+        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona, mailboxProvider }),
       });
       setDetail(res);
       await refresh();
@@ -816,7 +848,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     try {
       const res = await apiFetch<{ items: Detail[] }>('/accounts/generate-bulk', token, {
         method: 'POST',
-        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona, count: bulkCount }),
+        body: JSON.stringify({ geoKey: selectedGeo, documentType: effectiveDocumentType, role: accountRole, persona, count: bulkCount, mailboxProvider }),
       });
       const firstItem = res.items[0] ?? null;
       setDetail(firstItem ? await apiFetch<Detail>(`/history/${firstItem.id}?debug=1`, token) : null);
@@ -872,7 +904,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setError('');
     setIsCreatingMailbox(true);
     try {
-      const mailbox = await apiFetch<TempMailbox>('/mailboxes/create', token, { method: 'POST' });
+      const mailbox = await apiFetch<TempMailbox>('/mailboxes/create', token, {
+        method: 'POST',
+        body: JSON.stringify({ mailboxProvider }),
+      });
       setTempMailbox(mailbox);
       setTempMailboxInbox(null);
       await refreshUsage();
@@ -1040,6 +1075,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <select className="input-field compact" value={effectiveDocumentType} onChange={(e) => setDocumentType(e.target.value)}>
             {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
             <option value="missing_rule_probe">missing_rule_probe</option>
+          </select>
+        </Field>
+        <Field label="Mailbox provider">
+          <select className="input-field compact" value={mailboxProvider} onChange={(e) => selectMailboxProvider(e.target.value as MailboxProviderKey)}>
+            {MAILBOX_PROVIDER_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </Field>
         <Field label="Bulk count">
@@ -1294,6 +1334,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
                     <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
                     <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
+                    <InspectorRow label="Mailbox provider" value={mailboxProviderLabel(detail.mailboxProvider)} onCopy={() => copyValue(`mailbox-provider:${detail.id}`, mailboxProviderLabel(detail.mailboxProvider))} copied={copiedField === `mailbox-provider:${detail.id}`} />
                     <PhoneEditField
                       value={phoneDraft}
                       canEdit={detail.createdByUserId === user.id}

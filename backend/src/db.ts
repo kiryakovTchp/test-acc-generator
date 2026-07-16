@@ -87,6 +87,7 @@ ensureColumn('account_history', 'address_line', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'postal_code', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'persona', "TEXT NOT NULL DEFAULT 'standard_user'");
 ensureColumn('account_history', 'document_issue_date', "TEXT NOT NULL DEFAULT ''");
+ensureColumn('account_history', 'mailbox_provider', "TEXT NOT NULL DEFAULT 'mail_tm'");
 ensureColumn('account_history', 'inbox_status', "TEXT NOT NULL DEFAULT 'no_email_found'");
 ensureColumn('account_history', 'inbox_sender', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_subject', "TEXT NOT NULL DEFAULT ''");
