@@ -86,7 +86,6 @@ function InviteForm() {
         method: 'POST',
         body: JSON.stringify({ inviteToken: token, email, username, password }),
       });
-      window.localStorage.setItem('tag-token', res.token);
       window.localStorage.setItem('tag-user', JSON.stringify(res.user));
       router.push('/main');
     } catch (err) {

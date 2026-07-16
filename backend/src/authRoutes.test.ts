@@ -158,6 +158,13 @@ test('refresh and profile updates preserve the selected workspace', async () => 
       body: { workspaceId: created.user.workspaceId },
     });
     assert.equal(refreshed.user.workspaceId, created.user.workspaceId);
+
+    const staleRefresh = await rawRequest(baseUrl, '/auth/refresh', {
+      method: 'POST',
+      headers: { Cookie: cookie },
+      body: { workspaceId: created.user.workspaceId },
+    });
+    assert.equal(staleRefresh.status, 401);
   } finally {
     await closeServer(server);
   }
