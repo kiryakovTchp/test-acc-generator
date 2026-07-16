@@ -2,6 +2,8 @@ import db from './db.js';
 import { assertWorkspaceRole } from './permissions.js';
 
 const ACTIVITY_READER_ROLES = ['owner', 'admin', 'member', 'viewer'] as const;
+const DEFAULT_ACTIVITY_RETENTION_DAYS = 180;
+const DEFAULT_ACTIVITY_MAX_EVENTS_PER_WORKSPACE = 5000;
 
 export interface ActivityEventResponse {
   id: number;
@@ -37,6 +39,7 @@ export function recordActivity(input: {
     input.summary,
     JSON.stringify(input.metadata ?? {}),
   );
+  cleanupActivityEvents(input.workspaceId);
 }
 
 export function listActivityEvents(workspaceId: number, userId: number, limit = 75): ActivityEventResponse[] {
@@ -73,4 +76,30 @@ function parseMetadata(value: string): Record<string, unknown> {
   } catch {
     return {};
   }
+}
+
+export function cleanupActivityEvents(
+  workspaceId: number,
+  options: { retentionDays?: number; maxEvents?: number } = {},
+) {
+  const retentionDays = Math.max(1, Math.floor(options.retentionDays ?? DEFAULT_ACTIVITY_RETENTION_DAYS));
+  const maxEvents = Math.max(1, Math.floor(options.maxEvents ?? DEFAULT_ACTIVITY_MAX_EVENTS_PER_WORKSPACE));
+
+  db.prepare(`
+    DELETE FROM activity_events
+    WHERE workspace_id = ?
+      AND datetime(created_at) < datetime('now', ?)
+  `).run(workspaceId, `-${retentionDays} days`);
+
+  db.prepare(`
+    DELETE FROM activity_events
+    WHERE workspace_id = ?
+      AND id NOT IN (
+        SELECT id
+        FROM activity_events
+        WHERE workspace_id = ?
+        ORDER BY datetime(created_at) DESC, id DESC
+        LIMIT ?
+      )
+  `).run(workspaceId, workspaceId, maxEvents);
 }

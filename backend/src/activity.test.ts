@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db from './db.js';
-import { listActivityEvents, recordActivity } from './activity.js';
+import { cleanupActivityEvents, listActivityEvents, recordActivity } from './activity.js';
 
 test('activity events are recorded with actor and parsed metadata', () => {
   const userId = createTestUser('activity_owner');
@@ -44,6 +44,29 @@ test('workspace viewers can read activity but outsiders cannot', () => {
 
   assert.equal(listActivityEvents(workspaceId, viewerId).length > 0, true);
   assert.throws(() => listActivityEvents(workspaceId, outsiderId), /Workspace access denied/);
+});
+
+test('activity cleanup keeps storage bounded per workspace', () => {
+  const userId = createTestUser('activity_retention');
+  const workspaceId = createWorkspaceForUser(userId, 'Activity Retention QA');
+
+  for (let index = 0; index < 6; index += 1) {
+    db.prepare(`
+      INSERT INTO activity_events (workspace_id, user_id, event_type, summary, created_at)
+      VALUES (?, ?, ?, ?, datetime('now', ?))
+    `).run(workspaceId, userId, 'test_event', `Event ${index}`, `-${index} minutes`);
+  }
+  db.prepare(`
+    INSERT INTO activity_events (workspace_id, user_id, event_type, summary, created_at)
+    VALUES (?, ?, 'old_event', 'Old event', datetime('now', '-365 days'))
+  `).run(workspaceId, userId);
+
+  cleanupActivityEvents(workspaceId, { retentionDays: 180, maxEvents: 3 });
+  const events = listActivityEvents(workspaceId, userId, 10);
+
+  assert.equal(events.length, 3);
+  assert.equal(events.some((event) => event.eventType === 'old_event'), false);
+  assert.deepEqual(events.map((event) => event.summary), ['Event 0', 'Event 1', 'Event 2']);
 });
 
 function createTestUser(prefix: string) {
