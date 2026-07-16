@@ -1272,7 +1272,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <section className="panel panel-list">
             <div className="panel-header">
               <h2>Recent identities <span>({history.length})</span></h2>
-              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
+              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>Filters</button>
             </div>
 
             {showFilters ? (
@@ -1443,15 +1443,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           ) : activeNav === 'accounts' ? (
           <>
           <section className="panel panel-list">
-            <div className="panel-header">
-              <h2>Test Users <span>({history.length})</span></h2>
-              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>F</button>
+            <div className="panel-header accounts-header">
+              <h2>Test users <span className="count-badge">{history.length}</span></h2>
             </div>
 
-            {showFilters ? (
-              <div className="list-controls">
-                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
-                <div className="control-row">
+            <div className="list-controls accounts-controls">
+              <input className="input-field compact account-search-field" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search by user, email, GEO, or account ID" />
+              <div className="control-row accounts-filter-row">
                   <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
                     <option value="generated">Generated</option>
@@ -1470,13 +1468,22 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <option value="newest">Newest first</option>
                     <option value="oldest">Oldest first</option>
                   </select>
-                </div>
               </div>
-            ) : null}
+            </div>
 
             <div className="account-table-wrap">
               {isWorkspaceBootstrapping ? <TableSkeleton columns={8} rows={7} /> : filteredHistory.length ? (
                 <table className="account-table">
+                  <colgroup>
+                    <col className="account-col-user" />
+                    <col className="account-col-geo" />
+                    <col className="account-col-email" />
+                    <col className="account-col-status" />
+                    <col className="account-col-balance" />
+                    <col className="account-col-scope" />
+                    <col className="account-col-created" />
+                    <col className="account-col-actions" />
+                  </colgroup>
                   <thead>
                     <tr>
                       <th>Test user</th>
@@ -1500,7 +1507,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                             <span>{item.firstName} {item.lastName}</span>
                           </td>
                           <td>{item.geoLabel}</td>
-                          <td>{item.email}</td>
+                          <td className="email-cell">{item.email}</td>
                           <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)}>{statusLabel(rowStatus)}</span></td>
                           <td>
                             <BalanceStatusSelect
@@ -1509,11 +1516,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                             />
                           </td>
                           <td>
-                            <SharingControl
-                              item={item}
-                              canManage={item.createdByUserId === user.id}
-                              onToggle={(shared) => void saveSharing(item.id, shared)}
-                            />
+                            <span className={cn('badge', `tone-${scopeTone(item)}`)}>{scopeLabel(item)}</span>
                           </td>
                           <td>{formatCompactDate(item.createdAt)}</td>
                           <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>Details</button></td>
@@ -1524,7 +1527,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 </table>
               ) : <div className="empty-state">No test users match the current filters.</div>}
             </div>
-            <Link className="view-all-button" href="/accounts">View all test users</Link>
           </section>
 
           {detail && typeof document !== 'undefined' ? createPortal((
