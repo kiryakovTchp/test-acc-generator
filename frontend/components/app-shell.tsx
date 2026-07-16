@@ -255,15 +255,18 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const storage = getBrowserStorage();
     if (!storage) return;
 
-    const storedToken = storage.getItem('tag-token') ?? '';
     const storedUser = storage.getItem('tag-user');
 
-    if (storedToken && storedUser) {
+    storage.removeItem('tag-token');
+    if (storedUser) {
       try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
+        const parsedUser = JSON.parse(storedUser) as UserInfo;
+        setUser(parsedUser);
+        refreshSession(parsedUser.workspaceId).catch(() => {
+          storage.removeItem('tag-user');
+          setUser(null);
+        });
       } catch {
-        storage.removeItem('tag-token');
         storage.removeItem('tag-user');
       }
     }
@@ -802,10 +805,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     persistAuthState(res.token, res.user);
   }
 
-  async function refreshSession() {
+  async function refreshSession(workspaceId = user?.workspaceId) {
     const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/refresh', undefined, {
       method: 'POST',
-      body: JSON.stringify({ workspaceId: user?.workspaceId }),
+      body: JSON.stringify({ workspaceId }),
     });
     persistAuthState(res.token, res.user);
     return res.token;
@@ -824,7 +827,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   function persistAuthState(nextToken: string, nextUser: UserInfo) {
     const storage = getBrowserStorage();
-    storage?.setItem('tag-token', nextToken);
+    storage?.removeItem('tag-token');
     storage?.setItem('tag-user', JSON.stringify(nextUser));
     setToken(nextToken);
     setUser(nextUser);

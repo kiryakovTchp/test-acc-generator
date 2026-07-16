@@ -198,11 +198,12 @@ app.post('/auth/refresh', (req, res) => {
   `).get(hashSessionToken(sessionToken)) as { id: number; user_id: number } | undefined;
   if (!session) return res.status(401).json({ error: 'Session expired' });
 
-  db.prepare('UPDATE sessions SET last_seen_at = CURRENT_TIMESTAMP WHERE id = ?').run(session.id);
   const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(session.user_id) as any;
   if (!user || user.status !== 'active') return res.status(401).json({ error: 'Unauthorized' });
   const preferredWorkspaceId = resolvePreferredWorkspaceId(user.id, req.body?.workspaceId);
-  res.json(buildAuthResponse(user, session.id, preferredWorkspaceId));
+  const rotatedSession = rotateSession(session.id, session.user_id, req);
+  setSessionCookie(res, rotatedSession.token, rotatedSession.expiresAt);
+  res.json(buildAuthResponse(user, rotatedSession.id, preferredWorkspaceId));
 });
 
 app.post('/auth/logout', auth, (req, res) => {
@@ -703,6 +704,24 @@ function createSession(userId: number, req: express.Request) {
     expiresAt.toISOString(),
   );
   return { id: Number(result.lastInsertRowid), token, expiresAt };
+}
+
+function rotateSession(sessionId: number, userId: number, req: express.Request) {
+  const token = newSessionToken();
+  const expiresAt = addDays(new Date(), Number.isFinite(sessionDays) ? sessionDays : 30);
+  db.prepare(`
+    UPDATE sessions
+    SET token_hash = ?, user_agent = ?, ip_address = ?, expires_at = ?, last_seen_at = CURRENT_TIMESTAMP
+    WHERE id = ? AND user_id = ? AND revoked_at IS NULL
+  `).run(
+    hashSessionToken(token),
+    String(req.headers['user-agent'] ?? '').slice(0, 240),
+    requestIp(req),
+    expiresAt.toISOString(),
+    sessionId,
+    userId,
+  );
+  return { id: sessionId, token, expiresAt };
 }
 
 function buildAuthResponse(user: { id: number; login: string; role: Role; email?: string; username?: string; status?: string }, sessionId: number, preferredWorkspaceId?: number) {

@@ -138,7 +138,7 @@ Acceptance: Helmet or equivalent headers; `X-Powered-By` removed; auth/history/m
 
 ### SEC-201 - Move access token out of localStorage
 
-Status: planned
+Status: implemented in third security remediation pass
 Owner: Developer
 Acceptance: access token held in memory; refresh token is HttpOnly, Secure, rotated on use.
 
