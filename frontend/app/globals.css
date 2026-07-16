@@ -181,12 +181,21 @@ button {
   position: sticky;
   top: 0;
   display: flex;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   flex-direction: column;
   justify-content: space-between;
+  overflow: hidden;
   padding: 20px 16px;
   background: var(--sidebar);
   color: #cbd5e1;
+}
+
+.sidebar-main {
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: 14px;
 }
 
 .sidebar-brand {
@@ -261,6 +270,7 @@ button {
 .sidebar-footer {
   display: grid;
   gap: 10px;
+  flex-shrink: 0;
 }
 
 .sidebar-user,
@@ -1218,7 +1228,9 @@ select.input-field.badge-select {
 
   .sidebar {
     position: static;
-    min-height: auto;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
   }
 
   .workspace-grid {
@@ -1293,13 +1305,22 @@ body {
 .sidebar {
   position: sticky;
   top: 0;
+  height: 100vh;
+  height: 100dvh;
   min-height: 100vh;
   padding: 14px 16px;
+  overflow: hidden;
   background:
     linear-gradient(180deg, rgba(22, 35, 49, 0.96), rgba(13, 21, 31, 1)),
     var(--sidebar);
   border-right: 1px solid rgba(255, 255, 255, 0.06);
   color: #d5dde8;
+}
+
+.sidebar-main {
+  min-height: 0;
+  overflow: auto;
+  padding-bottom: 14px;
 }
 
 .sidebar-brand {
@@ -3013,7 +3034,9 @@ kbd {
 
   .sidebar {
     position: static;
-    min-height: auto;
+    height: 100vh;
+    height: 100dvh;
+    min-height: 100vh;
   }
 
   .workspace-grid {
