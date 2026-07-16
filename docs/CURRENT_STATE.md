@@ -191,6 +191,8 @@ Workspace settings include:
 - `shared_account_editing`: `creator_only` or `owner_admin`;
 - `workspace_creation_policy`: `active_users` or `owner_admin`.
 
+The generation panel also lets the operator choose a mailbox provider for the current single or bulk generation run. Generated account history stores the provider that created the mailbox.
+
 When workspace creation policy is `owner_admin`, only the current workspace owner/admin can create another workspace from that context.
 
 ### Invite
@@ -530,7 +532,7 @@ Recommended authenticated smoke:
 ## Known Constraints
 
 - Outbound invite email is not implemented yet; invite links must be copied manually.
-- Temporary mailbox delivery depends on public temporary-mail providers. The app supports `mail.tm`, `mail.gw`, and a `mail.tm -> mail.gw` fallback mode with timeout/retry and an authenticated health check.
+- Temporary mailbox delivery depends on public temporary-mail providers. The app supports `mail.tm`, `mail.gw`, and a `mail.tm -> mail.gw` fallback mode with timeout/retry, an authenticated health check, workspace default provider selection, and per-generation provider choice.
 - All generated identity data is synthetic and should be used only for QA/testing.
 - Some GEO datasets are verified while others are synthetic-pattern or missing-rule quality.
 - Frontend has focused Node unit tests for shared UI state helpers and Settings tab metadata; browser-level E2E coverage is still not implemented.

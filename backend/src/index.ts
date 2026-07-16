@@ -453,7 +453,7 @@ app.post('/mailboxes/create', auth, async (req, res) => {
       'mailbox_limit_reached',
       'Daily mailbox creation limit reached',
     );
-    const mailbox = await getEmailProvider(settings.mailbox_provider).createAccount();
+    const mailbox = await getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)).createAccount();
     recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.mailboxCreated);
     res.json(mailbox);
   } catch (error) {
@@ -606,7 +606,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
       documentType,
       role: role === 'admin' ? 'admin' : 'user',
       persona: isPersona(persona) ? persona : 'standard_user',
-      emailProvider: getEmailProvider(settings.mailbox_provider),
+      emailProvider: getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)),
       includeDebug: req.query.debug === '1',
     });
     recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, 1);
@@ -637,7 +637,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
         documentType,
         role: role === 'admin' ? 'admin' : 'user',
         persona: isPersona(persona) ? persona : 'standard_user',
-        emailProvider: getEmailProvider(settings.mailbox_provider),
+        emailProvider: getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)),
         includeDebug: false,
       }));
     }
@@ -821,4 +821,9 @@ function getEmailProvider(providerKey: string | undefined): EmailProvider {
   if (providerKey === 'mail_gw') return mailGwProvider;
   if (providerKey === 'mail_tm_mail_gw_fallback') return fallbackEmailProvider;
   return mailTmProvider;
+}
+
+function resolveMailboxProvider(candidate: unknown, fallback: string | undefined) {
+  const value = typeof candidate === 'string' ? candidate : fallback;
+  return ['mail_tm', 'mail_gw', 'mail_tm_mail_gw_fallback'].includes(String(value)) ? String(value) : 'mail_tm';
 }

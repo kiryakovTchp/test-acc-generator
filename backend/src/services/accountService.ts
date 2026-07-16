@@ -51,9 +51,9 @@ export async function generateAccount(input: {
       user_id, workspace_id, created_by_user_id, geo_key, geo_label, email, email_password, username,
       first_name, last_name, phone, age, gender, date_of_birth, country, region, city, place_of_birth, address_line, postal_code, persona,
       account_role, document_type, document_value, document_issue_date, document_quality, registration_url,
-      inbox_status, inbox_sender, inbox_subject, inbox_received_at,
+      mailbox_provider, inbox_status, inbox_sender, inbox_subject, inbox_received_at,
       inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `).run(
     input.userId,
     workspaceId,
@@ -82,6 +82,7 @@ export async function generateAccount(input: {
     profile.documentIssueDate,
     quality,
     '',
+    emailAccount.provider ?? 'mail_tm',
     hydratedInbox.status,
     hydratedInbox.sender,
     hydratedInbox.subject,
@@ -258,6 +259,7 @@ export function listHistory(userId: number, workspaceId?: number) {
            ah.document_type as documentType,
            ah.document_issue_date as documentIssueDate,
            ah.document_quality as documentQuality,
+           ah.mailbox_provider as mailboxProvider,
            ah.inbox_status as inboxStatus,
            ah.created_by_user_id as createdByUserId,
            COALESCE(u.login, '') as createdByLogin,
@@ -317,6 +319,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     documentValue: row.document_value,
     documentIssueDate: row.document_issue_date,
     documentQuality: row.document_quality,
+    mailboxProvider: row.mailbox_provider ?? 'mail_tm',
     fullProfileText: [
       `Account ID: ${row.site_account_id || ''}`,
       `Balance Status: ${balanceStatusLabel(normalizeBalanceStatus(row.balance_status))}`,
