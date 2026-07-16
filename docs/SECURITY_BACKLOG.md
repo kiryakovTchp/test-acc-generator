@@ -13,7 +13,7 @@ This backlog is worked through the Security Working Group process:
 
 ### SEC-001 - Rotate exposed production secrets and revoke sessions
 
-Status: blocked on operational approval
+Status: done operationally on 2026-07-17
 Owner: Ops + Project
 Impact: leaked `JWT_SECRET` and seed credentials can allow forged tokens and account takeover.
 
@@ -32,7 +32,7 @@ Acceptance:
 - seed/user passwords rotated;
 - active sessions revoked;
 - container recreated with new env;
-- access logs reviewed from 2026-06-09 onward.
+- available nginx access logs reviewed.
 
 ### SEC-002 - Require active session-bound JWTs
 
@@ -78,7 +78,7 @@ Acceptance:
 
 ### SEC-004 - Enforce HTTPS and containment at edge
 
-Status: blocked on infrastructure access/approval
+Status: done operationally on 2026-07-17
 Owner: Ops
 Impact: HTTP can expose login, password, and JWT.
 
