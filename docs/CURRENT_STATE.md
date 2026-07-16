@@ -210,6 +210,11 @@ Current logged actions:
 
 Activity can be read by any active member of the current workspace and appears in Settings -> Activity.
 
+Storage guard:
+
+- activity is capped at the latest 5000 events per workspace;
+- events older than 180 days are removed during activity writes.
+
 ## Frontend Views
 
 ### `/main`
