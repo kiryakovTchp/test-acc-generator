@@ -6,9 +6,7 @@ const localApiTarget = process.env.LOCAL_API_TARGET?.trim() || 'http://127.0.0.1
 const useLocalApiRewrite = !externalApiUrl || externalApiUrl === '/api';
 
 const nextConfig: NextConfig = {
-  experimental: {
-    typedRoutes: false,
-  },
+  typedRoutes: false,
   outputFileTracingRoot: path.join(__dirname, '..'),
   async rewrites() {
     if (!useLocalApiRewrite) return [];
