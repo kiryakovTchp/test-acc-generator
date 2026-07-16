@@ -31,7 +31,7 @@ export const USAGE_EVENTS = {
 
 export function getWorkspaceSettings(workspaceId: number): WorkspaceSettingsRow {
   const settings = db.prepare(`
-    SELECT history_retention_days, history_limit, allow_bulk_generation, max_bulk_count,
+    SELECT history_retention_days, history_limit, allow_bulk_generation, max_bulk_count, mailbox_provider,
            shared_account_editing, workspace_creation_policy,
            accounts_per_day, mailbox_create_per_day, inbox_refresh_per_minute
     FROM workspace_settings
@@ -43,6 +43,7 @@ export function getWorkspaceSettings(workspaceId: number): WorkspaceSettingsRow 
     history_limit: 50,
     allow_bulk_generation: 1,
     max_bulk_count: 25,
+    mailbox_provider: 'mail_tm',
     shared_account_editing: 'creator_only',
     workspace_creation_policy: 'active_users',
     accounts_per_day: 25,
