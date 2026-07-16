@@ -15,6 +15,8 @@ export interface WorkspaceSettingsRow {
   history_retention_days?: number;
   allow_bulk_generation?: number;
   max_bulk_count: number;
+  shared_account_editing?: string;
+  workspace_creation_policy?: string;
   accounts_per_day: number;
   mailbox_create_per_day: number;
   inbox_refresh_per_minute: number;
@@ -28,7 +30,9 @@ export const USAGE_EVENTS = {
 
 export function getWorkspaceSettings(workspaceId: number): WorkspaceSettingsRow {
   const settings = db.prepare(`
-    SELECT history_retention_days, history_limit, allow_bulk_generation, max_bulk_count, accounts_per_day, mailbox_create_per_day, inbox_refresh_per_minute
+    SELECT history_retention_days, history_limit, allow_bulk_generation, max_bulk_count,
+           shared_account_editing, workspace_creation_policy,
+           accounts_per_day, mailbox_create_per_day, inbox_refresh_per_minute
     FROM workspace_settings
     WHERE workspace_id = ?
   `).get(workspaceId) as WorkspaceSettingsRow | undefined;
@@ -38,6 +42,8 @@ export function getWorkspaceSettings(workspaceId: number): WorkspaceSettingsRow 
     history_limit: 50,
     allow_bulk_generation: 1,
     max_bulk_count: 25,
+    shared_account_editing: 'creator_only',
+    workspace_creation_policy: 'active_users',
     accounts_per_day: 25,
     mailbox_create_per_day: 25,
     inbox_refresh_per_minute: 10,
@@ -52,6 +58,8 @@ export function getUsageSummary(workspaceId: number, userId: number) {
       historyLimit: settings.history_limit,
       allowBulkGeneration: Boolean(settings.allow_bulk_generation ?? 1),
       maxBulkCount: settings.max_bulk_count,
+      sharedAccountEditing: settings.shared_account_editing ?? 'creator_only',
+      workspaceCreationPolicy: settings.workspace_creation_policy ?? 'active_users',
     },
     limits: {
       accountsPerDay: buildUsage(workspaceId, userId, USAGE_EVENTS.accountGenerated, settings.accounts_per_day, '-1 day'),

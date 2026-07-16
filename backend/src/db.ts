@@ -134,6 +134,8 @@ CREATE TABLE IF NOT EXISTS workspace_settings (
   allow_bulk_generation INTEGER NOT NULL DEFAULT 1,
   max_bulk_count INTEGER NOT NULL DEFAULT 25,
   mailbox_provider TEXT NOT NULL DEFAULT 'mail_tm',
+  shared_account_editing TEXT NOT NULL DEFAULT 'creator_only',
+  workspace_creation_policy TEXT NOT NULL DEFAULT 'active_users',
   accounts_per_day INTEGER NOT NULL DEFAULT 25,
   mailbox_create_per_day INTEGER NOT NULL DEFAULT 25,
   inbox_refresh_per_minute INTEGER NOT NULL DEFAULT 10,
@@ -212,6 +214,8 @@ CREATE INDEX IF NOT EXISTS idx_activity_events_workspace_type ON activity_events
 
 ensureColumn('sessions', 'last_seen_at', 'TEXT');
 ensureColumn('workspaces', 'status', "TEXT NOT NULL DEFAULT 'active'");
+ensureColumn('workspace_settings', 'shared_account_editing', "TEXT NOT NULL DEFAULT 'creator_only'");
+ensureColumn('workspace_settings', 'workspace_creation_policy', "TEXT NOT NULL DEFAULT 'active_users'");
 
 const seedUsers = loadSeedUsers();
 for (const user of seedUsers) {

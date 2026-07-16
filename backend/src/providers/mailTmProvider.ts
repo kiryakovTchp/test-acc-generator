@@ -1,6 +1,7 @@
 import { simpleParser } from 'mailparser';
 import type { EmailAccount, EmailProvider, InboxMessage } from './emailProvider.js';
 import { cleanEmailText, dedupeLinks, extractLinks, pickPrimaryVerificationLink, randomString } from '../utils.js';
+import { ApiError } from '../limits.js';
 
 interface MailTmDomain {
   domain: string;
@@ -23,6 +24,9 @@ export class MailTmProvider implements EmailProvider {
   private readonly domainCacheTtlMs = Number(process.env.MAIL_TM_DOMAIN_CACHE_TTL_MS ?? 60 * 60 * 1000);
   private readonly inboxPollAttempts = Number(process.env.MAIL_TM_INBOX_POLL_ATTEMPTS ?? 1);
   private readonly inboxPollDelayMs = Number(process.env.MAIL_TM_INBOX_POLL_DELAY_MS ?? 2500);
+  private readonly requestTimeoutMs = Number(process.env.MAIL_TM_REQUEST_TIMEOUT_MS ?? 10000);
+  private readonly retryAttempts = Number(process.env.MAIL_TM_RETRY_ATTEMPTS ?? 2);
+  private readonly retryDelayMs = Number(process.env.MAIL_TM_RETRY_DELAY_MS ?? 500);
   private domainCache: { value: string; expiresAt: number } | null = null;
 
   async createAccount(): Promise<EmailAccount> {
@@ -30,11 +34,11 @@ export class MailTmProvider implements EmailProvider {
     const address = `test${randomString(10)}@${domain}`;
     const password = `${randomString(16)}A!7`;
 
-    const response = await fetch(`${this.baseUrl}/accounts`, {
+    const response = await this.request('/accounts', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ address, password }),
-    });
+    }, 'mail.tm account creation');
 
     if (!response.ok) {
       throw new Error(`mail.tm account creation failed (${response.status})`);
@@ -60,14 +64,19 @@ export class MailTmProvider implements EmailProvider {
     return [];
   }
 
+  async checkHealth() {
+    const domain = await this.getDomain();
+    return { ok: true, provider: 'mail_tm', message: `Active domain: ${domain}` };
+  }
+
   private async getDomain() {
     if (this.domainCache && this.domainCache.expiresAt > Date.now()) {
       return this.domainCache.value;
     }
 
-    const response = await fetch(`${this.baseUrl}/domains?page=1`, {
+    const response = await this.request('/domains?page=1', {
       headers: { Accept: 'application/ld+json' },
-    });
+    }, 'mail.tm domain lookup');
     if (!response.ok) {
       throw new Error(`mail.tm domain lookup failed (${response.status})`);
     }
@@ -83,11 +92,11 @@ export class MailTmProvider implements EmailProvider {
   }
 
   private async getToken(address: string, password: string) {
-    const response = await fetch(`${this.baseUrl}/token`, {
+    const response = await this.request('/token', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ address, password }),
-    });
+    }, 'mail.tm token request');
 
     if (!response.ok) {
       throw new Error(`mail.tm token request failed (${response.status})`);
@@ -101,12 +110,12 @@ export class MailTmProvider implements EmailProvider {
   }
 
   private async listMessages(token: string) {
-    const response = await fetch(`${this.baseUrl}/messages?page=1`, {
+    const response = await this.request('/messages?page=1', {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/ld+json',
       },
-    });
+    }, 'mail.tm inbox fetch');
 
     if (!response.ok) {
       throw new Error(`mail.tm inbox fetch failed (${response.status})`);
@@ -117,9 +126,9 @@ export class MailTmProvider implements EmailProvider {
   }
 
   private async hydrateMessage(token: string, id: string, preview: MailTmMessage): Promise<InboxMessage> {
-    const response = await fetch(`${this.baseUrl}/messages/${id}`, {
+    const response = await this.request(`/messages/${id}`, {
       headers: { Authorization: `Bearer ${token}` },
-    });
+    }, 'mail.tm message fetch', { throwOnFailure: false });
 
     if (!response.ok) {
       const rawText = preview.text ?? preview.htmlAsText ?? preview.intro ?? '';
@@ -149,6 +158,40 @@ export class MailTmProvider implements EmailProvider {
       receivedAt: payload.createdAt,
       links,
     };
+  }
+
+  private async request(path: string, init: RequestInit, label: string, options: { throwOnFailure?: boolean } = {}) {
+    const throwOnFailure = options.throwOnFailure ?? true;
+    const attempts = Math.max(1, Math.floor(this.retryAttempts));
+    let lastError: unknown = null;
+
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), Math.max(1000, this.requestTimeoutMs));
+      try {
+        const response = await fetch(`${this.baseUrl}${path}`, { ...init, signal: controller.signal });
+        clearTimeout(timeout);
+        if (response.ok || !this.shouldRetry(response.status) || attempt === attempts) {
+          if (!response.ok && throwOnFailure) {
+            throw new ApiError('mail_provider_unavailable', `${label} failed (${response.status})`, 502);
+          }
+          return response;
+        }
+      } catch (error) {
+        clearTimeout(timeout);
+        lastError = error;
+        if (error instanceof ApiError || attempt === attempts) break;
+      }
+
+      await sleep(this.retryDelayMs * attempt);
+    }
+
+    if (lastError instanceof ApiError) throw lastError;
+    throw new ApiError('mail_provider_unavailable', `${label} is temporarily unavailable`, 502);
+  }
+
+  private shouldRetry(status: number) {
+    return status === 429 || status >= 500;
   }
 }
 

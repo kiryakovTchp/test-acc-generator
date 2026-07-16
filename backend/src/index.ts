@@ -283,7 +283,7 @@ app.get('/workspaces', auth, (req, res) => {
 
 app.post('/workspaces', auth, (req, res) => {
   try {
-    const workspace = createWorkspace((req as any).user.userId, req.body ?? {});
+    const workspace = createWorkspace((req as any).user.userId, req.body ?? {}, (req as any).user.workspaceId);
     const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
     res.status(201).json({ workspace, workspaces: listWorkspaces(user.id), ...buildAuthResponse(user, (req as any).user.sessionId ?? 0, workspace.id) });
   } catch (error) {
@@ -453,6 +453,18 @@ app.post('/mailboxes/create', auth, async (req, res) => {
     res.json(mailbox);
   } catch (error) {
     sendError(res, error, 'Failed to create mailbox');
+  }
+});
+
+app.get('/mailboxes/health', auth, async (req, res) => {
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+    if (!emailProvider.checkHealth) {
+      return res.json({ ok: true, provider: 'mail_tm', message: 'Health check is not implemented for this provider' });
+    }
+    res.json(await emailProvider.checkHealth());
+  } catch (error) {
+    sendError(res, error, 'Mailbox provider health check failed');
   }
 });
 

@@ -30,6 +30,8 @@ test('workspace settings can be updated by an owner and clamp unsafe numbers', (
     historyLimit: 2000,
     allowBulkGeneration: false,
     maxBulkCount: 12,
+    sharedAccountEditing: 'owner_admin',
+    workspaceCreationPolicy: 'owner_admin',
     accountsPerDay: 40,
     mailboxCreatePerDay: 41,
     inboxRefreshPerMinute: 6,
@@ -39,6 +41,8 @@ test('workspace settings can be updated by an owner and clamp unsafe numbers', (
   assert.equal(updated.historyLimit, 1000);
   assert.equal(updated.allowBulkGeneration, false);
   assert.equal(updated.maxBulkCount, 12);
+  assert.equal(updated.sharedAccountEditing, 'owner_admin');
+  assert.equal(updated.workspaceCreationPolicy, 'owner_admin');
   assert.equal(updated.accountsPerDay, 40);
   assert.equal(updated.mailboxCreatePerDay, 41);
   assert.equal(updated.inboxRefreshPerMinute, 6);

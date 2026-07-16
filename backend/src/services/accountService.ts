@@ -5,6 +5,7 @@ import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickP
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 import { recordActivity } from '../activity.js';
+import { getWorkspaceRole } from '../permissions.js';
 
 const rules = geoRules as unknown as GeoRule[];
 const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
@@ -113,13 +114,14 @@ export async function generateAccount(input: {
 
 export async function refreshInbox(id: number, userId: number, emailProvider: EmailProvider, waitMs = 0, includeDebug = false, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const canEditShared = canEditSharedAccount(userId, resolvedWorkspaceId);
   const row = db.prepare(`
     SELECT *
     FROM account_history
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-      AND (created_by_user_id = ? OR user_id = ?)
-  `).get(id, resolvedWorkspaceId, userId, userId, userId) as any;
+      AND (created_by_user_id = ? OR user_id = ? OR (shared_with_workspace = 1 AND ? = 1))
+  `).get(id, resolvedWorkspaceId, userId, userId, userId, canEditShared ? 1 : 0) as any;
   if (!row) return null;
   const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
   const hydratedInbox = buildInboxPayload(inbox);
@@ -129,7 +131,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
         inbox_plain_text = ?, inbox_links_json = ?, inbox_codes_json = ?, inbox_html = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-      AND (created_by_user_id = ? OR user_id = ?)
+      AND (created_by_user_id = ? OR user_id = ? OR (shared_with_workspace = 1 AND ? = 1))
   `).run(
     hydratedInbox.status,
     hydratedInbox.sender,
@@ -144,6 +146,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     userId,
     userId,
     userId,
+    canEditShared ? 1 : 0,
   );
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
@@ -165,13 +168,14 @@ export function updateSiteAccountId(id: number, userId: number, siteAccountId: s
 export function updateAccountBalanceStatus(id: number, userId: number, balanceStatus: string, includeDebug = false, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   const normalized = normalizeBalanceStatus(balanceStatus);
+  const canEditShared = canEditSharedAccount(userId, resolvedWorkspaceId);
   const result = db.prepare(`
     UPDATE account_history
     SET balance_status = ?
     WHERE id = ?
       AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
-      AND (created_by_user_id = ? OR user_id = ?)
-  `).run(normalized, id, resolvedWorkspaceId, userId, userId, userId);
+      AND (created_by_user_id = ? OR user_id = ? OR (shared_with_workspace = 1 AND ? = 1))
+  `).run(normalized, id, resolvedWorkspaceId, userId, userId, userId, canEditShared ? 1 : 0);
   if (result.changes === 0) return null;
   recordActivity({
     workspaceId: resolvedWorkspaceId,
@@ -436,6 +440,13 @@ function resolveWorkspace(userId: number, workspaceId?: number) {
     return assertWorkspaceAccess(userId, workspaceId);
   }
   return getDefaultWorkspaceForUser(userId);
+}
+
+function canEditSharedAccount(userId: number, workspaceId: number) {
+  const settings = getWorkspaceSettings(workspaceId);
+  if ((settings.shared_account_editing ?? 'creator_only') !== 'owner_admin') return false;
+  const role = getWorkspaceRole(userId, workspaceId);
+  return role === 'owner' || role === 'admin';
 }
 
 function getCreatedByLogin(userId: number | null) {

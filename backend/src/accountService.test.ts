@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { listGeoRules, generateAccount, getHistoryDetail, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { listActivityEvents } from './activity.js';
+import { updateWorkspaceSettings } from './settings.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -255,6 +256,10 @@ test('workspace members see only their own account history until an account is s
   assert.equal(getHistoryDetail(item!.id, ownerId, true, workspaceId)?.inbox.rawHtml, '<b>Code 123456</b>');
 
   assert.equal(updateAccountBalanceStatus(item!.id, memberId, 'has_balance', false, workspaceId), null);
+  db.prepare("UPDATE workspace_members SET role = 'admin' WHERE workspace_id = ? AND user_id = ?").run(workspaceId, memberId);
+  updateWorkspaceSettings(workspaceId, ownerId, { sharedAccountEditing: 'owner_admin' });
+  assert.equal(updateAccountBalanceStatus(item!.id, memberId, 'has_balance', false, workspaceId)?.balanceStatus, 'has_balance');
+  assert.equal((await refreshInbox(item!.id, memberId, provider, 0, false, workspaceId))?.inbox.status, 'email_received');
 
   const privateAgain = updateHistorySharing(item!.id, ownerId, false, false, workspaceId);
   assert.equal(privateAgain?.sharedWithWorkspace, false);

@@ -16,67 +16,13 @@ This file tracks product and engineering improvements that are not yet implement
 - Workspace archive/restore management for owners, including Settings UI and safe active-workspace fallback.
 - Activity log table, API, and Settings -> Activity UI for generation, sharing, invite, member, workspace, and session events.
 - Stronger frontend tests for shared UI state helpers and Settings tab metadata, replacing the smoke placeholder.
+- Workspace creation policy setting: any active user or current workspace owner/admin only.
+- Granular shared account permission setting for owner/admin balance and inbox refresh on shared accounts.
+- Mailbox provider reliability pass: mail.tm request timeout/retry and authenticated provider health check.
 
-## P2 - Workspace Creation Policy
+## Not Planned
 
-Status: planned
-
-### Problem
-
-Any active user can create a workspace today. That is probably fine for internal V1, but productized usage may need tighter policy.
-
-### Options
-
-- global admin only;
-- workspace owner/admin only;
-- allow active users, but cap workspace count;
-- feature flag: `ALLOW_USER_WORKSPACE_CREATION`.
-
-## P2 - Granular Shared Account Permissions
-
-Status: planned
-
-### Problem
-
-Shared accounts are currently read-only for non-creators. Some team workflows may need shared editing for balance status or inbox refresh.
-
-### Options
-
-- keep current read-only model;
-- allow `admin/owner` to edit shared accounts;
-- add per-account permissions;
-- allow workspace setting `sharedAccountsEditableByMembers`.
-
-## P2 - Dataset Quality Dashboard
-
-Status: planned
-
-### Problem
-
-Dataset quality exists per generated account, but operators do not have a full view of GEO/document coverage.
-
-### Acceptance Criteria
-
-- list GEOs and document types;
-- show quality: verified, synthetic pattern, missing rules;
-- show sample output;
-- show notes/source confidence from docs.
-
-## P2 - Email Provider Reliability
-
-Status: planned
-
-### Problem
-
-Generated mailboxes depend on one provider.
-
-### Candidate Improvements
-
-- add provider fallback;
-- provider health indicator;
-- retry policy per provider;
-- provider selection in workspace settings;
-- better error codes for mailbox creation and inbox fetch failures.
+- Dataset Quality Dashboard: explicitly deprioritized on 2026-07-16.
 
 ## P3 - UI Polish
 

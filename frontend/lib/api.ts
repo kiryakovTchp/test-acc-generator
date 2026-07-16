@@ -56,6 +56,8 @@ export interface UsageSummary {
     historyLimit: number;
     allowBulkGeneration: boolean;
     maxBulkCount: number;
+    sharedAccountEditing: 'creator_only' | 'owner_admin';
+    workspaceCreationPolicy: 'active_users' | 'owner_admin';
   };
   limits: {
     accountsPerDay: UsageLimit;
@@ -125,6 +127,8 @@ export interface WorkspaceSettings {
   allowBulkGeneration: boolean;
   maxBulkCount: number;
   mailboxProvider: string;
+  sharedAccountEditing: 'creator_only' | 'owner_admin';
+  workspaceCreationPolicy: 'active_users' | 'owner_admin';
   accountsPerDay: number;
   mailboxCreatePerDay: number;
   inboxRefreshPerMinute: number;
