@@ -1117,7 +1117,9 @@ select.input-field.badge-select {
 }
 
 .alert.slim {
-  margin-bottom: 14px;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto 14px;
 }
 
 .alert-error {
@@ -1133,9 +1135,11 @@ select.input-field.badge-select {
 }
 
 .alerts-panel {
+  width: 100%;
+  max-width: 1480px;
   display: grid;
   gap: 8px;
-  margin-bottom: 14px;
+  margin: 0 auto 14px;
 }
 
 .alert-card {
@@ -1436,6 +1440,7 @@ body {
 }
 
 .workspace-shell {
+  width: 100%;
   min-width: 0;
   padding: 0 18px 20px;
 }
@@ -1555,7 +1560,9 @@ body {
 }
 
 .quick-actions-panel {
-  margin: 18px 0 14px;
+  width: 100%;
+  max-width: 1480px;
+  margin: 18px auto 14px;
   padding: 14px 16px 16px;
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -1633,6 +1640,9 @@ body {
 }
 
 .workspace-grid {
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
   display: grid;
   grid-template-columns: 260px minmax(0, 1fr);
   grid-template-areas:
@@ -1924,6 +1934,9 @@ body {
 
 .utility-panel {
   grid-area: utility;
+  width: 100%;
+  max-width: 1480px;
+  margin: 0 auto;
   display: grid;
   align-content: start;
   gap: 16px;
@@ -2932,6 +2945,26 @@ kbd {
       'generation detail'
       'list detail'
       'links codes';
+  }
+}
+
+@media (min-width: 1680px) {
+  .workspace-shell {
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .workspace-grid {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .panel-generation,
+  .panel-list {
+    width: 100%;
+  }
+
+  .quick-actions-grid {
+    grid-template-columns: repeat(4, minmax(180px, 1fr));
   }
 }
 
