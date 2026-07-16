@@ -256,6 +256,43 @@ test('generated history records the mailbox provider used for creation', async (
   assert.equal(row?.mailbox_provider, 'mail_gw');
 });
 
+test('generation reads inbox with the provider that created the mailbox', async () => {
+  let primaryFetchCalls = 0;
+  let fallbackFetchCalls = 0;
+  const fallbackCreateProvider: EmailProvider = {
+    async createAccount() {
+      return { address: 'stub@mail.gw', password: 'secret', provider: 'mail_gw' };
+    },
+    async fetchInbox() {
+      primaryFetchCalls += 1;
+      throw new Error('wrong provider');
+    },
+  };
+  const mailGwReadProvider: EmailProvider = {
+    async createAccount() {
+      throw new Error('not used');
+    },
+    async fetchInbox() {
+      fallbackFetchCalls += 1;
+      return [{ plainText: 'Code 654321' }];
+    },
+  };
+
+  const item = await generateAccount({
+    userId: 1,
+    geoKey: 'zambia',
+    documentType: 'passport',
+    role: 'user',
+    persona: 'standard_user',
+    emailProvider: fallbackCreateProvider,
+    emailProviderForAccount: (providerKey) => providerKey === 'mail_gw' ? mailGwReadProvider : fallbackCreateProvider,
+  });
+
+  assert.equal(item?.mailboxProvider, 'mail_gw');
+  assert.equal(primaryFetchCalls, 0);
+  assert.equal(fallbackFetchCalls, 1);
+});
+
 test('workspace members see only their own account history until an account is shared', async () => {
   const ownerId = createTestUser('history_owner');
   const memberId = createTestUser('history_member');

@@ -70,6 +70,7 @@ interface Detail {
 interface TempMailbox {
   address: string;
   password: string;
+  provider?: MailboxProviderKey;
 }
 
 type MailboxInbox = Detail['inbox'];

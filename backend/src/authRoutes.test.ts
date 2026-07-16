@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import jwt from 'jsonwebtoken';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { hashPassword } from './auth.js';
 import { createWorkspaceInvite } from './invitations.js';
@@ -85,6 +86,32 @@ test('profile password and session management routes update only the authenticat
 
     const expired = await rawRequest(baseUrl, '/auth/me', { headers: { Authorization: `Bearer ${profile.token}` } });
     assert.equal(expired.status, 401);
+  } finally {
+    await closeServer(server);
+  }
+});
+
+test('signed access token without active session is rejected', async () => {
+  const password = 'session-required-password-123';
+  const userId = createTestUser('session_required_user', password);
+  const login = getLogin(userId);
+  const workspaceId = getDefaultWorkspaceForUser(userId);
+  const token = jwt.sign(
+    { userId, login, role: 'user', workspaceId },
+    'dev-secret',
+    {
+      expiresIn: '30m',
+      issuer: 'test-account-generator',
+      audience: 'test-account-generator-ui',
+      algorithm: 'HS256',
+    },
+  );
+
+  const server = app.listen(0);
+  try {
+    const baseUrl = `http://127.0.0.1:${(server.address() as any).port}`;
+    const response = await rawRequest(baseUrl, '/auth/me', { headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(response.status, 401);
   } finally {
     await closeServer(server);
   }

@@ -224,8 +224,14 @@ for (const user of seedUsers) {
     INSERT INTO users (login, password, password_hash, role, email, username, status, updated_at)
     VALUES (?, '', ?, ?, ?, ?, 'active', CURRENT_TIMESTAMP)
     ON CONFLICT(login) DO UPDATE SET
-      password = '',
-      password_hash = excluded.password_hash,
+      password = CASE
+        WHEN users.password_hash IS NULL OR users.password_hash = '' THEN ''
+        ELSE users.password
+      END,
+      password_hash = CASE
+        WHEN users.password_hash IS NULL OR users.password_hash = '' THEN excluded.password_hash
+        ELSE users.password_hash
+      END,
       role = excluded.role,
       email = COALESCE(NULLIF(users.email, ''), excluded.email),
       username = COALESCE(NULLIF(users.username, ''), excluded.username),
@@ -239,6 +245,9 @@ backfillUserWorkspaceFoundation();
 function loadSeedUsers() {
   const raw = process.env.SEED_USERS_JSON;
   if (!raw) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('SEED_USERS_JSON is required in production');
+    }
     return [
       { login: 'admin', password: 'admin123', role: 'admin' as const },
       { login: 'demo', password: 'demo123', role: 'user' as const },

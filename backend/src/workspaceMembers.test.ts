@@ -50,6 +50,44 @@ test('workspace must keep at least one owner', () => {
   assert.equal(listWorkspaceMembers(workspaceId, ownerId).some((item) => item.userId === ownerId && item.workspaceRole === 'owner'), true);
 });
 
+test('workspace admin cannot take over owner role or mutate owners', () => {
+  const ownerId = createTestUser('members_takeover_owner');
+  const adminId = createTestUser('members_takeover_admin');
+  const targetId = createTestUser('members_takeover_target');
+  const workspaceId = getDefaultWorkspaceForUser(ownerId);
+
+  addWorkspaceMember(workspaceId, ownerId, { login: getLogin(adminId), role: 'admin' });
+  addWorkspaceMember(workspaceId, ownerId, { login: getLogin(targetId), role: 'member' });
+
+  assert.throws(
+    () => updateWorkspaceMemberRole(workspaceId, adminId, adminId, { role: 'owner' }),
+    (error) => error instanceof ApiError && error.code === 'owner_role_required',
+  );
+  assert.throws(
+    () => updateWorkspaceMemberRole(workspaceId, adminId, targetId, { role: 'owner' }),
+    (error) => error instanceof ApiError && error.code === 'owner_role_required',
+  );
+  assert.throws(
+    () => updateWorkspaceMemberRole(workspaceId, adminId, ownerId, { role: 'member' }),
+    (error) => error instanceof ApiError && error.code === 'owner_role_required',
+  );
+  assert.throws(
+    () => removeWorkspaceMember(workspaceId, adminId, ownerId),
+    (error) => error instanceof ApiError && error.code === 'owner_role_required',
+  );
+});
+
+test('workspace owner can grant owner role when another owner remains', () => {
+  const ownerId = createTestUser('members_grant_owner');
+  const targetId = createTestUser('members_new_owner');
+  const workspaceId = getDefaultWorkspaceForUser(ownerId);
+
+  addWorkspaceMember(workspaceId, ownerId, { login: getLogin(targetId), role: 'admin' });
+  const members = updateWorkspaceMemberRole(workspaceId, ownerId, targetId, { role: 'owner' });
+
+  assert.equal(members.some((item) => item.userId === targetId && item.workspaceRole === 'owner'), true);
+});
+
 function createTestUser(prefix: string) {
   const login = `${prefix}_${Date.now()}_${Math.random().toString(16).slice(2)}`;
   const result = db.prepare(`

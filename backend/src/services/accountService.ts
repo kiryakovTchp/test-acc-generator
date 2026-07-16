@@ -26,6 +26,7 @@ export async function generateAccount(input: {
   role: Role;
   persona: PersonaKey;
   emailProvider: EmailProvider;
+  emailProviderForAccount?: (providerKey: string | undefined) => EmailProvider;
   includeDebug?: boolean;
 }) {
   cleanupOldHistory();
@@ -34,8 +35,9 @@ export async function generateAccount(input: {
   if (!geo) throw new ApiError('unsupported_geo', 'Unsupported GEO');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
+  const inboxProvider = input.emailProviderForAccount?.(emailAccount.provider) ?? input.emailProvider;
   const profile = generatePersonaProfile(geo.key, input.persona);
-  const inbox = await input.emailProvider.fetchInbox(emailAccount.address, emailAccount.password, generationInboxWaitMs);
+  const inbox = await inboxProvider.fetchInbox(emailAccount.address, emailAccount.password, generationInboxWaitMs);
   const hydratedInbox = buildInboxPayload(inbox);
 
   let documentValue = 'Missing Rules';
@@ -150,6 +152,19 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     canEditShared ? 1 : 0,
   );
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
+}
+
+export function getRefreshMailboxProviderKey(id: number, userId: number, workspaceId?: number) {
+  const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
+  const canEditShared = canEditSharedAccount(userId, resolvedWorkspaceId);
+  const row = db.prepare(`
+    SELECT mailbox_provider as mailboxProvider
+    FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ? OR (shared_with_workspace = 1 AND ? = 1))
+  `).get(id, resolvedWorkspaceId, userId, userId, userId, canEditShared ? 1 : 0) as { mailboxProvider?: string } | undefined;
+  return row?.mailboxProvider;
 }
 
 export function updateSiteAccountId(id: number, userId: number, siteAccountId: string, includeDebug = false, workspaceId?: number) {
