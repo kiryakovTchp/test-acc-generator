@@ -688,6 +688,33 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     }
   }
 
+  async function updateWorkspaceLifecycle(workspaceId: number, status: WorkspaceSummary['status']) {
+    setIsSavingSettings(true);
+    setSettingsStatus(status === 'archived' ? 'Archiving workspace' : 'Restoring workspace');
+    setError('');
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo; workspaces: WorkspaceSummary[]; workspace: WorkspaceSummary }>(`/workspaces/${workspaceId}/status`, token, {
+        method: 'PATCH',
+        body: JSON.stringify({ status }),
+      });
+      setWorkspaces(res.workspaces);
+      if (workspaceId === user?.workspaceId) {
+        setDetail(null);
+        persistAuthState(res.token, res.user);
+        await refresh(res.token, { showLoading: true });
+        setSettingsStatus(status === 'archived' ? 'Workspace archived' : 'Workspace restored');
+      } else {
+        setSettingsStatus(status === 'archived' ? 'Workspace archived' : 'Workspace restored');
+        await refreshUsage(res.token);
+      }
+    } catch (err) {
+      setSettingsStatus('Save failed');
+      setError(err instanceof Error ? err.message : 'Failed to update workspace status');
+    } finally {
+      setIsSavingSettings(false);
+    }
+  }
+
   async function saveAccountProfile() {
     setIsSavingAccount(true);
     setAccountStatus('Saving profile');
@@ -1132,7 +1159,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               aria-label="Switch workspace"
             >
               {workspaces.map((workspace) => (
-                <option key={workspace.id} value={workspace.id}>{workspace.name}</option>
+                <option key={workspace.id} value={workspace.id} disabled={workspace.status === 'archived'}>
+                  {workspace.name}{workspace.status === 'archived' ? ' (archived)' : ''}
+                </option>
               ))}
             </select>
             <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} users · {user.workspaceRole ?? 'member'}</div>
@@ -1662,6 +1691,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               onSavePersonalSettings={savePersonalSettings}
               onSaveWorkspaceSettings={saveWorkspaceSettings}
               onCreateWorkspace={createNewWorkspace}
+              onUpdateWorkspaceLifecycle={updateWorkspaceLifecycle}
               onAddMember={addMember}
               onUpdateMemberRole={updateMemberRole}
               onRemoveMember={removeMember}
@@ -1889,6 +1919,7 @@ function UtilityView({
   onSavePersonalSettings,
   onSaveWorkspaceSettings,
   onCreateWorkspace,
+  onUpdateWorkspaceLifecycle,
   onAddMember,
   onUpdateMemberRole,
   onRemoveMember,
@@ -1967,6 +1998,7 @@ function UtilityView({
   onSavePersonalSettings: () => void;
   onSaveWorkspaceSettings: () => void;
   onCreateWorkspace: () => void;
+  onUpdateWorkspaceLifecycle: (workspaceId: number, status: WorkspaceSummary['status']) => void;
   onAddMember: () => void;
   onUpdateMemberRole: (userId: number, role: WorkspaceMember['workspaceRole']) => void;
   onRemoveMember: (userId: number) => void;
@@ -2253,6 +2285,7 @@ function UtilityView({
     ? `${window.location.origin}/invite?token=${encodeURIComponent(lastInviteToken)}`
     : '';
   const pendingInviteCount = workspaceInvites.filter((invite) => invite.status === 'pending').length;
+  const activeWorkspaceCount = workspaces.filter((workspace) => workspace.status === 'active').length;
   const settingsTabs: Array<{ key: SettingsTab; label: string; meta: string }> = [
     { key: 'defaults', label: 'Defaults', meta: userSettings ? userSettings.defaultGeo : 'Loading' },
     { key: 'workspace', label: 'Workspace', meta: `${editableWorkspaceSettings.accountsPerDay}/day` },
@@ -2348,6 +2381,47 @@ function UtilityView({
           <button type="button" className="primary-button" onClick={onCreateWorkspace} disabled={isSavingSettings || !newWorkspaceName.trim()}>
             Create workspace
           </button>
+        </div>
+        <div className="members-table-wrap workspace-lifecycle-wrap">
+          <table className="account-table members-table workspace-lifecycle-table">
+            <thead>
+              <tr>
+                <th>Workspace</th>
+                <th>Status</th>
+                <th>Role</th>
+                <th>Users</th>
+                <th />
+              </tr>
+            </thead>
+            <tbody>
+              {workspaces.map((workspace) => {
+                const isActive = workspace.status === 'active';
+                const isOwner = workspace.workspaceRole === 'owner';
+                const disablesLastActive = isActive && activeWorkspaceCount <= 1;
+                return (
+                  <tr key={workspace.id}>
+                    <td>
+                      <strong>{workspace.name}</strong>
+                      <span>{workspace.id === currentWorkspace?.id ? 'Current workspace' : `Updated ${formatCompactDate(workspace.updatedAt)}`}</span>
+                    </td>
+                    <td><span className={cn('badge', isActive ? 'tone-success' : 'tone-warning')}>{workspace.status}</span></td>
+                    <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)}>{workspace.workspaceRole}</span></td>
+                    <td>{workspace.memberCount}</td>
+                    <td>
+                      <button
+                        type="button"
+                        className="micro-button"
+                        onClick={() => onUpdateWorkspaceLifecycle(workspace.id, isActive ? 'archived' : 'active')}
+                        disabled={isSavingSettings || !isOwner || disablesLastActive}
+                      >
+                        {isActive ? 'Archive' : 'Restore'}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
         <div className="settings-grid">
           <Field label="History retention days">
