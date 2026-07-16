@@ -86,6 +86,23 @@ export function recordUsageEvent(workspaceId: number, userId: number, eventType:
   `).run(workspaceId, userId, eventType, quantity);
 }
 
+export interface UsageReservation {
+  eventType: string;
+  limit: number;
+  window: '-1 day' | '-1 minute';
+  code: string;
+  message: string;
+  quantity?: number;
+}
+
+export function reserveUsage(workspaceId: number, userId: number, reservation: UsageReservation) {
+  reserveUsageBatch(workspaceId, userId, [reservation]);
+}
+
+export function reserveUsageBatch(workspaceId: number, userId: number, reservations: UsageReservation[]) {
+  reserveUsageTransaction(workspaceId, userId, reservations);
+}
+
 function buildUsage(workspaceId: number, userId: number, eventType: string, limit: number, since: string) {
   const used = getUsedQuantity(workspaceId, userId, eventType, since);
   return {
@@ -105,6 +122,25 @@ function enforceLimit(workspaceId: number, userId: number, eventType: string, li
     throw new ApiError(code, message, 429);
   }
 }
+
+const reserveUsageTransaction = db.transaction((workspaceId: number, userId: number, reservations: UsageReservation[]) => {
+  for (const reservation of reservations) {
+    enforceLimit(
+      workspaceId,
+      userId,
+      reservation.eventType,
+      reservation.limit,
+      reservation.window,
+      reservation.code,
+      reservation.message,
+      reservation.quantity ?? 1,
+    );
+  }
+
+  for (const reservation of reservations) {
+    recordUsageEvent(workspaceId, userId, reservation.eventType, reservation.quantity ?? 1);
+  }
+});
 
 function getUsedQuantity(workspaceId: number, userId: number, eventType: string, since: string) {
   const used = db.prepare(`

@@ -4,10 +4,15 @@ import jwt from 'jsonwebtoken';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { hashPassword } from './auth.js';
 import { createWorkspaceInvite } from './invitations.js';
+import { resetRateLimitsForTest } from './rateLimit.js';
 
 process.env.NODE_ENV = 'test';
 process.env.REGISTRATION_MODE = 'invite_only';
 const app = (await import('./index.js')).default;
+
+test.beforeEach(() => {
+  resetRateLimitsForTest();
+});
 
 test('invite can be inspected and accepted through HTTP registration', async () => {
   const ownerId = createTestUser('http_invite_owner', 'owner-password-123');
@@ -153,6 +158,49 @@ test('refresh and profile updates preserve the selected workspace', async () => 
       body: { workspaceId: created.user.workspaceId },
     });
     assert.equal(refreshed.user.workspaceId, created.user.workspaceId);
+  } finally {
+    await closeServer(server);
+  }
+});
+
+test('login is rate limited by source and normalized login', async () => {
+  const login = uniqueLogin('rate_limited_login');
+
+  const server = app.listen(0);
+  try {
+    const baseUrl = `http://127.0.0.1:${(server.address() as any).port}`;
+    let response = await rawRequest(baseUrl, '/auth/login', {
+      method: 'POST',
+      headers: { 'x-forwarded-for': '203.0.113.41' },
+      body: { login, password: 'wrong-password' },
+    });
+    assert.equal(response.status, 401);
+
+    for (let index = 0; index < 8; index += 1) {
+      response = await rawRequest(baseUrl, '/auth/login', {
+        method: 'POST',
+        headers: { 'x-forwarded-for': '203.0.113.41' },
+        body: { login, password: 'wrong-password' },
+      });
+    }
+    assert.equal(response.status, 429);
+    const events = db.prepare('SELECT success, failure_reason FROM auth_events WHERE login = ? ORDER BY id DESC LIMIT 1').get(login) as { success: number; failure_reason: string };
+    assert.equal(events.success, 0);
+    assert.equal(events.failure_reason, 'rate_limited');
+  } finally {
+    await closeServer(server);
+  }
+});
+
+test('auth endpoints reject overly long passwords before hashing', async () => {
+  const server = app.listen(0);
+  try {
+    const baseUrl = `http://127.0.0.1:${(server.address() as any).port}`;
+    const response = await rawRequest(baseUrl, '/auth/login', {
+      method: 'POST',
+      body: { login: uniqueLogin('long_password_login'), password: 'x'.repeat(257) },
+    });
+    assert.equal(response.status, 401);
   } finally {
     await closeServer(server);
   }

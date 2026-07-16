@@ -9,8 +9,9 @@ import type { EmailProvider } from './providers/emailProvider.js';
 import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { addDays, hashPassword, hashSessionToken, newSessionToken, verifyPassword } from './auth.js';
-import { ApiError, enforceDailyLimit, enforceMinuteLimit, getUsageSummary, getWorkspaceSettings, recordUsageEvent, USAGE_EVENTS } from './limits.js';
+import { addDays, hashPasswordAsync, hashSessionToken, newSessionToken, verifyPasswordAsync } from './auth.js';
+import { ApiError, getUsageSummary, getWorkspaceSettings, reserveUsage, reserveUsageBatch, USAGE_EVENTS } from './limits.js';
+import { assertRateLimit } from './rateLimit.js';
 import { assertCanReadWorkspaceSettings, getUserSettings, getWorkspaceSettingsForApi, updateUserSettings, updateWorkspaceSettings } from './settings.js';
 import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './permissions.js';
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
@@ -28,13 +29,22 @@ const jwtIssuer = process.env.JWT_ISSUER ?? 'test-account-generator';
 const jwtAudience = process.env.JWT_AUDIENCE ?? 'test-account-generator-ui';
 const sessionDays = Number(process.env.SESSION_DAYS ?? 30);
 const registrationMode = process.env.REGISTRATION_MODE ?? 'disabled';
+const maxPasswordLength = Number(process.env.MAX_PASSWORD_LENGTH ?? 256);
 const mailTmProvider = new MailTmProvider();
 const mailGwProvider = new MailGwProvider();
 const fallbackEmailProvider = new FallbackEmailProvider(mailTmProvider, mailGwProvider);
 const sessionCookieName = 'tag_session';
 
+app.disable('x-powered-by');
 app.use(cors({ credentials: true, origin: resolveCorsOrigin }));
 app.use(express.json());
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'same-origin');
+  next();
+});
 
 function auth(req: express.Request, res: express.Response, next: express.NextFunction) {
   const token = req.headers.authorization?.replace('Bearer ', '');
@@ -73,25 +83,40 @@ function auth(req: express.Request, res: express.Response, next: express.NextFun
 
 app.get('/health', (_req, res) => res.json({ ok: true }));
 
-app.post('/auth/login', (req, res) => {
+app.post('/auth/login', async (req, res) => {
   const login = String(req.body?.login ?? '').trim();
   const password = String(req.body?.password ?? '');
-  const user = db.prepare('SELECT id, login, password, password_hash, role, email, username, status FROM users WHERE login = ? OR email = ? OR username = ? LIMIT 1').get(login, login, login) as any;
-  if (!user || !verifyPassword(password, user.password_hash, user.password)) {
+  const ipAddress = requestIp(req);
+  if (!login || password.length > maxPasswordLength) {
+    recordAuthEvent(login, ipAddress, false, 'invalid_payload');
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  if (user.status !== 'active') {
-    return res.status(403).json({ error: 'User is not active' });
+  const user = db.prepare('SELECT id, login, password, password_hash, role, email, username, status FROM users WHERE login = ? OR email = ? OR username = ? LIMIT 1').get(login, login, login) as any;
+  try {
+    assertRateLimit(`login:${ipAddress}:${login.toLowerCase()}`, {
+      limit: 8,
+      windowMs: 10 * 60 * 1000,
+      code: 'auth_rate_limited',
+      message: 'Too many login attempts',
+    });
+  } catch (error) {
+    recordAuthEvent(login, ipAddress, false, 'rate_limited');
+    return sendError(res, error, 'Login rate limit exceeded');
+  }
+  if (!user || user.status !== 'active' || !(await verifyPasswordAsync(password, user.password_hash, user.password))) {
+    recordAuthEvent(login, ipAddress, false, user && user.status !== 'active' ? 'inactive_user' : 'invalid_credentials');
+    return res.status(401).json({ error: 'Invalid credentials' });
   }
   if (!user.password_hash) {
-    db.prepare('UPDATE users SET password_hash = ?, password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(hashPassword(password), '', user.id);
+    db.prepare('UPDATE users SET password_hash = ?, password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(await hashPasswordAsync(password), '', user.id);
   }
   const session = createSession(user.id, req);
   setSessionCookie(res, session.token, session.expiresAt);
+  recordAuthEvent(login, ipAddress, true);
   res.json(buildAuthResponse(user, session.id));
 });
 
-app.post('/auth/register', (req, res) => {
+app.post('/auth/register', async (req, res) => {
   if (registrationMode === 'disabled') {
     return res.status(403).json({ error: 'Registration is disabled', code: 'registration_disabled' });
   }
@@ -99,17 +124,23 @@ app.post('/auth/register', (req, res) => {
   const email = String(req.body?.email ?? '').trim().toLowerCase();
   const username = normalizeUsername(req.body?.username);
   const password = String(req.body?.password ?? '');
-  if (!email || !email.includes('@') || !username || password.length < 8) {
+  if (!email || !email.includes('@') || !username || password.length < 8 || password.length > maxPasswordLength) {
     return res.status(400).json({ error: 'Valid email, username, and 8+ character password are required', code: 'invalid_registration_payload' });
   }
 
   try {
+    assertRateLimit(`register:${requestIp(req)}`, {
+      limit: 5,
+      windowMs: 10 * 60 * 1000,
+      code: 'auth_rate_limited',
+      message: 'Too many registration attempts',
+    });
     if (registrationMode === 'invite_only') {
       const inviteToken = String(req.body?.inviteToken ?? '').trim();
       if (!inviteToken) {
         return res.status(403).json({ error: 'Invite token is required', code: 'invite_required' });
       }
-      const user = registerUserWithInvite({ inviteToken, email, username, passwordHash: hashPassword(password) });
+      const user = registerUserWithInvite({ inviteToken, email, username, passwordHash: await hashPasswordAsync(password) });
       const session = createSession(user.id, req);
       setSessionCookie(res, session.token, session.expiresAt);
       return res.status(201).json(buildAuthResponse(user, session.id));
@@ -118,7 +149,7 @@ app.post('/auth/register', (req, res) => {
     const result = db.prepare(`
       INSERT INTO users (login, password, password_hash, role, email, username, status, updated_at)
       VALUES (?, '', ?, 'user', ?, ?, 'active', CURRENT_TIMESTAMP)
-    `).run(username, hashPassword(password), email, username);
+    `).run(username, await hashPasswordAsync(password), email, username);
     const userId = Number(result.lastInsertRowid);
     getDefaultWorkspaceForUser(userId);
     const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(userId) as any;
@@ -146,6 +177,16 @@ app.get('/auth/invite', (req, res) => {
 });
 
 app.post('/auth/refresh', (req, res) => {
+  try {
+    assertRateLimit(`refresh:${requestIp(req)}`, {
+      limit: 60,
+      windowMs: 5 * 60 * 1000,
+      code: 'auth_rate_limited',
+      message: 'Too many refresh attempts',
+    });
+  } catch (error) {
+    return sendError(res, error, 'Refresh rate limit exceeded');
+  }
   const sessionToken = readCookie(req, sessionCookieName);
   if (!sessionToken) return res.status(401).json({ error: 'No active session' });
 
@@ -255,21 +296,21 @@ app.patch('/auth/profile', auth, (req, res) => {
   }
 });
 
-app.patch('/auth/password', auth, (req, res) => {
+app.patch('/auth/password', auth, async (req, res) => {
   const currentPassword = String(req.body?.currentPassword ?? '');
   const nextPassword = String(req.body?.newPassword ?? '');
-  if (nextPassword.length < 8) {
+  if (nextPassword.length < 8 || nextPassword.length > maxPasswordLength || currentPassword.length > maxPasswordLength) {
     return res.status(400).json({ error: 'New password must be at least 8 characters', code: 'invalid_password_payload' });
   }
   const user = db.prepare('SELECT id, password, password_hash FROM users WHERE id = ?').get((req as any).user.userId) as any;
-  if (!user || !verifyPassword(currentPassword, user.password_hash, user.password)) {
+  if (!user || !(await verifyPasswordAsync(currentPassword, user.password_hash, user.password))) {
     return res.status(403).json({ error: 'Current password is incorrect', code: 'current_password_invalid' });
   }
   db.prepare(`
     UPDATE users
     SET password_hash = ?, password = '', updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `).run(hashPassword(nextPassword), (req as any).user.userId);
+  `).run(await hashPasswordAsync(nextPassword), (req as any).user.userId);
   db.prepare(`
     UPDATE sessions
     SET revoked_at = CURRENT_TIMESTAMP
@@ -455,16 +496,8 @@ app.post('/mailboxes/create', auth, async (req, res) => {
   const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
-    enforceDailyLimit(
-      (req as any).user.workspaceId,
-      (req as any).user.userId,
-      USAGE_EVENTS.mailboxCreated,
-      settings.mailbox_create_per_day,
-      'mailbox_limit_reached',
-      'Daily mailbox creation limit reached',
-    );
+    reserveMailboxCreation((req as any).user.workspaceId, (req as any).user.userId, settings);
     const mailbox = await getEmailProvider(resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider)).createAccount();
-    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.mailboxCreated);
     res.json(mailbox);
   } catch (error) {
     sendError(res, error, 'Failed to create mailbox');
@@ -494,17 +527,9 @@ app.post('/mailboxes/inbox', auth, async (req, res) => {
   }
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
-    enforceMinuteLimit(
-      (req as any).user.workspaceId,
-      (req as any).user.userId,
-      USAGE_EVENTS.inboxRefreshed,
-      settings.inbox_refresh_per_minute,
-      'inbox_refresh_limit_reached',
-      'Inbox refresh limit reached',
-    );
+    reserveInboxRefresh((req as any).user.workspaceId, (req as any).user.userId, settings);
     const provider = getMailboxReadProvider(req.body?.provider ?? req.body?.mailboxProvider ?? preciseMailboxProviderOrUndefined(settings.mailbox_provider));
     const inbox = await provider.fetchInbox(address, password, waitMs);
-    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(buildInboxPayload(inbox));
   } catch (error) {
     sendError(res, error, 'Failed to fetch mailbox inbox');
@@ -517,20 +542,12 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
   const includeDebug = req.query.debug === '1';
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
-    enforceMinuteLimit(
-      (req as any).user.workspaceId,
-      (req as any).user.userId,
-      USAGE_EVENTS.inboxRefreshed,
-      settings.inbox_refresh_per_minute,
-      'inbox_refresh_limit_reached',
-      'Inbox refresh limit reached',
-    );
     const historyId = Number(req.params.id);
     const mailboxProvider = getRefreshMailboxProviderKey(historyId, (req as any).user.userId, (req as any).user.workspaceId);
     if (!mailboxProvider) return res.status(404).json({ error: 'Not found' });
+    reserveInboxRefresh((req as any).user.workspaceId, (req as any).user.userId, settings);
     const item = await refreshInbox(historyId, (req as any).user.userId, getMailboxReadProvider(mailboxProvider), waitMs, includeDebug, (req as any).user.workspaceId);
     if (!item) return res.status(404).json({ error: 'Not found' });
-    recordUsageEvent((req as any).user.workspaceId, (req as any).user.userId, USAGE_EVENTS.inboxRefreshed);
     res.json(item);
   } catch (error) {
     sendError(res, error, 'Failed to refresh inbox');
@@ -612,7 +629,7 @@ app.post('/accounts/generate', auth, async (req, res) => {
   const settings = getWorkspaceSettings((req as any).user.workspaceId);
   try {
     requireWorkspacePermission(req, ['owner', 'admin', 'member']);
-    enforceGenerationLimits((req as any).user.workspaceId, (req as any).user.userId, settings, 1);
+    reserveGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, settings, 1);
     const item = await generateAccount({
       userId: (req as any).user.userId,
       workspaceId: (req as any).user.workspaceId,
@@ -624,7 +641,6 @@ app.post('/accounts/generate', auth, async (req, res) => {
       emailProviderForAccount: getMailboxReadProvider,
       includeDebug: req.query.debug === '1',
     });
-    recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, 1);
     res.json(item);
   } catch (error) {
     sendError(res, error, 'Failed to generate account');
@@ -642,7 +658,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
     if (!settings.allow_bulk_generation) {
       throw new ApiError('bulk_generation_disabled', 'Bulk generation is disabled for this workspace', 403);
     }
-    enforceGenerationLimits((req as any).user.workspaceId, (req as any).user.userId, settings, count);
+    reserveGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, settings, count);
     const items = [];
     for (let index = 0; index < count; index += 1) {
       items.push(await generateAccount({
@@ -657,7 +673,6 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
         includeDebug: false,
       }));
     }
-    recordGenerationUsage((req as any).user.workspaceId, (req as any).user.userId, count);
     res.json({ items });
   } catch (error) {
     sendError(res, error, 'Failed to generate accounts');
@@ -761,30 +776,45 @@ function normalizeEmail(value: unknown) {
   return email && email.includes('@') ? email : '';
 }
 
-function enforceGenerationLimits(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>, quantity: number) {
-  enforceDailyLimit(
-    workspaceId,
-    userId,
-    USAGE_EVENTS.accountGenerated,
-    settings.accounts_per_day,
-    'generation_limit_reached',
-    'Daily account generation limit reached',
-    quantity,
-  );
-  enforceDailyLimit(
-    workspaceId,
-    userId,
-    USAGE_EVENTS.mailboxCreated,
-    settings.mailbox_create_per_day,
-    'mailbox_limit_reached',
-    'Daily mailbox creation limit reached',
-    quantity,
-  );
+function reserveGenerationUsage(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>, quantity: number) {
+  reserveUsageBatch(workspaceId, userId, [
+    {
+      eventType: USAGE_EVENTS.accountGenerated,
+      limit: settings.accounts_per_day,
+      window: '-1 day',
+      code: 'generation_limit_reached',
+      message: 'Daily account generation limit reached',
+      quantity,
+    },
+    {
+      eventType: USAGE_EVENTS.mailboxCreated,
+      limit: settings.mailbox_create_per_day,
+      window: '-1 day',
+      code: 'mailbox_limit_reached',
+      message: 'Daily mailbox creation limit reached',
+      quantity,
+    },
+  ]);
 }
 
-function recordGenerationUsage(workspaceId: number, userId: number, quantity: number) {
-  recordUsageEvent(workspaceId, userId, USAGE_EVENTS.accountGenerated, quantity);
-  recordUsageEvent(workspaceId, userId, USAGE_EVENTS.mailboxCreated, quantity);
+function reserveMailboxCreation(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>) {
+  reserveUsage(workspaceId, userId, {
+    eventType: USAGE_EVENTS.mailboxCreated,
+    limit: settings.mailbox_create_per_day,
+    window: '-1 day',
+    code: 'mailbox_limit_reached',
+    message: 'Daily mailbox creation limit reached',
+  });
+}
+
+function reserveInboxRefresh(workspaceId: number, userId: number, settings: ReturnType<typeof getWorkspaceSettings>) {
+  reserveUsage(workspaceId, userId, {
+    eventType: USAGE_EVENTS.inboxRefreshed,
+    limit: settings.inbox_refresh_per_minute,
+    window: '-1 minute',
+    code: 'inbox_refresh_limit_reached',
+    message: 'Inbox refresh limit reached',
+  });
 }
 
 function resolveJwtSecret() {
@@ -803,6 +833,19 @@ function parseAllowedOrigins() {
       .map((origin) => origin.trim())
       .filter(Boolean),
   );
+}
+
+function requestIp(req: express.Request) {
+  const forwardedFor = String(req.headers['x-forwarded-for'] ?? '').split(',')[0]?.trim();
+  const ip = String(req.headers['cf-connecting-ip'] ?? req.headers['x-real-ip'] ?? forwardedFor ?? req.ip ?? '');
+  return ip.slice(0, 80);
+}
+
+function recordAuthEvent(login: string, ipAddress: string, success: boolean, failureReason = '') {
+  db.prepare(`
+    INSERT INTO auth_events (login, ip_address, success, failure_reason)
+    VALUES (?, ?, ?, ?)
+  `).run(login.trim().toLowerCase().slice(0, 160), ipAddress.slice(0, 80), success ? 1 : 0, failureReason.slice(0, 80));
 }
 
 function resolveCorsOrigin(origin: string | undefined, callback: (error: Error | null, allow?: boolean | string) => void) {

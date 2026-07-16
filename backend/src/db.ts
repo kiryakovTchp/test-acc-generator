@@ -169,6 +169,15 @@ CREATE TABLE IF NOT EXISTS usage_events (
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS auth_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  login TEXT NOT NULL DEFAULT '',
+  ip_address TEXT NOT NULL DEFAULT '',
+  success INTEGER NOT NULL DEFAULT 0,
+  failure_reason TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS workspace_invites (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   workspace_id INTEGER NOT NULL,
@@ -205,6 +214,8 @@ CREATE INDEX IF NOT EXISTS idx_account_history_workspace_created_at ON account_h
 CREATE INDEX IF NOT EXISTS idx_account_history_created_by ON account_history(created_by_user_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_account_history_workspace_shared ON account_history(workspace_id, shared_with_workspace, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_usage_events_workspace_type_created_at ON usage_events(workspace_id, event_type, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_auth_events_login_created_at ON auth_events(login, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_auth_events_ip_created_at ON auth_events(ip_address, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token_hash_unique ON sessions(token_hash);
 CREATE INDEX IF NOT EXISTS idx_workspace_invites_workspace_created_at ON workspace_invites(workspace_id, created_at DESC);
