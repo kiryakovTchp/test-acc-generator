@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import db from './db.js';
 import { createWorkspace, listWorkspaces, updateWorkspaceStatus } from './workspaces.js';
+import { listActivityEvents } from './activity.js';
 
 test('active users can create and list additional workspaces', () => {
   const userId = createTestUser('workspace_create');
@@ -13,6 +14,7 @@ test('active users can create and list additional workspaces', () => {
 
   const workspaces = listWorkspaces(userId);
   assert.ok(workspaces.some((item) => item.id === workspace.id && item.memberCount === 1));
+  assert.ok(listActivityEvents(workspace.id, userId).some((event) => event.eventType === 'workspace_created'));
 });
 
 test('inactive users cannot create workspaces', () => {
@@ -43,6 +45,9 @@ test('owners can archive and restore an extra workspace', () => {
 
   const restored = updateWorkspaceStatus(userId, archiveTarget.id, { status: 'active' });
   assert.equal(restored.status, 'active');
+  const events = listActivityEvents(archiveTarget.id, userId);
+  assert.ok(events.some((event) => event.eventType === 'workspace_archived'));
+  assert.ok(events.some((event) => event.eventType === 'workspace_restored'));
 });
 
 test('non-owners cannot archive workspaces', () => {

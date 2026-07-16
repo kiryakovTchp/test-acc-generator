@@ -11,22 +11,11 @@ This file tracks product and engineering improvements that are not yet implement
 - `P2`: useful improvement;
 - `P3`: polish or optional enhancement.
 
-## P1 - Stronger Frontend Tests
+## Completed on 2026-07-16
 
-Status: planned
-
-### Problem
-
-Frontend test is currently a smoke placeholder. Next build type checks the app, but important UI behavior is not covered.
-
-### Candidate Coverage
-
-- login/auth bootstrap;
-- workspace switcher renders and changes active workspace;
-- private/shared account controls render correctly;
-- non-owner shared account rows are read-only;
-- Settings tabs render without layout regressions;
-- invite link copy and invite creation states.
+- Workspace archive/restore management for owners, including Settings UI and safe active-workspace fallback.
+- Activity log table, API, and Settings -> Activity UI for generation, sharing, invite, member, workspace, and session events.
+- Stronger frontend tests for shared UI state helpers and Settings tab metadata, replacing the smoke placeholder.
 
 ## P2 - Workspace Creation Policy
 
@@ -57,24 +46,6 @@ Shared accounts are currently read-only for non-creators. Some team workflows ma
 - allow `admin/owner` to edit shared accounts;
 - add per-account permissions;
 - allow workspace setting `sharedAccountsEditableByMembers`.
-
-## P2 - Activity Log
-
-Status: planned
-
-### Problem
-
-Important actions are not audited in a dedicated table.
-
-### Candidate Events
-
-- generated account;
-- account shared/unshared;
-- balance status changed;
-- invite created/revoked/accepted;
-- member role changed;
-- workspace created/switched/archived;
-- session revoked.
 
 ## P2 - Dataset Quality Dashboard
 

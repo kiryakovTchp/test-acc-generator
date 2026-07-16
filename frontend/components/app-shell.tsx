@@ -3,14 +3,12 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { apiFetch, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
+import { apiFetch, type ActivityItem, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
+import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
 type NavKey = Exclude<AppView, 'main'>;
-type HistoryStatus = 'generated' | 'email_received' | 'waiting';
-type AccountBalanceStatus = 'unknown' | 'no_balance' | 'has_balance';
-type SettingsTab = 'defaults' | 'workspace' | 'invites' | 'team' | 'security' | 'analytics';
 type BrowserGenerationSettings = {
   selectedGeo: string;
   documentType: string;
@@ -89,11 +87,6 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
 ];
 
 const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
-const BALANCE_STATUS_OPTIONS: Array<{ value: AccountBalanceStatus; label: string }> = [
-  { value: 'unknown', label: 'Unknown' },
-  { value: 'no_balance', label: 'No balance' },
-  { value: 'has_balance', label: 'Has balance' },
-];
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
@@ -139,65 +132,6 @@ function localPhoneDigits(phone: string, geoKey?: string) {
     return digits.slice(countryCode.length);
   }
   return digits;
-}
-
-function mapHistoryStatus(item: HistoryItem): HistoryStatus {
-  if (item.inboxStatus === 'email_received') return 'email_received';
-  if (item.inboxStatus === 'waiting_for_email' || item.inboxStatus === 'no_email_found') return 'waiting';
-  return 'generated';
-}
-
-function mapDetailStatus(detail: Detail | null): HistoryStatus {
-  if (!detail) return 'waiting';
-  if (detail.inbox.status === 'email_received') return 'email_received';
-  if (detail.inbox.status === 'no_email_found') return 'waiting';
-  return 'generated';
-}
-
-function statusTone(status: HistoryStatus) {
-  if (status === 'email_received') return 'success';
-  if (status === 'generated') return 'active';
-  return 'warning';
-}
-
-function inviteStatusTone(status: string) {
-  if (status === 'accepted') return 'success';
-  if (status === 'pending') return 'active';
-  return 'warning';
-}
-
-function roleTone(role: string) {
-  if (role === 'owner' || role === 'admin') return 'success';
-  if (role === 'member' || role === 'user') return 'active';
-  return 'warning';
-}
-
-function statusLabel(status: HistoryStatus) {
-  if (status === 'email_received') return 'Email received';
-  if (status === 'generated') return 'Generated';
-  return 'Waiting';
-}
-
-function balanceStatusLabel(status: AccountBalanceStatus) {
-  return BALANCE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? 'Unknown';
-}
-
-function balanceStatusTone(status: AccountBalanceStatus) {
-  if (status === 'has_balance') return 'success';
-  if (status === 'no_balance') return 'warning';
-  return 'active';
-}
-
-function isWorkspaceShared(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
-  return item.sharedWithWorkspace === true || item.sharedWithWorkspace === 1;
-}
-
-function scopeTone(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
-  return isWorkspaceShared(item) ? 'success' : 'active';
-}
-
-function scopeLabel(item: Pick<HistoryItem, 'sharedWithWorkspace'> | Pick<Detail, 'sharedWithWorkspace'>) {
-  return isWorkspaceShared(item) ? 'Shared' : 'Private';
 }
 
 function getBrowserStorage(): Storage | null {
@@ -269,6 +203,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [usageSummary, setUsageSummary] = useState<UsageSummary | null>(null);
   const [alertItems, setAlertItems] = useState<AlertItem[]>([]);
   const [analyticsSummary, setAnalyticsSummary] = useState<AnalyticsSummary | null>(null);
+  const [activityItems, setActivityItems] = useState<ActivityItem[]>([]);
   const [userSettings, setUserSettings] = useState<UserSettings | null>(null);
   const [workspaceSettings, setWorkspaceSettings] = useState<ServerWorkspaceSettings | null>(null);
   const [workspaces, setWorkspaces] = useState<WorkspaceSummary[]>([]);
@@ -438,12 +373,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setAccountUsername(me.user.username ?? me.user.login);
       const workspaceId = me.user.workspaceId;
       const canLoadInvites = ['owner', 'admin'].includes(me.user.workspaceRole ?? '');
-      const [geo, historyRes, limitsRes, alertsRes, analyticsRes, userSettingsRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
+      const [geo, historyRes, limitsRes, alertsRes, analyticsRes, activityRes, userSettingsRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes, sessionsRes] = await Promise.all([
         apiFetch<{ items: GeoItem[] }>('/geo-rules', authToken),
         apiFetch<{ items: HistoryItem[] }>('/history', authToken),
         apiFetch<UsageSummary>('/limits', authToken),
         apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
         apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
+        apiFetch<{ items: ActivityItem[] }>('/activity', authToken),
         apiFetch<{ settings: UserSettings }>('/user/settings', authToken),
         apiFetch<{ workspaces: WorkspaceSummary[] }>('/workspaces', authToken),
         workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
@@ -456,6 +392,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setUsageSummary(limitsRes);
       setAlertItems(alertsRes.items);
       setAnalyticsSummary(analyticsRes.summary);
+      setActivityItems(activityRes.items);
       setUserSettings(userSettingsRes.settings);
       setWorkspaces(workspacesRes.workspaces);
       setWorkspaceSettings(workspaceSettingsRes.settings);
@@ -486,10 +423,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function refreshUsage(authToken = token) {
-    const [limitsRes, alertsRes, analyticsRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
+    const [limitsRes, alertsRes, analyticsRes, activityRes, workspacesRes, workspaceSettingsRes, workspaceMembersRes, workspaceInvitesRes] = await Promise.all([
       apiFetch<UsageSummary>('/limits', authToken),
       apiFetch<{ items: AlertItem[] }>('/alerts', authToken),
       apiFetch<{ summary: AnalyticsSummary }>('/analytics/summary', authToken),
+      apiFetch<{ items: ActivityItem[] }>('/activity', authToken),
       apiFetch<{ workspaces: WorkspaceSummary[] }>('/workspaces', authToken),
       user?.workspaceId ? apiFetch<{ settings: ServerWorkspaceSettings }>(`/workspaces/${user.workspaceId}/settings`, authToken) : Promise.resolve({ settings: null }),
       user?.workspaceId ? apiFetch<{ members: WorkspaceMember[] }>(`/workspaces/${user.workspaceId}/members`, authToken) : Promise.resolve({ members: [] }),
@@ -498,6 +436,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setUsageSummary(limitsRes);
     setAlertItems(alertsRes.items);
     setAnalyticsSummary(analyticsRes.summary);
+    setActivityItems(activityRes.items);
     setWorkspaces(workspacesRes.workspaces);
     setWorkspaceSettings(workspaceSettingsRes.settings);
     setWorkspaceMembers(workspaceMembersRes.members);
@@ -1709,6 +1648,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               isWorkspaceLoading={isWorkspaceBootstrapping}
               alertItems={alertItems}
               analyticsSummary={analyticsSummary}
+              activityItems={activityItems}
             />
           )}
         </div>
@@ -1937,6 +1877,7 @@ function UtilityView({
   isWorkspaceLoading,
   alertItems,
   analyticsSummary,
+  activityItems,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -2016,6 +1957,7 @@ function UtilityView({
   isWorkspaceLoading: boolean;
   alertItems: AlertItem[];
   analyticsSummary: AnalyticsSummary | null;
+  activityItems: ActivityItem[];
 }) {
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
 
@@ -2286,14 +2228,15 @@ function UtilityView({
     : '';
   const pendingInviteCount = workspaceInvites.filter((invite) => invite.status === 'pending').length;
   const activeWorkspaceCount = workspaces.filter((workspace) => workspace.status === 'active').length;
-  const settingsTabs: Array<{ key: SettingsTab; label: string; meta: string }> = [
-    { key: 'defaults', label: 'Defaults', meta: userSettings ? userSettings.defaultGeo : 'Loading' },
-    { key: 'workspace', label: 'Workspace', meta: `${editableWorkspaceSettings.accountsPerDay}/day` },
-    { key: 'invites', label: 'Invites', meta: `${pendingInviteCount} pending` },
-    { key: 'team', label: 'Team', meta: `${workspaceMembers.length} users` },
-    { key: 'security', label: 'Security', meta: `${authSessions.length} sessions` },
-    { key: 'analytics', label: 'Analytics', meta: analyticsSummary ? `${analyticsSummary.totals.generated24h}/24h` : 'Loading' },
-  ];
+  const settingsTabs = buildSettingsTabs({
+    bulkCount,
+    workspaceName: currentWorkspace?.name,
+    inviteCount: pendingInviteCount,
+    memberCount: workspaceMembers.length,
+    activeSessionCount: authSessions.length,
+    generated24h: analyticsSummary?.totals.generated24h ?? 0,
+    activityCount: activityItems.length,
+  });
 
   return (
     <section className="panel utility-panel">
@@ -2739,6 +2682,45 @@ function UtilityView({
       </section>
       ) : null}
 
+      {settingsTab === 'activity' ? (
+      <section className="settings-section settings-tab-panel">
+        <div className="section-subhead">
+          <h3>Activity Log</h3>
+          <p>Workspace actions across generation, sharing, invites, members, workspaces, and sessions.</p>
+        </div>
+        <div className="account-table-wrap activity-table-wrap">
+          <table className="account-table activity-table">
+            <thead>
+              <tr>
+                <th>Event</th>
+                <th>Actor</th>
+                <th>Entity</th>
+                <th>Time</th>
+              </tr>
+            </thead>
+            <tbody>
+              {activityItems.map((item) => (
+                <tr key={item.id}>
+                  <td>
+                    <strong>{item.summary}</strong>
+                    <span>{activityEventLabel(item.eventType)}</span>
+                  </td>
+                  <td>{item.actorLogin || `User ${item.userId}`}</td>
+                  <td>{item.entityType ? `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}` : 'Workspace'}</td>
+                  <td>{formatCompactDate(item.createdAt)}</td>
+                </tr>
+              ))}
+              {activityItems.length === 0 ? (
+                <tr>
+                  <td colSpan={4}>No workspace activity yet.</td>
+                </tr>
+              ) : null}
+            </tbody>
+          </table>
+        </div>
+      </section>
+      ) : null}
+
       <div className="settings-save-note">
         Browser cache is still used for fast reloads, but backend settings are the source of truth after sign in.
       </div>
@@ -2762,6 +2744,10 @@ function Metric({ label, value }: { label: string; value: string }) {
       <strong>{value}</strong>
     </div>
   );
+}
+
+function activityEventLabel(value: string) {
+  return value.replaceAll('_', ' ');
 }
 
 function UsagePill({ label, used, limit }: { label: string; used: number; limit: number }) {

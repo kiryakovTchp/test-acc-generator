@@ -1,6 +1,7 @@
 import db from './db.js';
 import { ApiError } from './limits.js';
 import { assertWorkspaceRole, type WorkspaceRole } from './permissions.js';
+import { recordActivity } from './activity.js';
 
 const WORKSPACE_ROLES: WorkspaceRole[] = ['owner', 'admin', 'member', 'viewer'];
 
@@ -66,6 +67,15 @@ export function addWorkspaceMember(workspaceId: number, actorUserId: number, pay
   }
 
   db.prepare('INSERT OR IGNORE INTO user_settings (user_id) VALUES (?)').run(user.id);
+  recordActivity({
+    workspaceId,
+    userId: actorUserId,
+    eventType: 'member_added',
+    entityType: 'user',
+    entityId: user.id,
+    summary: `Added ${lookup} as ${role}`,
+    metadata: { targetUserId: user.id, role },
+  });
   return listWorkspaceMembers(workspaceId, actorUserId);
 }
 
@@ -83,6 +93,15 @@ export function updateWorkspaceMemberRole(workspaceId: number, actorUserId: numb
     WHERE workspace_id = ? AND user_id = ?
   `).run(role, workspaceId, targetUserId);
 
+  recordActivity({
+    workspaceId,
+    userId: actorUserId,
+    eventType: 'member_role_changed',
+    entityType: 'user',
+    entityId: targetUserId,
+    summary: `Changed member role to ${role}`,
+    metadata: { targetUserId, role },
+  });
   return listWorkspaceMembers(workspaceId, actorUserId);
 }
 
@@ -96,6 +115,15 @@ export function removeWorkspaceMember(workspaceId: number, actorUserId: number, 
     WHERE workspace_id = ? AND user_id = ?
   `).run(workspaceId, targetUserId);
 
+  recordActivity({
+    workspaceId,
+    userId: actorUserId,
+    eventType: 'member_removed',
+    entityType: 'user',
+    entityId: targetUserId,
+    summary: 'Removed workspace member',
+    metadata: { targetUserId },
+  });
   return listWorkspaceMembers(workspaceId, actorUserId);
 }
 

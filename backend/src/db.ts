@@ -183,6 +183,20 @@ CREATE TABLE IF NOT EXISTS workspace_invites (
   FOREIGN KEY (accepted_by_user_id) REFERENCES users(id)
 );
 
+CREATE TABLE IF NOT EXISTS activity_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  workspace_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  event_type TEXT NOT NULL,
+  entity_type TEXT NOT NULL DEFAULT '',
+  entity_id TEXT NOT NULL DEFAULT '',
+  summary TEXT NOT NULL,
+  metadata_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (workspace_id) REFERENCES workspaces(id),
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);
+
 CREATE INDEX IF NOT EXISTS idx_workspace_members_user ON workspace_members(user_id, workspace_id);
 CREATE INDEX IF NOT EXISTS idx_account_history_workspace_created_at ON account_history(workspace_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_account_history_created_by ON account_history(created_by_user_id, created_at DESC);
@@ -192,6 +206,8 @@ CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user_id, created_at DES
 CREATE UNIQUE INDEX IF NOT EXISTS idx_sessions_token_hash_unique ON sessions(token_hash);
 CREATE INDEX IF NOT EXISTS idx_workspace_invites_workspace_created_at ON workspace_invites(workspace_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_workspace_invites_status_expires_at ON workspace_invites(status, expires_at);
+CREATE INDEX IF NOT EXISTS idx_activity_events_workspace_created_at ON activity_events(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_activity_events_workspace_type ON activity_events(workspace_id, event_type, created_at DESC);
 `);
 
 ensureColumn('sessions', 'last_seen_at', 'TEXT');

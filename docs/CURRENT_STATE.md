@@ -1,8 +1,8 @@
 # Test Account Generator V1 - current state
 
-Last updated: 2026-07-15  
-Production URL: https://test-acc-generator.touchpe.ru  
-Current production commit at update time: `4f2b908 Add private account sharing and workspaces`
+Last updated: 2026-07-16
+Production URL: https://test-acc-generator.touchpe.ru
+Current production commit at update time: this document's commit
 
 This document describes the current product and technical state. The older roadmap files in this folder are historical planning notes unless they explicitly say otherwise.
 
@@ -21,7 +21,8 @@ Primary user jobs:
 - track site account id and balance status manually;
 - keep generated accounts private by default;
 - share selected generated accounts with teammates in the same workspace;
-- invite teammates into workspaces with role-based access.
+- invite teammates into workspaces with role-based access;
+- review workspace activity across generation, sharing, invites, members, workspaces, and sessions.
 
 ## Stack
 
@@ -47,6 +48,7 @@ test-account-generator-v1/
       workspaces.ts                    # workspace list/create/switch helpers
       workspaceMembers.ts              # member management
       invitations.ts                   # invite token lifecycle and invite registration
+      activity.ts                      # workspace activity log
       settings.ts                      # user/workspace settings
       limits.ts                        # usage limits and usage events
       monitoring.ts                    # alerts and analytics summary
@@ -192,6 +194,22 @@ Current limitation:
 
 - invite links are not emailed automatically yet. The UI provides a copyable invite link.
 
+### Activity Event
+
+Activity events live in `activity_events` and are scoped to a workspace.
+
+Current logged actions:
+
+- generated account;
+- account shared/unshared;
+- balance status changed;
+- invite created/revoked/accepted;
+- member added/removed/role changed;
+- workspace created/archived/restored;
+- session revoked, logout everywhere, and password change.
+
+Activity can be read by any active member of the current workspace and appears in Settings -> Activity.
+
 ## Frontend Views
 
 ### `/main`
@@ -251,7 +269,8 @@ Settings are grouped by tabs:
 - Invites: create/revoke invite links;
 - Team: member list and role management;
 - Security: profile, password, sessions;
-- Analytics: workspace usage and alerts.
+- Analytics: workspace usage and alerts;
+- Activity: recent workspace action log.
 
 Workspace switcher is in the sidebar. Creating a workspace immediately switches the session into the new workspace by issuing a new JWT with that workspace id.
 
@@ -328,6 +347,7 @@ Authorization: Bearer <jwt>
 - `GET /limits`
 - `GET /alerts`
 - `GET /analytics/summary`
+- `GET /activity`
 
 ### User Settings
 
@@ -394,6 +414,7 @@ Current main tables:
 - `user_settings`;
 - `sessions`;
 - `usage_events`;
+- `activity_events`;
 - `account_history`.
 
 Schema migrations are lightweight and run from `backend/src/db.ts` through `CREATE TABLE IF NOT EXISTS`, `CREATE INDEX IF NOT EXISTS`, and `ensureColumn`.
@@ -486,6 +507,6 @@ Recommended authenticated smoke:
 - Temporary mailbox delivery depends on `mail.tm` availability and may be flaky.
 - All generated identity data is synthetic and should be used only for QA/testing.
 - Some GEO datasets are verified while others are synthetic-pattern or missing-rule quality.
-- Frontend smoke test is currently minimal; most coverage is backend tests plus Next build type checking.
+- Frontend has focused Node unit tests for shared UI state helpers and Settings tab metadata; browser-level E2E coverage is still not implemented.
 - Workspace archive/restore is available to workspace owners from Settings -> Workspace; archived workspaces remain visible in management but cannot be switched into.
 - There is no billing or organization-level admin model.

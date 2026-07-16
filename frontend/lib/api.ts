@@ -99,6 +99,19 @@ export interface AnalyticsSummary {
   }>;
 }
 
+export interface ActivityItem {
+  id: number;
+  workspaceId: number;
+  userId: number;
+  actorLogin: string;
+  eventType: string;
+  entityType: string;
+  entityId: string;
+  summary: string;
+  metadata: Record<string, unknown>;
+  createdAt: string;
+}
+
 export interface UserSettings {
   defaultGeo: string;
   defaultPersona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';

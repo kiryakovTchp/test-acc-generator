@@ -4,6 +4,7 @@ import db, { getDefaultWorkspaceForUser } from './db.js';
 import { listGeoRules, generateAccount, getHistoryDetail, listHistory, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
+import { listActivityEvents } from './activity.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -135,6 +136,7 @@ test('account balance status can be set after registration', async () => {
 
   const listItem = (listHistory(1) as Array<{ id: number; balanceStatus: string }>).find((entry) => entry.id === item?.id);
   assert.equal(listItem?.balanceStatus, 'has_balance');
+  assert.ok(listActivityEvents(item!.workspaceId, 1).some((event) => event.eventType === 'balance_status_changed' && event.entityId === String(item!.id)));
 });
 
 test('phone can be regenerated without changing the rest of the identity', async () => {
@@ -240,11 +242,13 @@ test('workspace members see only their own account history until an account is s
 
   const item = await generateAccount({ userId: ownerId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.ok(item);
+  assert.ok(listActivityEvents(workspaceId, ownerId).some((event) => event.eventType === 'account_generated' && event.entityId === String(item!.id)));
   assert.equal(listHistory(memberId, workspaceId).some((row: any) => row.id === item!.id), false);
   assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId), null);
 
   const shared = updateHistorySharing(item!.id, ownerId, true, false, workspaceId);
   assert.equal(shared?.sharedWithWorkspace, true);
+  assert.ok(listActivityEvents(workspaceId, ownerId).some((event) => event.eventType === 'account_shared' && event.entityId === String(item!.id)));
   assert.equal(listHistory(memberId, workspaceId).some((row: any) => row.id === item!.id && row.sharedWithWorkspace), true);
   assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId)?.email, item?.email);
   assert.equal(getHistoryDetail(item!.id, memberId, true, workspaceId)?.inbox.rawHtml, null);
@@ -254,6 +258,7 @@ test('workspace members see only their own account history until an account is s
 
   const privateAgain = updateHistorySharing(item!.id, ownerId, false, false, workspaceId);
   assert.equal(privateAgain?.sharedWithWorkspace, false);
+  assert.ok(listActivityEvents(workspaceId, ownerId).some((event) => event.eventType === 'account_unshared' && event.entityId === String(item!.id)));
   assert.equal(getHistoryDetail(item!.id, memberId, false, workspaceId), null);
 });
 

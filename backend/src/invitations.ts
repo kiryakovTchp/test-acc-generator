@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto';
 import db from './db.js';
 import { ApiError } from './limits.js';
 import { assertWorkspaceRole, type WorkspaceRole } from './permissions.js';
+import { recordActivity } from './activity.js';
 
 type InviteRole = Extract<WorkspaceRole, 'admin' | 'member' | 'viewer'>;
 
@@ -81,6 +82,15 @@ export function createWorkspaceInvite(workspaceId: number, actorUserId: number, 
     WHERE id = ?
   `).get(Number(result.lastInsertRowid)) as WorkspaceInviteResponse;
 
+  recordActivity({
+    workspaceId,
+    userId: actorUserId,
+    eventType: 'invite_created',
+    entityType: 'invite',
+    entityId: invite.id,
+    summary: `Created ${role} invite${email ? ` for ${email}` : ''}`,
+    metadata: { email, role, expiresAt },
+  });
   return { ...invite, token };
 }
 
@@ -103,6 +113,15 @@ export function revokeWorkspaceInvite(workspaceId: number, actorUserId: number, 
     SET status = 'revoked'
     WHERE id = ?
   `).run(inviteId);
+  recordActivity({
+    workspaceId,
+    userId: actorUserId,
+    eventType: 'invite_revoked',
+    entityType: 'invite',
+    entityId: inviteId,
+    summary: 'Revoked workspace invite',
+    metadata: { inviteId },
+  });
   return listWorkspaceInvites(workspaceId, actorUserId);
 }
 
@@ -132,6 +151,15 @@ export function registerUserWithInvite(payload: { inviteToken: string; email: st
       WHERE id = ?
     `).run(userId, invite.id);
 
+    recordActivity({
+      workspaceId: invite.workspaceId,
+      userId,
+      eventType: 'invite_accepted',
+      entityType: 'invite',
+      entityId: invite.id,
+      summary: `Accepted invite as ${invite.role}`,
+      metadata: { email: payload.email, role: invite.role },
+    });
     return db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(userId) as any;
   })();
 }
