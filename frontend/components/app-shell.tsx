@@ -1130,7 +1130,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   return (
     <main className="console-shell">
       <aside className="sidebar">
-        <div>
+        <div className="sidebar-main">
           <div className="sidebar-brand">
             <div className="sidebar-brand-mark">QA</div>
             <div>
