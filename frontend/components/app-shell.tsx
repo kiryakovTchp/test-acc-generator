@@ -246,6 +246,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [isSavingAccount, setIsSavingAccount] = useState(false);
   const [accountStatus, setAccountStatus] = useState('Account ready');
   const [mailProviderStatus, setMailProviderStatus] = useState('Provider not checked');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -374,6 +375,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsSidebarOpen(false);
+        return;
+      }
+
       if (!user || isEditableTarget(event.target) || event.metaKey || event.ctrlKey || event.altKey) return;
       const key = event.key.toLowerCase();
       if (key === 'g') {
@@ -1128,7 +1134,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   return (
-    <main className="console-shell">
+    <main className={cn('console-shell', isSidebarOpen && 'is-sidebar-open')}>
+      <button
+        type="button"
+        className="sidebar-backdrop"
+        aria-label="Close navigation"
+        onClick={() => setIsSidebarOpen(false)}
+      />
       <aside className="sidebar">
         <div className="sidebar-main">
           <div className="sidebar-brand">
@@ -1163,6 +1175,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               <Link
                 key={item.key}
                 href={item.href}
+                onClick={() => setIsSidebarOpen(false)}
                 className={cn('sidebar-nav-item', activeNav === item.key && 'is-active')}
               >
                 <span className="sidebar-nav-short">{item.short}</span>
@@ -1191,10 +1204,23 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
       <section className="workspace-shell">
         <div className="topbar">
-          <div className="breadcrumb">
-            <span>Workspace</span>
-            <span>Test Users</span>
-            <strong>Generation Console</strong>
+          <div className="topbar-primary">
+            <button
+              type="button"
+              className="mobile-menu-button"
+              aria-label="Open navigation"
+              aria-expanded={isSidebarOpen}
+              onClick={() => setIsSidebarOpen(true)}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            <div className="breadcrumb">
+              <span>Workspace</span>
+              <span>Test Users</span>
+              <strong>Generation Console</strong>
+            </div>
           </div>
           <div className="topbar-admin">
             {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
