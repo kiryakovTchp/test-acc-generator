@@ -32,7 +32,7 @@ Runtime:
 - backend: Node.js, Express 5, TypeScript;
 - database: SQLite through `better-sqlite3`;
 - auth: password hashes with Node `scrypt`, session table, JWT access tokens;
-- mailbox provider: `mail.tm` through the `EmailProvider` interface;
+- mailbox providers: `mail.tm` and `mail.gw` through the `EmailProvider` interface;
 - deployment: Dockerfile, docker-compose, nginx reverse proxy.
 
 Repo structure:
@@ -54,7 +54,9 @@ test-account-generator-v1/
       monitoring.ts                    # alerts and analytics summary
       services/accountService.ts       # identity generation, history, sharing, inbox updates
       providers/emailProvider.ts       # provider interface
-      providers/mailTmProvider.ts      # mail.tm provider
+      providers/mailTmProvider.ts      # mail.tm-compatible provider
+      providers/mailGwProvider.ts      # mail.gw provider
+      providers/fallbackEmailProvider.ts # provider fallback wrapper
       geo-rules.json                   # GEO/document rules
       utils.ts                         # profile generation, links, codes, text cleanup
   frontend/
@@ -85,7 +87,7 @@ Browser
     -> /        Next.js frontend on 127.0.0.1:3000
     -> /api/*   Express backend on 127.0.0.1:4000
         -> SQLite database mounted at backend/data/app.db
-        -> mail.tm API for temporary mailboxes
+        -> mail.tm/mail.gw APIs for temporary mailboxes
 ```
 
 Frontend calls `/api` by default. In local development, `frontend/next.config.ts` rewrites `/api/*` to the backend. In production, nginx performs the routing.
@@ -185,7 +187,7 @@ Workspace settings include:
 - retention and history limits;
 - bulk generation limits;
 - usage quotas;
-- mailbox provider selection;
+- mailbox provider selection: `mail_tm`, `mail_gw`, or `mail_tm_mail_gw_fallback`;
 - `shared_account_editing`: `creator_only` or `owner_admin`;
 - `workspace_creation_policy`: `active_users` or `owner_admin`.
 
@@ -452,6 +454,7 @@ Important env vars:
 - `NEXT_PUBLIC_API_URL`: usually `/api` in browser-facing frontend;
 - `LOCAL_API_TARGET`: local Next rewrite target;
 - `MAIL_TM_BASE_URL`;
+- `MAIL_GW_BASE_URL`;
 - `MAIL_TM_INBOX_POLL_ATTEMPTS`;
 - `MAIL_TM_INBOX_POLL_DELAY_MS`;
 - `MAIL_TM_REQUEST_TIMEOUT_MS`;
@@ -527,7 +530,7 @@ Recommended authenticated smoke:
 ## Known Constraints
 
 - Outbound invite email is not implemented yet; invite links must be copied manually.
-- Temporary mailbox delivery depends on `mail.tm` availability; requests now use timeout/retry and expose an authenticated health check, but there is not yet a second fallback provider.
+- Temporary mailbox delivery depends on public temporary-mail providers. The app supports `mail.tm`, `mail.gw`, and a `mail.tm -> mail.gw` fallback mode with timeout/retry and an authenticated health check.
 - All generated identity data is synthetic and should be used only for QA/testing.
 - Some GEO datasets are verified while others are synthetic-pattern or missing-rule quality.
 - Frontend has focused Node unit tests for shared UI state helpers and Settings tab metadata; browser-level E2E coverage is still not implemented.

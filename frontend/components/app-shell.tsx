@@ -2396,8 +2396,10 @@ function UtilityView({
             <input className="input-field compact" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
           </Field>
           <Field label="Mailbox provider">
-            <select className="input-field compact" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value })}>
+            <select className="input-field compact" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value as ServerWorkspaceSettings['mailboxProvider'] })}>
               <option value="mail_tm">mail.tm</option>
+              <option value="mail_gw">mail.gw</option>
+              <option value="mail_tm_mail_gw_fallback">mail.tm → mail.gw fallback</option>
             </select>
           </Field>
           <Field label="Shared account editing">

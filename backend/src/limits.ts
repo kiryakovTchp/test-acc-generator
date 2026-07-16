@@ -15,6 +15,7 @@ export interface WorkspaceSettingsRow {
   history_retention_days?: number;
   allow_bulk_generation?: number;
   max_bulk_count: number;
+  mailbox_provider?: string;
   shared_account_editing?: string;
   workspace_creation_policy?: string;
   accounts_per_day: number;

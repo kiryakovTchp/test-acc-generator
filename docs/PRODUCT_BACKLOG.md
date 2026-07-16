@@ -18,7 +18,7 @@ This file tracks product and engineering improvements that are not yet implement
 - Stronger frontend tests for shared UI state helpers and Settings tab metadata, replacing the smoke placeholder.
 - Workspace creation policy setting: any active user or current workspace owner/admin only.
 - Granular shared account permission setting for owner/admin balance and inbox refresh on shared accounts.
-- Mailbox provider reliability pass: mail.tm request timeout/retry and authenticated provider health check.
+- Mailbox provider reliability pass: mail.tm/mail.gw provider selection, mail.tm -> mail.gw fallback mode, request timeout/retry, and authenticated provider health check.
 
 ## Not Planned
 

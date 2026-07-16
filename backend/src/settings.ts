@@ -6,9 +6,11 @@ import type { PersonaKey } from './types.js';
 const PERSONAS = ['standard_user', 'young_user', 'senior_user', 'male_user', 'female_user'];
 const SHARED_ACCOUNT_EDITING = ['creator_only', 'owner_admin'] as const;
 const WORKSPACE_CREATION_POLICIES = ['active_users', 'owner_admin'] as const;
+const MAILBOX_PROVIDERS = ['mail_tm', 'mail_gw', 'mail_tm_mail_gw_fallback'] as const;
 
 export type SharedAccountEditing = typeof SHARED_ACCOUNT_EDITING[number];
 export type WorkspaceCreationPolicy = typeof WORKSPACE_CREATION_POLICIES[number];
+export type MailboxProviderKey = typeof MAILBOX_PROVIDERS[number];
 
 export interface UserSettingsResponse {
   defaultGeo: string;
@@ -22,7 +24,7 @@ export interface WorkspaceSettingsResponse {
   historyLimit: number;
   allowBulkGeneration: boolean;
   maxBulkCount: number;
-  mailboxProvider: string;
+  mailboxProvider: MailboxProviderKey;
   sharedAccountEditing: SharedAccountEditing;
   workspaceCreationPolicy: WorkspaceCreationPolicy;
   accountsPerDay: number;
@@ -84,7 +86,7 @@ export function getWorkspaceSettingsForApi(workspaceId: number): WorkspaceSettin
     historyLimit: clampInt(row.history_limit, 1, 1000, 50),
     allowBulkGeneration: Boolean(row.allow_bulk_generation),
     maxBulkCount: clampInt(row.max_bulk_count, 1, 100, 25),
-    mailboxProvider: row.mailbox_provider || 'mail_tm',
+    mailboxProvider: normalizeEnum(row.mailbox_provider, MAILBOX_PROVIDERS, 'mail_tm'),
     sharedAccountEditing: normalizeEnum(row.shared_account_editing, SHARED_ACCOUNT_EDITING, 'creator_only'),
     workspaceCreationPolicy: normalizeEnum(row.workspace_creation_policy, WORKSPACE_CREATION_POLICIES, 'active_users'),
     accountsPerDay: clampInt(row.accounts_per_day, 0, 10000, 25),
@@ -102,7 +104,7 @@ export function updateWorkspaceSettings(workspaceId: number, userId: number, pay
     historyLimit: clampInt(payload?.historyLimit, 1, 1000, current.historyLimit),
     allowBulkGeneration: typeof payload?.allowBulkGeneration === 'boolean' ? payload.allowBulkGeneration : current.allowBulkGeneration,
     maxBulkCount: clampInt(payload?.maxBulkCount, 1, 100, current.maxBulkCount),
-    mailboxProvider: normalizeKey(payload?.mailboxProvider, current.mailboxProvider, 40),
+    mailboxProvider: normalizeEnum(payload?.mailboxProvider, MAILBOX_PROVIDERS, current.mailboxProvider),
     sharedAccountEditing: normalizeEnum(payload?.sharedAccountEditing, SHARED_ACCOUNT_EDITING, current.sharedAccountEditing),
     workspaceCreationPolicy: normalizeEnum(payload?.workspaceCreationPolicy, WORKSPACE_CREATION_POLICIES, current.workspaceCreationPolicy),
     accountsPerDay: clampInt(payload?.accountsPerDay, 0, 10000, current.accountsPerDay),

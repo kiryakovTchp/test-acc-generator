@@ -20,7 +20,8 @@ interface MailTmMessage {
 }
 
 export class MailTmProvider implements EmailProvider {
-  private readonly baseUrl = process.env.MAIL_TM_BASE_URL ?? 'https://api.mail.tm';
+  private readonly providerName: string;
+  private readonly baseUrl: string;
   private readonly domainCacheTtlMs = Number(process.env.MAIL_TM_DOMAIN_CACHE_TTL_MS ?? 60 * 60 * 1000);
   private readonly inboxPollAttempts = Number(process.env.MAIL_TM_INBOX_POLL_ATTEMPTS ?? 1);
   private readonly inboxPollDelayMs = Number(process.env.MAIL_TM_INBOX_POLL_DELAY_MS ?? 2500);
@@ -28,6 +29,11 @@ export class MailTmProvider implements EmailProvider {
   private readonly retryAttempts = Number(process.env.MAIL_TM_RETRY_ATTEMPTS ?? 2);
   private readonly retryDelayMs = Number(process.env.MAIL_TM_RETRY_DELAY_MS ?? 500);
   private domainCache: { value: string; expiresAt: number } | null = null;
+
+  constructor(options: { providerName?: string; baseUrl?: string } = {}) {
+    this.providerName = options.providerName ?? 'mail_tm';
+    this.baseUrl = options.baseUrl ?? process.env.MAIL_TM_BASE_URL ?? 'https://api.mail.tm';
+  }
 
   async createAccount(): Promise<EmailAccount> {
     const domain = await this.getDomain();
@@ -44,7 +50,7 @@ export class MailTmProvider implements EmailProvider {
       throw new Error(`mail.tm account creation failed (${response.status})`);
     }
 
-    return { address, password };
+    return { address, password, provider: this.providerName };
   }
 
   async fetchInbox(address: string, password: string, waitMs = 0): Promise<InboxMessage[]> {
@@ -66,7 +72,7 @@ export class MailTmProvider implements EmailProvider {
 
   async checkHealth() {
     const domain = await this.getDomain();
-    return { ok: true, provider: 'mail_tm', message: `Active domain: ${domain}` };
+    return { ok: true, provider: this.providerName, message: `Active domain: ${domain}` };
   }
 
   private async getDomain() {
