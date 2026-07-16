@@ -81,6 +81,52 @@ export function getWorkspaceForUser(userId: number, workspaceId: number): Worksp
   return row;
 }
 
+export function updateWorkspaceStatus(userId: number, workspaceId: number, payload: any): WorkspaceResponse {
+  const status = normalizeWorkspaceStatus(payload?.status);
+  const workspace = db.prepare(`
+    SELECT w.id,
+           w.status,
+           wm.role as workspaceRole
+    FROM workspace_members wm
+    JOIN workspaces w ON w.id = wm.workspace_id
+    WHERE wm.user_id = ? AND wm.workspace_id = ?
+    LIMIT 1
+  `).get(userId, workspaceId) as { id: number; status: 'active' | 'archived'; workspaceRole: WorkspaceRole } | undefined;
+
+  if (!workspace) {
+    throw new ApiError('workspace_not_found', 'Workspace not found', 404);
+  }
+  if (workspace.workspaceRole !== 'owner') {
+    throw new ApiError('workspace_owner_required', 'Only workspace owners can archive or restore workspaces', 403);
+  }
+  if (workspace.status === status) {
+    return listWorkspaces(userId).find((item) => item.id === workspaceId) ?? getWorkspaceForUser(userId, workspaceId);
+  }
+  if (status === 'archived') {
+    const activeCount = db.prepare(`
+      SELECT COUNT(*) as total
+      FROM workspace_members wm
+      JOIN workspaces w ON w.id = wm.workspace_id
+      WHERE wm.user_id = ? AND w.status = 'active'
+    `).get(userId) as { total: number };
+    if (Number(activeCount.total) <= 1) {
+      throw new ApiError('last_active_workspace_required', 'At least one active workspace is required', 400);
+    }
+  }
+
+  db.prepare(`
+    UPDATE workspaces
+    SET status = ?, updated_at = CURRENT_TIMESTAMP
+    WHERE id = ?
+  `).run(status, workspaceId);
+
+  const updated = listWorkspaces(userId).find((item) => item.id === workspaceId);
+  if (!updated) {
+    throw new ApiError('workspace_not_found', 'Workspace not found', 404);
+  }
+  return updated;
+}
+
 export function assertActiveWorkspaceRole(userId: number, workspaceId: number) {
   assertWorkspaceAccess(userId, workspaceId);
   const role = getWorkspaceRole(userId, workspaceId);
@@ -92,4 +138,9 @@ export function assertActiveWorkspaceRole(userId: number, workspaceId: number) {
 
 function normalizeWorkspaceName(value: unknown) {
   return String(value ?? '').trim().replace(/\s+/g, ' ').slice(0, 80);
+}
+
+function normalizeWorkspaceStatus(value: unknown): 'active' | 'archived' {
+  if (value === 'active' || value === 'archived') return value;
+  throw new ApiError('invalid_workspace_status', 'Workspace status must be active or archived', 400);
 }

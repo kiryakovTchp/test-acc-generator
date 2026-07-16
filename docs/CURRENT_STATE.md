@@ -487,5 +487,5 @@ Recommended authenticated smoke:
 - All generated identity data is synthetic and should be used only for QA/testing.
 - Some GEO datasets are verified while others are synthetic-pattern or missing-rule quality.
 - Frontend smoke test is currently minimal; most coverage is backend tests plus Next build type checking.
-- Workspace archive status exists in the model, but no UI/API for archiving is exposed yet.
+- Workspace archive/restore is available to workspace owners from Settings -> Workspace; archived workspaces remain visible in management but cannot be switched into.
 - There is no billing or organization-level admin model.

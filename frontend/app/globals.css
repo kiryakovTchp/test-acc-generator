@@ -2128,6 +2128,15 @@ body {
   margin-bottom: 10px;
 }
 
+.workspace-lifecycle-wrap {
+  margin-bottom: 14px;
+}
+
+.workspace-lifecycle-table td:nth-child(4) {
+  font-weight: 800;
+  color: var(--text);
+}
+
 .invite-token-box {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;

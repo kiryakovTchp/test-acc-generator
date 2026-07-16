@@ -13,7 +13,7 @@ import { assertWorkspaceRole, getWorkspaceRole, type WorkspaceRole } from './per
 import { addWorkspaceMember, listWorkspaceMembers, removeWorkspaceMember, updateWorkspaceMemberRole } from './workspaceMembers.js';
 import { createWorkspaceInvite, getPublicInvite, listWorkspaceInvites, registerUserWithInvite, revokeWorkspaceInvite } from './invitations.js';
 import { getWorkspaceAlerts, getWorkspaceAnalytics } from './monitoring.js';
-import { createWorkspace, getWorkspaceForUser, listWorkspaces } from './workspaces.js';
+import { createWorkspace, getWorkspaceForUser, listWorkspaces, updateWorkspaceStatus } from './workspaces.js';
 
 const app = express();
 const port = Number(process.env.PORT ?? 4000);
@@ -271,6 +271,20 @@ app.post('/workspaces/:id/switch', auth, (req, res) => {
     res.json({ workspaces: listWorkspaces(user.id), ...buildAuthResponse(user, (req as any).user.sessionId ?? 0, workspaceId) });
   } catch (error) {
     sendError(res, error, 'Failed to switch workspace');
+  }
+});
+
+app.patch('/workspaces/:id/status', auth, (req, res) => {
+  try {
+    const workspaceId = Number(req.params.id);
+    const workspace = updateWorkspaceStatus((req as any).user.userId, workspaceId, req.body ?? {});
+    const preferredWorkspaceId = workspace.status === 'archived' && workspaceId === (req as any).user.workspaceId
+      ? getDefaultWorkspaceForUser((req as any).user.userId)
+      : (req as any).user.workspaceId;
+    const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get((req as any).user.userId) as any;
+    res.json({ workspace, workspaces: listWorkspaces(user.id), ...buildAuthResponse(user, (req as any).user.sessionId ?? 0, preferredWorkspaceId) });
+  } catch (error) {
+    sendError(res, error, 'Failed to update workspace status');
   }
 });
 

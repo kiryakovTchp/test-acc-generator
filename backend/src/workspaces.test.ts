@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db from './db.js';
-import { createWorkspace, listWorkspaces } from './workspaces.js';
+import { createWorkspace, listWorkspaces, updateWorkspaceStatus } from './workspaces.js';
 
 test('active users can create and list additional workspaces', () => {
   const userId = createTestUser('workspace_create');
@@ -22,6 +22,42 @@ test('inactive users cannot create workspaces', () => {
   assert.throws(
     () => createWorkspace(userId, { name: 'Blocked' }),
     /Only active users can create workspaces/,
+  );
+});
+
+test('owners can archive and restore an extra workspace', () => {
+  const userId = createTestUser('workspace_archive');
+  const defaultWorkspace = createWorkspace(userId, { name: 'Default QA' });
+  const archiveTarget = createWorkspace(userId, { name: 'Old Launch' });
+
+  const archived = updateWorkspaceStatus(userId, archiveTarget.id, { status: 'archived' });
+  assert.equal(archived.status, 'archived');
+  assert.throws(
+    () => updateWorkspaceStatus(userId, defaultWorkspace.id, { status: 'archived' }),
+    /At least one active workspace is required/,
+  );
+
+  const listed = listWorkspaces(userId);
+  assert.equal(listed.find((item) => item.id === archiveTarget.id)?.status, 'archived');
+  assert.equal(listed.at(-1)?.id, archiveTarget.id);
+
+  const restored = updateWorkspaceStatus(userId, archiveTarget.id, { status: 'active' });
+  assert.equal(restored.status, 'active');
+});
+
+test('non-owners cannot archive workspaces', () => {
+  const ownerId = createTestUser('workspace_owner');
+  const memberId = createTestUser('workspace_member');
+  const workspace = createWorkspace(ownerId, { name: 'Owned workspace' });
+
+  db.prepare(`
+    INSERT INTO workspace_members (workspace_id, user_id, role)
+    VALUES (?, ?, 'admin')
+  `).run(workspace.id, memberId);
+
+  assert.throws(
+    () => updateWorkspaceStatus(memberId, workspace.id, { status: 'archived' }),
+    /Only workspace owners can archive or restore workspaces/,
   );
 });
 
