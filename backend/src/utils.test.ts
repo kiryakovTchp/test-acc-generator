@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanEmailText, pickPrimaryVerificationLink } from './utils.js';
+import { cleanEmailText, dedupeLinks, pickPrimaryVerificationLink } from './utils.js';
 
 test('pickPrimaryVerificationLink prefers real verification links over tracking redirects', () => {
   const winner = pickPrimaryVerificationLink([
@@ -31,4 +31,15 @@ test('cleanEmailText removes raw urls and malformed leftovers cleanly', () => {
   const cleaned = cleanEmailText('Verify your account ( https://example.com/verify?token=abc )\n\nUse [this link](https://example.com/alt) now.');
 
   assert.equal(cleaned, 'Verify your account\n\nUse this link now.');
+});
+
+test('dedupeLinks keeps only normalized https links', () => {
+  const links = dedupeLinks([
+    { url: 'https://example.com/verify?token=abc.' },
+    { url: 'http://example.com/not-safe' },
+    { url: 'javascript:alert(1)' },
+    { url: 'https://example.com/verify?token=abc' },
+  ]);
+
+  assert.deepEqual(links, [{ url: 'https://example.com/verify?token=abc' }]);
 });

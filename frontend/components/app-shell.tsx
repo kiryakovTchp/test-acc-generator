@@ -1082,7 +1082,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   function openActivationLink() {
     if (!activationLink) return;
-    window.open(activationLink, '_blank', 'noopener,noreferrer');
+    openSafeExternalLink(activationLink);
   }
 
   const generationSettingsPanel = (
@@ -1404,25 +1404,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
                     />
-                    <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
 
                   <div className="form-section form-section-wide">
                     <h3>Personal info</h3>
-                    <div className="personal-info-grid">
-                      <InspectorRow label="Last name" value={detail.lastName} onCopy={() => copyValue(`last-name:${detail.id}`, detail.lastName)} copied={copiedField === `last-name:${detail.id}`} />
-                      <InspectorRow label="Document issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue-date:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue-date:${detail.id}`} />
-                      <InspectorRow label="First name" value={detail.firstName} onCopy={() => copyValue(`first-name:${detail.id}`, detail.firstName)} copied={copiedField === `first-name:${detail.id}`} />
-                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
-                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
-                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
-                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
-                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
-                      <InspectorRow label="Type of document" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
-                      <InspectorRow label="Sex" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
-                      <InspectorRow label="Document number" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
-                      <InspectorRow label="Address" value={`${detail.addressLine}, ${detail.postalCode}`} onCopy={() => copyValue(`address:${detail.id}`, `${detail.addressLine}, ${detail.postalCode}`)} copied={copiedField === `address:${detail.id}`} />
-                    </div>
+                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} />
                   </div>
                 </section>
 
@@ -1619,25 +1606,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
                     />
-                    <InspectorRow label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
                   </div>
 
                   <div className="form-section form-section-wide">
                     <h3>Personal info</h3>
-                    <div className="personal-info-grid">
-                      <InspectorRow label="Last name" value={detail.lastName} onCopy={() => copyValue(`last-name:${detail.id}`, detail.lastName)} copied={copiedField === `last-name:${detail.id}`} />
-                      <InspectorRow label="Document issue date" value={detail.documentIssueDate} onCopy={() => copyValue(`issue-date:${detail.id}`, detail.documentIssueDate)} copied={copiedField === `issue-date:${detail.id}`} />
-                      <InspectorRow label="First name" value={detail.firstName} onCopy={() => copyValue(`first-name:${detail.id}`, detail.firstName)} copied={copiedField === `first-name:${detail.id}`} />
-                      <InspectorRow label="Country" value={detail.country} onCopy={() => copyValue(`country:${detail.id}`, detail.country)} copied={copiedField === `country:${detail.id}`} />
-                      <InspectorRow label="Date of birth" value={detail.dateOfBirth} onCopy={() => copyValue(`dob:${detail.id}`, detail.dateOfBirth)} copied={copiedField === `dob:${detail.id}`} />
-                      <InspectorRow label="Region" value={detail.region} onCopy={() => copyValue(`region:${detail.id}`, detail.region)} copied={copiedField === `region:${detail.id}`} />
-                      <InspectorRow label="Place of birth" value={detail.placeOfBirth} onCopy={() => copyValue(`pob:${detail.id}`, detail.placeOfBirth)} copied={copiedField === `pob:${detail.id}`} />
-                      <InspectorRow label="City" value={detail.city} onCopy={() => copyValue(`city:${detail.id}`, detail.city)} copied={copiedField === `city:${detail.id}`} />
-                      <InspectorRow label="Type of document" value={detail.documentType} onCopy={() => copyValue(`doc-type:${detail.id}`, detail.documentType)} copied={copiedField === `doc-type:${detail.id}`} />
-                      <InspectorRow label="Sex" value={detail.gender} onCopy={() => copyValue(`gender:${detail.id}`, detail.gender)} copied={copiedField === `gender:${detail.id}`} />
-                      <InspectorRow label="Document number" value={detail.documentValue} onCopy={() => copyValue(`doc:${detail.id}`, detail.documentValue)} copied={copiedField === `doc:${detail.id}`} />
-                      <InspectorRow label="Address" value={`${detail.addressLine}, ${detail.postalCode}`} onCopy={() => copyValue(`address:${detail.id}`, `${detail.addressLine}, ${detail.postalCode}`)} copied={copiedField === `address:${detail.id}`} />
-                    </div>
+                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} />
                   </div>
                 </section>
 
@@ -2138,7 +2112,7 @@ function UtilityView({
                 activationLink={detail.inbox.primaryVerificationLink?.url ?? detail.inbox.links[0]?.url ?? ''}
                 onActivate={() => {
                   const url = detail.inbox.primaryVerificationLink?.url ?? detail.inbox.links[0]?.url;
-                  if (url) window.open(url, '_blank', 'noopener,noreferrer');
+                  if (url) openSafeExternalLink(url);
                 }}
                 onCopyEmail={() => onCopy(`mailboxes-message:${detail.id}`, detail.inbox.plainText || detail.inbox.subject || '')}
                 copied={copiedField === `mailboxes-message:${detail.id}`}
@@ -2948,6 +2922,7 @@ function EmailMessage({
 }) {
   const hasEmail = detail.inbox.status === 'email_received' && Boolean(detail.inbox.subject || detail.inbox.plainText || detail.inbox.rawHtml);
   const emailHtml = detail.inbox.rawHtml ? buildEmailSrcDoc(detail.inbox.rawHtml) : '';
+  const activationHost = activationLink ? safeHostname(activationLink) : '';
 
   return (
     <section className="email-message-card">
@@ -2963,6 +2938,7 @@ function EmailMessage({
             </button>
           ) : null}
           <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
+          {activationHost ? <span className="link-host-preview">{activationHost}</span> : null}
           <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
             {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
@@ -3064,11 +3040,13 @@ function StandaloneInbox({ inbox, address }: { inbox: MailboxInbox | null; addre
 }
 
 function buildEmailSrcDoc(rawHtml: string) {
+  const safeHtml = sanitizeEmailHtml(rawHtml);
   return `<!doctype html>
 <html>
 <head>
   <base target="_blank">
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; style-src 'unsafe-inline'; font-src data:; base-uri 'none'; form-action 'none'">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     html, body { margin: 0; padding: 0; background: #fff; color: #111827; }
@@ -3078,8 +3056,34 @@ function buildEmailSrcDoc(rawHtml: string) {
     a { color: #0f766e; }
   </style>
 </head>
-<body>${rawHtml}</body>
+<body>${safeHtml}</body>
 </html>`;
+}
+
+function sanitizeEmailHtml(rawHtml: string) {
+  return rawHtml
+    .replace(/<script\b[\s\S]*?<\/script>/gi, '')
+    .replace(/\s(?:src|srcset)=["'](?!data:)[^"']*["']/gi, '')
+    .replace(/\shref=["'](?!https:\/\/)[^"']*["']/gi, '');
+}
+
+function openSafeExternalLink(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    if (url.protocol !== 'https:') return;
+    window.open(url.toString(), '_blank', 'noopener,noreferrer');
+  } catch {
+    // Ignore malformed links extracted from third-party email content.
+  }
+}
+
+function safeHostname(rawUrl: string) {
+  try {
+    const url = new URL(rawUrl);
+    return url.protocol === 'https:' ? url.hostname : '';
+  } catch {
+    return '';
+  }
 }
 
 function InspectorGroup({ title, children }: { title: string; children: React.ReactNode }) {
@@ -3265,6 +3269,70 @@ function SharingControl({
       ) : (
         <span className="sharing-owner">{item.createdByLogin ? `by ${item.createdByLogin}` : 'read only'}</span>
       )}
+    </div>
+  );
+}
+
+function PersonalInfoFields({
+  detail,
+  copiedField,
+  onCopy,
+}: {
+  detail: Detail;
+  copiedField: string;
+  onCopy: (key: string, value: string) => void;
+}) {
+  const address = `${detail.addressLine}, ${detail.postalCode}`;
+  const fields = [
+    { key: 'last-name', label: 'Last name', value: detail.lastName },
+    { key: 'first-name', label: 'First name', value: detail.firstName },
+    { key: 'dob', label: 'Date of birth', value: detail.dateOfBirth },
+    { key: 'pob', label: 'Place of birth', value: detail.placeOfBirth },
+    { key: 'doc-type', label: 'Type of document', value: detail.documentType },
+    { key: 'doc', label: 'Document number', value: detail.documentValue },
+    { key: 'issue-date', label: 'Document issue date', value: detail.documentIssueDate },
+    { key: 'country', label: 'Country', value: detail.country },
+    { key: 'region', label: 'Region', value: detail.region },
+    { key: 'city', label: 'City', value: detail.city },
+    { key: 'gender', label: 'Sex', value: detail.gender },
+    { key: 'address', label: 'Address', value: address },
+  ];
+
+  return (
+    <div className="personal-info-grid">
+      {fields.map((field) => (
+        <RegistrationInfoField
+          key={field.key}
+          label={field.label}
+          value={field.value}
+          onCopy={() => onCopy(`${field.key}:${detail.id}`, field.value)}
+          copied={copiedField === `${field.key}:${detail.id}`}
+        />
+      ))}
+    </div>
+  );
+}
+
+function RegistrationInfoField({
+  label,
+  value,
+  onCopy,
+  copied,
+}: {
+  label: string;
+  value: string;
+  onCopy: () => void;
+  copied: boolean;
+}) {
+  return (
+    <div className="inspector-row registration-info-field">
+      <div className="inspector-label">{label}</div>
+      <div className="inspector-value">{value || '—'}</div>
+      <div className="inspector-actions">
+        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`Copy ${label}`} title={copied ? 'Copied' : 'Copy'}>
+          {copied ? <CheckIcon /> : <CopyIcon />}
+        </button>
+      </div>
     </div>
   );
 }

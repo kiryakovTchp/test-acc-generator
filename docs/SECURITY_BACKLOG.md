@@ -1,6 +1,6 @@
 # Security Backlog
 
-Last updated: 2026-07-16
+Last updated: 2026-07-24
 Source audit: `test-acc-generator-security-audit`, checked at commit `f370762`.
 
 This backlog is worked through the Security Working Group process:
@@ -136,6 +136,13 @@ Acceptance: Helmet or equivalent headers; `X-Powered-By` removed; auth/history/m
 
 ## P2 - Hardening
 
+Recovery note from 2026-07-24:
+
+- Production is known deployed through `a721123 Keep access tokens out of local storage`.
+- The fourth pass was started but not finished before the Codex limit interruption on 2026-07-17.
+- Local working tree contains verified changes for `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation; they still need commit, push, deploy, and production smoke checks before they can be considered deployed.
+- Remaining open P2 work after this rollout: `SEC-202`, `SEC-205`, and `SEC-206`.
+
 ### SEC-201 - Move access token out of localStorage
 
 Status: implemented in third security remediation pass
@@ -146,28 +153,77 @@ Acceptance: access token held in memory; refresh token is HttpOnly, Secure, rota
 
 Status: planned
 Owner: Developer + Ops
-Acceptance: envelope encryption with `DATA_ENCRYPTION_KEY`; migration plan; no key stored next to DB.
+Acceptance: envelope encryption with `DATA_ENCRYPTION_KEY`; migration plan; no key stored next to DB; old plaintext rows migrated or explicitly expired; backup/restore process documented.
+
+Remaining work:
+
+- add encryption helper and key validation;
+- encrypt mailbox password/token fields and sensitive inbox HTML/plaintext/link/code payloads at write time;
+- migrate or phase out existing plaintext DB rows;
+- add tests for encryption/decryption, missing key fail-fast in production, and backwards-compatible migration behavior;
+- deploy with key material stored outside the repo/DB.
 
 ### SEC-203 - Add scheduled retention cleanup
 
-Status: planned
+Status: verified locally; pending commit/deploy
 Owner: Developer
 Acceptance: periodic cleanup runs independently of user actions; retention logs/audit exist.
 
+Current implementation:
+
+- exports `cleanupOldHistory()`;
+- starts a backend interval outside test mode;
+- returns/logs deleted row count;
+- adds a backend test for expired workspace history cleanup.
+
+Remaining work:
+
+- decide whether retention deletes should also record `activity_events` or another audit trail;
+- commit, push, deploy, and verify production health/pages after rollout.
+
 ### SEC-204 - Validate email links and block tracking images
 
-Status: planned
+Status: verified locally; pending commit/deploy
 Owner: Developer + QA
 Acceptance: only `https:` links open; hostname preview is shown; remote images blocked by default.
 
+Current implementation:
+
+- backend link normalization now drops non-HTTPS links;
+- frontend opens extracted activation links only when they parse as HTTPS;
+- email iframe `srcdoc` gets a restrictive CSP;
+- email HTML sanitizer strips scripts, non-data images/srcset, and non-HTTPS hrefs;
+- UI shows hostname preview next to the open-verification action.
+
+Remaining work:
+
+- replace fragile regex sanitizing with a proper HTML sanitizer if package policy allows, or add broader negative tests for mixed quoting, uppercase attributes, protocol-relative URLs, event handlers, forms, and meta refresh;
+- check all extracted-link surfaces, including the Codes view, for consistent open/copy behavior and hostname visibility;
+- commit, push, deploy, and smoke-test inbox rendering with a real provider message.
+
 ### SEC-205 - Remove `.env.production` from Git history
 
-Status: blocked until secret rotation is complete
+Status: planned; secret rotation is complete, but history rewrite is not started
 Owner: Ops + Project
 Acceptance: `git filter-repo` cleanup coordinated, force-push planned, all collaborators reset safely.
+
+Remaining work:
+
+- confirm all collaborators/remotes are ready for a force-pushed history rewrite;
+- run `git filter-repo` or equivalent to remove historical `.env.production`;
+- force-push only after coordination;
+- document reset/reclone instructions for collaborators;
+- re-run secret scanning after rewrite.
 
 ### SEC-206 - Add security automation in CI
 
 Status: planned
 Owner: Developer
 Acceptance: gitleaks, Dependabot, CodeQL or equivalent run in CI.
+
+Remaining work:
+
+- add GitHub Actions workflows for secret scanning and dependency/code scanning;
+- add Dependabot config for npm workspaces;
+- make scans fail PRs on high-confidence findings;
+- document local pre-push or manual scan commands.

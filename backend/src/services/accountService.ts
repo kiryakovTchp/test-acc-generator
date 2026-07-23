@@ -425,8 +425,8 @@ export function updateHistorySharing(id: number, userId: number, sharedWithWorks
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
-function cleanupOldHistory() {
-  db.prepare(`
+export function cleanupOldHistory() {
+  const workspaceResult = db.prepare(`
     DELETE FROM account_history
     WHERE workspace_id IS NOT NULL
       AND workspace_id IN (
@@ -435,7 +435,8 @@ function cleanupOldHistory() {
         WHERE datetime(account_history.created_at) < datetime('now', '-' || history_retention_days || ' days')
       )
   `).run();
-  db.prepare(`DELETE FROM account_history WHERE workspace_id IS NULL AND datetime(created_at) < datetime('now', '-30 days')`).run();
+  const legacyResult = db.prepare(`DELETE FROM account_history WHERE workspace_id IS NULL AND datetime(created_at) < datetime('now', '-30 days')`).run();
+  return Number(workspaceResult.changes ?? 0) + Number(legacyResult.changes ?? 0);
 }
 
 function trimHistoryForWorkspace(userId: number, workspaceId: number) {

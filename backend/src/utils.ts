@@ -255,13 +255,16 @@ export function cleanEmailText(text: string) {
 
 export function dedupeLinks<T extends { url: string }>(links: T[]) {
   const seen = new Set<string>();
-  return links.filter((link) => {
+  const safeLinks: T[] = [];
+  for (const link of links) {
     const normalized = normalizeUrl(link.url);
-    if (seen.has(normalized)) return false;
+    if (!normalized) continue;
+    if (seen.has(normalized)) continue;
     seen.add(normalized);
     link.url = normalized;
-    return true;
-  });
+    safeLinks.push(link);
+  }
+  return safeLinks;
 }
 
 export function pickPrimaryVerificationLink(links: Array<{ url: string; label?: string }>) {
@@ -295,7 +298,13 @@ function scoreVerificationLink(link: { url: string; label?: string }) {
 }
 
 function normalizeUrl(url: string) {
-  return url.replace(/[)\]>'".,]+$/g, '');
+  const trimmed = url.trim().replace(/[)\]>'".,]+$/g, '');
+  try {
+    const parsed = new URL(trimmed);
+    return parsed.protocol === 'https:' ? parsed.toString() : '';
+  } catch {
+    return '';
+  }
 }
 
 export function extractCodes(text: string) {
