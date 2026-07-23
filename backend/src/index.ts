@@ -6,7 +6,7 @@ import { MailTmProvider } from './providers/mailTmProvider.js';
 import { MailGwProvider } from './providers/mailGwProvider.js';
 import { FallbackEmailProvider } from './providers/fallbackEmailProvider.js';
 import type { EmailProvider } from './providers/emailProvider.js';
-import { buildInboxPayload, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, cleanupOldHistory, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPasswordAsync, hashSessionToken, newSessionToken, verifyPasswordAsync } from './auth.js';
@@ -681,6 +681,7 @@ app.post('/accounts/generate-bulk', auth, async (req, res) => {
 });
 
 if (process.env.NODE_ENV !== 'test') {
+  startRetentionCleanupSchedule();
   app.listen(port, () => console.log(`backend listening on ${port}`));
 }
 
@@ -865,6 +866,22 @@ function recordAuthEvent(login: string, ipAddress: string, success: boolean, fai
     INSERT INTO auth_events (login, ip_address, success, failure_reason)
     VALUES (?, ?, ?, ?)
   `).run(login.trim().toLowerCase().slice(0, 160), ipAddress.slice(0, 80), success ? 1 : 0, failureReason.slice(0, 80));
+}
+
+function startRetentionCleanupSchedule() {
+  const intervalMs = Math.max(60_000, Number(process.env.RETENTION_CLEANUP_INTERVAL_MS ?? 6 * 60 * 60 * 1000));
+  const runCleanup = () => {
+    try {
+      const deleted = cleanupOldHistory();
+      if (deleted > 0) {
+        console.log(`retention cleanup removed ${deleted} history rows`);
+      }
+    } catch (error) {
+      console.error('retention cleanup failed', error);
+    }
+  };
+  runCleanup();
+  setInterval(runCleanup, intervalMs).unref();
 }
 
 function resolveCorsOrigin(origin: string | undefined, callback: (error: Error | null, allow?: boolean | string) => void) {

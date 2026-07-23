@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { listGeoRules, generateAccount, getHistoryDetail, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { cleanupOldHistory, listGeoRules, generateAccount, getHistoryDetail, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { listActivityEvents } from './activity.js';
@@ -342,6 +342,19 @@ test('workspace history limit trims generated identities per workspace setting',
   await generateAccount({ userId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
 
   assert.equal(listHistory(userId, workspaceId).length, 2);
+});
+
+test('retention cleanup removes expired workspace history without user action', async () => {
+  const userId = createTestUser('retention_cleanup');
+  const workspaceId = getDefaultWorkspaceForUser(userId);
+  db.prepare('UPDATE workspace_settings SET history_retention_days = ? WHERE workspace_id = ?').run(1, workspaceId);
+
+  const item = await generateAccount({ userId, workspaceId, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.ok(item);
+  db.prepare("UPDATE account_history SET created_at = datetime('now', '-2 days') WHERE id = ?").run(item!.id);
+
+  assert.equal(cleanupOldHistory(), 1);
+  assert.equal(getHistoryDetail(item!.id, userId, false, workspaceId), null);
 });
 
 test('usage limits count quantity before allowing another provider call', () => {
