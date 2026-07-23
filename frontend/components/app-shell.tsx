@@ -1217,11 +1217,19 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </div>
 
         <div className="sidebar-footer">
-          <div className="sidebar-user">
-            <strong>{user.login}</strong>
-            <span>{user.role}</span>
-          </div>
-          <button className="sidebar-logout" onClick={() => void logout()}>Logout</button>
+          <button className="sidebar-user" type="button" onClick={() => void logout()} aria-label="Logout">
+            <span className="sidebar-user-copy">
+              <strong>{user.login}</strong>
+              <span>{user.role}</span>
+            </span>
+            <span className="sidebar-logout-icon" aria-hidden="true">
+              <svg viewBox="0 0 32 32" focusable="false">
+                <path d="M14 5H8.5A3.5 3.5 0 0 0 5 8.5v15A3.5 3.5 0 0 0 8.5 27H14" />
+                <path d="M19 10l6 6-6 6" />
+                <path d="M11 16h14" />
+              </svg>
+            </span>
+          </button>
         </div>
       </aside>
 

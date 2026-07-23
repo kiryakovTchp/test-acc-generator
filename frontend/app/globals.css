@@ -281,23 +281,15 @@ button {
 }
 
 .sidebar-footer {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 28px;
-  gap: 8px;
-  align-items: center;
   min-height: 0;
+  margin: 0 14px 10px;
 }
 
-.sidebar-user,
-.sidebar-logout {
+.sidebar-user {
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   padding: 10px;
   background: rgba(255, 255, 255, 0.04);
-}
-
-.sidebar-logout {
-  color: white;
 }
 
 .workspace-shell {
@@ -1097,8 +1089,7 @@ select.input-field.badge-select {
 .primary-button,
 .secondary-button,
 .ghost-button,
-.micro-button,
-.sidebar-logout {
+.micro-button {
   border-radius: 10px;
   padding: 9px 11px;
   border: 1px solid transparent;
@@ -1485,42 +1476,67 @@ body {
   display: none;
 }
 
-.sidebar-user,
-.sidebar-logout {
-  border-radius: 6px;
-}
-
 .sidebar-user {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 50px;
   min-width: 0;
-  border-color: rgba(255, 255, 255, 0.08);
-  padding: 8px 9px;
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(126, 146, 170, 0.22);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: rgba(24, 31, 44, 0.82);
+  color: white;
+  text-align: left;
 }
 
-.sidebar-user strong,
-.sidebar-user span {
+.sidebar-user-copy,
+.sidebar-user-copy strong,
+.sidebar-user-copy span {
+  display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.sidebar-logout {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  min-width: 28px;
-  height: 28px;
-  padding: 0;
-  border-color: rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.04);
-  color: #dce5f0;
-  font-size: 0;
+.sidebar-user-copy strong {
+  color: white;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
 }
 
-.sidebar-logout::before {
-  content: '>';
-  font-size: 14px;
-  line-height: 1;
+.sidebar-user-copy span {
+  margin-top: 2px;
+  color: #a4adbb;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.sidebar-logout-icon {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: #e6edf7;
+}
+
+.sidebar-logout-icon svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.sidebar-user:hover {
+  border-color: rgba(170, 187, 208, 0.32);
+  background: rgba(28, 37, 52, 0.88);
 }
 
 .workspace-shell {
