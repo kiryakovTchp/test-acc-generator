@@ -138,9 +138,9 @@ Acceptance: Helmet or equivalent headers; `X-Powered-By` removed; auth/history/m
 
 Recovery note from 2026-07-24:
 
-- Production is known deployed through `a721123 Keep access tokens out of local storage`.
+- Production was recovered from `a721123 Keep access tokens out of local storage` and deployed through `f8f5f57 Implement Figma sidebar components and security cleanup`.
 - The fourth pass was started but not finished before the Codex limit interruption on 2026-07-17.
-- Local working tree contains verified changes for `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation; they still need commit, push, deploy, and production smoke checks before they can be considered deployed.
+- `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation were committed, pushed, deployed, and production smoke-checked on 2026-07-24.
 - Remaining open P2 work after this rollout: `SEC-202`, `SEC-205`, and `SEC-206`.
 
 ### SEC-201 - Move access token out of localStorage
@@ -165,7 +165,7 @@ Remaining work:
 
 ### SEC-203 - Add scheduled retention cleanup
 
-Status: verified locally; pending commit/deploy
+Status: deployed in fourth security remediation pass
 Owner: Developer
 Acceptance: periodic cleanup runs independently of user actions; retention logs/audit exist.
 
@@ -179,11 +179,11 @@ Current implementation:
 Remaining work:
 
 - decide whether retention deletes should also record `activity_events` or another audit trail;
-- commit, push, deploy, and verify production health/pages after rollout.
+- optionally expose retention cleanup metrics in ops/health tooling.
 
 ### SEC-204 - Validate email links and block tracking images
 
-Status: verified locally; pending commit/deploy
+Status: deployed in fourth security remediation pass
 Owner: Developer + QA
 Acceptance: only `https:` links open; hostname preview is shown; remote images blocked by default.
 
@@ -199,7 +199,7 @@ Remaining work:
 
 - replace fragile regex sanitizing with a proper HTML sanitizer if package policy allows, or add broader negative tests for mixed quoting, uppercase attributes, protocol-relative URLs, event handlers, forms, and meta refresh;
 - check all extracted-link surfaces, including the Codes view, for consistent open/copy behavior and hostname visibility;
-- commit, push, deploy, and smoke-test inbox rendering with a real provider message.
+- smoke-test inbox rendering with a real provider message when a fresh provider email sample is available.
 
 ### SEC-205 - Remove `.env.production` from Git history
 
