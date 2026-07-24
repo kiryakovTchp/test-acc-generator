@@ -2729,11 +2729,6 @@ function UtilityView({
           <Field label={t('Bulk count')}>
             <input className="input-field compact" id="settings-bulk-count" name="settingsBulkCount" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
           </Field>
-          <Field label={t('Interface language')}>
-            <select className="input-field compact" id="settings-interface-language" name="settingsInterfaceLanguage" value={locale} onChange={(e) => setLocale(normalizeLocale(e.target.value))}>
-              {LOCALE_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-            </select>
-          </Field>
         </div>
         <div className="settings-actions">
           <span>{userSettings ? (locale === 'ru' ? `На сервере: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}` : `Server default: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}`) : (locale === 'ru' ? 'Серверные настройки загружаются' : 'Server defaults loading')}</span>
@@ -3033,6 +3028,11 @@ function UtilityView({
           </Field>
           <Field label={t('Username')}>
             <input className="input-field compact" id="account-username" name="accountUsername" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" autoComplete="username" />
+          </Field>
+          <Field label={t('Interface language')}>
+            <select className="input-field compact" id="account-interface-language" name="accountInterfaceLanguage" value={locale} onChange={(e) => setLocale(normalizeLocale(e.target.value))}>
+              {LOCALE_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
           </Field>
         </div>
         <div className="settings-actions">
