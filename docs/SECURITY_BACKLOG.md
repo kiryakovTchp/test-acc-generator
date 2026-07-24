@@ -141,7 +141,7 @@ Recovery note from 2026-07-24:
 - Production was recovered from `a721123 Keep access tokens out of local storage` and deployed through `f8f5f57 Implement Figma sidebar components and security cleanup`.
 - The fourth pass was started but not finished before the Codex limit interruption on 2026-07-17.
 - `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation were committed, pushed, deployed, and production smoke-checked on 2026-07-24.
-- Remaining open P2 work after this rollout: `SEC-202` and `SEC-205`.
+- Remaining open P2 work after this rollout: `SEC-205`.
 
 ### SEC-201 - Move access token out of localStorage
 
@@ -151,7 +151,7 @@ Acceptance: access token held in memory; refresh token is HttpOnly, Secure, rota
 
 ### SEC-202 - Encrypt mailbox credentials and sensitive inbox data at rest
 
-Status: implemented locally; pending production key injection, deploy, and migration smoke
+Status: deployed on 2026-07-24
 Owner: Developer + Ops
 Acceptance: envelope encryption with `DATA_ENCRYPTION_KEY`; migration plan; no key stored next to DB; old plaintext rows migrated or explicitly expired; backup/restore process documented.
 
@@ -167,8 +167,9 @@ Current implementation:
 Deployment notes:
 
 - production SQLite backup was created before this work: `backend/data/backups/app-before-sec202-20260724125035.db` plus WAL/SHM;
-- deploy requires setting `DATA_ENCRYPTION_KEY` in the server `.env.production` before rebuilding;
-- after deploy, verify API health and sample encrypted row markers in SQLite without printing decrypted values.
+- server `.env.production` was backed up to `.env.production.before-sec202-20260724125738` before adding `DATA_ENCRYPTION_KEY`;
+- production deploy migrated 40/40 account history rows to encrypted sensitive fields;
+- production smoke passed `/api/health`, `/main`, `/accounts`, `/settings`, container logs, encrypted row marker counts, and in-container decrypt check without printing decrypted values.
 
 ### SEC-203 - Add scheduled retention cleanup
 
