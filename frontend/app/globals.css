@@ -1125,6 +1125,11 @@ select.input-field.badge-select {
   opacity: 0.55;
 }
 
+.micro-button.danger-soft {
+  border-color: #fed7aa;
+  color: #9a3412;
+}
+
 .w-full {
   width: 100%;
 }
@@ -2949,6 +2954,54 @@ body {
   border-top: 1px solid #edf0f4;
 }
 
+.mailbox-control-card {
+  display: grid;
+  gap: 10px;
+  padding: 10px;
+  border: 1px solid #edf0f4;
+  border-radius: 4px;
+  background: #fbfcfe;
+}
+
+.mailbox-control-meta {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+
+.mailbox-control-meta span,
+.mailbox-control-meta small {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailbox-control-meta strong {
+  overflow: hidden;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailbox-control-actions {
+  display: grid;
+  grid-template-columns: 1fr 0.72fr 0.9fr;
+  gap: 6px;
+}
+
+.mailbox-control-actions .micro-button,
+.mailbox-control-actions .primary-button {
+  min-height: 32px;
+  padding: 7px 8px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
 .email-message-toolbar {
   display: flex;
   align-items: center;
@@ -3511,6 +3564,10 @@ kbd {
   .logout-button {
     width: 100%;
     min-width: 0;
+  }
+
+  .mailbox-control-actions {
+    grid-template-columns: 1fr;
   }
 
   .quick-actions-panel,

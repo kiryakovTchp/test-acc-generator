@@ -6,7 +6,7 @@ import { MailTmProvider } from './providers/mailTmProvider.js';
 import { MailGwProvider } from './providers/mailGwProvider.js';
 import { FallbackEmailProvider } from './providers/fallbackEmailProvider.js';
 import type { EmailProvider } from './providers/emailProvider.js';
-import { buildInboxPayload, cleanupOldHistory, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { buildInboxPayload, cleanupOldHistory, deleteHistory, generateAccount, getHistoryDetail, getRefreshMailboxProviderKey, listGeoRules, listHistory, refreshInbox, regeneratePhone, replaceMailbox, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { PersonaKey, Role } from './types.js';
 import db, { getDefaultWorkspaceForUser } from './db.js';
 import { addDays, hashPasswordAsync, hashSessionToken, newSessionToken, verifyPasswordAsync } from './auth.js';
@@ -552,6 +552,28 @@ app.post('/history/:id/refresh-inbox', auth, async (req, res) => {
     res.json(item);
   } catch (error) {
     sendError(res, error, 'Failed to refresh inbox');
+  }
+});
+
+app.post('/history/:id/replace-mailbox', auth, async (req, res) => {
+  const settings = getWorkspaceSettings((req as any).user.workspaceId);
+  const includeDebug = req.query.debug === '1';
+  try {
+    requireWorkspacePermission(req, ['owner', 'admin', 'member']);
+    const providerKey = resolveMailboxProvider(req.body?.mailboxProvider, settings.mailbox_provider);
+    const item = await replaceMailbox({
+      id: Number(req.params.id),
+      userId: (req as any).user.userId,
+      emailProvider: getEmailProvider(providerKey),
+      emailProviderForAccount: getMailboxReadProvider,
+      reserveMailboxCreation: () => reserveMailboxCreation((req as any).user.workspaceId, (req as any).user.userId, settings),
+      includeDebug,
+      workspaceId: (req as any).user.workspaceId,
+    });
+    if (!item) return res.status(404).json({ error: 'Not found' });
+    res.json(item);
+  } catch (error) {
+    sendError(res, error, 'Failed to replace mailbox');
   }
 });
 
