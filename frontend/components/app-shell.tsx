@@ -201,7 +201,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [detail, setDetail] = useState<Detail | null>(null);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showFilters, setShowFilters] = useState(true);
   const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
   const isRefreshingInboxRef = useRef(false);
@@ -356,6 +355,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
     return next;
   }, [accountGeoFilter, accountSearch, balanceFilter, history, sortMode, statusFilter]);
+
+  const recentHistory = useMemo(() => {
+    return [...history].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }, [history]);
 
   const selectedStatus = mapDetailStatus(detail);
   const currentWorkspace = workspaces.find((item) => item.id === user?.workspaceId);
@@ -1388,33 +1391,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <section className="panel panel-list">
             <div className="panel-header">
               <h2>Recent identities <span>({history.length})</span></h2>
-              <button type="button" className="filter-button" onClick={() => setShowFilters((value) => !value)}>Filters</button>
             </div>
 
-            {showFilters ? (
-              <div className="list-controls">
-                <input className="input-field compact" id="main-account-search" name="mainAccountSearch" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
-                <div className="control-row">
-                  <select className="input-field compact" id="main-status-filter" name="mainStatusFilter" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
-                    <option value="all">All statuses</option>
-                    <option value="generated">Generated</option>
-                    <option value="email_received">Email received</option>
-                    <option value="waiting">Waiting</option>
-                  </select>
-                  <select className="input-field compact" id="main-balance-filter" name="mainBalanceFilter" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
-                    <option value="all">All balances</option>
-                    {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-                  </select>
-                  <select className="input-field compact" id="main-sort-mode" name="mainSortMode" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
-                  </select>
-                </div>
-              </div>
-            ) : null}
-
             <div className="account-list">
-              {isWorkspaceBootstrapping ? <ListSkeleton rows={6} /> : filteredHistory.length ? filteredHistory.map((item) => {
+              {isWorkspaceBootstrapping ? <ListSkeleton rows={6} /> : recentHistory.length ? recentHistory.map((item) => {
                 const rowStatus = mapHistoryStatus(item);
                 const selected = detail?.id === item.id;
                 return (
@@ -1423,14 +1403,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <span className={cn('badge-dot', `tone-${statusTone(rowStatus)}`)} />
                     </span>
                     <strong>{item.siteAccountId || item.username}</strong>
-                    <span className={cn('badge', `tone-${scopeTone(item)}`)}>{scopeLabel(item)}</span>
                     <time>{formatCompactDate(item.createdAt)}</time>
                   </button>
                 );
               }) : (
                 <AccountsEmptyState
                   hasHistory={history.length > 0}
-                  hasFilters={hasActiveAccountFilters}
+                  hasFilters={false}
                   onClearFilters={clearAccountFilters}
                 />
               )}

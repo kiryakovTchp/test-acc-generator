@@ -1772,7 +1772,7 @@ body {
   max-width: 1480px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
+  grid-template-columns: 300px minmax(0, 1fr);
   grid-template-areas:
     'generation detail'
     'list detail'
@@ -1790,7 +1790,7 @@ body {
 .main-rail {
   grid-area: main-rail;
   display: grid;
-  gap: 14px;
+  gap: 36px;
   align-content: start;
   min-width: 0;
 }
@@ -1837,6 +1837,13 @@ body {
 
 .main-rail .panel-list {
   grid-area: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 8px;
+  height: 446.5px;
+  padding: 16px;
 }
 
 .panel-generation {
@@ -1845,6 +1852,12 @@ body {
 
 .main-rail .panel-generation {
   grid-area: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  height: 420px;
+  padding: 16px;
 }
 
 .panel-detail {
@@ -1887,8 +1900,15 @@ body {
 }
 
 .panel-header {
+  display: flex;
   align-items: center;
   margin-bottom: 10px;
+}
+
+.main-rail .panel-header {
+  width: 100%;
+  height: 15px;
+  margin-bottom: 0;
 }
 
 .panel-actions {
@@ -1957,6 +1977,27 @@ body {
   text-transform: none;
 }
 
+.main-rail .panel-header h2 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: 15px;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+}
+
+.main-rail .panel-header h2 span {
+  color: #25b876;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 13px;
+  letter-spacing: 0;
+}
+
 .accounts-controls {
   display: grid;
   grid-template-columns: minmax(260px, 1fr) auto;
@@ -1992,6 +2033,72 @@ body {
   font-size: 12px;
 }
 
+.main-rail .field-block {
+  gap: 5px;
+}
+
+.main-rail .field-block > span {
+  color: #374151;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 16px;
+}
+
+.main-rail .form-stack {
+  width: 100%;
+  gap: 10px;
+}
+
+.main-rail .input-field.compact {
+  height: 32px;
+  min-height: 32px;
+  border-color: #e7eaf0;
+  border-radius: 4px;
+  padding: 7px 14px;
+  color: #151922;
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.main-rail select.input-field.compact {
+  appearance: none;
+  padding-right: 26px;
+  background-image: url("data:image/svg+xml,%3Csvg width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236E7787' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-position: right 9px center;
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+}
+
+.main-rail input.input-field.compact {
+  height: 34px;
+  line-height: 18px;
+  padding: 7px 10px;
+}
+
+.main-rail .bulk-card h3 {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 15px;
+  color: #151922;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.main-rail .bulk-card p {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 35px;
+  margin: 0;
+  color: #6e7787;
+  font-size: 12px;
+  line-height: 17px;
+}
+
 .account-list {
   gap: 0;
   max-height: min(394px, calc(100dvh - 356px));
@@ -2002,7 +2109,7 @@ body {
 
 .account-row {
   display: grid;
-  grid-template-columns: var(--badge-height) minmax(0, 1fr) auto auto;
+  grid-template-columns: var(--badge-height) minmax(0, 1fr) auto;
   gap: 9px;
   align-items: center;
   width: 100%;
@@ -2013,6 +2120,28 @@ body {
   padding: 0 4px;
   background: #fff;
   text-align: left;
+}
+
+.main-rail .account-list {
+  width: 100%;
+  height: 366px;
+  flex: 0 0 366px;
+  max-height: 394px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.main-rail .account-row {
+  width: 100%;
+  height: 41px;
+  min-height: 39px;
+  padding: 8px 6px;
+}
+
+.main-rail .status-marker {
+  height: 24px;
+  min-height: 24px;
+  border-radius: 999px;
 }
 
 .account-row.is-selected {
@@ -2034,6 +2163,23 @@ body {
 .code-row time {
   color: var(--muted);
   font-size: 11px;
+}
+
+.main-rail .account-row time {
+  color: #6e7787;
+  font-size: 11px;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.main-rail .view-all-button {
+  height: 15.5px;
+  border-radius: 3px;
+  background: #fff;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 18px;
 }
 
 .account-table-wrap {
@@ -3323,7 +3469,7 @@ kbd {
   }
 
   .workspace-grid.main-view {
-    grid-template-columns: 260px minmax(0, 1fr);
+    grid-template-columns: 300px minmax(0, 1fr);
     grid-template-areas:
       'main-rail detail'
       'links codes';
