@@ -54,6 +54,11 @@ const GEO_NAME_DEFAULTS: Record<string, GeoNameProfile> = {
     femaleFirstNames: ['Marie', 'Chantal', 'Sandrine', 'Estelle', 'Prisca', 'Nadine', 'Ariane', 'Justine'],
     lastNames: ['Mba', 'Ondo', 'Obame', 'Ndong', 'Nguema', 'Essono', 'Ebang', 'Moussavou', 'Oyono'],
   },
+  cote_divoire: {
+    maleFirstNames: ['Kouadio', 'Yao', 'Koffi', 'Mamadou', 'Adama', 'Jean', 'Serge', 'Ibrahim'],
+    femaleFirstNames: ['Awa', 'Aminata', 'Aya', 'Kouakou', 'Fatoumata', 'Aicha', 'Mariam', 'Nadine'],
+    lastNames: ['Kone', 'Coulibaly', 'Kouassi', 'Yao', 'Traore', 'Bamba', 'Koffi', 'Diabate', 'Ouattara'],
+  },
 };
 
 const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
@@ -151,6 +156,14 @@ const GEO_PROFILE_DEFAULTS: Record<string, GeoProfile> = {
       { name: 'Haut-Ogooue', cities: ['Franceville'], postalPrefixes: ['600'], streetPrefixes: ['Avenue de la Renovation', 'Route de Moanda'] },
     ],
   },
+  cote_divoire: {
+    country: "Cote d'Ivoire",
+    regions: [
+      { name: 'Abidjan', cities: ['Abidjan', 'Yopougon'], postalPrefixes: ['01', '02'], streetPrefixes: ['Boulevard Latrille', 'Avenue Chardy'] },
+      { name: 'Lacs', cities: ['Yamoussoukro'], postalPrefixes: ['10'], streetPrefixes: ['Avenue Houphouet-Boigny', 'Rue des Jardins'] },
+      { name: 'Savanes', cities: ['Korhogo'], postalPrefixes: ['20'], streetPrefixes: ['Route de Ferkessedougou', 'Avenue de la Republique'] },
+    ],
+  },
   ethiopia: {
     country: 'Ethiopia',
     regions: [
@@ -223,9 +236,15 @@ export function randomDigits(length: number) {
   return Array.from({ length }, (_, i) => String(bytes[i] % 10)).join('');
 }
 
-export function fillTemplate(template: string) {
+export function randomLetters(length: number) {
+  return randomString(length, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ');
+}
+
+export function fillTemplate(template: string, context: { dateOfBirth?: string } = {}) {
   return template
     .replace('{YYYY}', String(new Date().getFullYear()))
+    .replace('{DOB_YYMMDD}', formatDateOfBirthYyMmDd(context.dateOfBirth))
+    .replace(/\{RANDL(\d+)\}/g, (_, letters) => randomLetters(Number(letters)))
     .replace(/\{RAND(\d+)\}/g, (_, digits) => randomDigits(Number(digits)));
 }
 
@@ -362,6 +381,7 @@ export function randomPhone(geoKey: string) {
     sierra_leone: '+23276',
     togo: '+22890',
     gabon: '+24106',
+    cote_divoire: '+22507',
     ethiopia: '+25191',
     senegal: '+22170',
     tanzania: '+25562',
@@ -379,6 +399,12 @@ export function randomPhone(geoKey: string) {
   const totalDigits = totalDigitsByGeo[geoKey] ?? 12;
   const digitsNeeded = Math.max(6, totalDigits - prefix.replace(/\D/g, '').length);
   return `${prefix}${randomDigits(digitsNeeded)}`;
+}
+
+function formatDateOfBirthYyMmDd(dateOfBirth?: string) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth ?? '');
+  if (!match) return randomDigits(6);
+  return `${match[1].slice(-2)}${match[2]}${match[3]}`;
 }
 
 function randomAge(persona: PersonaKey) {

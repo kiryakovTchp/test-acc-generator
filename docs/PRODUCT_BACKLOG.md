@@ -1,6 +1,6 @@
 # Product Backlog
 
-Last updated: 2026-07-16
+Last updated: 2026-07-24
 
 This file tracks product and engineering improvements that are not yet implemented. Keep it current when new requirements appear in chat or during implementation.
 
@@ -10,6 +10,33 @@ This file tracks product and engineering improvements that are not yet implement
 - `P1`: important product capability or security/ops hardening;
 - `P2`: useful improvement;
 - `P3`: polish or optional enhancement.
+
+## P1 - Personal Account Access ACL
+
+Status: planned
+Source: 2026-07-24 Telegram discussion after creating `i.kiryakov` in `Global PMO Africa`
+Owner: Developer + Project
+
+### Problem
+
+The current sharing model uses `account_history.shared_with_workspace=1`, which opens an account to every member of the workspace. That is too broad for cases where an admin needs to give one specific user access to HasBalance accounts.
+
+### Required Behavior
+
+- Admins/owners can grant a specific user access to specific accounts without exposing those accounts to the whole workspace.
+- Existing workspace-wide sharing remains available only as an explicit "share with workspace" action.
+- `/history` and account detail visibility include direct account grants.
+- Bulk grant flow supports "grant all admin-created HasBalance accounts in this workspace to this user".
+- New HasBalance accounts should have a clear policy: manual grant by admin, or an explicit auto-grant rule for selected users.
+- Activity log records grant/revoke events with actor, target user, account, and workspace.
+
+### Recommended Technical Shape
+
+- Add an `account_access` table with `account_id`, `user_id`, `granted_by_user_id`, `permission`, `created_at`, and optional `revoked_at`/soft-delete fields.
+- Add indexes on `(user_id, account_id)` and `(account_id, user_id)`.
+- Update account list/detail permission queries from creator/owner/workspace-share only to creator/owner/direct-grant/workspace-share.
+- Add backend APIs for grant, revoke, and bulk grant by `balance_status='has_balance'`.
+- Keep `shared_with_workspace` as a separate broad-sharing feature, not as the path for personal access.
 
 ## Completed on 2026-07-16
 
