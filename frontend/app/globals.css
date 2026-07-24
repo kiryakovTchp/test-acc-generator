@@ -1583,11 +1583,7 @@ body {
 .sidebar-switch-icon svg {
   width: 14px;
   height: 14px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  fill: currentColor;
 }
 
 .sidebar-logout-button {
@@ -1611,11 +1607,7 @@ body {
 .sidebar-logout-icon svg {
   width: 20px;
   height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
+  fill: currentColor;
 }
 
 .sidebar-user-card:hover {
