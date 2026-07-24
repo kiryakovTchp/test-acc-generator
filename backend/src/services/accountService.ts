@@ -6,6 +6,7 @@ import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 import { recordActivity } from '../activity.js';
 import { getWorkspaceRole } from '../permissions.js';
+import { decryptSensitive, decryptSensitiveNullable, encryptSensitive, encryptSensitiveNullable } from '../sensitiveData.js';
 
 const rules = geoRules as unknown as GeoRule[];
 const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
@@ -63,7 +64,7 @@ export async function generateAccount(input: {
     geo.key,
     geo.label,
     emailAccount.address,
-    emailAccount.password,
+    encryptSensitive(emailAccount.password, 'account_history.email_password'),
     username,
     profile.firstName,
     profile.lastName,
@@ -89,10 +90,10 @@ export async function generateAccount(input: {
     hydratedInbox.sender,
     hydratedInbox.subject,
     hydratedInbox.receivedAt,
-    hydratedInbox.plainText,
-    JSON.stringify(hydratedInbox.links),
-    JSON.stringify(hydratedInbox.codes),
-    hydratedInbox.rawHtml ?? null,
+    encryptSensitiveNullable(hydratedInbox.plainText, 'account_history.inbox_plain_text'),
+    encryptSensitive(JSON.stringify(hydratedInbox.links), 'account_history.inbox_links_json'),
+    encryptSensitive(JSON.stringify(hydratedInbox.codes), 'account_history.inbox_codes_json'),
+    encryptSensitiveNullable(hydratedInbox.rawHtml, 'account_history.inbox_html'),
   );
 
   trimHistoryForWorkspace(input.userId, workspaceId);
@@ -126,7 +127,7 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
       AND (created_by_user_id = ? OR user_id = ? OR (shared_with_workspace = 1 AND ? = 1))
   `).get(id, resolvedWorkspaceId, userId, userId, userId, canEditShared ? 1 : 0) as any;
   if (!row) return null;
-  const inbox = await emailProvider.fetchInbox(row.email, row.email_password, waitMs);
+  const inbox = await emailProvider.fetchInbox(row.email, decryptSensitive(row.email_password, 'account_history.email_password'), waitMs);
   const hydratedInbox = buildInboxPayload(inbox);
   db.prepare(`
     UPDATE account_history
@@ -140,10 +141,10 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
     hydratedInbox.sender,
     hydratedInbox.subject,
     hydratedInbox.receivedAt,
-    hydratedInbox.plainText,
-    JSON.stringify(hydratedInbox.links),
-    JSON.stringify(hydratedInbox.codes),
-    hydratedInbox.rawHtml ?? null,
+    encryptSensitiveNullable(hydratedInbox.plainText, 'account_history.inbox_plain_text'),
+    encryptSensitive(JSON.stringify(hydratedInbox.links), 'account_history.inbox_links_json'),
+    encryptSensitive(JSON.stringify(hydratedInbox.codes), 'account_history.inbox_codes_json'),
+    encryptSensitiveNullable(hydratedInbox.rawHtml, 'account_history.inbox_html'),
     id,
     resolvedWorkspaceId,
     userId,
@@ -197,16 +198,16 @@ export async function replaceMailbox(input: {
       AND (created_by_user_id = ? OR user_id = ?)
   `).run(
     emailAccount.address,
-    emailAccount.password,
+    encryptSensitive(emailAccount.password, 'account_history.email_password'),
     emailAccount.provider ?? 'mail_tm',
     hydratedInbox.status,
     hydratedInbox.sender,
     hydratedInbox.subject,
     hydratedInbox.receivedAt,
-    hydratedInbox.plainText,
-    JSON.stringify(hydratedInbox.links),
-    JSON.stringify(hydratedInbox.codes),
-    hydratedInbox.rawHtml ?? null,
+    encryptSensitiveNullable(hydratedInbox.plainText, 'account_history.inbox_plain_text'),
+    encryptSensitive(JSON.stringify(hydratedInbox.links), 'account_history.inbox_links_json'),
+    encryptSensitive(JSON.stringify(hydratedInbox.codes), 'account_history.inbox_codes_json'),
+    encryptSensitiveNullable(hydratedInbox.rawHtml, 'account_history.inbox_html'),
     input.id,
     resolvedWorkspaceId,
     input.userId,
@@ -380,6 +381,13 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
   `).get(id, resolvedWorkspaceId, userId, userId, userId) as any;
   if (!row) return null;
   const isCreator = row.created_by_user_id === userId || row.user_id === userId;
+  const emailPassword = decryptSensitive(row.email_password, 'account_history.email_password');
+  const inboxPlainText = decryptSensitiveNullable(row.inbox_plain_text, 'account_history.inbox_plain_text') ?? '';
+  const inboxLinksJson = decryptSensitive(row.inbox_links_json, 'account_history.inbox_links_json');
+  const inboxCodesJson = decryptSensitive(row.inbox_codes_json, 'account_history.inbox_codes_json');
+  const inboxHtml = decryptSensitiveNullable(row.inbox_html, 'account_history.inbox_html');
+  const inboxLinks = JSON.parse(inboxLinksJson);
+  const inboxCodes = JSON.parse(inboxCodesJson);
   return {
     id: row.id,
     workspaceId: row.workspace_id,
@@ -390,7 +398,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
     geoKey: row.geo_key,
     geoLabel: row.geo_label,
     email: row.email,
-    emailPassword: row.email_password,
+    emailPassword,
     username: row.username,
     siteAccountId: row.site_account_id,
     balanceStatus: normalizeBalanceStatus(row.balance_status),
@@ -418,7 +426,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
       `Balance Status: ${balanceStatusLabel(normalizeBalanceStatus(row.balance_status))}`,
       `Username: ${row.username}`,
       `Email: ${row.email}`,
-      `Mailbox Password: ${row.email_password}`,
+      `Mailbox Password: ${emailPassword}`,
       `First Name: ${row.first_name}`,
       `Last Name: ${row.last_name}`,
       `Phone: ${row.phone}`,
@@ -440,11 +448,11 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
       sender: row.inbox_sender,
       subject: row.inbox_subject,
       receivedAt: row.inbox_received_at,
-      plainText: row.inbox_plain_text ?? '',
-      links: JSON.parse(row.inbox_links_json),
-      primaryVerificationLink: pickPrimaryVerificationLink(JSON.parse(row.inbox_links_json)),
-      codes: JSON.parse(row.inbox_codes_json),
-      rawHtml: includeDebug && isCreator ? row.inbox_html : null,
+      plainText: inboxPlainText,
+      links: inboxLinks,
+      primaryVerificationLink: pickPrimaryVerificationLink(inboxLinks),
+      codes: inboxCodes,
+      rawHtml: includeDebug && isCreator ? inboxHtml : null,
     },
     createdAt: row.created_at,
   };

@@ -6,6 +6,7 @@ import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { listActivityEvents } from './activity.js';
 import { updateWorkspaceSettings } from './settings.js';
+import { isEncryptedSensitive } from './sensitiveData.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -15,6 +16,7 @@ const provider: EmailProvider = {
     return [{ plainText: 'Code 123456 and link https://example.com', html: '<b>Code 123456</b>' }];
   },
 };
+const testDataEncryptionKey = 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
 
 test('generation waits briefly for first inbox snapshot', async () => {
   let observedWaitMs = 0;
@@ -249,6 +251,47 @@ test('history detail hides raw html unless debug payload is explicitly requested
 
   const debugItem = getHistoryDetail(item!.id, 1, true);
   assert.equal(debugItem?.inbox.rawHtml, '<b>Code 123456</b>');
+});
+
+test('generated sensitive mailbox data is encrypted at rest when a key is configured', async () => {
+  const previousKey = process.env.DATA_ENCRYPTION_KEY;
+  process.env.DATA_ENCRYPTION_KEY = testDataEncryptionKey;
+  try {
+    const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+    assert.equal(item?.emailPassword, 'secret');
+    assert.equal(item?.inbox.plainText, 'Code 123456 and link https://example.com');
+    assert.equal(item?.inbox.rawHtml, null);
+
+    const debugItem = getHistoryDetail(item!.id, 1, true);
+    assert.equal(debugItem?.inbox.rawHtml, '<b>Code 123456</b>');
+
+    const row = db.prepare(`
+      SELECT email_password, inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
+      FROM account_history
+      WHERE id = ?
+    `).get(item!.id) as {
+      email_password: string;
+      inbox_plain_text: string;
+      inbox_links_json: string;
+      inbox_codes_json: string;
+      inbox_html: string;
+    } | undefined;
+
+    assert.ok(row);
+    assert.equal(isEncryptedSensitive(row!.email_password), true);
+    assert.equal(isEncryptedSensitive(row!.inbox_plain_text), true);
+    assert.equal(isEncryptedSensitive(row!.inbox_links_json), true);
+    assert.equal(isEncryptedSensitive(row!.inbox_codes_json), true);
+    assert.equal(isEncryptedSensitive(row!.inbox_html), true);
+    assert.notEqual(row!.email_password, 'secret');
+    assert.notEqual(row!.inbox_plain_text, 'Code 123456 and link https://example.com');
+  } finally {
+    if (previousKey === undefined) {
+      delete process.env.DATA_ENCRYPTION_KEY;
+    } else {
+      process.env.DATA_ENCRYPTION_KEY = previousKey;
+    }
+  }
 });
 
 test('seed users receive default workspace settings and membership', () => {

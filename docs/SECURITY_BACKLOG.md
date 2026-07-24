@@ -151,17 +151,24 @@ Acceptance: access token held in memory; refresh token is HttpOnly, Secure, rota
 
 ### SEC-202 - Encrypt mailbox credentials and sensitive inbox data at rest
 
-Status: planned
+Status: implemented locally; pending production key injection, deploy, and migration smoke
 Owner: Developer + Ops
 Acceptance: envelope encryption with `DATA_ENCRYPTION_KEY`; migration plan; no key stored next to DB; old plaintext rows migrated or explicitly expired; backup/restore process documented.
 
-Remaining work:
+Current implementation:
 
-- add encryption helper and key validation;
-- encrypt mailbox password/token fields and sensitive inbox HTML/plaintext/link/code payloads at write time;
-- migrate or phase out existing plaintext DB rows;
-- add tests for encryption/decryption, missing key fail-fast in production, and backwards-compatible migration behavior;
-- deploy with key material stored outside the repo/DB.
+- added AES-256-GCM helper with `enc:v1` payload format and `DATA_ENCRYPTION_KEY` validation;
+- production startup fails fast if `DATA_ENCRYPTION_KEY` is missing or invalid;
+- new writes encrypt `email_password`, `inbox_plain_text`, `inbox_links_json`, `inbox_codes_json`, and `inbox_html`;
+- reads remain backwards-compatible with existing plaintext rows;
+- startup migrates plaintext sensitive account history rows when a key is configured;
+- tests cover encrypted-at-rest writes, production missing-key fail-fast, and plaintext-to-encrypted startup migration.
+
+Deployment notes:
+
+- production SQLite backup was created before this work: `backend/data/backups/app-before-sec202-20260724125035.db` plus WAL/SHM;
+- deploy requires setting `DATA_ENCRYPTION_KEY` in the server `.env.production` before rebuilding;
+- after deploy, verify API health and sample encrypted row markers in SQLite without printing decrypted values.
 
 ### SEC-203 - Add scheduled retention cleanup
 

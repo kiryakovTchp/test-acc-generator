@@ -10,6 +10,7 @@ import db from './db.js';
 
 const require = createRequire(import.meta.url);
 const tsxLoaderPath = require.resolve('tsx');
+const testDataEncryptionKey = 'base64:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=';
 
 test('password hashing verifies the original password and rejects another one', () => {
   const hash = hashPassword('correct horse battery staple');
@@ -42,9 +43,21 @@ test('session token hashes are stable but do not expose the token', () => {
 test('production startup requires explicit seed users', () => {
   const cwd = mkdtempSync(path.join(tmpdir(), 'tag-prod-seed-'));
   try {
-    const result = runDbImport(cwd, { NODE_ENV: 'production', SEED_USERS_JSON: '' });
+    const result = runDbImport(cwd, { NODE_ENV: 'production', SEED_USERS_JSON: '', DATA_ENCRYPTION_KEY: testDataEncryptionKey });
     assert.notEqual(result.status, 0);
     assert.match(`${result.stderr}${result.stdout}`, /SEED_USERS_JSON is required in production/);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test('production startup requires data encryption key', () => {
+  const cwd = mkdtempSync(path.join(tmpdir(), 'tag-prod-encryption-'));
+  const seed = JSON.stringify([{ login: 'admin', password: 'first-password-123', role: 'admin' }]);
+  try {
+    const result = runDbImport(cwd, { NODE_ENV: 'production', SEED_USERS_JSON: seed, DATA_ENCRYPTION_KEY: '' });
+    assert.notEqual(result.status, 0);
+    assert.match(`${result.stderr}${result.stdout}`, /DATA_ENCRYPTION_KEY is required in production/);
   } finally {
     rmSync(cwd, { recursive: true, force: true });
   }
@@ -65,6 +78,38 @@ test('seed bootstrap does not reset existing user password hashes', () => {
       const row = db.prepare("SELECT password_hash FROM users WHERE login = 'admin'").get();
       if (row.password_hash !== 'custom-password-hash') {
         throw new Error('password hash was reset');
+      }
+    `);
+    assert.equal(second.status, 0, second.stderr);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
+test('startup migrates plaintext sensitive account history when encryption key is configured', () => {
+  const cwd = mkdtempSync(path.join(tmpdir(), 'tag-sensitive-migration-'));
+  try {
+    const first = runDbImport(cwd, {}, `
+      const db = (await import(${JSON.stringify(new URL('./db.ts', import.meta.url).href)})).default;
+      db.prepare(\`
+        INSERT INTO account_history (
+          user_id, workspace_id, created_by_user_id, geo_key, geo_label, email, email_password, username,
+          account_role, document_type, document_value, document_quality, registration_url,
+          inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
+        ) VALUES (1, 1, 1, 'zambia', 'Zambia', 'plain@example.test', 'plain-password', 'plain_user',
+          'user', 'passport', 'A123', 'synthetic_pattern', '',
+          'Code 123456', '[{"url":"https://example.com"}]', '["123456"]', '<b>Code</b>')
+      \`).run();
+    `);
+    assert.equal(first.status, 0, first.stderr);
+
+    const second = runDbImport(cwd, { DATA_ENCRYPTION_KEY: testDataEncryptionKey }, `
+      const db = (await import(${JSON.stringify(new URL('./db.ts', import.meta.url).href)})).default;
+      const row = db.prepare('SELECT email_password, inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html FROM account_history WHERE email = ?').get('plain@example.test');
+      for (const field of ['email_password', 'inbox_plain_text', 'inbox_links_json', 'inbox_codes_json', 'inbox_html']) {
+        if (!String(row[field]).startsWith('enc:v1:')) {
+          throw new Error(field + ' was not encrypted');
+        }
       }
     `);
     assert.equal(second.status, 0, second.stderr);

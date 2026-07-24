@@ -3,12 +3,14 @@ import path from 'node:path';
 import fs from 'node:fs';
 import type { Role, DocumentQuality, Gender, PersonaKey, AccountBalanceStatus } from './types.js';
 import { hashPassword } from './auth.js';
+import { assertDataEncryptionReady, encryptSensitive, encryptSensitiveNullable, hasDataEncryptionKey, isEncryptedSensitive } from './sensitiveData.js';
 
 const dataDir = path.resolve(process.cwd(), 'backend', 'data');
 fs.mkdirSync(dataDir, { recursive: true });
 const db = new Database(path.join(dataDir, 'app.db'));
 db.pragma('journal_mode = WAL');
 db.pragma('busy_timeout = 5000');
+assertDataEncryptionReady();
 
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
@@ -253,6 +255,7 @@ for (const user of seedUsers) {
 }
 
 backfillUserWorkspaceFoundation();
+migrateSensitiveAccountHistoryRows();
 
 function loadSeedUsers() {
   const raw = process.env.SEED_USERS_JSON;
@@ -466,4 +469,61 @@ function createDefaultWorkspaceForUser(userId: number): number {
   `).run(workspaceId);
 
   return workspaceId;
+}
+
+function migrateSensitiveAccountHistoryRows() {
+  if (!hasDataEncryptionKey()) return;
+
+  const rows = db.prepare(`
+    SELECT id, email_password, inbox_plain_text, inbox_links_json, inbox_codes_json, inbox_html
+    FROM account_history
+  `).all() as Array<{
+    id: number;
+    email_password: string;
+    inbox_plain_text: string | null;
+    inbox_links_json: string;
+    inbox_codes_json: string;
+    inbox_html: string | null;
+  }>;
+
+  const update = db.prepare(`
+    UPDATE account_history
+    SET email_password = ?,
+        inbox_plain_text = ?,
+        inbox_links_json = ?,
+        inbox_codes_json = ?,
+        inbox_html = ?
+    WHERE id = ?
+  `);
+
+  const tx = db.transaction(() => {
+    for (const row of rows) {
+      if (isSensitiveRowEncrypted(row)) {
+        continue;
+      }
+      update.run(
+        encryptSensitive(row.email_password, 'account_history.email_password'),
+        encryptSensitiveNullable(row.inbox_plain_text, 'account_history.inbox_plain_text'),
+        encryptSensitive(row.inbox_links_json, 'account_history.inbox_links_json'),
+        encryptSensitive(row.inbox_codes_json, 'account_history.inbox_codes_json'),
+        encryptSensitiveNullable(row.inbox_html, 'account_history.inbox_html'),
+        row.id,
+      );
+    }
+  });
+  tx();
+}
+
+function isSensitiveRowEncrypted(row: {
+  email_password: string;
+  inbox_plain_text: string | null;
+  inbox_links_json: string;
+  inbox_codes_json: string;
+  inbox_html: string | null;
+}) {
+  return isEncryptedSensitive(row.email_password)
+    && (row.inbox_plain_text === null || isEncryptedSensitive(row.inbox_plain_text))
+    && isEncryptedSensitive(row.inbox_links_json)
+    && isEncryptedSensitive(row.inbox_codes_json)
+    && (row.inbox_html === null || isEncryptedSensitive(row.inbox_html));
 }
