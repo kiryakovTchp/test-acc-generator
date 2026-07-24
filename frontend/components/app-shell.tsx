@@ -3088,11 +3088,11 @@ function EmailMessage({
         </div>
         <div className="email-message-actions">
           {onWaitRefresh ? (
-            <button className="micro-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>
+            <button className="micro-button email-wait-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>
               {isRefreshing ? 'Waiting' : 'Wait & refresh'}
             </button>
           ) : null}
-          <button className="micro-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
+          <button className="micro-button email-open-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
           {activationHost ? <span className="link-host-preview">{activationHost}</span> : null}
           <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
             {copied ? <CheckIcon /> : <CopyIcon />}
