@@ -10,8 +10,8 @@
   "dependencies": {
     "@mdi/light-js": "^0.2.63",
     "next": "^16.2.10",
-    "react": "19.1.0",
-    "react-dom": "19.1.0"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
