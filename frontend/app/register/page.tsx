@@ -27,6 +27,8 @@ export default function RegisterPage() {
         <div className="login-fields">
           <input
             className="input-field"
+            id="invite-token"
+            name="inviteToken"
             value={inviteToken}
             onChange={(event) => {
               setInviteToken(event.target.value);

@@ -103,10 +103,10 @@ function InviteForm() {
         <h1>Join Test User Console</h1>
         <p>{invite ? `${invite.workspaceName} · ${invite.role}` : status}</p>
         <div className="login-fields">
-          <input className="input-field" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="email" disabled={Boolean(invite?.email)} />
-          <input className="input-field" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="username" autoComplete="username" />
-          <input className="input-field" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="password" type="password" autoComplete="new-password" />
-          <input className="input-field" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="confirm password" type="password" autoComplete="new-password" />
+          <input className="input-field" id="invite-accept-email" name="email" value={email} onChange={(event) => setEmail(event.target.value)} placeholder="email" autoComplete="email" disabled={Boolean(invite?.email)} />
+          <input className="input-field" id="invite-accept-username" name="username" value={username} onChange={(event) => setUsername(event.target.value)} placeholder="username" autoComplete="username" />
+          <input className="input-field" id="invite-accept-password" name="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="password" type="password" autoComplete="new-password" />
+          <input className="input-field" id="invite-accept-confirm-password" name="confirmPassword" value={confirmPassword} onChange={(event) => setConfirmPassword(event.target.value)} placeholder="confirm password" type="password" autoComplete="new-password" />
         </div>
         {invite ? <p className="invite-meta">Expires {new Date(invite.expiresAt).toLocaleString()}</p> : null}
         {error ? <p className="alert alert-error">{error}</p> : null}
