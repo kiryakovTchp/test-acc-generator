@@ -18,6 +18,8 @@ type BrowserGenerationSettings = {
   mailboxProvider: MailboxProviderKey;
 };
 
+type AccountSwitchProfile = Pick<UserInfo, 'id' | 'login' | 'role' | 'email' | 'username' | 'workspaceId' | 'workspaceRole'>;
+
 type MailboxProviderKey = 'mail_tm' | 'mail_gw' | 'mail_tm_mail_gw_fallback';
 
 interface Detail {
@@ -98,6 +100,7 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
 ];
 
 const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
+const ACCOUNT_SWITCHER_STORAGE_KEY = 'tag-account-switcher-profiles';
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
@@ -160,6 +163,35 @@ function getBrowserStorage(): Storage | null {
   } catch {
     return null;
   }
+}
+
+function accountProfileFromUser(user: UserInfo): AccountSwitchProfile {
+  return {
+    id: user.id,
+    login: user.login,
+    role: user.role,
+    email: user.email,
+    username: user.username,
+    workspaceId: user.workspaceId,
+    workspaceRole: user.workspaceRole,
+  };
+}
+
+function normalizeSavedAccounts(accounts: AccountSwitchProfile[]) {
+  const seen = new Set<number>();
+  return accounts
+    .filter((account) => Number.isInteger(account.id) && account.id > 0 && typeof account.login === 'string' && account.login.trim())
+    .filter((account) => {
+      if (seen.has(account.id)) return false;
+      seen.add(account.id);
+      return true;
+    })
+    .slice(0, 6);
+}
+
+function upsertSavedAccount(accounts: AccountSwitchProfile[], user: UserInfo) {
+  const profile = accountProfileFromUser(user);
+  return normalizeSavedAccounts([profile, ...accounts.filter((account) => account.id !== profile.id)]);
 }
 
 function isEditableTarget(target: EventTarget | null) {
@@ -251,17 +283,36 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [accountStatus, setAccountStatus] = useState('Account ready');
   const [mailProviderStatus, setMailProviderStatus] = useState('Provider not checked');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [savedAccounts, setSavedAccounts] = useState<AccountSwitchProfile[]>([]);
+  const savedAccountsRef = useRef<AccountSwitchProfile[]>([]);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const [switchLogin, setSwitchLogin] = useState('');
+  const [switchPassword, setSwitchPassword] = useState('');
+  const [isAddingAccount, setIsAddingAccount] = useState(false);
+  const [switchingAccountId, setSwitchingAccountId] = useState<number | null>(null);
 
   useEffect(() => {
     const storage = getBrowserStorage();
     if (!storage) return;
 
     const storedUser = storage.getItem('tag-user');
+    const storedAccounts = storage.getItem(ACCOUNT_SWITCHER_STORAGE_KEY);
+    let loadedProfiles: AccountSwitchProfile[] = [];
 
     storage.removeItem('tag-token');
+    if (storedAccounts) {
+      try {
+        loadedProfiles = normalizeSavedAccounts(JSON.parse(storedAccounts) as AccountSwitchProfile[]);
+        saveAccountProfiles(loadedProfiles);
+      } catch {
+        storage.removeItem(ACCOUNT_SWITCHER_STORAGE_KEY);
+      }
+    }
+
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser) as UserInfo;
+        saveAccountProfiles(upsertSavedAccount(loadedProfiles, parsedUser));
         setUser(parsedUser);
         refreshSession(parsedUser.workspaceId).catch(() => {
           storage.removeItem('tag-user');
@@ -362,6 +413,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   const selectedStatus = mapDetailStatus(detail);
   const currentWorkspace = workspaces.find((item) => item.id === user?.workspaceId);
+  const accountSwitcherAccounts = user ? upsertSavedAccount(savedAccounts, user) : savedAccounts;
   const primaryActionsDisabled = !detail;
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
@@ -822,7 +874,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       await apiFetch(`/auth/sessions/${sessionId}`, token, { method: 'DELETE' });
       const wasCurrent = authSessions.some((session) => session.id === sessionId && Boolean(session.isCurrent));
       if (wasCurrent) {
-        clearAuthState();
+        clearAuthState(user?.id ? { removeAccountId: user.id } : undefined);
         return;
       }
       await refreshAuthSessions();
@@ -841,7 +893,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     setError('');
     try {
       await apiFetch('/auth/logout-everywhere', token, { method: 'POST' });
-      clearAuthState();
+      clearAuthState({ removeAllAccounts: true });
     } catch (err) {
       setAccountStatus('Logout failed');
       setError(err instanceof Error ? err.message : 'Failed to logout everywhere');
@@ -860,6 +912,48 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     persistAuthState(res.token, res.user);
   }
 
+  async function addSwitchAccount(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setIsAddingAccount(true);
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/login', undefined, {
+        method: 'POST',
+        body: JSON.stringify({ login: switchLogin, password: switchPassword }),
+      });
+      setSwitchLogin('');
+      setSwitchPassword('');
+      setIsAccountMenuOpen(false);
+      persistAuthState(res.token, res.user);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to add account');
+    } finally {
+      setIsAddingAccount(false);
+    }
+  }
+
+  async function switchAccount(account: AccountSwitchProfile) {
+    if (account.id === user?.id) {
+      setIsAccountMenuOpen(false);
+      return;
+    }
+    setError('');
+    setSwitchingAccountId(account.id);
+    try {
+      const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/switch-account', undefined, {
+        method: 'POST',
+        body: JSON.stringify({ userId: account.id, workspaceId: account.workspaceId }),
+      });
+      setIsAccountMenuOpen(false);
+      persistAuthState(res.token, res.user);
+    } catch (err) {
+      removeSavedAccount(account.id);
+      setError(err instanceof Error ? `${account.login}: ${err.message}` : `Failed to switch to ${account.login}`);
+    } finally {
+      setSwitchingAccountId(null);
+    }
+  }
+
   async function refreshSession(workspaceId = user?.workspaceId) {
     const res = await apiFetch<{ token: string; user: UserInfo }>('/auth/refresh', undefined, {
       method: 'POST',
@@ -870,6 +964,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function logout() {
+    const currentUserId = user?.id;
     try {
       if (token) {
         await apiFetch('/auth/logout', token, { method: 'POST' });
@@ -877,23 +972,47 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     } catch {
       // Local cleanup still wins if the server session was already gone.
     }
-    clearAuthState();
+    clearAuthState(currentUserId ? { removeAccountId: currentUserId } : undefined);
+  }
+
+  function saveAccountProfiles(accounts: AccountSwitchProfile[]) {
+    const normalizedAccounts = normalizeSavedAccounts(accounts);
+    savedAccountsRef.current = normalizedAccounts;
+    setSavedAccounts(normalizedAccounts);
+    const storage = getBrowserStorage();
+    if (!storage) return;
+    if (normalizedAccounts.length === 0) {
+      storage.removeItem(ACCOUNT_SWITCHER_STORAGE_KEY);
+      return;
+    }
+    storage.setItem(ACCOUNT_SWITCHER_STORAGE_KEY, JSON.stringify(normalizedAccounts));
+  }
+
+  function removeSavedAccount(accountId: number) {
+    saveAccountProfiles(savedAccounts.filter((account) => account.id !== accountId));
   }
 
   function persistAuthState(nextToken: string, nextUser: UserInfo) {
     const storage = getBrowserStorage();
     storage?.removeItem('tag-token');
     storage?.setItem('tag-user', JSON.stringify(nextUser));
+    saveAccountProfiles(upsertSavedAccount(savedAccountsRef.current, nextUser));
     setToken(nextToken);
     setUser(nextUser);
   }
 
-  function clearAuthState() {
+  function clearAuthState(options?: { removeAccountId?: number; removeAllAccounts?: boolean }) {
     const storage = getBrowserStorage();
     storage?.removeItem('tag-token');
     storage?.removeItem('tag-user');
+    if (options?.removeAllAccounts) {
+      saveAccountProfiles([]);
+    } else if (options?.removeAccountId) {
+      removeSavedAccount(options.removeAccountId);
+    }
     setToken('');
     setUser(null);
+    setIsAccountMenuOpen(false);
   }
 
   async function generate() {
@@ -1302,19 +1421,64 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </div>
 
         <div className="sidebar-footer">
-          <button className="sidebar-user" type="button" onClick={() => void logout()} aria-label="Logout">
-            <span className="sidebar-user-copy">
-              <strong>{user.login}</strong>
-              <span>{user.role}</span>
-            </span>
-            <span className="sidebar-logout-icon" aria-hidden="true">
-              <svg viewBox="0 0 32 32" focusable="false">
-                <path d="M14 5H8.5A3.5 3.5 0 0 0 5 8.5v15A3.5 3.5 0 0 0 8.5 27H14" />
-                <path d="M19 10l6 6-6 6" />
-                <path d="M11 16h14" />
-              </svg>
-            </span>
-          </button>
+          <div className="sidebar-account-switcher">
+            {isAccountMenuOpen ? (
+              <div className="account-switch-menu" role="menu" aria-label="Switch account">
+                <div className="account-switch-menu-head">
+                  <strong>Accounts</strong>
+                  <span>{accountSwitcherAccounts.length} saved</span>
+                </div>
+                <div className="account-switch-list">
+                  {accountSwitcherAccounts.map((account) => (
+                    <button
+                      key={account.id}
+                      type="button"
+                      className={cn('account-switch-row', account.id === user.id && 'is-current')}
+                      onClick={() => void switchAccount(account)}
+                      disabled={switchingAccountId === account.id}
+                      role="menuitem"
+                    >
+                      <span className="account-switch-avatar">{account.login.slice(0, 2).toUpperCase()}</span>
+                      <span className="account-switch-copy">
+                        <strong>{account.login}</strong>
+                        <span>{account.id === user.id ? 'Current' : account.role}</span>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <form className="account-switch-form" onSubmit={addSwitchAccount}>
+                  <input className="account-switch-input" id="switch-account-login" name="switchAccountLogin" value={switchLogin} onChange={(event) => setSwitchLogin(event.target.value)} placeholder="login" autoComplete="username" />
+                  <input className="account-switch-input" id="switch-account-password" name="switchAccountPassword" value={switchPassword} onChange={(event) => setSwitchPassword(event.target.value)} placeholder="password" type="password" autoComplete="current-password" />
+                  <button className="account-switch-submit" type="submit" disabled={isAddingAccount || !switchLogin.trim() || !switchPassword}>
+                    {isAddingAccount ? 'Adding' : 'Add account'}
+                  </button>
+                </form>
+              </div>
+            ) : null}
+            <div className="sidebar-user-card">
+              <button className="sidebar-user-main" type="button" onClick={() => setIsAccountMenuOpen((value) => !value)} aria-label="Switch account" aria-expanded={isAccountMenuOpen}>
+                <span className="sidebar-user-copy">
+                  <strong>{user.login}</strong>
+                  <span>{user.role}</span>
+                </span>
+                <span className="sidebar-switch-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" focusable="false">
+                    <path d="M7 10l5-5 5 5" />
+                    <path d="M7 14l5 5 5-5" />
+                  </svg>
+                </span>
+              </button>
+              <button className="sidebar-logout-button" type="button" onClick={() => void logout()} aria-label="Logout">
+                <span className="sidebar-logout-icon" aria-hidden="true">
+                  <svg viewBox="0 0 32 32" focusable="false">
+                    <path d="M14 5H8.5A3.5 3.5 0 0 0 5 8.5v15A3.5 3.5 0 0 0 8.5 27H14" />
+                    <path d="M19 10l6 6-6 6" />
+                    <path d="M11 16h14" />
+                  </svg>
+                </span>
+              </button>
+            </div>
+          </div>
         </div>
       </aside>
 

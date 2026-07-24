@@ -34,6 +34,7 @@ const mailTmProvider = new MailTmProvider();
 const mailGwProvider = new MailGwProvider();
 const fallbackEmailProvider = new FallbackEmailProvider(mailTmProvider, mailGwProvider);
 const sessionCookieName = 'tag_session';
+const accountSessionCookiePrefix = 'tag_session_user_';
 
 app.disable('x-powered-by');
 app.use(cors({ credentials: true, origin: resolveCorsOrigin }));
@@ -111,7 +112,8 @@ app.post('/auth/login', async (req, res) => {
     db.prepare('UPDATE users SET password_hash = ?, password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(await hashPasswordAsync(password), '', user.id);
   }
   const session = createSession(user.id, req);
-  setSessionCookie(res, session.token, session.expiresAt);
+  setActiveSessionCookie(res, session.token, session.expiresAt);
+  setAccountSessionCookie(res, user.id, session.token, session.expiresAt);
   recordAuthEvent(login, ipAddress, true);
   res.json(buildAuthResponse(user, session.id));
 });
@@ -142,7 +144,8 @@ app.post('/auth/register', async (req, res) => {
       }
       const user = registerUserWithInvite({ inviteToken, email, username, passwordHash: await hashPasswordAsync(password) });
       const session = createSession(user.id, req);
-      setSessionCookie(res, session.token, session.expiresAt);
+      setActiveSessionCookie(res, session.token, session.expiresAt);
+      setAccountSessionCookie(res, user.id, session.token, session.expiresAt);
       return res.status(201).json(buildAuthResponse(user, session.id));
     }
 
@@ -154,7 +157,8 @@ app.post('/auth/register', async (req, res) => {
     getDefaultWorkspaceForUser(userId);
     const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(userId) as any;
     const session = createSession(user.id, req);
-    setSessionCookie(res, session.token, session.expiresAt);
+    setActiveSessionCookie(res, session.token, session.expiresAt);
+    setAccountSessionCookie(res, user.id, session.token, session.expiresAt);
     res.status(201).json(buildAuthResponse(user, session.id));
   } catch (error) {
     if (error instanceof ApiError) {
@@ -202,7 +206,46 @@ app.post('/auth/refresh', (req, res) => {
   if (!user || user.status !== 'active') return res.status(401).json({ error: 'Unauthorized' });
   const preferredWorkspaceId = resolvePreferredWorkspaceId(user.id, req.body?.workspaceId);
   const rotatedSession = rotateSession(session.id, session.user_id, req);
-  setSessionCookie(res, rotatedSession.token, rotatedSession.expiresAt);
+  setActiveSessionCookie(res, rotatedSession.token, rotatedSession.expiresAt);
+  setAccountSessionCookie(res, user.id, rotatedSession.token, rotatedSession.expiresAt);
+  res.json(buildAuthResponse(user, rotatedSession.id, preferredWorkspaceId));
+});
+
+app.post('/auth/switch-account', (req, res) => {
+  try {
+    assertRateLimit(`switch-account:${requestIp(req)}`, {
+      limit: 30,
+      windowMs: 5 * 60 * 1000,
+      code: 'auth_rate_limited',
+      message: 'Too many account switch attempts',
+    });
+  } catch (error) {
+    return sendError(res, error, 'Account switch rate limit exceeded');
+  }
+
+  const userId = Number(req.body?.userId);
+  if (!Number.isInteger(userId) || userId <= 0) {
+    return res.status(400).json({ error: 'User id is required', code: 'invalid_switch_account_payload' });
+  }
+
+  const sessionToken = readCookie(req, accountSessionCookieName(userId));
+  if (!sessionToken) return res.status(401).json({ error: 'No saved session for this account', code: 'saved_session_missing' });
+
+  const session = db.prepare(`
+    SELECT id, user_id
+    FROM sessions
+    WHERE token_hash = ? AND user_id = ? AND revoked_at IS NULL AND datetime(expires_at) > datetime('now')
+    LIMIT 1
+  `).get(hashSessionToken(sessionToken), userId) as { id: number; user_id: number } | undefined;
+  if (!session) return res.status(401).json({ error: 'Saved session expired', code: 'saved_session_expired' });
+
+  const user = db.prepare('SELECT id, login, role, email, username, status FROM users WHERE id = ?').get(session.user_id) as any;
+  if (!user || user.status !== 'active') return res.status(401).json({ error: 'Unauthorized' });
+
+  const preferredWorkspaceId = resolvePreferredWorkspaceId(user.id, req.body?.workspaceId);
+  const rotatedSession = rotateSession(session.id, session.user_id, req);
+  setActiveSessionCookie(res, rotatedSession.token, rotatedSession.expiresAt);
+  setAccountSessionCookie(res, user.id, rotatedSession.token, rotatedSession.expiresAt);
   res.json(buildAuthResponse(user, rotatedSession.id, preferredWorkspaceId));
 });
 
@@ -210,7 +253,8 @@ app.post('/auth/logout', auth, (req, res) => {
   if ((req as any).user.sessionId) {
     db.prepare('UPDATE sessions SET revoked_at = CURRENT_TIMESTAMP WHERE id = ? AND user_id = ?').run((req as any).user.sessionId, (req as any).user.userId);
   }
-  clearSessionCookie(res);
+  clearActiveSessionCookie(res);
+  clearAccountSessionCookie(res, (req as any).user.userId);
   res.status(204).send();
 });
 
@@ -228,7 +272,8 @@ app.post('/auth/logout-everywhere', auth, (req, res) => {
     summary: 'Logged out everywhere',
     metadata: { revokedCount: result.changes },
   });
-  clearSessionCookie(res);
+  clearActiveSessionCookie(res);
+  clearAccountSessionCookie(res, (req as any).user.userId);
   res.status(204).send();
 });
 
@@ -273,7 +318,8 @@ app.delete('/auth/sessions/:id', auth, (req, res) => {
     });
   }
   if (sessionId === (req as any).user.sessionId) {
-    clearSessionCookie(res);
+    clearActiveSessionCookie(res);
+    clearAccountSessionCookie(res, (req as any).user.userId);
   }
   res.status(204).send();
 });
@@ -783,8 +829,12 @@ function isSessionActive(sessionId: number, userId: number) {
   return Boolean(session);
 }
 
-function setSessionCookie(res: express.Response, token: string, expiresAt: Date) {
-  res.cookie(sessionCookieName, token, {
+function accountSessionCookieName(userId: number) {
+  return `${accountSessionCookiePrefix}${userId}`;
+}
+
+function setCookie(res: express.Response, name: string, token: string, expiresAt: Date) {
+  res.cookie(name, token, {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProduction,
@@ -793,13 +843,29 @@ function setSessionCookie(res: express.Response, token: string, expiresAt: Date)
   });
 }
 
-function clearSessionCookie(res: express.Response) {
-  res.clearCookie(sessionCookieName, {
+function clearCookie(res: express.Response, name: string) {
+  res.clearCookie(name, {
     httpOnly: true,
     sameSite: 'lax',
     secure: isProduction,
     path: '/',
   });
+}
+
+function setActiveSessionCookie(res: express.Response, token: string, expiresAt: Date) {
+  setCookie(res, sessionCookieName, token, expiresAt);
+}
+
+function setAccountSessionCookie(res: express.Response, userId: number, token: string, expiresAt: Date) {
+  setCookie(res, accountSessionCookieName(userId), token, expiresAt);
+}
+
+function clearActiveSessionCookie(res: express.Response) {
+  clearCookie(res, sessionCookieName);
+}
+
+function clearAccountSessionCookie(res: express.Response, userId: number) {
+  clearCookie(res, accountSessionCookieName(userId));
 }
 
 function readCookie(req: express.Request, name: string) {

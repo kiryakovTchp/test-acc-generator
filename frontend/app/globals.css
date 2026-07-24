@@ -279,6 +279,7 @@ button {
 }
 
 .sidebar-footer {
+  position: relative;
   min-height: 0;
   margin: 0 14px 10px;
 }
@@ -1505,19 +1506,40 @@ body {
   display: none;
 }
 
-.sidebar-user {
+.sidebar-account-switcher {
+  position: relative;
+  min-width: 0;
+}
+
+.sidebar-user-card {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 20px;
-  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) 30px;
   align-items: center;
   width: 100%;
   min-height: 50px;
   min-width: 0;
   border: 1px solid rgba(126, 146, 170, 0.22);
   border-radius: 8px;
-  padding: 9px 10px;
   background: rgba(24, 31, 44, 0.82);
   color: white;
+  overflow: hidden;
+}
+
+.sidebar-user-main,
+.sidebar-logout-button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.sidebar-user-main {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 14px;
+  gap: 7px;
+  align-items: center;
+  min-width: 0;
+  min-height: 48px;
+  padding: 9px 6px 9px 10px;
   text-align: left;
 }
 
@@ -1545,12 +1567,45 @@ body {
   line-height: 1.2;
 }
 
+.sidebar-switch-icon,
 .sidebar-logout-icon {
   display: grid;
   place-items: center;
+  color: #e6edf7;
+}
+
+.sidebar-switch-icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+.sidebar-switch-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.sidebar-logout-button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  min-height: 48px;
+  border-left: 1px solid rgba(126, 146, 170, 0.16);
+}
+
+.sidebar-logout-button:hover,
+.sidebar-user-main:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebar-logout-icon {
   width: 20px;
   height: 20px;
-  color: #e6edf7;
 }
 
 .sidebar-logout-icon svg {
@@ -1563,9 +1618,150 @@ body {
   stroke-width: 2;
 }
 
-.sidebar-user:hover {
+.sidebar-user-card:hover {
   border-color: rgba(170, 187, 208, 0.32);
   background: rgba(28, 37, 52, 0.88);
+}
+
+.account-switch-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 8px);
+  z-index: 40;
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid rgba(126, 146, 170, 0.24);
+  border-radius: 8px;
+  background: #111d2a;
+  box-shadow: 0 16px 34px rgba(0, 0, 0, 0.32);
+}
+
+.account-switch-menu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: white;
+}
+
+.account-switch-menu-head strong {
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.account-switch-menu-head span {
+  color: #91a0b3;
+  font-size: 9px;
+}
+
+.account-switch-list {
+  display: grid;
+  gap: 4px;
+}
+
+.account-switch-row {
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
+  min-height: 34px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 5px 6px;
+  background: transparent;
+  color: #d8e1ee;
+  text-align: left;
+}
+
+.account-switch-row:hover,
+.account-switch-row.is-current {
+  border-color: rgba(126, 146, 170, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.account-switch-row:disabled {
+  opacity: 0.6;
+}
+
+.account-switch-avatar {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: rgba(37, 184, 118, 0.16);
+  color: #86efac;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.account-switch-copy,
+.account-switch-copy strong,
+.account-switch-copy span {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.account-switch-copy strong {
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.account-switch-copy span {
+  margin-top: 2px;
+  color: #9daabd;
+  font-size: 9px;
+}
+
+.account-switch-form {
+  display: grid;
+  gap: 6px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(126, 146, 170, 0.16);
+}
+
+.account-switch-input {
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  border: 1px solid rgba(126, 146, 170, 0.22);
+  border-radius: 6px;
+  padding: 0 8px;
+  background: rgba(5, 11, 18, 0.36);
+  color: white;
+  font-size: 10px;
+  outline: none;
+}
+
+.account-switch-input::placeholder {
+  color: #728196;
+}
+
+.account-switch-input:focus {
+  border-color: rgba(37, 184, 118, 0.56);
+}
+
+.account-switch-submit {
+  height: 28px;
+  border: 0;
+  border-radius: 6px;
+  background: #25b876;
+  color: #062116;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.account-switch-submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 .workspace-shell {

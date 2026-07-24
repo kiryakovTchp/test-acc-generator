@@ -170,6 +170,53 @@ test('refresh and profile updates preserve the selected workspace', async () => 
   }
 });
 
+test('account switch uses saved per-user session cookies without exposing tokens in storage', async () => {
+  const firstPassword = 'first-switch-password-123';
+  const secondPassword = 'second-switch-password-123';
+  const firstUserId = createTestUser('switch_first_user', firstPassword);
+  const secondUserId = createTestUser('switch_second_user', secondPassword);
+
+  const server = app.listen(0);
+  try {
+    const baseUrl = `http://127.0.0.1:${(server.address() as any).port}`;
+    const firstLoginResponse = await rawRequest(baseUrl, '/auth/login', {
+      method: 'POST',
+      body: { login: getLogin(firstUserId), password: firstPassword },
+    });
+    assert.equal(firstLoginResponse.status, 200);
+    const firstSetCookie = firstLoginResponse.headers.get('set-cookie') ?? '';
+    assert.match(firstSetCookie, new RegExp(`tag_session_user_${firstUserId}=`));
+
+    const secondLoginResponse = await rawRequest(baseUrl, '/auth/login', {
+      method: 'POST',
+      body: { login: getLogin(secondUserId), password: secondPassword },
+    });
+    assert.equal(secondLoginResponse.status, 200);
+    const secondSetCookie = secondLoginResponse.headers.get('set-cookie') ?? '';
+    assert.match(secondSetCookie, new RegExp(`tag_session_user_${secondUserId}=`));
+
+    const switched = await requestJson<{ token: string; user: { id: number; login: string } }>(baseUrl, '/auth/switch-account', {
+      method: 'POST',
+      headers: {
+        Cookie: [
+          extractCookie(firstSetCookie, `tag_session_user_${firstUserId}`),
+          extractCookie(secondSetCookie, `tag_session_user_${secondUserId}`),
+        ].join('; '),
+      },
+      body: { userId: firstUserId },
+    });
+    assert.equal(switched.user.id, firstUserId);
+    assert.equal(switched.user.login, getLogin(firstUserId));
+
+    const me = await requestJson<{ user: { id: number } }>(baseUrl, '/auth/me', {
+      headers: { Authorization: `Bearer ${switched.token}` },
+    });
+    assert.equal(me.user.id, firstUserId);
+  } finally {
+    await closeServer(server);
+  }
+});
+
 test('login is rate limited by source and normalized login', async () => {
   const login = uniqueLogin('rate_limited_login');
 
@@ -256,6 +303,14 @@ function uniqueLogin(prefix: string) {
 
 function uniqueEmail(prefix: string) {
   return `${uniqueLogin(prefix)}@example.test`;
+}
+
+function extractCookie(setCookieHeader: string, name: string) {
+  const match = setCookieHeader.match(new RegExp(`(?:^|,\\s*)(${name}=[^;]+)`));
+  if (!match?.[1]) {
+    assert.fail(`Missing cookie ${name} in ${setCookieHeader}`);
+  }
+  return match[1];
 }
 
 interface RequestOptions {
