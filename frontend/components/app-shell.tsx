@@ -1510,7 +1510,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         {error ? <div className="alert alert-error slim">{error}</div> : null}
         {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
         {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} identities and mailbox snapshots.</div> : null}
-        <AlertsPanel items={alertItems} />
+        {activeNav === 'main' ? <AlertsPanel items={alertItems} /> : null}
 
         {showQuickActions ? (
           <section className="quick-actions-panel">

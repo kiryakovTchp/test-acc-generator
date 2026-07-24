@@ -2572,8 +2572,8 @@ body {
 .utility-panel {
   grid-area: utility;
   width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   display: grid;
   align-content: start;
   gap: 16px;

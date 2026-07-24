@@ -36,9 +36,9 @@ export function getWorkspaceAlerts(workspaceId: number, userId: number): AlertIt
     alerts.push({
       id: 'dataset-review-24h',
       tone: 'info',
-      title: `${reviewDocuments.count} generated ${reviewDocuments.count === 1 ? 'identity needs' : 'identities need'} review`,
-      message: 'Missing or unverified document format.',
-      metric: 'Review',
+      title: `Dataset review: ${reviewDocuments.count} generated ${reviewDocuments.count === 1 ? 'identity' : 'identities'}`,
+      message: 'Some document formats are synthetic or missing rules. Select an identity to see its document status.',
+      metric: 'Docs',
     });
   }
 
