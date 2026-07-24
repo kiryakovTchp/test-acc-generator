@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { apiFetch, type ActivityItem, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
 import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
@@ -204,6 +204,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [showFilters, setShowFilters] = useState(true);
   const [copiedField, setCopiedField] = useState('');
   const [isRefreshingInbox, setIsRefreshingInbox] = useState(false);
+  const isRefreshingInboxRef = useRef(false);
+  const [isReplacingMailbox, setIsReplacingMailbox] = useState(false);
   const [isRegeneratingPhone, setIsRegeneratingPhone] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isBulkGenerating, setIsBulkGenerating] = useState(false);
@@ -377,11 +379,61 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   useEffect(() => {
     setSiteAccountIdDraft(detail?.siteAccountId ?? '');
+    setInboxStatusLabel('');
   }, [detail?.id, detail?.siteAccountId]);
 
   useEffect(() => {
     setPhoneDraft(detail?.phone ?? '');
   }, [detail?.id, detail?.phone]);
+
+  useEffect(() => {
+    isRefreshingInboxRef.current = isRefreshingInbox;
+  }, [isRefreshingInbox]);
+
+  useEffect(() => {
+    if (!token || !detail || detail.inbox.status === 'email_received') return;
+    let cancelled = false;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    let attempts = 0;
+    const maxAttempts = 6;
+
+    async function pollInbox() {
+      if (cancelled || !detail || isRefreshingInboxRef.current) return;
+      attempts += 1;
+      isRefreshingInboxRef.current = true;
+      setIsRefreshingInbox(true);
+      setInboxStatusLabel(`Auto-check ${attempts}/${maxAttempts}`);
+      try {
+        const updated = await apiFetch<Detail>(`/history/${detail.id}/refresh-inbox?debug=1`, token, {
+          method: 'POST',
+          body: JSON.stringify({ waitMs: 30000 }),
+        });
+        if (cancelled) return;
+        setDetail((current) => current?.id === detail.id ? updated : current);
+        setInboxStatusLabel(updated.inbox.status === 'email_received' ? 'Email received' : 'Auto-check active');
+        await refresh();
+        if (updated.inbox.status === 'email_received') return;
+      } catch {
+        if (!cancelled) setInboxStatusLabel('Auto-check paused');
+        return;
+      } finally {
+        isRefreshingInboxRef.current = false;
+        if (!cancelled) setIsRefreshingInbox(false);
+      }
+
+      if (!cancelled && attempts < maxAttempts) {
+        timeoutId = setTimeout(pollInbox, 15000);
+      } else if (!cancelled) {
+        setInboxStatusLabel('No email found');
+      }
+    }
+
+    timeoutId = setTimeout(pollInbox, 5000);
+    return () => {
+      cancelled = true;
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [detail?.id, detail?.inbox.status, token]);
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -883,6 +935,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   async function refreshInboxForDetail(waitMs = 0) {
     if (!detail) return;
     setIsRefreshingInbox(true);
+    isRefreshingInboxRef.current = true;
     setInboxStatusLabel(waitMs > 0 ? 'Waiting for email' : 'Checking inbox');
     setError('');
     try {
@@ -897,7 +950,32 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setError(err instanceof Error ? err.message : 'Failed to refresh inbox');
       setInboxStatusLabel('No email found');
     } finally {
+      isRefreshingInboxRef.current = false;
       setIsRefreshingInbox(false);
+    }
+  }
+
+  async function replaceMailboxForDetail() {
+    if (!detail) return;
+    const confirmed = window.confirm('Replace mailbox for this identity? The old email will stop matching any registration form where it was already pasted.');
+    if (!confirmed) return;
+    setIsReplacingMailbox(true);
+    setError('');
+    setInboxStatusLabel('Replacing mailbox');
+    try {
+      const updated = await apiFetch<Detail>(`/history/${detail.id}/replace-mailbox?debug=1`, token, {
+        method: 'POST',
+        body: JSON.stringify({ mailboxProvider }),
+      });
+      setDetail(updated);
+      setInboxStatusLabel('Mailbox replaced');
+      await refresh();
+      await refreshUsage();
+    } catch (err) {
+      setInboxStatusLabel('Replace failed');
+      setError(err instanceof Error ? err.message : 'Failed to replace mailbox');
+    } finally {
+      setIsReplacingMailbox(false);
     }
   }
 
@@ -1415,6 +1493,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       copied={copiedField === `phone:${detail.id}`}
                     />
                     <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <MailboxControls
+                      detail={detail}
+                      statusLabel={inboxStatusLabel}
+                      isRefreshing={isRefreshingInbox}
+                      isReplacing={isReplacingMailbox}
+                      canReplace={detail.createdByUserId === user.id}
+                      onCheckNow={() => refreshInboxForDetail(0)}
+                      onWaitRefresh={() => refreshInboxForDetail(30000)}
+                      onReplace={() => void replaceMailboxForDetail()}
+                    />
                   </div>
 
                   <div className="form-section form-section-wide">
@@ -1617,6 +1705,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       copied={copiedField === `phone:${detail.id}`}
                     />
                     <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <MailboxControls
+                      detail={detail}
+                      statusLabel={inboxStatusLabel}
+                      isRefreshing={isRefreshingInbox}
+                      isReplacing={isReplacingMailbox}
+                      canReplace={detail.createdByUserId === user.id}
+                      onCheckNow={() => refreshInboxForDetail(0)}
+                      onWaitRefresh={() => refreshInboxForDetail(30000)}
+                      onReplace={() => void replaceMailboxForDetail()}
+                    />
                   </div>
 
                   <div className="form-section form-section-wide">
@@ -1900,6 +1998,58 @@ function DatasetNotice({ quality }: { quality: Detail['documentQuality'] }) {
     <div className={cn('dataset-notice', quality !== 'verified' && 'is-review')}>
       <strong>{title}</strong>
       <span>Identity data is still being reviewed and may not be 100% accurate. Use it as test data only.</span>
+    </div>
+  );
+}
+
+function MailboxControls({
+  detail,
+  statusLabel: currentStatusLabel,
+  isRefreshing,
+  isReplacing,
+  canReplace,
+  onCheckNow,
+  onWaitRefresh,
+  onReplace,
+}: {
+  detail: Detail;
+  statusLabel: string;
+  isRefreshing: boolean;
+  isReplacing: boolean;
+  canReplace: boolean;
+  onCheckNow: () => void;
+  onWaitRefresh: () => void;
+  onReplace: () => void;
+}) {
+  const status = detail.inbox.status === 'email_received'
+    ? 'Email received'
+    : currentStatusLabel || 'Auto-checks for up to 5 min after opening';
+  const retentionNote = detail.mailboxProvider === 'mail_gw'
+    ? 'mail.gw retention is provider-dependent'
+    : 'mail.tm keeps received mail for 7 days';
+
+  return (
+    <div className="mailbox-control-card">
+      <div className="mailbox-control-meta">
+        <span>{mailboxProviderLabel(detail.mailboxProvider)}</span>
+        <strong>{status}</strong>
+        <small>{retentionNote}</small>
+      </div>
+      <div className="mailbox-control-actions">
+        <button type="button" className="micro-button" onClick={onCheckNow} disabled={isRefreshing || isReplacing}>Check now</button>
+        <button type="button" className="primary-button" onClick={onWaitRefresh} disabled={isRefreshing || isReplacing}>
+          {isRefreshing ? 'Waiting' : 'Wait'}
+        </button>
+        <button
+          type="button"
+          className="micro-button danger-soft"
+          onClick={onReplace}
+          disabled={!canReplace || isRefreshing || isReplacing}
+          title={canReplace ? 'Create a new mailbox for this identity' : 'Only the creator can replace this mailbox'}
+        >
+          {isReplacing ? 'Replacing' : 'Replace'}
+        </button>
+      </div>
     </div>
   );
 }

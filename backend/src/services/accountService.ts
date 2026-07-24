@@ -154,6 +154,84 @@ export async function refreshInbox(id: number, userId: number, emailProvider: Em
   return getHistoryDetail(id, userId, includeDebug, resolvedWorkspaceId);
 }
 
+export async function replaceMailbox(input: {
+  id: number;
+  userId: number;
+  emailProvider: EmailProvider;
+  emailProviderForAccount?: (providerKey: string | undefined) => EmailProvider;
+  reserveMailboxCreation?: () => void;
+  includeDebug?: boolean;
+  workspaceId?: number;
+}) {
+  const resolvedWorkspaceId = resolveWorkspace(input.userId, input.workspaceId);
+  const row = db.prepare(`
+    SELECT email
+    FROM account_history
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).get(input.id, resolvedWorkspaceId, input.userId, input.userId, input.userId) as { email: string } | undefined;
+  if (!row) return null;
+  input.reserveMailboxCreation?.();
+
+  const emailAccount = await input.emailProvider.createAccount();
+  const inboxProvider = input.emailProviderForAccount?.(emailAccount.provider) ?? input.emailProvider;
+  const inbox = await inboxProvider.fetchInbox(emailAccount.address, emailAccount.password, generationInboxWaitMs);
+  const hydratedInbox = buildInboxPayload(inbox);
+
+  db.prepare(`
+    UPDATE account_history
+    SET email = ?,
+        email_password = ?,
+        mailbox_provider = ?,
+        inbox_status = ?,
+        inbox_sender = ?,
+        inbox_subject = ?,
+        inbox_received_at = ?,
+        inbox_plain_text = ?,
+        inbox_links_json = ?,
+        inbox_codes_json = ?,
+        inbox_html = ?
+    WHERE id = ?
+      AND (workspace_id = ? OR (workspace_id IS NULL AND user_id = ?))
+      AND (created_by_user_id = ? OR user_id = ?)
+  `).run(
+    emailAccount.address,
+    emailAccount.password,
+    emailAccount.provider ?? 'mail_tm',
+    hydratedInbox.status,
+    hydratedInbox.sender,
+    hydratedInbox.subject,
+    hydratedInbox.receivedAt,
+    hydratedInbox.plainText,
+    JSON.stringify(hydratedInbox.links),
+    JSON.stringify(hydratedInbox.codes),
+    hydratedInbox.rawHtml ?? null,
+    input.id,
+    resolvedWorkspaceId,
+    input.userId,
+    input.userId,
+    input.userId,
+  );
+
+  recordActivity({
+    workspaceId: resolvedWorkspaceId,
+    userId: input.userId,
+    eventType: 'mailbox_replaced',
+    entityType: 'account',
+    entityId: input.id,
+    summary: 'Replaced account mailbox',
+    metadata: {
+      previousEmail: row.email,
+      nextEmail: emailAccount.address,
+      mailboxProvider: emailAccount.provider ?? 'mail_tm',
+      inboxStatus: hydratedInbox.status,
+    },
+  });
+
+  return getHistoryDetail(input.id, input.userId, input.includeDebug, resolvedWorkspaceId);
+}
+
 export function getRefreshMailboxProviderKey(id: number, userId: number, workspaceId?: number) {
   const resolvedWorkspaceId = resolveWorkspace(userId, workspaceId);
   const canEditShared = canEditSharedAccount(userId, resolvedWorkspaceId);

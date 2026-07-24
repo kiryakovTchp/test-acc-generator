@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import db, { getDefaultWorkspaceForUser } from './db.js';
-import { cleanupOldHistory, listGeoRules, generateAccount, getHistoryDetail, listHistory, refreshInbox, regeneratePhone, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
+import { cleanupOldHistory, listGeoRules, generateAccount, getHistoryDetail, listHistory, refreshInbox, regeneratePhone, replaceMailbox, updateAccountBalanceStatus, updateHistorySharing, updatePhone, updateSiteAccountId } from './services/accountService.js';
 import type { EmailProvider } from './providers/emailProvider.js';
 import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_EVENTS } from './limits.js';
 import { listActivityEvents } from './activity.js';
@@ -176,6 +176,32 @@ test('phone can be regenerated without changing the rest of the identity', async
   assert.match(updated?.fullProfileText ?? '', new RegExp(`Phone: ${updated?.phone.replace('+', '\\+')}`));
 });
 
+test('mailbox can be replaced without changing identity data', async () => {
+  let nextMailbox = 0;
+  const replaceProvider: EmailProvider = {
+    async createAccount() {
+      nextMailbox += 1;
+      return { address: `replacement-${nextMailbox}@mail.tm`, password: `secret-${nextMailbox}`, provider: 'mail_tm' };
+    },
+    async fetchInbox() {
+      return [];
+    },
+  };
+  const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const updated = await replaceMailbox({ id: item!.id, userId: 1, emailProvider: replaceProvider });
+
+  assert.equal(updated?.email, 'replacement-1@mail.tm');
+  assert.equal(updated?.emailPassword, 'secret-1');
+  assert.equal(updated?.mailboxProvider, 'mail_tm');
+  assert.equal(updated?.inbox.status, 'no_email_found');
+  assert.equal(updated?.firstName, item?.firstName);
+  assert.equal(updated?.lastName, item?.lastName);
+  assert.equal(updated?.documentValue, item?.documentValue);
+  assert.equal(updated?.phone, item?.phone);
+  assert.match(updated?.fullProfileText ?? '', /Email: replacement-1@mail\.tm/);
+  assert.ok(listActivityEvents(item!.workspaceId, 1).some((event) => event.eventType === 'mailbox_replaced' && event.entityId === String(item!.id)));
+});
+
 test('missing rules yield missing_rules quality', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'uganda', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(item?.documentQuality, 'missing_rules');
@@ -340,6 +366,7 @@ test('workspace members see only their own account history until an account is s
   updateWorkspaceSettings(workspaceId, ownerId, { sharedAccountEditing: 'owner_admin' });
   assert.equal(updateAccountBalanceStatus(item!.id, memberId, 'has_balance', false, workspaceId)?.balanceStatus, 'has_balance');
   assert.equal((await refreshInbox(item!.id, memberId, provider, 0, false, workspaceId))?.inbox.status, 'email_received');
+  assert.equal(await replaceMailbox({ id: item!.id, userId: memberId, emailProvider: provider, workspaceId }), null);
 
   const privateAgain = updateHistorySharing(item!.id, ownerId, false, false, workspaceId);
   assert.equal(privateAgain?.sharedWithWorkspace, false);
