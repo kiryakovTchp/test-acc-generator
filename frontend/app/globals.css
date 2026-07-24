@@ -2146,6 +2146,8 @@ body {
   width: 100%;
   height: 366px;
   flex: 0 0 366px;
+  align-content: start;
+  grid-auto-rows: 41px;
   max-height: 394px;
   overflow-x: hidden;
   overflow-y: auto;
