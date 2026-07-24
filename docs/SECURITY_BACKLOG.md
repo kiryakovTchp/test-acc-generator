@@ -141,7 +141,7 @@ Recovery note from 2026-07-24:
 - Production was recovered from `a721123 Keep access tokens out of local storage` and deployed through `f8f5f57 Implement Figma sidebar components and security cleanup`.
 - The fourth pass was started but not finished before the Codex limit interruption on 2026-07-17.
 - `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation were committed, pushed, deployed, and production smoke-checked on 2026-07-24.
-- Remaining open P2 work after this rollout: `SEC-202`, `SEC-205`, and `SEC-206`.
+- Remaining open P2 work after this rollout: `SEC-202` and `SEC-205`.
 
 ### SEC-201 - Move access token out of localStorage
 
@@ -217,13 +217,19 @@ Remaining work:
 
 ### SEC-206 - Add security automation in CI
 
-Status: planned
+Status: implemented on 2026-07-24
 Owner: Developer
 Acceptance: gitleaks, Dependabot, CodeQL or equivalent run in CI.
 
+Current implementation:
+
+- added `.github/workflows/security.yml` with Gitleaks, CodeQL, and npm audit jobs;
+- added `.github/dependabot.yml` for npm workspace and GitHub Actions update PRs;
+- upgraded fixable dependency chain with `npm audit fix --workspaces`;
+- added a root `postcss` override so non-optional high severity npm audit is clean;
+- documented the local audit command and the remaining optional Next.js `sharp` upstream blocker in `docs/SECURITY_AUTOMATION.md`.
+
 Remaining work:
 
-- add GitHub Actions workflows for secret scanning and dependency/code scanning;
-- add Dependabot config for npm workspaces;
-- make scans fail PRs on high-confidence findings;
-- document local pre-push or manual scan commands.
+- review the first GitHub Actions run after push;
+- remove the optional-audit exception once Next.js publishes a clean `sharp` upgrade path.
