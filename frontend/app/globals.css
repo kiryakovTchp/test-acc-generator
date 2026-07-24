@@ -1160,8 +1160,7 @@ select.input-field.badge-select {
 
 .alert.slim {
   width: 100%;
-  max-width: 1480px;
-  margin: 0 auto 14px;
+  margin: 0 0 14px;
 }
 
 .alert-error {
@@ -1178,10 +1177,9 @@ select.input-field.badge-select {
 
 .alerts-panel {
   width: 100%;
-  max-width: 1480px;
   display: grid;
   gap: 8px;
-  margin: 0 auto 14px;
+  margin: 0 0 14px;
 }
 
 .alert-card {
@@ -1573,7 +1571,7 @@ body {
 .workspace-shell {
   width: 100%;
   min-width: 0;
-  padding: 0 18px 20px;
+  padding: 14px 18px 20px;
 }
 
 .topbar {
@@ -1715,8 +1713,7 @@ body {
 
 .quick-actions-panel {
   width: 100%;
-  max-width: 1480px;
-  margin: 18px auto 14px;
+  margin: 0 0 14px;
   padding: 14px 16px 16px;
   border: 1px solid var(--border);
   border-radius: 2px;
@@ -1795,8 +1792,7 @@ body {
 
 .workspace-grid {
   width: 100%;
-  max-width: 1480px;
-  margin: 0 auto;
+  margin: 0;
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr);
   grid-template-areas:
