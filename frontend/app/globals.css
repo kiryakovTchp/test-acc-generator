@@ -2871,6 +2871,15 @@ body {
 .detail-stack {
   display: grid;
   gap: 14px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.detail-stack > * {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .registration-form-grid {
