@@ -1297,9 +1297,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </section>
         ) : null}
 
-        <div className={cn('workspace-grid', activeNav === 'main' ? undefined : activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
+        <div className={cn('workspace-grid', activeNav === 'main' ? 'main-view' : activeNav === 'accounts' ? 'accounts-view' : 'single-view')}>
           {activeNav === 'main' ? (
           <>
+          <div className="main-rail">
           {generationSettingsPanel}
 
           <section className="panel panel-list">
@@ -1354,6 +1355,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             </div>
             <Link className="view-all-button" href="/accounts">View all test users</Link>
           </section>
+          </div>
 
           <section className="panel panel-detail">
             <div className="panel-header">

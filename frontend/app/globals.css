@@ -1770,6 +1770,20 @@ body {
   align-items: start;
 }
 
+.workspace-grid.main-view {
+  grid-template-areas:
+    'main-rail detail'
+    'links codes';
+}
+
+.main-rail {
+  grid-area: main-rail;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+  min-width: 0;
+}
+
 .workspace-grid.accounts-view,
 .workspace-grid.single-view {
   grid-template-columns: minmax(0, 1fr);
@@ -1810,8 +1824,16 @@ body {
   padding: 16px;
 }
 
+.main-rail .panel-list {
+  grid-area: auto;
+}
+
 .panel-generation {
   grid-area: generation;
+}
+
+.main-rail .panel-generation {
+  grid-area: auto;
 }
 
 .panel-detail {
@@ -3241,11 +3263,10 @@ kbd {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
-  .workspace-grid {
+  .workspace-grid.main-view {
     grid-template-columns: 260px minmax(0, 1fr);
     grid-template-areas:
-      'generation detail'
-      'list detail'
+      'main-rail detail'
       'links codes';
   }
 }
@@ -3320,11 +3341,10 @@ kbd {
     min-height: 100vh;
   }
 
-  .workspace-grid {
+  .workspace-grid.main-view {
     grid-template-columns: 1fr;
     grid-template-areas:
-      'generation'
-      'list'
+      'main-rail'
       'detail'
       'links'
       'codes';
@@ -3341,11 +3361,10 @@ kbd {
 }
 
 @media (max-width: 900px) {
-  .workspace-grid {
+  .workspace-grid.main-view {
     grid-template-columns: 1fr;
     grid-template-areas:
-      'generation'
-      'list'
+      'main-rail'
       'detail'
       'links'
       'codes';
