@@ -42,6 +42,23 @@ export function roleTone(role: string) {
   return 'warning';
 }
 
+export function roleLabel(role: string, locale: Locale = 'en') {
+  if (locale === 'en') return role;
+  if (role === 'owner') return 'владелец';
+  if (role === 'admin') return 'админ';
+  if (role === 'member') return 'участник';
+  if (role === 'viewer') return 'просмотр';
+  if (role === 'user') return 'пользователь';
+  return role;
+}
+
+export function workspaceStatusLabel(status: string, locale: Locale = 'en') {
+  if (locale === 'en') return status;
+  if (status === 'active') return 'активна';
+  if (status === 'archived') return 'архив';
+  return status;
+}
+
 export function statusLabel(status: HistoryStatus, locale: Locale = 'en') {
   if (status === 'email_received') return translate(locale, 'Email received');
   if (status === 'generated') return translate(locale, 'Generated');
@@ -82,7 +99,7 @@ export function buildSettingsTabs(input: {
 }) {
   const locale = input.locale ?? 'en';
   return [
-    { key: 'defaults', label: translate(locale, 'Defaults'), meta: locale === 'ru' ? `${input.bulkCount} bulk` : `${input.bulkCount} bulk` },
+    { key: 'defaults', label: translate(locale, 'Defaults'), meta: locale === 'ru' ? `${input.bulkCount} в пакете` : `${input.bulkCount} bulk` },
     { key: 'workspace', label: translate(locale, 'Workspace'), meta: input.workspaceName ?? translate(locale, 'No workspace') },
     { key: 'invites', label: translate(locale, 'Invites'), meta: locale === 'ru' ? `${input.inviteCount} ссылок` : `${input.inviteCount} links` },
     { key: 'team', label: translate(locale, 'Team'), meta: locale === 'ru' ? `${input.memberCount} участников` : `${input.memberCount} members` },

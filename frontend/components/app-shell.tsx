@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import { mdilLogout, mdilUnfoldMoreHorizontal } from '@mdi/light-js';
 import { apiFetch, type ActivityItem, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
 import { LOCALE_OPTIONS, normalizeLocale, translate, type Locale } from '@/lib/i18n';
-import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
+import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleLabel, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, workspaceStatusLabel, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
 type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
@@ -219,6 +219,33 @@ function isMailboxProviderKey(value: unknown): value is MailboxProviderKey {
 
 function mailboxProviderLabel(value?: string) {
   return MAILBOX_PROVIDER_OPTIONS.find((item) => item.value === value)?.label ?? 'mail.tm';
+}
+
+function alertCopy(item: AlertItem, locale: Locale) {
+  if (locale === 'en') return item;
+  const usageMessage = () => {
+    const parts = item.message.match(/(\d+) of (\d+)/);
+    return parts ? `Использовано ${parts[1]} из ${parts[2]} доступных действий.` : tr(locale, item.message);
+  };
+  if (item.id === 'dataset-review-24h') {
+    const count = Number(item.title.match(/\d+/)?.[0] ?? 0);
+    return {
+      ...item,
+      title: count === 1 ? 'Проверка датасета: создан 1 профиль' : `Проверка датасета: создано профилей ${count}`,
+      message: 'Часть форматов документов синтетическая или пока без правил. Откройте профиль, чтобы увидеть статус документа.',
+      metric: 'Документы',
+    };
+  }
+  if (item.id.endsWith('-disabled')) {
+    return { ...item, title: `${tr(locale, item.title.replace(' disabled', ''))}: отключено`, message: 'Лимит для этого действия установлен в 0.', metric: '0 лимит' };
+  }
+  if (item.id.endsWith('-limit-reached')) {
+    return { ...item, title: `${tr(locale, item.title.replace(' limit reached', ''))}: лимит исчерпан`, message: usageMessage(), metric: item.metric };
+  }
+  if (item.id.endsWith('-limit-warning')) {
+    return { ...item, title: `${tr(locale, item.title.replace(' limit near', ''))}: близко к лимиту`, message: usageMessage(), metric: item.metric };
+  }
+  return { ...item, title: tr(locale, item.title), message: tr(locale, item.message), metric: item.metric ? tr(locale, item.metric) : item.metric };
 }
 
 export default function AppShell({ view = 'main' }: { view?: AppView }) {
@@ -465,7 +492,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       attempts += 1;
       isRefreshingInboxRef.current = true;
       setIsRefreshingInbox(true);
-      setInboxStatusLabel(`Auto-check ${attempts}/${maxAttempts}`);
+      setInboxStatusLabel(locale === 'ru' ? `Автопроверка ${attempts}/${maxAttempts}` : `Auto-check ${attempts}/${maxAttempts}`);
       try {
         const updated = await apiFetch<Detail>(`/history/${detail.id}/refresh-inbox?debug=1`, token, {
           method: 'POST',
@@ -496,7 +523,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       cancelled = true;
       if (timeoutId) clearTimeout(timeoutId);
     };
-  }, [detail?.id, detail?.inbox.status, token]);
+  }, [detail?.id, detail?.inbox.status, locale, token]);
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
@@ -1089,7 +1116,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   async function replaceMailboxForDetail() {
     if (!detail) return;
-    const confirmed = window.confirm('Replace mailbox for this identity? The old email will stop matching any registration form where it was already pasted.');
+    const confirmed = window.confirm(locale === 'ru'
+      ? 'Заменить почтовый ящик для этого профиля? Старый email перестанет совпадать с формами, куда его уже вставили.'
+      : 'Replace mailbox for this identity? The old email will stop matching any registration form where it was already pasted.');
     if (!confirmed) return;
     setIsReplacingMailbox(true);
     setError('');
@@ -1268,7 +1297,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     const phoneForCopy = localPhoneDigits(detail.phone, detail.geoKey);
     const identityPack = [
       `Account ID: ${detail.siteAccountId || ''}`,
-      `Balance Status: ${balanceStatusLabel(detail.balanceStatus)}`,
+      `Balance Status: ${balanceStatusLabel(detail.balanceStatus, locale)}`,
       `Username: ${detail.username}`,
       `Email: ${detail.email}`,
       `Mailbox Password: ${detail.emailPassword}`,
@@ -1298,7 +1327,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const generationSettingsPanel = (
     <section className="panel panel-generation accounts-settings bulk-card">
       <h3>{t('Generation panel')}</h3>
-      <p>{locale === 'ru' ? 'Настройки для создания одного identity и bulk-генерации.' : 'Defaults used by Generate identity and Generate bulk.'}</p>
+      <p>{locale === 'ru' ? 'Настройки для одного профиля и пакетной генерации.' : 'Defaults used by Generate identity and Generate bulk.'}</p>
       <div className="form-stack">
         <Field label="GEO">
           <select className="input-field compact" id="generation-geo" name="generationGeo" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
@@ -1307,7 +1336,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </Field>
         <Field label={t('Form persona')}>
           <select className="input-field compact" id="generation-persona" name="generationPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            {PERSONAS.map((item) => <option key={item.value} value={item.value}>{tr(locale, item.label)}</option>)}
           </select>
         </Field>
         <Field label={t('Document type')}>
@@ -1355,7 +1384,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         <form className="login-card" onSubmit={doLogin}>
           <div className="login-badge">{t('Internal QA console')}</div>
           <h1>{t('Test User Console')}</h1>
-          <p>{locale === 'ru' ? 'Создавайте test identities, копируйте регистрационные данные и проверяйте mailbox verification.' : 'Generate test identities, copy registration data, and inspect mailbox verification.'}</p>
+          <p>{locale === 'ru' ? 'Создавайте тестовые профили, копируйте регистрационные данные и проверяйте письма верификации.' : 'Generate test identities, copy registration data, and inspect mailbox verification.'}</p>
           <div className="login-fields">
             <input className="input-field" id="login" name="login" value={login} onChange={(e) => setLogin(e.target.value)} placeholder={t('login')} autoComplete="username" />
             <input className="input-field" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('password')} type="password" autoComplete="current-password" />
@@ -1403,8 +1432,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 </option>
               ))}
             </select>
-            <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} {t('users')} · {user.workspaceRole ?? 'member'}</div>
-            <span className={cn('flow-status', currentWorkspace?.status === 'archived' && 'is-archived')}>{currentWorkspace?.status ?? 'active'}</span>
+            <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} {t('users')} · {roleLabel(user.workspaceRole ?? 'member', locale)}</div>
+            <span className={cn('flow-status', currentWorkspace?.status === 'archived' && 'is-archived')}>{workspaceStatusLabel(currentWorkspace?.status ?? 'active', locale)}</span>
           </div>
 
           <nav className="sidebar-nav">
@@ -1451,7 +1480,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <span className="account-switch-avatar">{account.login.slice(0, 2).toUpperCase()}</span>
                       <span className="account-switch-copy">
                         <strong>{account.login}</strong>
-                        <span>{account.id === user.id ? (locale === 'ru' ? 'Текущий' : 'Current') : account.role}</span>
+                        <span>{account.id === user.id ? (locale === 'ru' ? 'Текущий' : 'Current') : roleLabel(account.role, locale)}</span>
                       </span>
                     </button>
                   ))}
@@ -1469,7 +1498,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               <button className="sidebar-user-main" type="button" onClick={() => setIsAccountMenuOpen((value) => !value)} aria-label={t('Switch account')} aria-expanded={isAccountMenuOpen}>
                 <span className="sidebar-user-copy">
                   <strong>{user.login}</strong>
-                  <span>{user.role}</span>
+                  <span>{roleLabel(user.role, locale)}</span>
                 </span>
                 <span className="sidebar-switch-icon" aria-hidden="true">
                   <MdiLightIcon path={mdilUnfoldMoreHorizontal} />
@@ -1517,28 +1546,28 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </div>
 
         {error ? <div className="alert alert-error slim">{error}</div> : null}
-        {isGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? 'Создаю mailbox, credentials и первый снимок inbox.' : 'Creating mailbox, credentials, and first inbox snapshot.'}</div> : null}
-        {isBulkGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? `Создаю ${bulkCount} identities и mailbox snapshots.` : `Creating ${bulkCount} identities and mailbox snapshots.`}</div> : null}
+        {isGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? 'Создаю почтовый ящик, учетные данные и первый снимок входящих.' : 'Creating mailbox, credentials, and first inbox snapshot.'}</div> : null}
+        {isBulkGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? `Создаю профили и почтовые снимки: ${bulkCount}.` : `Creating ${bulkCount} identities and mailbox snapshots.`}</div> : null}
         {activeNav === 'main' ? <AlertsPanel items={alertItems} locale={locale} /> : null}
 
         {showQuickActions ? (
           <section className="quick-actions-panel">
           <div className="quick-actions-title">{t('Quick actions')}</div>
           {usageSummary ? <UsageStrip usage={usageSummary} locale={locale} /> : <UsageStripSkeleton />}
-          <div className="quick-actions-grid" aria-label={locale === 'ru' ? 'Основные действия identity' : 'Primary identity actions'}>
+          <div className="quick-actions-grid" aria-label={locale === 'ru' ? 'Основные действия с профилями' : 'Primary identity actions'}>
             <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
               <span className="action-icon">+</span>
-              <span><strong>{isGenerating ? (locale === 'ru' ? 'Создаю identity' : 'Generating identity') : t('Generate identity')}</strong><small>{t('Single test user')}</small></span>
+              <span><strong>{isGenerating ? (locale === 'ru' ? 'Создаю профиль' : 'Generating identity') : t('Generate identity')}</strong><small>{t('Single test user')}</small></span>
               <kbd>G</kbd>
             </button>
             <button className="action-card" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
               <span className="action-icon">B</span>
-              <span><strong>{isBulkGenerating ? (locale === 'ru' ? `Создаю ${bulkCount}` : `Generating ${bulkCount}`) : t('Generate bulk')}</strong><small>{t('Multiple test users')}</small></span>
+              <span><strong>{isBulkGenerating ? (locale === 'ru' ? `Создаю: ${bulkCount}` : `Generating ${bulkCount}`) : t('Generate bulk')}</strong><small>{t('Multiple test users')}</small></span>
               <kbd>B</kbd>
             </button>
             <button className="action-card" onClick={() => refreshInboxForDetail(30000)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
               <span className="action-icon">R</span>
-              <span><strong>{isRefreshingInbox ? (locale === 'ru' ? 'Жду inbox' : 'Waiting for inbox') : t('Wait & refresh')}</strong><small>{locale === 'ru' ? 'Выбранный test user' : 'Selected test user'}</small></span>
+              <span><strong>{isRefreshingInbox ? (locale === 'ru' ? 'Жду письмо' : 'Waiting for inbox') : t('Wait & refresh')}</strong><small>{locale === 'ru' ? 'Выбранный пользователь' : 'Selected test user'}</small></span>
               <kbd>R</kbd>
             </button>
             <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
@@ -1557,7 +1586,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <section className="panel panel-list">
             <div className="panel-header">
-              <h2>{locale === 'ru' ? 'Последние identities' : 'Recent identities'} <span>({history.length})</span></h2>
+              <h2>{locale === 'ru' ? 'Последние профили' : 'Recent identities'} <span>({history.length})</span></h2>
             </div>
 
             <div className="account-list">
@@ -1578,6 +1607,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   hasHistory={history.length > 0}
                   hasFilters={false}
                   onClearFilters={clearAccountFilters}
+                  locale={locale}
                 />
               )}
             </div>
@@ -1628,6 +1658,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       canManage={detail.createdByUserId === user.id}
                       isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
+                      locale={locale}
                     />
                     <InspectorRow label={t('Password')} value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive locale={locale} />
                     <InspectorRow label={t('Username')} value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} locale={locale} />
@@ -1676,7 +1707,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InfoTile label={t('Region fields')} value={`${detail.country}\n${detail.region}\n${detail.city}`} action={t('Copy')} onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
                     <InfoTile label={t('Document')} value={`${detail.documentType}\n${detail.documentValue}`} action={t('Copy')} onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
                     <InfoTile label={t('Phone')} value={detail.phone} action={t('Copy')} onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
-                    <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
+                    <InfoTile label="Email" value={detail.email} action={t('Copy')} onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
 
@@ -1848,6 +1879,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       canManage={detail.createdByUserId === user.id}
                       isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
+                      locale={locale}
                     />
                     <InspectorRow label={t('Password')} value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive locale={locale} />
                     <InspectorRow label={t('Username')} value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} locale={locale} />
@@ -1895,7 +1927,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     <InfoTile label={t('Region fields')} value={`${detail.country}\n${detail.region}\n${detail.city}`} action={t('Copy')} onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
                     <InfoTile label={t('Document')} value={`${detail.documentType}\n${detail.documentValue}`} action={t('Copy')} onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
                     <InfoTile label={t('Phone')} value={detail.phone} action={t('Copy')} onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
-                    <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
+                    <InfoTile label="Email" value={detail.email} action={t('Copy')} onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
 
@@ -2138,15 +2170,18 @@ function AlertsPanel({ items, locale = 'en' }: { items: AlertItem[]; locale?: Lo
 
   return (
     <section className="alerts-panel" aria-label={tr(locale, 'Workspace alerts')}>
-      {items.slice(0, 3).map((item) => (
+      {items.slice(0, 3).map((item) => {
+        const copy = alertCopy(item, locale);
+        return (
         <div key={item.id} className={cn('alert-card', `tone-${item.tone}`)}>
           <div>
-            <strong>{item.title}</strong>
-            <span>{item.message}</span>
+            <strong>{copy.title}</strong>
+            <span>{copy.message}</span>
           </div>
-          {item.metric ? <small>{item.metric}</small> : null}
+          {copy.metric ? <small>{copy.metric}</small> : null}
         </div>
-      ))}
+      );
+      })}
     </section>
   );
 }
@@ -2211,7 +2246,7 @@ function MailboxControls({
           className="micro-button danger-soft"
           onClick={onReplace}
           disabled={!canReplace || isRefreshing || isReplacing}
-          title={canReplace ? (locale === 'ru' ? 'Создать новый mailbox для этой identity' : 'Create a new mailbox for this identity') : (locale === 'ru' ? 'Только создатель может заменить mailbox' : 'Only the creator can replace this mailbox')}
+          title={canReplace ? (locale === 'ru' ? 'Создать новый почтовый ящик для этого профиля' : 'Create a new mailbox for this identity') : (locale === 'ru' ? 'Только создатель может заменить почтовый ящик' : 'Only the creator can replace this mailbox')}
         >
           {isReplacing ? tr(locale, 'Replacing') : tr(locale, 'Replace')}
         </button>
@@ -2398,7 +2433,7 @@ function UtilityView({
         <div className="utility-header">
           <div>
             <h2>{t('Mailboxes')}</h2>
-            <p>{locale === 'ru' ? 'Откройте mailbox, посмотрите последнее письмо и скопируйте ссылки или коды верификации.' : 'Open a mailbox, inspect the latest message, and copy parsed verification links or codes.'}</p>
+            <p>{locale === 'ru' ? 'Откройте почтовый ящик, посмотрите последнее письмо и скопируйте ссылки или коды верификации.' : 'Open a mailbox, inspect the latest message, and copy parsed verification links or codes.'}</p>
           </div>
           <button type="button" className="primary-button" onClick={onCreateMailbox} disabled={isCreatingMailbox}>
             {isCreatingMailbox ? t('Creating mailbox') : t('Create temporary mailbox')}
@@ -2410,7 +2445,7 @@ function UtilityView({
             <div className="mailbox-reader-header">
               <div>
                 <h3>{detail ? detail.email : tempMailbox ? tempMailbox.address : t('Inbox')}</h3>
-                <p>{detail ? `${t('Test user')}: ${detail.siteAccountId || detail.username}` : tempMailbox ? (locale === 'ru' ? 'Отдельный временный mailbox' : 'Standalone temporary mailbox') : (locale === 'ru' ? 'Откройте созданный mailbox или создайте временный.' : 'Open a generated mailbox or create a temporary one.')}</p>
+                <p>{detail ? `${t('Test user')}: ${detail.siteAccountId || detail.username}` : tempMailbox ? (locale === 'ru' ? 'Отдельный временный ящик' : 'Standalone temporary mailbox') : (locale === 'ru' ? 'Откройте созданный ящик или создайте временный.' : 'Open a generated mailbox or create a temporary one.')}</p>
               </div>
               <div className="mailbox-reader-actions">
                 {detail ? (
@@ -2469,8 +2504,8 @@ function UtilityView({
               </>
             ) : (
               <div className="email-empty-state">
-                <strong>{locale === 'ru' ? 'Mailbox не открыт' : 'No mailbox opened'}</strong>
-                <span>{locale === 'ru' ? 'Нажмите Open в таблице ниже, чтобы посмотреть inbox этого mailbox.' : 'Select `Open` in the table below to view that mailbox inbox here.'}</span>
+                <strong>{locale === 'ru' ? 'Почтовый ящик не открыт' : 'No mailbox opened'}</strong>
+                <span>{locale === 'ru' ? 'Нажмите "Открыть" в таблице ниже, чтобы посмотреть входящие этого ящика.' : 'Select `Open` in the table below to view that mailbox inbox here.'}</span>
               </div>
             )}
           </section>
@@ -2530,7 +2565,7 @@ function UtilityView({
           </Field>
           <Field label="Persona">
             <select className="input-field compact" id="form-data-persona" name="formDataPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{tr(locale, item.label)}</option>)}
             </select>
           </Field>
           <Field label={t('Document type')}>
@@ -2554,7 +2589,7 @@ function UtilityView({
           <div className="form-data-picker">
             <div className="section-subhead">
               <h3>{t('Select test user')}</h3>
-              <p>{locale === 'ru' ? 'Откройте любого созданного test user, чтобы увидеть точные регистрационные поля на этой странице.' : 'Open any generated test user to display its exact registration fields on this page.'}</p>
+              <p>{locale === 'ru' ? 'Откройте любого созданного тестового пользователя, чтобы увидеть точные регистрационные поля на этой странице.' : 'Open any generated test user to display its exact registration fields on this page.'}</p>
             </div>
             <div className="account-table-wrap">
               {isWorkspaceLoading ? <TableSkeleton columns={4} rows={6} /> : (
@@ -2589,7 +2624,7 @@ function UtilityView({
         <div className="utility-header">
           <div>
             <h2>{t('Verification')}</h2>
-            <p>{locale === 'ru' ? 'Коды и verification links для выбранного test user.' : 'Codes and verification links for the selected test user.'}</p>
+            <p>{locale === 'ru' ? 'Коды и ссылки верификации для выбранного тестового пользователя.' : 'Codes and verification links for the selected test user.'}</p>
           </div>
           <span className={cn('badge', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail), locale) : t('No test user selected')}</span>
         </div>
@@ -2678,7 +2713,7 @@ function UtilityView({
       <div className="utility-header settings-header">
         <div>
           <h2>{t('Settings')}</h2>
-          <p>{locale === 'ru' ? 'Личные настройки, лимиты workspace, доступ и безопасность аккаунта сгруппированы по задачам.' : 'Defaults, workspace limits, access, and account security are grouped by task.'}</p>
+          <p>{locale === 'ru' ? 'Личные настройки, лимиты рабочей области, доступ и безопасность аккаунта сгруппированы по задачам.' : 'Defaults, workspace limits, access, and account security are grouped by task.'}</p>
         </div>
         <span className={cn('badge', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{t(settingsStatus)}</span>
       </div>
@@ -2717,7 +2752,7 @@ function UtilityView({
           </Field>
           <Field label={t('Default persona')}>
             <select className="input-field compact" id="settings-default-persona" name="settingsDefaultPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
-              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+              {PERSONAS.map((item) => <option key={item.value} value={item.value}>{tr(locale, item.label)}</option>)}
             </select>
           </Field>
           <Field label={t('Default document')}>
@@ -2743,12 +2778,12 @@ function UtilityView({
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
           <h3>{t('Workspace Limits')}</h3>
-          <p>{locale === 'ru' ? 'Общее хранение, лимиты провайдеров и настройки bulk-генерации для workspace.' : 'Shared retention, provider limits, and bulk-generation controls for the workspace.'}</p>
+          <p>{locale === 'ru' ? 'Общее хранение, лимиты провайдеров и настройки пакетной генерации для рабочей области.' : 'Shared retention, provider limits, and bulk-generation controls for the workspace.'}</p>
         </div>
         <div className="workspace-create-row">
           <div>
             <strong>{currentWorkspace?.name ?? t('Current workspace')}</strong>
-            <span>{locale === 'ru' ? `${workspaces.length} workspace доступно · активная роль ${currentWorkspace?.workspaceRole ?? 'member'}` : `${workspaces.length} workspaces available · active role ${currentWorkspace?.workspaceRole ?? 'member'}`}</span>
+            <span>{locale === 'ru' ? `Доступно рабочих областей: ${workspaces.length} · роль: ${roleLabel(currentWorkspace?.workspaceRole ?? 'member', locale)}` : `${workspaces.length} workspaces available · active role ${currentWorkspace?.workspaceRole ?? 'member'}`}</span>
           </div>
           <input
             className="input-field compact"
@@ -2784,8 +2819,8 @@ function UtilityView({
                       <strong>{workspace.name}</strong>
                       <span>{workspace.id === currentWorkspace?.id ? t('Current workspace') : (locale === 'ru' ? `Обновлено ${formatCompactDate(workspace.updatedAt)}` : `Updated ${formatCompactDate(workspace.updatedAt)}`)}</span>
                     </td>
-                    <td><span className={cn('badge', isActive ? 'tone-success' : 'tone-warning')}>{workspace.status}</span></td>
-                    <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)} title={`Workspace role: ${workspace.workspaceRole}`}>{workspace.workspaceRole}</span></td>
+                    <td><span className={cn('badge', isActive ? 'tone-success' : 'tone-warning')}>{workspaceStatusLabel(workspace.status, locale)}</span></td>
+                    <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)} title={`${t('Workspace role')}: ${roleLabel(workspace.workspaceRole, locale)}`}>{roleLabel(workspace.workspaceRole, locale)}</span></td>
                     <td>{workspace.memberCount}</td>
                     <td>
                       <button
@@ -2822,8 +2857,8 @@ function UtilityView({
           </Field>
           <Field label={t('Shared account editing')}>
             <select className="input-field compact" id="shared-account-editing" name="sharedAccountEditing" value={editableWorkspaceSettings.sharedAccountEditing} onChange={(e) => updateWorkspaceDraft({ sharedAccountEditing: e.target.value as ServerWorkspaceSettings['sharedAccountEditing'] })}>
-              <option value="creator_only">{locale === 'ru' ? 'Только создатель' : 'Creator only'}</option>
-              <option value="owner_admin">{locale === 'ru' ? 'Owner/admin могут менять shared' : 'Owner/admin can edit shared'}</option>
+              <option value="creator_only">{t('Creator only')}</option>
+              <option value="owner_admin">{t('Owner/admin can edit shared')}</option>
             </select>
           </Field>
           <Field label={t('Workspace creation')}>
@@ -2881,10 +2916,10 @@ function UtilityView({
             placeholder={t('email for invite')}
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} id="invite-role" name="inviteRole" value={inviteRole} title={`Invite role: ${inviteRole}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
-            <option value="member">member</option>
-            <option value="viewer">viewer</option>
-            <option value="admin">admin</option>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} id="invite-role" name="inviteRole" value={inviteRole} title={`${t('Role')}: ${roleLabel(inviteRole, locale)}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+            <option value="member">{roleLabel('member', locale)}</option>
+            <option value="viewer">{roleLabel('viewer', locale)}</option>
+            <option value="admin">{roleLabel('admin', locale)}</option>
           </select>
           <button type="button" className="primary-button" onClick={onCreateInvite} disabled={isSavingSettings || !canManageWorkspaceSettings}>{t('Create invite')}</button>
         </div>
@@ -2913,7 +2948,7 @@ function UtilityView({
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
                   <td><strong>{invite.email || t('Open invite')}</strong><span>{t('Expires')} {formatCompactDate(invite.expiresAt)}</span></td>
-                  <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)} title={`Invite role: ${invite.role}`}>{invite.role}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)} title={`${t('Role')}: ${roleLabel(invite.role, locale)}`}>{roleLabel(invite.role, locale)}</span></td>
                   <td>
                     <span className={cn('badge', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
                     {invite.acceptedByLogin ? <span>{locale === 'ru' ? `принял ${invite.acceptedByLogin}` : `by ${invite.acceptedByLogin}`}</span> : null}
@@ -2962,11 +2997,11 @@ function UtilityView({
             placeholder={t('login, email, or username')}
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} id="member-role" name="memberRole" value={memberRole} title={`Workspace role: ${memberRole}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
-            <option value="member">member</option>
-            <option value="viewer">viewer</option>
-            <option value="admin">admin</option>
-            <option value="owner">owner</option>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} id="member-role" name="memberRole" value={memberRole} title={`${t('Workspace role')}: ${roleLabel(memberRole, locale)}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+            <option value="member">{roleLabel('member', locale)}</option>
+            <option value="viewer">{roleLabel('viewer', locale)}</option>
+            <option value="admin">{roleLabel('admin', locale)}</option>
+            <option value="owner">{roleLabel('owner', locale)}</option>
           </select>
           <button type="button" className="primary-button" onClick={onAddMember} disabled={isSavingSettings || !memberLookup.trim() || !canManageWorkspaceSettings}>{t('Add member')}</button>
         </div>
@@ -2991,17 +3026,17 @@ function UtilityView({
                       id={`member-role-${member.userId}`}
                       name={`memberRole-${member.userId}`}
                       value={member.workspaceRole}
-                      title={`Workspace role: ${member.workspaceRole}`}
+                      title={`${t('Workspace role')}: ${roleLabel(member.workspaceRole, locale)}`}
                       onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
                       disabled={!canManageWorkspaceSettings || isSavingSettings}
                     >
-                      <option value="owner">owner</option>
-                      <option value="admin">admin</option>
-                      <option value="member">member</option>
-                      <option value="viewer">viewer</option>
+                      <option value="owner">{roleLabel('owner', locale)}</option>
+                      <option value="admin">{roleLabel('admin', locale)}</option>
+                      <option value="member">{roleLabel('member', locale)}</option>
+                      <option value="viewer">{roleLabel('viewer', locale)}</option>
                     </select>
                   </td>
-                  <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)} title={`System role: ${member.userRole}`}>{member.userRole}</span></td>
+                  <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)} title={`${t('System role')}: ${roleLabel(member.userRole, locale)}`}>{roleLabel(member.userRole, locale)}</span></td>
                   <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>{t('Remove')}</button></td>
                 </tr>
               ))}
@@ -3010,7 +3045,7 @@ function UtilityView({
         </div>
 
         <div className="settings-actions">
-          <span>{canManageWorkspaceSettings ? (locale === 'ru' ? 'Инвайты создают новых пользователей; add member привязывает существующего.' : 'Invites create new users; add member attaches an existing user.') : t('Member management requires owner or admin access.')}</span>
+          <span>{canManageWorkspaceSettings ? (locale === 'ru' ? 'Инвайты создают новых пользователей; кнопка "Добавить участника" привязывает существующего.' : 'Invites create new users; add member attaches an existing user.') : t('Member management requires owner or admin access.')}</span>
         </div>
       </section>
       ) : null}
@@ -3019,7 +3054,7 @@ function UtilityView({
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
           <h3>{t('Account Security')}</h3>
-          <p>{locale === 'ru' ? 'Email, username, password и активные сессии вашего аккаунта.' : 'Email, username, password, and active sessions for your user account.'}</p>
+          <p>{locale === 'ru' ? 'Email, имя пользователя, пароль и активные сессии вашего аккаунта.' : 'Email, username, password, and active sessions for your user account.'}</p>
         </div>
 
         <div className="settings-grid account-settings-grid">
@@ -3104,7 +3139,7 @@ function UtilityView({
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
           <h3>{t('Workspace Analytics')}</h3>
-          <p>{locale === 'ru' ? 'Операционные счетчики генерации, mailbox и inbox events.' : 'Operational counters from local generation, mailbox, and inbox usage events.'}</p>
+          <p>{locale === 'ru' ? 'Операционные счетчики генерации, почтовых ящиков и проверок входящих.' : 'Operational counters from local generation, mailbox, and inbox usage events.'}</p>
         </div>
 
         {analyticsSummary ? (
@@ -3123,7 +3158,7 @@ function UtilityView({
                 {analyticsSummary.usageByDay.length ? analyticsSummary.usageByDay.map((item) => (
                   <div key={`${item.day}:${item.eventType}`} className="analytics-row">
                     <span>{item.day}</span>
-                    <strong>{item.eventType.replaceAll('_', ' ')}</strong>
+                    <strong>{activityEventLabel(item.eventType, locale)}</strong>
                     <small>{item.total}</small>
                   </div>
                 )) : <div className="empty-state compact">{t('No usage events yet.')}</div>}
@@ -3145,7 +3180,7 @@ function UtilityView({
 
         <div className="section-subhead">
           <h3>{t('Active Alerts')}</h3>
-          <p>{locale === 'ru' ? 'Лимиты и dataset warnings из текущего состояния workspace.' : 'Limit and dataset warnings generated from the current workspace state.'}</p>
+          <p>{locale === 'ru' ? 'Лимиты и предупреждения датасета из текущего состояния рабочей области.' : 'Limit and dataset warnings generated from the current workspace state.'}</p>
         </div>
         {alertItems.length ? <AlertsPanel items={alertItems} locale={locale} /> : <div className="empty-state compact">{t('No active alerts.')}</div>}
       </section>
@@ -3155,7 +3190,7 @@ function UtilityView({
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
           <h3>{t('Activity Log')}</h3>
-          <p>{locale === 'ru' ? 'Действия workspace: генерация, sharing, invites, members, workspaces и sessions.' : 'Workspace actions across generation, sharing, invites, members, workspaces, and sessions.'}</p>
+          <p>{locale === 'ru' ? 'Действия рабочей области: генерация, доступ, инвайты, участники и сессии.' : 'Workspace actions across generation, sharing, invites, members, workspaces, and sessions.'}</p>
         </div>
         <div className="account-table-wrap activity-table-wrap">
           <table className="account-table activity-table">
@@ -3172,10 +3207,10 @@ function UtilityView({
                 <tr key={item.id}>
                   <td>
                     <strong>{item.summary}</strong>
-                    <span>{activityEventLabel(item.eventType)}</span>
+                    <span>{activityEventLabel(item.eventType, locale)}</span>
                   </td>
                   <td>{item.actorLogin || `${t('User')} ${item.userId}`}</td>
-                  <td>{item.entityType ? `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}` : t('Workspace')}</td>
+                  <td>{item.entityType ? `${activityEntityLabel(item.entityType, locale)}${item.entityId ? ` #${item.entityId}` : ''}` : t('Workspace')}</td>
                   <td>{formatCompactDate(item.createdAt)}</td>
                 </tr>
               ))}
@@ -3215,8 +3250,41 @@ function Metric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function activityEventLabel(value: string) {
+function activityEventLabel(value: string, locale: Locale = 'en') {
+  if (locale === 'ru') {
+    const labels: Record<string, string> = {
+      account_generated: 'создан аккаунт',
+      account_bulk_generated: 'создан пакет аккаунтов',
+      account_shared: 'аккаунт открыт рабочей области',
+      account_unshared: 'аккаунт снова личный',
+      balance_status_updated: 'обновлен статус баланса',
+      invite_created: 'создан инвайт',
+      invite_revoked: 'инвайт отозван',
+      member_added: 'участник добавлен',
+      member_removed: 'участник удален',
+      member_role_updated: 'роль участника обновлена',
+      workspace_created: 'рабочая область создана',
+      workspace_archived: 'рабочая область архивирована',
+      workspace_restored: 'рабочая область восстановлена',
+      password_changed: 'пароль изменен',
+      session_revoked: 'сессия отозвана',
+    };
+    return labels[value] ?? value.replaceAll('_', ' ');
+  }
   return value.replaceAll('_', ' ');
+}
+
+function activityEntityLabel(value: string, locale: Locale = 'en') {
+  if (locale !== 'ru') return value;
+  const labels: Record<string, string> = {
+    account: 'аккаунт',
+    invite: 'инвайт',
+    member: 'участник',
+    workspace: 'рабочая область',
+    session: 'сессия',
+    user: 'пользователь',
+  };
+  return labels[value] ?? value;
 }
 
 function UsagePill({ label, used, limit }: { label: string; used: number; limit: number }) {
