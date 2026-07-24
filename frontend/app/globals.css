@@ -859,6 +859,26 @@ button {
   color: var(--badge-success-text);
 }
 
+.badge.tone-success:not(.status-marker) {
+  min-height: 24px;
+  border-radius: 10px;
+  padding: 5px 8px;
+  gap: 6px;
+  color: #17613b;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 13px;
+}
+
+.badge.tone-success:not(.status-marker) .badge-dot {
+  width: 6px;
+  height: 6px;
+  background: #25b876;
+  box-shadow: none;
+  color: #25b876;
+  opacity: 1;
+}
+
 .badge-dot.tone-success,
 .status-dot.tone-success {
   background: #22c55e;
