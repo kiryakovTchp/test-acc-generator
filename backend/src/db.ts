@@ -228,6 +228,7 @@ ensureColumn('sessions', 'last_seen_at', 'TEXT');
 ensureColumn('workspaces', 'status', "TEXT NOT NULL DEFAULT 'active'");
 ensureColumn('workspace_settings', 'shared_account_editing', "TEXT NOT NULL DEFAULT 'creator_only'");
 ensureColumn('workspace_settings', 'workspace_creation_policy', "TEXT NOT NULL DEFAULT 'active_users'");
+ensureColumn('user_settings', 'locale', "TEXT NOT NULL DEFAULT 'en'");
 
 const seedUsers = loadSeedUsers();
 for (const user of seedUsers) {

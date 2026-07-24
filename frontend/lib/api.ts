@@ -120,6 +120,7 @@ export interface UserSettings {
   defaultPersona: 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
   defaultDocumentType: string;
   bulkCount: number;
+  locale: 'en' | 'ru';
 }
 
 export interface WorkspaceSettings {
