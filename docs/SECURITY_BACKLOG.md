@@ -141,7 +141,7 @@ Recovery note from 2026-07-24:
 - Production was recovered from `a721123 Keep access tokens out of local storage` and deployed through `f8f5f57 Implement Figma sidebar components and security cleanup`.
 - The fourth pass was started but not finished before the Codex limit interruption on 2026-07-17.
 - `SEC-203`, `SEC-204`, and the Figma sidebar/component implementation were committed, pushed, deployed, and production smoke-checked on 2026-07-24.
-- Remaining open P2 work after this rollout: `SEC-205`.
+- Remaining open P2 work after this rollout: none.
 
 ### SEC-201 - Move access token out of localStorage
 
@@ -211,17 +211,19 @@ Remaining work:
 
 ### SEC-205 - Remove `.env.production` from Git history
 
-Status: planned; secret rotation is complete, but history rewrite is not started
+Status: done on 2026-07-24
 Owner: Ops + Project
 Acceptance: `git filter-repo` cleanup coordinated, force-push planned, all collaborators reset safely.
 
-Remaining work:
+Completion notes:
 
-- confirm all collaborators/remotes are ready for a force-pushed history rewrite;
-- run `git filter-repo` or equivalent to remove historical `.env.production`;
-- force-push only after coordination;
-- document reset/reclone instructions for collaborators;
-- re-run secret scanning after rewrite.
+- created a local full-history bundle backup before rewriting: `projects/backups/test-acc-generator-before-sec205-20260724161025.bundle`;
+- rewrote history in an isolated mirror clone, not the working tree;
+- removed historical `.env.production` and env-backup variants while preserving `.env.production.example`;
+- verified `git log --all -- .env.production` returns no commits and `git rev-list --objects --all` returns no matching env secret paths;
+- force-pushed main with an explicit lease against the previous `8b0b373` main SHA;
+- resynced local and production repos with `git fetch origin main && git reset --hard origin/main`;
+- production `.env.production`, env backups, and `backend/data` stayed untracked and intact.
 
 ### SEC-206 - Add security automation in CI
 
