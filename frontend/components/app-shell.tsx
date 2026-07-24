@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { mdilLogout, mdilUnfoldMoreHorizontal } from '@mdi/light-js';
 import { apiFetch, type ActivityItem, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
 import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
 
@@ -1462,19 +1463,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   <span>{user.role}</span>
                 </span>
                 <span className="sidebar-switch-icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" focusable="false">
-                    <path d="M7 10l5-5 5 5" />
-                    <path d="M7 14l5 5 5-5" />
-                  </svg>
+                  <MdiLightIcon path={mdilUnfoldMoreHorizontal} />
                 </span>
               </button>
               <button className="sidebar-logout-button" type="button" onClick={() => void logout()} aria-label="Logout">
                 <span className="sidebar-logout-icon" aria-hidden="true">
-                  <svg viewBox="0 0 32 32" focusable="false">
-                    <path d="M14 5H8.5A3.5 3.5 0 0 0 5 8.5v15A3.5 3.5 0 0 0 8.5 27H14" />
-                    <path d="M19 10l6 6-6 6" />
-                    <path d="M11 16h14" />
-                  </svg>
+                  <MdiLightIcon path={mdilLogout} />
                 </span>
               </button>
             </div>
@@ -3692,6 +3686,14 @@ function InspectorRow({
         </button>
       </div>
     </div>
+  );
+}
+
+function MdiLightIcon({ path }: { path: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d={path} />
+    </svg>
   );
 }
 
