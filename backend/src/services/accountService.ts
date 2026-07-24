@@ -43,7 +43,7 @@ export async function generateAccount(input: {
   let documentValue = 'Missing Rules';
   let quality: DocumentQuality = 'missing_rules';
   if (docRule) {
-    documentValue = fillTemplate(pickTemplate(docRule.templates));
+    documentValue = fillTemplate(pickTemplate(docRule.templates), { dateOfBirth: profile.dateOfBirth });
     quality = docRule.quality;
   }
 

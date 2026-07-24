@@ -461,6 +461,7 @@ Backend также содержит lightweight migrations через `ensureCol
 - Guinea: `passport`;
 - Uzbekistan: `passport`, `pinfl`;
 - Kazakhstan: `iin`;
+- Cote d'Ivoire: `passport`, `national_id`, `driver_license_number`;
 - South Sudan: `national_id`, `passport`;
 - Generic International: `passport`.
 
@@ -878,4 +879,3 @@ git diff --check
 6. Добавить Playwright e2e suite и хранить visual smoke сценарии в repo.
 7. Добавить admin page для управления users вместо ручного `SEED_USERS_JSON`.
 8. Добавить health check mail.tm provider status.
-

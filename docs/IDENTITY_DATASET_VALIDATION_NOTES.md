@@ -45,7 +45,7 @@ The new dataset is broader and should be treated as a master draft:
 | Geo | Candidate | Dataset type | Proposed normalized type | Verdict | Source / rationale |
 | --- | --- | --- | --- | --- | --- |
 | NG | `^\d{11}$` | national_id | national_identity_number | confirmed | NIMC says the NIN consists of 11 numbers: https://nimc.gov.ng/nin |
-| KZ | `^\d{12}$` | national_id | individual_identification_number | confirmed | eGov Kazakhstan says IIN is a 12-digit combination and appears on ID/passport: https://egov.kz/cms/en/articles/iin_info |
+| KZ | `^\d{12}$` with `YYMMDD` prefix | iin | individual_identification_number | confirmed + user-provided rule | eGov Kazakhstan says IIN is a 12-digit combination and appears on ID/passport: https://egov.kz/cms/en/articles/iin_info. Generate the first six digits from profile date of birth, e.g. `2002-01-09` -> `020109`, then append six random digits. |
 | UZ | `^\d{14}$` | national_id | personal_identification_number | confirmed | my.gov.uz says PINFL is a unique 14-digit number: https://my.gov.uz/ru/static/jshshir-for-foreigners |
 | IE | `^\d{7}[A-Z]{1,2}$` | national_id | pps_number | rename | This is a PPS number, not a national ID document: https://www.gov.ie/en/department-of-social-protection/services/get-a-personal-public-service-pps-number/ |
 | GE | `^\d{11}$` | national_id | personal_number | confirmed for citizens | OECD Georgia TIN notes the 11-digit number is the same as the national identity card number for citizen natural persons: https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/georgia-tin.pdf |
@@ -63,6 +63,9 @@ The new dataset is broader and should be treated as a master draft:
 | KE | `^A\d{7}$` | passport | passport | probable | Kenya Immigration confirms ordinary passport A/B/C series by booklet size; exact number grammar still needs a document sample or PRADO page: https://immigration.go.ke/type-and-fees/ |
 | KE | `^\d{8}$` | national_id | national_id_card_number | probable | Kenya citizen services use national ID number as a core identifier, but exact 8-digit grammar still needs an official form/sample citation. |
 | GA | `^\d{2}SP\d{5}$` | passport | passport | specimen-based | User-provided PRADO specimen with non-placeholder value shows `Passport No` as `13SP01349`; `GAB` is displayed separately as the country code. |
+| CI | `^\d{2}[A-Z]{2}\d{5}$` | passport | passport | user-provided | User-provided Cote d'Ivoire pattern/example: `13AS85673`. |
+| CI | `^CI\d{9}$` | national_id | national_id | user-provided | User-provided Cote d'Ivoire ID pattern/example: `CI000910000`. |
+| CI | `^[A-Z]{4}\d{2}-\d{2}-\d{8}[A-Z]$` | driver_license_number | driver_license_number | user-provided | User-provided Cote d'Ivoire driving licence pattern: `LLLLNN-NN-NNNNNNNNL`. |
 | MW | `^\d{6}$` | passport | passport | specimen-based | User-provided PRADO specimen shows `Passport No` as six digits, e.g. `030025`; `MWI` is displayed separately as the country code. |
 | MW | `^\d{7}/\d$` | personal_number | personal_number | specimen-based | User-provided PRADO specimen shows `Personal No` slash form, e.g. `1212433/2`; keep as synthetic/review-required until refreshed across current Malawi documents. |
 | SL | `^\d{7}$` | passport | passport | specimen-based | User-provided PRADO specimen shows `Passport No` as seven digits, e.g. `0114439`; `SLE` is displayed separately as the country code. |

@@ -20,9 +20,9 @@
     "label": "Kazakhstan",
     "documents": {
       "iin": {
-        "templates": ["{RAND12}"],
+        "templates": ["{DOB_YYMMDD}{RAND6}"],
         "quality": "verified",
-        "notes": "eGov Kazakhstan confirms IIN is a 12-digit individual identification number."
+        "notes": "IIN is generated as YYMMDD from the profile date of birth followed by six random digits."
       }
     }
   },
@@ -163,6 +163,27 @@
         "templates": ["{RAND2}SP{RAND5}"],
         "quality": "synthetic_pattern",
         "notes": "PRADO specimen image shows a passport number like 13SP01349, with GAB only as the country code."
+      }
+    }
+  },
+  {
+    "key": "cote_divoire",
+    "label": "Cote d'Ivoire",
+    "documents": {
+      "passport": {
+        "templates": ["{RAND2}{RANDL2}{RAND5}"],
+        "quality": "synthetic_pattern",
+        "notes": "User-provided visual pattern and example 13AS85673: two digits, two letters, five digits."
+      },
+      "national_id": {
+        "templates": ["CI{RAND9}"],
+        "quality": "synthetic_pattern",
+        "notes": "User-provided visual pattern and example CI000910000: CI plus nine digits."
+      },
+      "driver_license_number": {
+        "templates": ["{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"],
+        "quality": "synthetic_pattern",
+        "notes": "User-provided visual pattern LLLLNN-NN-NNNNNNNNL."
       }
     }
   },

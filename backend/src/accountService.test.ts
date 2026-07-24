@@ -47,6 +47,7 @@ test('geo rules include required starter geos', () => {
     'Sierra Leone',
     'Togo',
     'Gabon',
+    "Cote d'Ivoire",
     'Ethiopia',
     'Senegal',
     'Tanzania',
@@ -105,6 +106,27 @@ test('gabon dataset follows provided PRADO passport specimen', async () => {
   assert.equal(passport?.country, 'Gabon');
   assert.equal(passport?.documentQuality, 'synthetic_pattern');
   assert.match(passport?.documentValue ?? '', /^\d{2}SP\d{5}$/);
+});
+
+test("cote d'ivoire dataset follows provided document shapes", async () => {
+  const passport = await generateAccount({ userId: 1, geoKey: 'cote_divoire', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(passport?.country, "Cote d'Ivoire");
+  assert.equal(passport?.documentQuality, 'synthetic_pattern');
+  assert.match(passport?.documentValue ?? '', /^\d{2}[A-Z]{2}\d{5}$/);
+
+  const nationalId = await generateAccount({ userId: 1, geoKey: 'cote_divoire', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.match(nationalId?.documentValue ?? '', /^CI\d{9}$/);
+
+  const driverLicence = await generateAccount({ userId: 1, geoKey: 'cote_divoire', documentType: 'driver_license_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.match(driverLicence?.documentValue ?? '', /^[A-Z]{4}\d{2}-\d{2}-\d{8}[A-Z]$/);
+});
+
+test('kazakhstan iin starts with profile date of birth', async () => {
+  const item = await generateAccount({ userId: 1, geoKey: 'kazakhstan', documentType: 'iin', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const birthPrefix = (item?.dateOfBirth ?? '').replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2})$/, '$2$3$4');
+  assert.equal(item?.documentQuality, 'verified');
+  assert.match(item?.documentValue ?? '', /^\d{12}$/);
+  assert.equal(item?.documentValue.slice(0, 6), birthPrefix);
 });
 
 test('gabon generated names come from the Gabon profile pool', async () => {
