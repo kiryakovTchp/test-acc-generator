@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { mdilLogout, mdilUnfoldMoreHorizontal } from '@mdi/light-js';
 import { apiFetch, type ActivityItem, type AlertItem, type AnalyticsSummary, type AuthSession, type GeoItem, type HistoryItem, type UsageSummary, type UserInfo, type UserSettings, type WorkspaceInvite, type WorkspaceMember, type WorkspaceSettings as ServerWorkspaceSettings, type WorkspaceSummary } from '@/lib/api';
+import { LOCALE_OPTIONS, normalizeLocale, translate, type Locale } from '@/lib/i18n';
 import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
@@ -102,6 +103,10 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
 
 const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
 const ACCOUNT_SWITCHER_STORAGE_KEY = 'tag-account-switcher-profiles';
+
+function tr(locale: Locale, text: string) {
+  return translate(locale, text);
+}
 
 function cn(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(' ');
@@ -274,6 +279,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [lastInviteToken, setLastInviteToken] = useState('');
   const [isSavingSettings, setIsSavingSettings] = useState(false);
   const [settingsStatus, setSettingsStatus] = useState('Saved locally');
+  const [locale, setLocale] = useState<Locale>('en');
   const [accountEmail, setAccountEmail] = useState('');
   const [accountUsername, setAccountUsername] = useState('');
   const [currentPassword, setCurrentPassword] = useState('');
@@ -291,6 +297,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const [switchPassword, setSwitchPassword] = useState('');
   const [isAddingAccount, setIsAddingAccount] = useState(false);
   const [switchingAccountId, setSwitchingAccountId] = useState<number | null>(null);
+  const t = (text: string) => tr(locale, text);
 
   useEffect(() => {
     const storage = getBrowserStorage();
@@ -548,6 +555,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       setAnalyticsSummary(analyticsRes.summary);
       setActivityItems(activityRes.items);
       setUserSettings(userSettingsRes.settings);
+      setLocale(normalizeLocale(userSettingsRes.settings.locale));
       setWorkspaces(workspacesRes.workspaces);
       setWorkspaceSettings(workspaceSettingsRes.settings);
       setWorkspaceMembers(workspaceMembersRes.members);
@@ -616,6 +624,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           defaultPersona: persona,
           defaultDocumentType: effectiveDocumentType,
           bulkCount,
+          locale,
         }),
       });
       setUserSettings(res.settings);
@@ -1288,31 +1297,31 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   const generationSettingsPanel = (
     <section className="panel panel-generation accounts-settings bulk-card">
-      <h3>Generation panel</h3>
-      <p>Defaults used by Generate identity and Generate bulk.</p>
+      <h3>{t('Generation panel')}</h3>
+      <p>{locale === 'ru' ? 'Настройки для создания одного identity и bulk-генерации.' : 'Defaults used by Generate identity and Generate bulk.'}</p>
       <div className="form-stack">
         <Field label="GEO">
           <select className="input-field compact" id="generation-geo" name="generationGeo" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
             {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
           </select>
         </Field>
-        <Field label="Form persona">
+        <Field label={t('Form persona')}>
           <select className="input-field compact" id="generation-persona" name="generationPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
             {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </Field>
-        <Field label="Document type">
+        <Field label={t('Document type')}>
           <select className="input-field compact" id="generation-document-type" name="generationDocumentType" value={effectiveDocumentType} onChange={(e) => setDocumentType(e.target.value)}>
             {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
             <option value="missing_rule_probe">missing_rule_probe</option>
           </select>
         </Field>
-        <Field label="Mailbox provider">
+        <Field label={t('Mailbox provider')}>
           <select className="input-field compact" id="generation-mailbox-provider" name="generationMailboxProvider" value={mailboxProvider} onChange={(e) => selectMailboxProvider(e.target.value as MailboxProviderKey)}>
             {MAILBOX_PROVIDER_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </Field>
-        <Field label="Bulk count">
+        <Field label={t('Bulk count')}>
           <input
             className="input-field compact"
             id="generation-bulk-count"
@@ -1330,11 +1339,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
   if (!settingsReady) {
     return (
-      <main className="auth-loading-shell" aria-label="Loading workspace">
+      <main className="auth-loading-shell" aria-label={t('Loading workspace')}>
         <div className="auth-loading-panel">
           <div className="sidebar-brand-mark">QA</div>
-          <strong>Test User Console</strong>
-          <span>Loading workspace</span>
+          <strong>{t('Test User Console')}</strong>
+          <span>{t('Loading workspace')}</span>
         </div>
       </main>
     );
@@ -1344,16 +1353,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     return (
       <main className="login-shell">
         <form className="login-card" onSubmit={doLogin}>
-          <div className="login-badge">Internal QA console</div>
-          <h1>Test User Console</h1>
-          <p>Generate test identities, copy registration data, and inspect mailbox verification.</p>
+          <div className="login-badge">{t('Internal QA console')}</div>
+          <h1>{t('Test User Console')}</h1>
+          <p>{locale === 'ru' ? 'Создавайте test identities, копируйте регистрационные данные и проверяйте mailbox verification.' : 'Generate test identities, copy registration data, and inspect mailbox verification.'}</p>
           <div className="login-fields">
-            <input className="input-field" id="login" name="login" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" autoComplete="username" />
-            <input className="input-field" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" autoComplete="current-password" />
+            <input className="input-field" id="login" name="login" value={login} onChange={(e) => setLogin(e.target.value)} placeholder={t('login')} autoComplete="username" />
+            <input className="input-field" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder={t('password')} type="password" autoComplete="current-password" />
           </div>
           {error ? <p className="alert alert-error">{error}</p> : null}
-          <button className="primary-button w-full">Sign in</button>
-          <Link className="login-helper-link" href="/register">Have an invite token?</Link>
+          <button className="primary-button w-full">{locale === 'ru' ? 'Войти' : 'Sign in'}</button>
+          <Link className="login-helper-link" href="/register">{locale === 'ru' ? 'Есть invite token?' : 'Have an invite token?'}</Link>
         </form>
       </main>
     );
@@ -1364,7 +1373,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <button
         type="button"
         className="sidebar-backdrop"
-        aria-label="Close navigation"
+        aria-label={t('Close navigation')}
         onClick={() => setIsSidebarOpen(false)}
       />
       <aside className="sidebar">
@@ -1372,13 +1381,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <div className="sidebar-brand">
             <div className="sidebar-brand-mark">QA</div>
             <div>
-              <strong>Test User Console</strong>
-              <span>Identity generation workspace</span>
+              <strong>{t('Test User Console')}</strong>
+              <span>{t('Identity generation workspace')}</span>
             </div>
           </div>
 
           <div className="flow-block">
-            <div className="flow-label">Workspace</div>
+            <div className="flow-label">{t('Workspace')}</div>
             <select
               className="workspace-switcher"
               id="workspace-switcher"
@@ -1386,15 +1395,15 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               value={user.workspaceId ?? ''}
               onChange={(event) => void switchWorkspace(Number(event.target.value))}
               disabled={isWorkspaceLoading}
-              aria-label="Switch workspace"
+              aria-label={t('Switch workspace')}
             >
               {workspaces.map((workspace) => (
                 <option key={workspace.id} value={workspace.id} disabled={workspace.status === 'archived'}>
-                  {workspace.name}{workspace.status === 'archived' ? ' (archived)' : ''}
+                  {workspace.name}{workspace.status === 'archived' ? ` (${locale === 'ru' ? 'архив' : 'archived'})` : ''}
                 </option>
               ))}
             </select>
-            <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} users · {user.workspaceRole ?? 'member'}</div>
+            <div className="flow-subtitle">{currentWorkspace?.memberCount ?? workspaceMembers.length} {t('users')} · {user.workspaceRole ?? 'member'}</div>
             <span className={cn('flow-status', currentWorkspace?.status === 'archived' && 'is-archived')}>{currentWorkspace?.status ?? 'active'}</span>
           </div>
 
@@ -1407,7 +1416,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 className={cn('sidebar-nav-item', activeNav === item.key && 'is-active')}
               >
                 <span className="sidebar-nav-short">{item.short}</span>
-                <span>{item.label}</span>
+                <span>{t(item.label)}</span>
                 <span className="sidebar-count">
                   {item.key === 'main' ? ''
                     : item.key === 'accounts' ? history.length
@@ -1424,10 +1433,10 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         <div className="sidebar-footer">
           <div className="sidebar-account-switcher">
             {isAccountMenuOpen ? (
-              <div className="account-switch-menu" role="menu" aria-label="Switch account">
+              <div className="account-switch-menu" role="menu" aria-label={t('Switch account')}>
                 <div className="account-switch-menu-head">
-                  <strong>Accounts</strong>
-                  <span>{accountSwitcherAccounts.length} saved</span>
+                  <strong>{t('Accounts')}</strong>
+                  <span>{accountSwitcherAccounts.length} {t('saved')}</span>
                 </div>
                 <div className="account-switch-list">
                   {accountSwitcherAccounts.map((account) => (
@@ -1442,22 +1451,22 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <span className="account-switch-avatar">{account.login.slice(0, 2).toUpperCase()}</span>
                       <span className="account-switch-copy">
                         <strong>{account.login}</strong>
-                        <span>{account.id === user.id ? 'Current' : account.role}</span>
+                        <span>{account.id === user.id ? (locale === 'ru' ? 'Текущий' : 'Current') : account.role}</span>
                       </span>
                     </button>
                   ))}
                 </div>
                 <form className="account-switch-form" onSubmit={addSwitchAccount}>
-                  <input className="account-switch-input" id="switch-account-login" name="switchAccountLogin" value={switchLogin} onChange={(event) => setSwitchLogin(event.target.value)} placeholder="login" autoComplete="username" />
-                  <input className="account-switch-input" id="switch-account-password" name="switchAccountPassword" value={switchPassword} onChange={(event) => setSwitchPassword(event.target.value)} placeholder="password" type="password" autoComplete="current-password" />
+                  <input className="account-switch-input" id="switch-account-login" name="switchAccountLogin" value={switchLogin} onChange={(event) => setSwitchLogin(event.target.value)} placeholder={t('login')} autoComplete="username" />
+                  <input className="account-switch-input" id="switch-account-password" name="switchAccountPassword" value={switchPassword} onChange={(event) => setSwitchPassword(event.target.value)} placeholder={t('password')} type="password" autoComplete="current-password" />
                   <button className="account-switch-submit" type="submit" disabled={isAddingAccount || !switchLogin.trim() || !switchPassword}>
-                    {isAddingAccount ? 'Adding' : 'Add account'}
+                    {isAddingAccount ? t('Adding') : t('Add account')}
                   </button>
                 </form>
               </div>
             ) : null}
             <div className="sidebar-user-card">
-              <button className="sidebar-user-main" type="button" onClick={() => setIsAccountMenuOpen((value) => !value)} aria-label="Switch account" aria-expanded={isAccountMenuOpen}>
+              <button className="sidebar-user-main" type="button" onClick={() => setIsAccountMenuOpen((value) => !value)} aria-label={t('Switch account')} aria-expanded={isAccountMenuOpen}>
                 <span className="sidebar-user-copy">
                   <strong>{user.login}</strong>
                   <span>{user.role}</span>
@@ -1466,7 +1475,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   <MdiLightIcon path={mdilUnfoldMoreHorizontal} />
                 </span>
               </button>
-              <button className="sidebar-logout-button" type="button" onClick={() => void logout()} aria-label="Logout">
+              <button className="sidebar-logout-button" type="button" onClick={() => void logout()} aria-label={t('Logout')}>
                 <span className="sidebar-logout-icon" aria-hidden="true">
                   <MdiLightIcon path={mdilLogout} />
                 </span>
@@ -1482,7 +1491,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <button
               type="button"
               className="mobile-menu-button"
-              aria-label="Open navigation"
+              aria-label={t('Open navigation')}
               aria-expanded={isSidebarOpen}
               onClick={() => setIsSidebarOpen(true)}
             >
@@ -1491,50 +1500,50 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               <span />
             </button>
             <div className="breadcrumb">
-              <span>Workspace</span>
-              <span>Test Users</span>
-              <strong>Generation Console</strong>
+              <span>{t('Workspace')}</span>
+              <span>{t('Test users')}</span>
+              <strong>{t('Generation Console')}</strong>
             </div>
           </div>
           <div className="topbar-admin">
-            {usageSummary ? <UsagePill label="Accounts" used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
-            <div className="topbar-chip workspace-chip" title={`Current workspace: ${currentWorkspace?.name ?? 'Workspace'}`}>
+            {usageSummary ? <UsagePill label={t('Accounts')} used={usageSummary.limits.accountsPerDay.used} limit={usageSummary.limits.accountsPerDay.limit} /> : <SkeletonBox className="usage-pill-skeleton" />}
+            <div className="topbar-chip workspace-chip" title={`${t('Current workspace')}: ${currentWorkspace?.name ?? t('Workspace')}`}>
               <span />
-              <strong>{currentWorkspace?.name ?? 'Workspace'}</strong>
+              <strong>{currentWorkspace?.name ?? t('Workspace')}</strong>
             </div>
-            <div className="topbar-chip user-chip" title={`Signed in as ${user.login}`}>{user.login}</div>
-            <button className="logout-button" onClick={() => void logout()}>Logout</button>
+            <div className="topbar-chip user-chip" title={locale === 'ru' ? `Вход: ${user.login}` : `Signed in as ${user.login}`}>{user.login}</div>
+            <button className="logout-button" onClick={() => void logout()}>{t('Logout')}</button>
           </div>
         </div>
 
         {error ? <div className="alert alert-error slim">{error}</div> : null}
-        {isGenerating ? <div className="alert alert-info slim">Creating mailbox, credentials, and first inbox snapshot.</div> : null}
-        {isBulkGenerating ? <div className="alert alert-info slim">Creating {bulkCount} identities and mailbox snapshots.</div> : null}
-        {activeNav === 'main' ? <AlertsPanel items={alertItems} /> : null}
+        {isGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? 'Создаю mailbox, credentials и первый снимок inbox.' : 'Creating mailbox, credentials, and first inbox snapshot.'}</div> : null}
+        {isBulkGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? `Создаю ${bulkCount} identities и mailbox snapshots.` : `Creating ${bulkCount} identities and mailbox snapshots.`}</div> : null}
+        {activeNav === 'main' ? <AlertsPanel items={alertItems} locale={locale} /> : null}
 
         {showQuickActions ? (
           <section className="quick-actions-panel">
-          <div className="quick-actions-title">Quick actions</div>
-          {usageSummary ? <UsageStrip usage={usageSummary} /> : <UsageStripSkeleton />}
-          <div className="quick-actions-grid" aria-label="Primary identity actions">
+          <div className="quick-actions-title">{t('Quick actions')}</div>
+          {usageSummary ? <UsageStrip usage={usageSummary} locale={locale} /> : <UsageStripSkeleton />}
+          <div className="quick-actions-grid" aria-label={locale === 'ru' ? 'Основные действия identity' : 'Primary identity actions'}>
             <button className="action-card" onClick={generate} disabled={isGenerateDisabled} title="G">
               <span className="action-icon">+</span>
-              <span><strong>{isGenerating ? 'Generating identity' : 'Generate identity'}</strong><small>Single test user</small></span>
+              <span><strong>{isGenerating ? (locale === 'ru' ? 'Создаю identity' : 'Generating identity') : t('Generate identity')}</strong><small>{t('Single test user')}</small></span>
               <kbd>G</kbd>
             </button>
             <button className="action-card" onClick={generateBulk} disabled={isGenerateDisabled} title="B">
               <span className="action-icon">B</span>
-              <span><strong>{isBulkGenerating ? `Generating ${bulkCount}` : 'Generate bulk'}</strong><small>Multiple test users</small></span>
+              <span><strong>{isBulkGenerating ? (locale === 'ru' ? `Создаю ${bulkCount}` : `Generating ${bulkCount}`) : t('Generate bulk')}</strong><small>{t('Multiple test users')}</small></span>
               <kbd>B</kbd>
             </button>
             <button className="action-card" onClick={() => refreshInboxForDetail(30000)} disabled={primaryActionsDisabled || isRefreshingInbox} title="R">
               <span className="action-icon">R</span>
-              <span><strong>{isRefreshingInbox ? 'Waiting for inbox' : 'Wait & refresh'}</strong><small>Selected test user</small></span>
+              <span><strong>{isRefreshingInbox ? (locale === 'ru' ? 'Жду inbox' : 'Waiting for inbox') : t('Wait & refresh')}</strong><small>{locale === 'ru' ? 'Выбранный test user' : 'Selected test user'}</small></span>
               <kbd>R</kbd>
             </button>
             <button className="action-card" onClick={copyIdentityPack} disabled={primaryActionsDisabled}>
               <span className="action-icon">CP</span>
-              <span><strong>Copy pack</strong><small>Registration data</small></span>
+              <span><strong>{t('Copy pack')}</strong><small>{t('Registration data')}</small></span>
             </button>
           </div>
         </section>
@@ -1548,7 +1557,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
           <section className="panel panel-list">
             <div className="panel-header">
-              <h2>Recent identities <span>({history.length})</span></h2>
+              <h2>{locale === 'ru' ? 'Последние identities' : 'Recent identities'} <span>({history.length})</span></h2>
             </div>
 
             <div className="account-list">
@@ -1557,7 +1566,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 const selected = detail?.id === item.id;
                 return (
                   <button key={item.id} type="button" className={cn('account-row', selected && 'is-selected')} onClick={() => loadDetail(item.id)}>
-                    <span className={cn('badge status-marker', `tone-${statusTone(rowStatus)}`)} title={statusLabel(rowStatus)} aria-label={statusLabel(rowStatus)}>
+                    <span className={cn('badge status-marker', `tone-${statusTone(rowStatus)}`)} title={statusLabel(rowStatus, locale)} aria-label={statusLabel(rowStatus, locale)}>
                       <span className={cn('badge-dot', `tone-${statusTone(rowStatus)}`)} />
                     </span>
                     <strong>{item.siteAccountId || item.username}</strong>
@@ -1572,29 +1581,29 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                 />
               )}
             </div>
-            <Link className="view-all-button" href="/accounts">View all test users</Link>
+            <Link className="view-all-button" href="/accounts">{t('View all test users')}</Link>
           </section>
           </div>
 
           <section className="panel panel-detail">
             <div className="panel-header">
-              <h2>Identity workspace {detail ? <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span> : null}</h2>
+              <h2>{t('Identity workspace')} {detail ? <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus, locale)}</span> : null}</h2>
             </div>
 
             {isWorkspaceBootstrapping && !detail ? (
               <IdentityWorkspaceSkeleton />
             ) : !detail ? (
               <div className="empty-workspace">
-                <h3>Generate an identity or open one from the list</h3>
-                <p>The selected test user appears here with registration data, mailbox, and verification.</p>
+                <h3>{t('Generate an identity or open one from the list')}</h3>
+                <p>{t('The selected test user appears here with registration data, mailbox, and verification.')}</p>
               </div>
             ) : (
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
-                    <h3>Test user</h3>
+                    <h3>{t('Test user')}</h3>
                     <label className="account-id-field">
-                      <span>Account ID</span>
+                      <span>{t('Account ID')}</span>
                       <div>
                         <input
                           className="input-field compact"
@@ -1608,22 +1617,22 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                               e.currentTarget.blur();
                             }
                           }}
-                          placeholder="Paste site account ID"
+                          placeholder={locale === 'ru' ? 'Вставьте ID аккаунта' : 'Paste site account ID'}
                         />
-                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
+                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>{t('Save')}</button>
                       </div>
                     </label>
-                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} locale={locale} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <SharingField
                       item={detail}
                       canManage={detail.createdByUserId === user.id}
                       isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
                     />
-                    <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
-                    <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
-                    <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
-                    <InspectorRow label="Mailbox provider" value={mailboxProviderLabel(detail.mailboxProvider)} onCopy={() => copyValue(`mailbox-provider:${detail.id}`, mailboxProviderLabel(detail.mailboxProvider))} copied={copiedField === `mailbox-provider:${detail.id}`} />
+                    <InspectorRow label={t('Password')} value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive locale={locale} />
+                    <InspectorRow label={t('Username')} value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} locale={locale} />
+                    <InspectorRow label={locale === 'ru' ? 'Дата регистрации' : 'Registration date'} value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} locale={locale} />
+                    <InspectorRow label={t('Mailbox provider')} value={mailboxProviderLabel(detail.mailboxProvider)} onCopy={() => copyValue(`mailbox-provider:${detail.id}`, mailboxProviderLabel(detail.mailboxProvider))} copied={copiedField === `mailbox-provider:${detail.id}`} locale={locale} />
                     <PhoneEditField
                       value={phoneDraft}
                       canEdit={detail.createdByUserId === user.id}
@@ -1634,8 +1643,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onRegenerate={() => void regeneratePhoneForDetail()}
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
+                      locale={locale}
                     />
-                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} locale={locale} />
                     <MailboxControls
                       detail={detail}
                       statusLabel={inboxStatusLabel}
@@ -1645,26 +1655,27 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onCheckNow={() => refreshInboxForDetail(0)}
                       onWaitRefresh={() => refreshInboxForDetail(30000)}
                       onReplace={() => void replaceMailboxForDetail()}
+                      locale={locale}
                     />
                   </div>
 
                   <div className="form-section form-section-wide">
-                    <h3>Personal info</h3>
-                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} />
+                    <h3>{t('Personal info')}</h3>
+                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} locale={locale} />
                   </div>
                 </section>
 
                 <section className="identity-pack">
                   <div className="identity-pack-header">
-                    <h3>Registration form data</h3>
-                    <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
+                    <h3>{t('Registration form data')}</h3>
+                    <button className="micro-button" onClick={copyIdentityPack}>{t('Copy all')}</button>
                   </div>
-                  <DatasetNotice quality={detail.documentQuality} />
+                  <DatasetNotice quality={detail.documentQuality} locale={locale} />
                   <div className="identity-pack-grid">
-                    <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
-                    <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
-                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
-                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
+                    <InfoTile label={t('Name fields')} value={`${detail.lastName}\n${detail.firstName}`} action={t('Copy')} onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+                    <InfoTile label={t('Region fields')} value={`${detail.country}\n${detail.region}\n${detail.city}`} action={t('Copy')} onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+                    <InfoTile label={t('Document')} value={`${detail.documentType}\n${detail.documentValue}`} action={t('Copy')} onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
+                    <InfoTile label={t('Phone')} value={detail.phone} action={t('Copy')} onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
@@ -1677,6 +1688,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   copied={copiedField === `email-message:${detail.id}`}
                   onWaitRefresh={() => refreshInboxForDetail(30000)}
                   isRefreshing={isRefreshingInbox}
+                  locale={locale}
                 />
               </div>
             )}
@@ -1685,14 +1697,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           {hasVerificationCodes ? (
             <section className="panel panel-codes">
               <div className="panel-header">
-                <h2>Codes <span>({verificationCodes.length})</span></h2>
+                <h2>{t('Codes')} <span>({verificationCodes.length})</span></h2>
               </div>
               <div className="codes-list">
                 {verificationCodes.map((code, index) => (
                 <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
-                  <span>{index === 0 ? 'Email code' : 'SMS code'}</span>
+                  <span>{index === 0 ? t('Email code') : t('SMS code')}</span>
                   <strong>{code}</strong>
-                  <small>{copiedField === `code:${code}` ? 'Copied' : 'CP'}</small>
+                  <small>{copiedField === `code:${code}` ? t('Copied') : 'CP'}</small>
                   <time>{formatCompactDate(verificationReceivedAt)}</time>
                 </button>
                 ))}
@@ -1704,29 +1716,29 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <>
           <section className="panel panel-list">
             <div className="panel-header accounts-header">
-              <h2>Test users <span className="count-badge">{history.length}</span></h2>
+              <h2>{t('Test users')} <span className="count-badge">{history.length}</span></h2>
             </div>
 
             <div className="list-controls accounts-controls">
-              <input className="input-field compact account-search-field" id="accounts-search" name="accountsSearch" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search by user, email, GEO, or account ID" />
+              <input className="input-field compact account-search-field" id="accounts-search" name="accountsSearch" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder={t('Search by user, email, GEO, or account ID')} />
               <div className="control-row accounts-filter-row">
                   <select className="input-field compact" id="accounts-status-filter" name="accountsStatusFilter" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
-                    <option value="all">All statuses</option>
-                    <option value="generated">Generated</option>
-                    <option value="email_received">Email received</option>
-                    <option value="waiting">Waiting</option>
+                    <option value="all">{t('All statuses')}</option>
+                    <option value="generated">{t('Generated')}</option>
+                    <option value="email_received">{t('Email received')}</option>
+                    <option value="waiting">{t('Waiting')}</option>
                   </select>
                   <select className="input-field compact" id="accounts-balance-filter" name="accountsBalanceFilter" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
-                    <option value="all">All balances</option>
-                    {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+                    <option value="all">{t('All balances')}</option>
+                    {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{balanceStatusLabel(item.value, locale)}</option>)}
                   </select>
                   <select className="input-field compact" id="accounts-geo-filter" name="accountsGeoFilter" value={accountGeoFilter} onChange={(e) => setAccountGeoFilter(e.target.value)}>
-                    <option value="all">All GEOs</option>
+                    <option value="all">{t('All GEOs')}</option>
                     {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
                   </select>
                   <select className="input-field compact" id="accounts-sort-mode" name="accountsSortMode" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
-                    <option value="newest">Newest first</option>
-                    <option value="oldest">Oldest first</option>
+                    <option value="newest">{t('Newest first')}</option>
+                    <option value="oldest">{t('Oldest first')}</option>
                   </select>
               </div>
             </div>
@@ -1746,13 +1758,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   </colgroup>
                   <thead>
                     <tr>
-                      <th>Test user</th>
+                      <th>{t('Test user')}</th>
                       <th>GEO</th>
                       <th>Email</th>
-                      <th>Status</th>
-                      <th>Balance</th>
-                      <th>Scope</th>
-                      <th>Created</th>
+                      <th>{t('Status')}</th>
+                      <th>{t('Balance')}</th>
+                      <th>{locale === 'ru' ? 'Доступ' : 'Scope'}</th>
+                      <th>{locale === 'ru' ? 'Создано' : 'Created'}</th>
                       <th />
                     </tr>
                   </thead>
@@ -1768,19 +1780,20 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                           </td>
                           <td>{item.geoLabel}</td>
                           <td className="email-cell">{item.email}</td>
-                          <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)} title={`Inbox status: ${statusLabel(rowStatus)}`}>{statusLabel(rowStatus)}</span></td>
+                          <td><span className={cn('badge', `tone-${statusTone(rowStatus)}`)} title={`${t('Status')}: ${statusLabel(rowStatus, locale)}`}>{statusLabel(rowStatus, locale)}</span></td>
                           <td>
                             <BalanceStatusSelect
                               value={item.balanceStatus}
                               disabled={savingBalanceId === item.id}
+                              locale={locale}
                               onChange={(value) => void saveBalanceStatus(item.id, value)}
                             />
                           </td>
                           <td>
-                            <span className={cn('badge', `tone-${scopeTone(item)}`)} title={isWorkspaceShared(item) ? 'Visible to workspace members' : 'Visible only to creator'}>{scopeLabel(item)}</span>
+                            <span className={cn('badge', `tone-${scopeTone(item)}`)} title={isWorkspaceShared(item) ? t('Visible to workspace members') : t('Visible only to creator')}>{scopeLabel(item, locale)}</span>
                           </td>
                           <td>{formatCompactDate(item.createdAt)}</td>
-                          <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>Details</button></td>
+                          <td><button type="button" className="micro-button" onClick={() => loadDetail(item.id)}>{t('Details')}</button></td>
                         </tr>
                       );
                     })}
@@ -1791,25 +1804,26 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   hasHistory={history.length > 0}
                   hasFilters={hasActiveAccountFilters}
                   onClearFilters={clearAccountFilters}
+                  locale={locale}
                 />
               )}
             </div>
           </section>
 
           {detail && typeof document !== 'undefined' ? createPortal((
-            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label="Test user details" onClick={() => setDetail(null)}>
+            <div className="account-detail-overlay" role="dialog" aria-modal="true" aria-label={t('Test user details')} onClick={() => setDetail(null)}>
               <section className="panel panel-detail account-detail-modal" onClick={(event) => event.stopPropagation()}>
                 <div className="panel-header">
-                  <h2>Test user details <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus)}</span></h2>
-                  <button type="button" className="micro-button" onClick={() => setDetail(null)}>Close</button>
+                  <h2>{t('Test user details')} <span className={cn('badge', `tone-${statusTone(selectedStatus)}`)}>{statusLabel(selectedStatus, locale)}</span></h2>
+                  <button type="button" className="micro-button" onClick={() => setDetail(null)}>{t('Close')}</button>
                 </div>
 
               <div className="detail-stack">
                 <section className="registration-form-grid">
                   <div className="form-section">
-                    <h3>Test user</h3>
+                    <h3>{t('Test user')}</h3>
                     <label className="account-id-field">
-                      <span>Account ID</span>
+                      <span>{t('Account ID')}</span>
                       <div>
                         <input
                           className="input-field compact"
@@ -1823,21 +1837,21 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                               e.currentTarget.blur();
                             }
                           }}
-                          placeholder="Paste site account ID"
+                          placeholder={locale === 'ru' ? 'Вставьте ID аккаунта' : 'Paste site account ID'}
                         />
-                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>Save</button>
+                        <button className="micro-button" onClick={saveSiteAccountId} disabled={siteAccountIdDraft.trim() === (detail.siteAccountId ?? '')}>{t('Save')}</button>
                       </div>
                     </label>
-                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
+                    <BalanceStatusField value={detail.balanceStatus} disabled={savingBalanceId === detail.id} locale={locale} onChange={(value) => void saveBalanceStatus(detail.id, value)} />
                     <SharingField
                       item={detail}
                       canManage={detail.createdByUserId === user.id}
                       isSaving={savingSharingId === detail.id}
                       onToggle={(shared) => void saveSharing(detail.id, shared)}
                     />
-                    <InspectorRow label="Password" value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive />
-                    <InspectorRow label="Username" value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} />
-                    <InspectorRow label="Registration date" value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} />
+                    <InspectorRow label={t('Password')} value={detail.emailPassword} hidden={!showPassword} onToggleHidden={() => setShowPassword((v) => !v)} onCopy={() => copyValue(`mailbox-password:${detail.id}`, detail.emailPassword)} copied={copiedField === `mailbox-password:${detail.id}`} sensitive locale={locale} />
+                    <InspectorRow label={t('Username')} value={detail.username} onCopy={() => copyValue(`username:${detail.id}`, detail.username)} copied={copiedField === `username:${detail.id}`} locale={locale} />
+                    <InspectorRow label={locale === 'ru' ? 'Дата регистрации' : 'Registration date'} value={formatDate(detail.createdAt)} onCopy={() => copyValue(`created:${detail.id}`, formatDate(detail.createdAt))} copied={copiedField === `created:${detail.id}`} locale={locale} />
                     <PhoneEditField
                       value={phoneDraft}
                       canEdit={detail.createdByUserId === user.id}
@@ -1848,8 +1862,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onRegenerate={() => void regeneratePhoneForDetail()}
                       onCopy={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))}
                       copied={copiedField === `phone:${detail.id}`}
+                      locale={locale}
                     />
-                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} />
+                    <RegistrationInfoField label="Email" value={detail.email} onCopy={() => copyValue(`email:${detail.id}`, detail.email)} copied={copiedField === `email:${detail.id}`} locale={locale} />
                     <MailboxControls
                       detail={detail}
                       statusLabel={inboxStatusLabel}
@@ -1859,26 +1874,27 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       onCheckNow={() => refreshInboxForDetail(0)}
                       onWaitRefresh={() => refreshInboxForDetail(30000)}
                       onReplace={() => void replaceMailboxForDetail()}
+                      locale={locale}
                     />
                   </div>
 
                   <div className="form-section form-section-wide">
-                    <h3>Personal info</h3>
-                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} />
+                    <h3>{t('Personal info')}</h3>
+                    <PersonalInfoFields detail={detail} copiedField={copiedField} onCopy={copyValue} locale={locale} />
                   </div>
                 </section>
 
                 <section className="identity-pack">
                   <div className="identity-pack-header">
-                    <h3>Registration form data</h3>
-                    <button className="micro-button" onClick={copyIdentityPack}>Copy all</button>
+                    <h3>{t('Registration form data')}</h3>
+                    <button className="micro-button" onClick={copyIdentityPack}>{t('Copy all')}</button>
                   </div>
-                  <DatasetNotice quality={detail.documentQuality} />
+                  <DatasetNotice quality={detail.documentQuality} locale={locale} />
                   <div className="identity-pack-grid">
-                    <InfoTile label="Name fields" value={`${detail.lastName}\n${detail.firstName}`} action="Copy" onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
-                    <InfoTile label="Region fields" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
-                    <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}`} action="Copy" onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
-                    <InfoTile label="Phone" value={detail.phone} action="Copy" onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
+                    <InfoTile label={t('Name fields')} value={`${detail.lastName}\n${detail.firstName}`} action={t('Copy')} onClick={() => copyValue(`names:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+                    <InfoTile label={t('Region fields')} value={`${detail.country}\n${detail.region}\n${detail.city}`} action={t('Copy')} onClick={() => copyValue(`region-pack:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+                    <InfoTile label={t('Document')} value={`${detail.documentType}\n${detail.documentValue}`} action={t('Copy')} onClick={() => copyValue(`doc-tile:${detail.id}`, `${detail.documentType}\n${detail.documentValue}`)} />
+                    <InfoTile label={t('Phone')} value={detail.phone} action={t('Copy')} onClick={() => copyValue(`phone:${detail.id}`, localPhoneDigits(detail.phone, detail.geoKey))} />
                     <InfoTile label="Email" value={detail.email} action="Copy" onClick={() => copyValue(`email:${detail.id}`, detail.email)} />
                   </div>
                 </section>
@@ -1891,6 +1907,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                   copied={copiedField === `email-message:${detail.id}`}
                   onWaitRefresh={() => refreshInboxForDetail(30000)}
                   isRefreshing={isRefreshingInbox}
+                  locale={locale}
                 />
               </div>
               </section>
@@ -1900,14 +1917,14 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           {hasVerificationCodes ? (
             <section className="panel panel-codes">
               <div className="panel-header">
-                <h2>Codes <span>({verificationCodes.length})</span></h2>
+                <h2>{t('Codes')} <span>({verificationCodes.length})</span></h2>
               </div>
               <div className="codes-list">
                 {verificationCodes.map((code, index) => (
                 <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
-                  <span>{index === 0 ? 'Email code' : 'SMS code'}</span>
+                  <span>{index === 0 ? t('Email code') : t('SMS code')}</span>
                   <strong>{code}</strong>
-                  <small>{copiedField === `code:${code}` ? 'Copied' : 'CP'}</small>
+                  <small>{copiedField === `code:${code}` ? t('Copied') : 'CP'}</small>
                   <time>{formatCompactDate(verificationReceivedAt)}</time>
                 </button>
                 ))}
@@ -1998,6 +2015,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               alertItems={alertItems}
               analyticsSummary={analyticsSummary}
               activityItems={activityItems}
+              locale={locale}
+              setLocale={setLocale}
             />
           )}
         </div>
@@ -2114,11 +2133,11 @@ function SettingsSectionSkeleton() {
   );
 }
 
-function AlertsPanel({ items }: { items: AlertItem[] }) {
+function AlertsPanel({ items, locale = 'en' }: { items: AlertItem[]; locale?: Locale }) {
   if (!items.length) return null;
 
   return (
-    <section className="alerts-panel" aria-label="Workspace alerts">
+    <section className="alerts-panel" aria-label={tr(locale, 'Workspace alerts')}>
       {items.slice(0, 3).map((item) => (
         <div key={item.id} className={cn('alert-card', `tone-${item.tone}`)}>
           <div>
@@ -2132,17 +2151,17 @@ function AlertsPanel({ items }: { items: AlertItem[] }) {
   );
 }
 
-function DatasetNotice({ quality }: { quality: Detail['documentQuality'] }) {
+function DatasetNotice({ quality, locale = 'en' }: { quality: Detail['documentQuality']; locale?: Locale }) {
   const title = quality === 'verified'
-    ? 'Verified format, synthetic data'
+    ? tr(locale, 'Verified format, synthetic data')
     : quality === 'missing_rules'
-      ? 'Dataset rule missing'
-      : 'Dataset under review';
+      ? tr(locale, 'Dataset rule missing')
+      : tr(locale, 'Dataset under review');
 
   return (
     <div className={cn('dataset-notice', quality !== 'verified' && 'is-review')}>
       <strong>{title}</strong>
-      <span>Identity data is still being reviewed and may not be 100% accurate. Use it as test data only.</span>
+      <span>{tr(locale, 'Identity data is still being reviewed and may not be 100% accurate. Use it as test data only.')}</span>
     </div>
   );
 }
@@ -2156,6 +2175,7 @@ function MailboxControls({
   onCheckNow,
   onWaitRefresh,
   onReplace,
+  locale = 'en',
 }: {
   detail: Detail;
   statusLabel: string;
@@ -2165,13 +2185,14 @@ function MailboxControls({
   onCheckNow: () => void;
   onWaitRefresh: () => void;
   onReplace: () => void;
+  locale?: Locale;
 }) {
   const status = detail.inbox.status === 'email_received'
-    ? 'Email received'
-    : currentStatusLabel || 'Auto-checks for up to 5 min after opening';
+    ? tr(locale, 'Email received')
+    : currentStatusLabel ? tr(locale, currentStatusLabel) : (locale === 'ru' ? 'Автопроверка до 5 минут после открытия' : 'Auto-checks for up to 5 min after opening');
   const retentionNote = detail.mailboxProvider === 'mail_gw'
-    ? 'mail.gw retention is provider-dependent'
-    : 'mail.tm keeps received mail for 7 days';
+    ? (locale === 'ru' ? 'mail.gw хранит письма по правилам провайдера' : 'mail.gw retention is provider-dependent')
+    : (locale === 'ru' ? 'mail.tm хранит полученные письма 7 дней' : 'mail.tm keeps received mail for 7 days');
 
   return (
     <div className="mailbox-control-card">
@@ -2181,18 +2202,18 @@ function MailboxControls({
         <small>{retentionNote}</small>
       </div>
       <div className="mailbox-control-actions">
-        <button type="button" className="micro-button" onClick={onCheckNow} disabled={isRefreshing || isReplacing}>Check now</button>
+        <button type="button" className="micro-button" onClick={onCheckNow} disabled={isRefreshing || isReplacing}>{tr(locale, 'Check now')}</button>
         <button type="button" className="primary-button" onClick={onWaitRefresh} disabled={isRefreshing || isReplacing}>
-          {isRefreshing ? 'Waiting' : 'Wait'}
+          {isRefreshing ? tr(locale, 'Waiting') : tr(locale, 'Wait')}
         </button>
         <button
           type="button"
           className="micro-button danger-soft"
           onClick={onReplace}
           disabled={!canReplace || isRefreshing || isReplacing}
-          title={canReplace ? 'Create a new mailbox for this identity' : 'Only the creator can replace this mailbox'}
+          title={canReplace ? (locale === 'ru' ? 'Создать новый mailbox для этой identity' : 'Create a new mailbox for this identity') : (locale === 'ru' ? 'Только создатель может заменить mailbox' : 'Only the creator can replace this mailbox')}
         >
-          {isReplacing ? 'Replacing' : 'Replace'}
+          {isReplacing ? tr(locale, 'Replacing') : tr(locale, 'Replace')}
         </button>
       </div>
     </div>
@@ -2281,6 +2302,8 @@ function UtilityView({
   alertItems,
   analyticsSummary,
   activityItems,
+  locale,
+  setLocale,
 }: {
   activeNav: Exclude<NavKey, 'accounts'>;
   detail: Detail | null;
@@ -2363,19 +2386,22 @@ function UtilityView({
   alertItems: AlertItem[];
   analyticsSummary: AnalyticsSummary | null;
   activityItems: ActivityItem[];
+  locale: Locale;
+  setLocale: (value: Locale) => void;
 }) {
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
+  const t = (text: string) => tr(locale, text);
 
   if (activeNav === 'mailboxes') {
     return (
       <section className="panel utility-panel">
         <div className="utility-header">
           <div>
-            <h2>Mailboxes</h2>
-            <p>Open a mailbox, inspect the latest message, and copy parsed verification links or codes.</p>
+            <h2>{t('Mailboxes')}</h2>
+            <p>{locale === 'ru' ? 'Откройте mailbox, посмотрите последнее письмо и скопируйте ссылки или коды верификации.' : 'Open a mailbox, inspect the latest message, and copy parsed verification links or codes.'}</p>
           </div>
           <button type="button" className="primary-button" onClick={onCreateMailbox} disabled={isCreatingMailbox}>
-            {isCreatingMailbox ? 'Creating mailbox' : 'Create temporary mailbox'}
+            {isCreatingMailbox ? t('Creating mailbox') : t('Create temporary mailbox')}
           </button>
         </div>
 
@@ -2383,26 +2409,26 @@ function UtilityView({
           <section className="mailbox-reader">
             <div className="mailbox-reader-header">
               <div>
-                <h3>{detail ? detail.email : tempMailbox ? tempMailbox.address : 'Inbox'}</h3>
-                <p>{detail ? `Test user: ${detail.siteAccountId || detail.username}` : tempMailbox ? 'Standalone temporary mailbox' : 'Open a generated mailbox or create a temporary one.'}</p>
+                <h3>{detail ? detail.email : tempMailbox ? tempMailbox.address : t('Inbox')}</h3>
+                <p>{detail ? `${t('Test user')}: ${detail.siteAccountId || detail.username}` : tempMailbox ? (locale === 'ru' ? 'Отдельный временный mailbox' : 'Standalone temporary mailbox') : (locale === 'ru' ? 'Откройте созданный mailbox или создайте временный.' : 'Open a generated mailbox or create a temporary one.')}</p>
               </div>
               <div className="mailbox-reader-actions">
                 {detail ? (
                   <>
                     <button type="button" className="micro-button" onClick={() => onRefreshInbox(0)} disabled={isRefreshingInbox}>
-                      Check now
+                      {t('Check now')}
                     </button>
                     <button type="button" className="primary-button" onClick={() => onRefreshInbox(30000)} disabled={isRefreshingInbox}>
-                      {isRefreshingInbox ? 'Waiting' : 'Wait & refresh'}
+                      {isRefreshingInbox ? t('Waiting') : t('Wait & refresh')}
                     </button>
                   </>
                 ) : tempMailbox ? (
                   <>
                     <button type="button" className="micro-button" onClick={() => onRefreshTempMailbox(0)} disabled={isRefreshingTempMailbox}>
-                      Check now
+                      {t('Check now')}
                     </button>
                     <button type="button" className="primary-button" onClick={() => onRefreshTempMailbox(30000)} disabled={isRefreshingTempMailbox}>
-                      {isRefreshingTempMailbox ? 'Waiting' : 'Wait & refresh'}
+                      {isRefreshingTempMailbox ? t('Waiting') : t('Wait & refresh')}
                     </button>
                   </>
                 ) : null}
@@ -2423,6 +2449,7 @@ function UtilityView({
                 copied={copiedField === `mailboxes-message:${detail.id}`}
                 onWaitRefresh={() => onRefreshInbox(30000)}
                 isRefreshing={isRefreshingInbox}
+                locale={locale}
               />
             ) : tempMailbox ? (
               <>
@@ -2430,20 +2457,20 @@ function UtilityView({
                   <button type="button" onClick={() => onCopy('temp-mailbox-address', tempMailbox.address)}>
                     <span>Email</span>
                     <strong>{tempMailbox.address}</strong>
-                    <small>{copiedField === 'temp-mailbox-address' ? 'Copied' : 'Copy'}</small>
+                    <small>{copiedField === 'temp-mailbox-address' ? t('Copied') : t('Copy')}</small>
                   </button>
                   <button type="button" onClick={() => onCopy('temp-mailbox-password', tempMailbox.password)}>
-                    <span>Password</span>
+                    <span>{t('Password')}</span>
                     <strong>{tempMailbox.password}</strong>
-                    <small>{copiedField === 'temp-mailbox-password' ? 'Copied' : 'Copy'}</small>
+                    <small>{copiedField === 'temp-mailbox-password' ? t('Copied') : t('Copy')}</small>
                   </button>
                 </div>
-                <StandaloneInbox inbox={tempMailboxInbox} address={tempMailbox.address} />
+                <StandaloneInbox inbox={tempMailboxInbox} address={tempMailbox.address} locale={locale} />
               </>
             ) : (
               <div className="email-empty-state">
-                <strong>No mailbox opened</strong>
-                <span>Select `Open` in the table below to view that mailbox inbox here.</span>
+                <strong>{locale === 'ru' ? 'Mailbox не открыт' : 'No mailbox opened'}</strong>
+                <span>{locale === 'ru' ? 'Нажмите Open в таблице ниже, чтобы посмотреть inbox этого mailbox.' : 'Select `Open` in the table below to view that mailbox inbox here.'}</span>
               </div>
             )}
           </section>
@@ -2454,9 +2481,9 @@ function UtilityView({
               <thead>
                 <tr>
                   <th>Email</th>
-                  <th>Test user</th>
-                  <th>Status</th>
-                  <th>Created</th>
+                  <th>{t('Test user')}</th>
+                  <th>{t('Status')}</th>
+                  <th>{locale === 'ru' ? 'Создано' : 'Created'}</th>
                   <th />
                 </tr>
               </thead>
@@ -2467,9 +2494,9 @@ function UtilityView({
                     <tr key={item.id} className={cn(detail?.id === item.id && 'is-selected')}>
                       <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
                       <td>{item.siteAccountId || item.username}</td>
-                      <td><span className={cn('badge', `tone-${statusTone(status)}`)}>{statusLabel(status)}</span></td>
+	                      <td><span className={cn('badge', `tone-${statusTone(status)}`)}>{statusLabel(status, locale)}</span></td>
                       <td>{formatCompactDate(item.createdAt)}</td>
-                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
+	                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>{t('Open')}</button></td>
                     </tr>
                   );
                 })}
@@ -2487,16 +2514,16 @@ function UtilityView({
       <section className="panel utility-panel">
         <div className="utility-header">
           <div>
-            <h2>Registration form data</h2>
-            <p>Exact values to paste into the target registration form.</p>
+            <h2>{t('Registration form data')}</h2>
+            <p>{locale === 'ru' ? 'Точные значения для вставки в целевую форму регистрации.' : 'Exact values to paste into the target registration form.'}</p>
           </div>
           <button type="button" className="secondary-button" onClick={() => detail ? onCopy(`form-data:${detail.id}`, detail.fullProfileText) : undefined} disabled={!detail}>
-            {copiedField === `form-data:${detail?.id}` ? 'Copied' : 'Copy selected data'}
+            {copiedField === `form-data:${detail?.id}` ? t('Copied') : t('Copy selected data')}
           </button>
         </div>
 
         <div className="settings-grid">
-          <Field label="Default GEO">
+          <Field label={t('Default GEO')}>
             <select className="input-field compact" id="form-data-default-geo" name="formDataDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
@@ -2506,7 +2533,7 @@ function UtilityView({
               {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </Field>
-          <Field label="Document type">
+          <Field label={t('Document type')}>
             <select className="input-field compact" id="form-data-document-type" name="formDataDocumentType" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
               {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
               <option value="missing_rule_probe">missing_rule_probe</option>
@@ -2516,24 +2543,24 @@ function UtilityView({
 
         {detail ? (
           <div className="form-data-grid">
-            <InfoTile label="Account ID" value={detail.siteAccountId || 'Not set'} action="Copy" onClick={() => onCopy(`fd-account:${detail.id}`, detail.siteAccountId || '')} />
-            <InfoTile label="First / last name" value={`${detail.firstName}\n${detail.lastName}`} action="Copy" onClick={() => onCopy(`fd-name:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
-            <InfoTile label="Birth / sex" value={`${detail.dateOfBirth}\n${detail.gender}`} action="Copy" onClick={() => onCopy(`fd-birth:${detail.id}`, `${detail.dateOfBirth}\n${detail.gender}`)} />
-            <InfoTile label="Country / region / city" value={`${detail.country}\n${detail.region}\n${detail.city}`} action="Copy" onClick={() => onCopy(`fd-geo:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
-            <InfoTile label="Document" value={`${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`} action="Copy" onClick={() => onCopy(`fd-doc:${detail.id}`, `${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`)} />
-            <InfoTile label="Contacts" value={`${detail.email}\n${detail.phone}`} action="Copy" onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${localPhoneDigits(detail.phone, detail.geoKey)}`)} />
+            <InfoTile label={t('Account ID')} value={detail.siteAccountId || (locale === 'ru' ? 'Не задан' : 'Not set')} action={t('Copy')} onClick={() => onCopy(`fd-account:${detail.id}`, detail.siteAccountId || '')} />
+            <InfoTile label={t('First / last name')} value={`${detail.firstName}\n${detail.lastName}`} action={t('Copy')} onClick={() => onCopy(`fd-name:${detail.id}`, `${detail.firstName}\n${detail.lastName}`)} />
+            <InfoTile label={t('Birth / sex')} value={`${detail.dateOfBirth}\n${detail.gender}`} action={t('Copy')} onClick={() => onCopy(`fd-birth:${detail.id}`, `${detail.dateOfBirth}\n${detail.gender}`)} />
+            <InfoTile label={t('Country / region / city')} value={`${detail.country}\n${detail.region}\n${detail.city}`} action={t('Copy')} onClick={() => onCopy(`fd-geo:${detail.id}`, `${detail.country}\n${detail.region}\n${detail.city}`)} />
+            <InfoTile label={t('Document')} value={`${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`} action={t('Copy')} onClick={() => onCopy(`fd-doc:${detail.id}`, `${detail.documentType}\n${detail.documentValue}\n${detail.documentIssueDate}`)} />
+            <InfoTile label={t('Contacts')} value={`${detail.email}\n${detail.phone}`} action={t('Copy')} onClick={() => onCopy(`fd-contact:${detail.id}`, `${detail.email}\n${localPhoneDigits(detail.phone, detail.geoKey)}`)} />
           </div>
         ) : (
           <div className="form-data-picker">
             <div className="section-subhead">
-              <h3>Select test user</h3>
-              <p>Open any generated test user to display its exact registration fields on this page.</p>
+              <h3>{t('Select test user')}</h3>
+              <p>{locale === 'ru' ? 'Откройте любого созданного test user, чтобы увидеть точные регистрационные поля на этой странице.' : 'Open any generated test user to display its exact registration fields on this page.'}</p>
             </div>
             <div className="account-table-wrap">
               {isWorkspaceLoading ? <TableSkeleton columns={4} rows={6} /> : (
               <table className="account-table">
                 <thead>
-                  <tr><th>Test user</th><th>GEO</th><th>Email</th><th /></tr>
+	                  <tr><th>{t('Test user')}</th><th>GEO</th><th>Email</th><th /></tr>
                 </thead>
                 <tbody>
                   {filteredHistory.map((item) => (
@@ -2541,7 +2568,7 @@ function UtilityView({
                       <td><strong>{item.siteAccountId || item.username}</strong><span>{item.firstName} {item.lastName}</span></td>
                       <td>{item.geoLabel}</td>
                       <td>{item.email}</td>
-                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open data</button></td>
+	                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>{t('Open data')}</button></td>
                     </tr>
                   ))}
                 </tbody>
@@ -2561,33 +2588,33 @@ function UtilityView({
       <section className="panel utility-panel">
         <div className="utility-header">
           <div>
-            <h2>Verification</h2>
-            <p>Codes and verification links for the selected test user.</p>
+            <h2>{t('Verification')}</h2>
+            <p>{locale === 'ru' ? 'Коды и verification links для выбранного test user.' : 'Codes and verification links for the selected test user.'}</p>
           </div>
-          <span className={cn('badge', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail)) : 'No test user selected'}</span>
+          <span className={cn('badge', `tone-${statusTone(mapDetailStatus(detail))}`)}>{detail ? statusLabel(mapDetailStatus(detail), locale) : t('No test user selected')}</span>
         </div>
 
         {detail ? (
           <div className="verification-page-grid">
             <div>
-              <h3>Codes</h3>
+              <h3>{t('Codes')}</h3>
               {codes.length ? codes.map((code, index) => (
                 <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => onCopy(`codes-page:${code}`, code)}>
-                  <span>{index === 0 ? 'Email code' : 'Code'}</span>
+	                  <span>{index === 0 ? t('Email code') : t('Code')}</span>
                   <strong>{code}</strong>
-                  <small>{copiedField === `codes-page:${code}` ? 'Copied' : 'CP'}</small>
+	                  <small>{copiedField === `codes-page:${code}` ? t('Copied') : 'CP'}</small>
                   <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
                 </button>
-              )) : <div className="empty-state compact">No codes captured yet.</div>}
+	              )) : <div className="empty-state compact">{t('No codes captured yet.')}</div>}
             </div>
             <div>
-              <h3>Links</h3>
+              <h3>{t('Links')}</h3>
               {links.length ? links.map((link) => (
                 <button key={link.url} type="button" className="verification-link-card" onClick={() => onCopy(`codes-link:${link.url}`, link.url)}>
-                  <strong>{link.label || (link.isPrimary ? 'Primary verification link' : 'Verification link')}</strong>
+	                  <strong>{link.label || (link.isPrimary ? t('Primary verification link') : t('Verification link'))}</strong>
                   <span>{truncate(link.url, 92)}</span>
                 </button>
-              )) : <div className="empty-state compact">No links captured yet.</div>}
+	              )) : <div className="empty-state compact">{t('No links captured yet.')}</div>}
             </div>
           </div>
         ) : (
@@ -2595,15 +2622,15 @@ function UtilityView({
             {isWorkspaceLoading ? <TableSkeleton columns={4} rows={6} /> : (
             <table className="account-table">
               <thead>
-                <tr><th>Test user</th><th>GEO</th><th>Status</th><th /></tr>
+	                <tr><th>{t('Test user')}</th><th>GEO</th><th>{t('Status')}</th><th /></tr>
               </thead>
               <tbody>
                 {filteredHistory.map((item) => (
                   <tr key={item.id}>
                     <td><strong>{item.siteAccountId || item.username}</strong><span>{item.email}</span></td>
                     <td>{item.geoLabel}</td>
-                    <td><span className={cn('badge', `tone-${statusTone(mapHistoryStatus(item))}`)}>{statusLabel(mapHistoryStatus(item))}</span></td>
-                    <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>Open</button></td>
+	                    <td><span className={cn('badge', `tone-${statusTone(mapHistoryStatus(item))}`)}>{statusLabel(mapHistoryStatus(item), locale)}</span></td>
+	                    <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>{t('Open')}</button></td>
                   </tr>
                 ))}
               </tbody>
@@ -2643,20 +2670,21 @@ function UtilityView({
     activeSessionCount: authSessions.length,
     generated24h: analyticsSummary?.totals.generated24h ?? 0,
     activityCount: activityItems.length,
+    locale,
   });
 
   return (
     <section className="panel utility-panel">
       <div className="utility-header settings-header">
         <div>
-          <h2>Settings</h2>
-          <p>Defaults, workspace limits, access, and account security are grouped by task.</p>
+          <h2>{t('Settings')}</h2>
+          <p>{locale === 'ru' ? 'Личные настройки, лимиты workspace, доступ и безопасность аккаунта сгруппированы по задачам.' : 'Defaults, workspace limits, access, and account security are grouped by task.'}</p>
         </div>
-        <span className={cn('badge', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{settingsStatus}</span>
+        <span className={cn('badge', settingsStatus === 'Save failed' ? 'tone-warning' : 'tone-success')}>{t(settingsStatus)}</span>
       </div>
 
       {isWorkspaceLoading ? <SettingsTabsSkeleton /> : (
-      <div className="settings-tabs" role="tablist" aria-label="Settings sections">
+      <div className="settings-tabs" role="tablist" aria-label={locale === 'ru' ? 'Разделы настроек' : 'Settings sections'}>
         {settingsTabs.map((tab) => (
           <button
             key={tab.key}
@@ -2678,34 +2706,39 @@ function UtilityView({
       ) : settingsTab === 'defaults' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Generation Defaults</h3>
-          <p>Your preferred GEO, persona, document type, and bulk count for new test users.</p>
+          <h3>{t('Generation Defaults')}</h3>
+          <p>{t('Your preferred GEO, persona, document type, and bulk count for new test users.')}</p>
         </div>
         <div className="settings-grid">
-          <Field label="Default GEO">
+          <Field label={t('Default GEO')}>
             <select className="input-field compact" id="settings-default-geo" name="settingsDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
           </Field>
-          <Field label="Default persona">
+          <Field label={t('Default persona')}>
             <select className="input-field compact" id="settings-default-persona" name="settingsDefaultPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
               {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </Field>
-          <Field label="Default document">
+          <Field label={t('Default document')}>
             <select className="input-field compact" id="settings-default-document" name="settingsDefaultDocument" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
               {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
               <option value="missing_rule_probe">missing_rule_probe</option>
             </select>
           </Field>
-          <Field label="Bulk count">
+          <Field label={t('Bulk count')}>
             <input className="input-field compact" id="settings-bulk-count" name="settingsBulkCount" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
+          </Field>
+          <Field label={t('Interface language')}>
+            <select className="input-field compact" id="settings-interface-language" name="settingsInterfaceLanguage" value={locale} onChange={(e) => setLocale(normalizeLocale(e.target.value))}>
+              {LOCALE_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
           </Field>
         </div>
         <div className="settings-actions">
-          <span>{userSettings ? `Server default: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType}` : 'Server defaults loading'}</span>
+          <span>{userSettings ? (locale === 'ru' ? `На сервере: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}` : `Server default: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}`) : (locale === 'ru' ? 'Серверные настройки загружаются' : 'Server defaults loading')}</span>
           <button type="button" className="primary-button" onClick={onSavePersonalSettings} disabled={isSavingSettings}>
-            {isSavingSettings ? 'Saving' : 'Save personal settings'}
+            {isSavingSettings ? t('Saving') : t('Save personal settings')}
           </button>
         </div>
       </section>
@@ -2714,13 +2747,13 @@ function UtilityView({
       {settingsTab === 'workspace' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Workspace Limits</h3>
-          <p>Shared retention, provider limits, and bulk-generation controls for the workspace.</p>
+          <h3>{t('Workspace Limits')}</h3>
+          <p>{locale === 'ru' ? 'Общее хранение, лимиты провайдеров и настройки bulk-генерации для workspace.' : 'Shared retention, provider limits, and bulk-generation controls for the workspace.'}</p>
         </div>
         <div className="workspace-create-row">
           <div>
-            <strong>{currentWorkspace?.name ?? 'Current workspace'}</strong>
-            <span>{workspaces.length} workspaces available · active role {currentWorkspace?.workspaceRole ?? 'member'}</span>
+            <strong>{currentWorkspace?.name ?? t('Current workspace')}</strong>
+            <span>{locale === 'ru' ? `${workspaces.length} workspace доступно · активная роль ${currentWorkspace?.workspaceRole ?? 'member'}` : `${workspaces.length} workspaces available · active role ${currentWorkspace?.workspaceRole ?? 'member'}`}</span>
           </div>
           <input
             className="input-field compact"
@@ -2728,20 +2761,20 @@ function UtilityView({
             name="newWorkspaceName"
             value={newWorkspaceName}
             onChange={(e) => setNewWorkspaceName(e.target.value)}
-            placeholder="New workspace name"
+            placeholder={t('New workspace name')}
           />
           <button type="button" className="primary-button" onClick={onCreateWorkspace} disabled={isSavingSettings || !newWorkspaceName.trim()}>
-            Create workspace
+            {t('Create workspace')}
           </button>
         </div>
         <div className="members-table-wrap workspace-lifecycle-wrap">
           <table className="account-table members-table workspace-lifecycle-table">
             <thead>
               <tr>
-                <th>Workspace</th>
-                <th>Status</th>
-                <th>Role</th>
-                <th>Users</th>
+                <th>{t('Workspace')}</th>
+                <th>{t('Status')}</th>
+                <th>{t('Role')}</th>
+                <th>{t('Users')}</th>
                 <th />
               </tr>
             </thead>
@@ -2754,7 +2787,7 @@ function UtilityView({
                   <tr key={workspace.id}>
                     <td>
                       <strong>{workspace.name}</strong>
-                      <span>{workspace.id === currentWorkspace?.id ? 'Current workspace' : `Updated ${formatCompactDate(workspace.updatedAt)}`}</span>
+                      <span>{workspace.id === currentWorkspace?.id ? t('Current workspace') : (locale === 'ru' ? `Обновлено ${formatCompactDate(workspace.updatedAt)}` : `Updated ${formatCompactDate(workspace.updatedAt)}`)}</span>
                     </td>
                     <td><span className={cn('badge', isActive ? 'tone-success' : 'tone-warning')}>{workspace.status}</span></td>
                     <td><span className={cn('badge', `tone-${roleTone(workspace.workspaceRole)}`)} title={`Workspace role: ${workspace.workspaceRole}`}>{workspace.workspaceRole}</span></td>
@@ -2766,7 +2799,7 @@ function UtilityView({
                         onClick={() => onUpdateWorkspaceLifecycle(workspace.id, isActive ? 'archived' : 'active')}
                         disabled={isSavingSettings || !isOwner || disablesLastActive}
                       >
-                        {isActive ? 'Archive' : 'Restore'}
+                        {isActive ? t('Archive') : t('Restore')}
                       </button>
                     </td>
                   </tr>
@@ -2776,61 +2809,61 @@ function UtilityView({
           </table>
         </div>
         <div className="settings-grid">
-          <Field label="History retention days">
+          <Field label={t('History retention days')}>
             <input className="input-field compact" id="history-retention-days" name="historyRetentionDays" type="number" min="1" max="3650" value={editableWorkspaceSettings.historyRetentionDays} onChange={(e) => updateWorkspaceDraft({ historyRetentionDays: Number(e.target.value) || 1 })} />
           </Field>
-          <Field label="History limit">
+          <Field label={t('History limit')}>
             <input className="input-field compact" id="history-limit" name="historyLimit" type="number" min="1" max="1000" value={editableWorkspaceSettings.historyLimit} onChange={(e) => updateWorkspaceDraft({ historyLimit: Number(e.target.value) || 1 })} />
           </Field>
-          <Field label="Max bulk count">
+          <Field label={t('Max bulk count')}>
             <input className="input-field compact" id="max-bulk-count" name="maxBulkCount" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
           </Field>
-          <Field label="Mailbox provider">
+          <Field label={t('Mailbox provider')}>
             <select className="input-field compact" id="workspace-mailbox-provider" name="workspaceMailboxProvider" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value as ServerWorkspaceSettings['mailboxProvider'] })}>
               <option value="mail_tm">mail.tm</option>
               <option value="mail_gw">mail.gw</option>
               <option value="mail_tm_mail_gw_fallback">mail.tm → mail.gw fallback</option>
             </select>
           </Field>
-          <Field label="Shared account editing">
+          <Field label={t('Shared account editing')}>
             <select className="input-field compact" id="shared-account-editing" name="sharedAccountEditing" value={editableWorkspaceSettings.sharedAccountEditing} onChange={(e) => updateWorkspaceDraft({ sharedAccountEditing: e.target.value as ServerWorkspaceSettings['sharedAccountEditing'] })}>
-              <option value="creator_only">Creator only</option>
-              <option value="owner_admin">Owner/admin can edit shared</option>
+              <option value="creator_only">{locale === 'ru' ? 'Только создатель' : 'Creator only'}</option>
+              <option value="owner_admin">{locale === 'ru' ? 'Owner/admin могут менять shared' : 'Owner/admin can edit shared'}</option>
             </select>
           </Field>
-          <Field label="Workspace creation">
+          <Field label={t('Workspace creation')}>
             <select className="input-field compact" id="workspace-creation-policy" name="workspaceCreationPolicy" value={editableWorkspaceSettings.workspaceCreationPolicy} onChange={(e) => updateWorkspaceDraft({ workspaceCreationPolicy: e.target.value as ServerWorkspaceSettings['workspaceCreationPolicy'] })}>
-              <option value="active_users">Any active user</option>
-              <option value="owner_admin">Current owner/admin only</option>
+              <option value="active_users">{t('Any active user')}</option>
+              <option value="owner_admin">{t('Current owner/admin only')}</option>
             </select>
           </Field>
           <label className="settings-toggle">
             <input id="allow-bulk-generation" name="allowBulkGeneration" type="checkbox" checked={editableWorkspaceSettings.allowBulkGeneration} onChange={(e) => updateWorkspaceDraft({ allowBulkGeneration: e.target.checked })} />
-            <span>Allow bulk generation</span>
+            <span>{t('Allow bulk generation')}</span>
           </label>
         </div>
         <div className="settings-grid quota-grid">
-          <Field label="Accounts per day">
+          <Field label={t('Accounts per day')}>
             <input className="input-field compact" id="accounts-per-day" name="accountsPerDay" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
           </Field>
-          <Field label="Mailboxes per day">
+          <Field label={t('Mailboxes per day')}>
             <input className="input-field compact" id="mailboxes-per-day" name="mailboxesPerDay" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
           </Field>
-          <Field label="Inbox refresh per minute">
+          <Field label={t('Inbox refresh per minute')}>
             <input className="input-field compact" id="inbox-refresh-per-minute" name="inboxRefreshPerMinute" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
           </Field>
         </div>
-        {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
+        {usageSummary ? <UsageStrip usage={usageSummary} locale={locale} /> : null}
         <div className="settings-actions">
           <span>{mailProviderStatus}</span>
           <button type="button" className="secondary-button" onClick={onCheckMailboxProviderHealth} disabled={isSavingSettings || !canManageWorkspaceSettings}>
-            Check mailbox provider
+            {t('Check mailbox provider')}
           </button>
         </div>
         <div className="settings-actions">
-          <span>{canManageWorkspaceSettings ? 'Applies to everyone in this workspace.' : 'Workspace settings require owner or admin access.'}</span>
+          <span>{canManageWorkspaceSettings ? t('Applies to everyone in this workspace.') : t('Workspace settings require owner or admin access.')}</span>
           <button type="button" className="primary-button" onClick={onSaveWorkspaceSettings} disabled={isSavingSettings || !workspaceSettings || !canManageWorkspaceSettings}>
-            {isSavingSettings ? 'Saving' : 'Save workspace settings'}
+            {isSavingSettings ? t('Saving') : t('Save workspace settings')}
           </button>
         </div>
       </section>
@@ -2839,8 +2872,8 @@ function UtilityView({
       {settingsTab === 'invites' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Invites</h3>
-          <p>Create invite-only registration links and revoke pending access.</p>
+          <h3>{t('Invites')}</h3>
+          <p>{t('Create invite-only registration links and revoke pending access.')}</p>
         </div>
 
         <div className="member-add-row invite-create-row">
@@ -2850,7 +2883,7 @@ function UtilityView({
             name="inviteEmail"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
-            placeholder="email for invite"
+            placeholder={t('email for invite')}
             disabled={!canManageWorkspaceSettings}
           />
           <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} id="invite-role" name="inviteRole" value={inviteRole} title={`Invite role: ${inviteRole}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
@@ -2858,15 +2891,15 @@ function UtilityView({
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
           </select>
-          <button type="button" className="primary-button" onClick={onCreateInvite} disabled={isSavingSettings || !canManageWorkspaceSettings}>Create invite</button>
+          <button type="button" className="primary-button" onClick={onCreateInvite} disabled={isSavingSettings || !canManageWorkspaceSettings}>{t('Create invite')}</button>
         </div>
 
         {lastInviteToken ? (
           <div className="invite-token-box">
-            <span>Invite link</span>
+            <span>{t('Invite link')}</span>
             <code>{inviteLink || lastInviteToken}</code>
             <button type="button" className="micro-button" onClick={() => onCopy('invite-link', inviteLink || lastInviteToken)}>
-              {copiedField === 'invite-link' ? 'Copied' : 'Copy'}
+              {copiedField === 'invite-link' ? t('Copied') : t('Copy')}
             </button>
           </div>
         ) : null}
@@ -2875,20 +2908,20 @@ function UtilityView({
           <table className="account-table members-table">
             <thead>
               <tr>
-                <th>Invite</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th>{t('Invite')}</th>
+                <th>{t('Role')}</th>
+                <th>{t('Status')}</th>
                 <th />
               </tr>
             </thead>
             <tbody>
               {workspaceInvites.map((invite) => (
                 <tr key={invite.id}>
-                  <td><strong>{invite.email || 'Open invite'}</strong><span>Expires {formatCompactDate(invite.expiresAt)}</span></td>
+                  <td><strong>{invite.email || t('Open invite')}</strong><span>{t('Expires')} {formatCompactDate(invite.expiresAt)}</span></td>
                   <td><span className={cn('badge', `tone-${roleTone(invite.role)}`)} title={`Invite role: ${invite.role}`}>{invite.role}</span></td>
                   <td>
                     <span className={cn('badge', `tone-${inviteStatusTone(invite.status)}`)}>{invite.status}</span>
-                    {invite.acceptedByLogin ? <span>by {invite.acceptedByLogin}</span> : null}
+                    {invite.acceptedByLogin ? <span>{locale === 'ru' ? `принял ${invite.acceptedByLogin}` : `by ${invite.acceptedByLogin}`}</span> : null}
                   </td>
                   <td>
                     <button
@@ -2897,14 +2930,14 @@ function UtilityView({
                       onClick={() => onRevokeInvite(invite.id)}
                       disabled={!canManageWorkspaceSettings || isSavingSettings || invite.status !== 'pending'}
                     >
-                      Revoke
+                      {t('Revoke')}
                     </button>
                   </td>
                 </tr>
               ))}
               {workspaceInvites.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>No invites yet</td>
+                  <td colSpan={4}>{locale === 'ru' ? 'Инвайтов пока нет' : 'No invites yet'}</td>
                 </tr>
               ) : null}
             </tbody>
@@ -2912,7 +2945,7 @@ function UtilityView({
         </div>
 
         <div className="settings-actions">
-          <span>{canManageWorkspaceSettings ? 'Invite links create new users directly inside this workspace.' : 'Invite management requires owner or admin access.'}</span>
+          <span>{canManageWorkspaceSettings ? t('Invite links create new users directly inside this workspace.') : t('Invite management requires owner or admin access.')}</span>
         </div>
       </section>
       ) : null}
@@ -2920,8 +2953,8 @@ function UtilityView({
       {settingsTab === 'team' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Team Members</h3>
-          <p>Add existing users to the workspace and adjust their access level.</p>
+          <h3>{t('Team Members')}</h3>
+          <p>{t('Add existing users to the workspace and adjust their access level.')}</p>
         </div>
 
         <div className="member-add-row">
@@ -2931,7 +2964,7 @@ function UtilityView({
             name="memberLookup"
             value={memberLookup}
             onChange={(e) => setMemberLookup(e.target.value)}
-            placeholder="login, email, or username"
+            placeholder={t('login, email, or username')}
             disabled={!canManageWorkspaceSettings}
           />
           <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} id="member-role" name="memberRole" value={memberRole} title={`Workspace role: ${memberRole}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
@@ -2940,16 +2973,16 @@ function UtilityView({
             <option value="admin">admin</option>
             <option value="owner">owner</option>
           </select>
-          <button type="button" className="primary-button" onClick={onAddMember} disabled={isSavingSettings || !memberLookup.trim() || !canManageWorkspaceSettings}>Add member</button>
+          <button type="button" className="primary-button" onClick={onAddMember} disabled={isSavingSettings || !memberLookup.trim() || !canManageWorkspaceSettings}>{t('Add member')}</button>
         </div>
 
         <div className="members-table-wrap">
           <table className="account-table members-table">
             <thead>
               <tr>
-                <th>User</th>
-                <th>Workspace role</th>
-                <th>System role</th>
+                <th>{t('User')}</th>
+                <th>{t('Workspace role')}</th>
+                <th>{t('System role')}</th>
                 <th />
               </tr>
             </thead>
@@ -2974,7 +3007,7 @@ function UtilityView({
                     </select>
                   </td>
                   <td><span className={cn('badge', `tone-${roleTone(member.userRole)}`)} title={`System role: ${member.userRole}`}>{member.userRole}</span></td>
-                  <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>Remove</button></td>
+                  <td><button type="button" className="micro-button" onClick={() => onRemoveMember(member.userId)} disabled={!canManageWorkspaceSettings || isSavingSettings}>{t('Remove')}</button></td>
                 </tr>
               ))}
             </tbody>
@@ -2982,7 +3015,7 @@ function UtilityView({
         </div>
 
         <div className="settings-actions">
-          <span>{canManageWorkspaceSettings ? 'Invites create new users; add member attaches an existing user.' : 'Member management requires owner or admin access.'}</span>
+          <span>{canManageWorkspaceSettings ? (locale === 'ru' ? 'Инвайты создают новых пользователей; add member привязывает существующего.' : 'Invites create new users; add member attaches an existing user.') : t('Member management requires owner or admin access.')}</span>
         </div>
       </section>
       ) : null}
@@ -2990,40 +3023,40 @@ function UtilityView({
       {settingsTab === 'security' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Account Security</h3>
-          <p>Email, username, password, and active sessions for your user account.</p>
+          <h3>{t('Account Security')}</h3>
+          <p>{locale === 'ru' ? 'Email, username, password и активные сессии вашего аккаунта.' : 'Email, username, password, and active sessions for your user account.'}</p>
         </div>
 
         <div className="settings-grid account-settings-grid">
           <Field label="Email">
             <input className="input-field compact" id="account-email" name="accountEmail" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} placeholder="email" autoComplete="email" />
           </Field>
-          <Field label="Username">
+          <Field label={t('Username')}>
             <input className="input-field compact" id="account-username" name="accountUsername" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" autoComplete="username" />
           </Field>
         </div>
         <div className="settings-actions">
-          <span>{accountStatus}</span>
+          <span>{t(accountStatus)}</span>
           <button type="button" className="primary-button" onClick={onSaveAccountProfile} disabled={isSavingAccount || !accountEmail.trim() || !accountUsername.trim()}>
-            {isSavingAccount ? 'Saving' : 'Save profile'}
+            {isSavingAccount ? t('Saving') : t('Save profile')}
           </button>
         </div>
 
         <div className="settings-grid password-settings-grid">
-          <Field label="Current password">
+          <Field label={t('Current password')}>
             <input className="input-field compact" id="current-password" name="currentPassword" type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
           </Field>
-          <Field label="New password">
+          <Field label={t('New password')}>
             <input className="input-field compact" id="new-password" name="newPassword" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" />
           </Field>
-          <Field label="Confirm new password">
+          <Field label={t('Confirm new password')}>
             <input className="input-field compact" id="confirm-new-password" name="confirmNewPassword" type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" />
           </Field>
         </div>
         <div className="settings-actions">
-          <span>Changing password revokes other active sessions.</span>
+          <span>{t('Changing password revokes other active sessions.')}</span>
           <button type="button" className="primary-button" onClick={onChangeAccountPassword} disabled={isSavingAccount || !currentPassword || !newPassword || !confirmNewPassword}>
-            {isSavingAccount ? 'Saving' : 'Change password'}
+            {isSavingAccount ? t('Saving') : t('Change password')}
           </button>
         </div>
 
@@ -3031,38 +3064,38 @@ function UtilityView({
           <table className="account-table sessions-table">
             <thead>
               <tr>
-                <th>Session</th>
+                <th>{t('Session')}</th>
                 <th>IP</th>
-                <th>Last seen</th>
-                <th>Expires</th>
+                <th>{t('Last seen')}</th>
+                <th>{t('Expires')}</th>
                 <th />
               </tr>
             </thead>
             <tbody>
               {authSessions.map((session) => (
                 <tr key={session.id}>
-                  <td><strong>{session.isCurrent ? 'Current session' : 'Active session'}</strong><span>{session.userAgent || 'Unknown client'}</span></td>
+                  <td><strong>{session.isCurrent ? t('Current session') : t('Active session')}</strong><span>{session.userAgent || t('Unknown client')}</span></td>
                   <td>{session.ipAddress || '—'}</td>
                   <td>{formatCompactDate(session.lastSeenAt || session.createdAt)}</td>
                   <td>{formatCompactDate(session.expiresAt)}</td>
                   <td>
                     <button type="button" className="micro-button" onClick={() => onRevokeSession(session.id)} disabled={isSavingAccount}>
-                      {session.isCurrent ? 'Logout' : 'Revoke'}
+                      {session.isCurrent ? t('Logout') : t('Revoke')}
                     </button>
                   </td>
                 </tr>
               ))}
               {authSessions.length === 0 ? (
                 <tr>
-                  <td colSpan={5}>No active sessions</td>
+                  <td colSpan={5}>{t('No active sessions')}</td>
                 </tr>
               ) : null}
             </tbody>
           </table>
         </div>
         <div className="settings-actions danger-actions">
-          <span>Revokes every active session for this account, including this browser.</span>
-          <button type="button" className="secondary-button danger-button" onClick={onLogoutEverywhere} disabled={isSavingAccount}>Logout everywhere</button>
+          <span>{t('Revokes every active session for this account, including this browser.')}</span>
+          <button type="button" className="secondary-button danger-button" onClick={onLogoutEverywhere} disabled={isSavingAccount}>{t('Logout everywhere')}</button>
         </div>
       </section>
       ) : null}
@@ -3070,68 +3103,68 @@ function UtilityView({
       {settingsTab === 'analytics' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Workspace Analytics</h3>
-          <p>Operational counters from local generation, mailbox, and inbox usage events.</p>
+          <h3>{t('Workspace Analytics')}</h3>
+          <p>{locale === 'ru' ? 'Операционные счетчики генерации, mailbox и inbox events.' : 'Operational counters from local generation, mailbox, and inbox usage events.'}</p>
         </div>
 
         {analyticsSummary ? (
           <>
             <div className="analytics-metric-grid">
-              <Metric label="Generated 7d" value={String(analyticsSummary.totals.generatedTotal)} />
-              <Metric label="Generated 24h" value={String(analyticsSummary.totals.generated24h)} />
-              <Metric label="Email received" value={String(analyticsSummary.totals.emailReceived)} />
-              <Metric label="Verified docs" value={String(analyticsSummary.totals.verifiedDocuments)} />
-              <Metric label="Review docs" value={String(analyticsSummary.totals.reviewDocuments)} />
+              <Metric label={t('Generated 7d')} value={String(analyticsSummary.totals.generatedTotal)} />
+              <Metric label={t('Generated 24h')} value={String(analyticsSummary.totals.generated24h)} />
+              <Metric label={t('Email received')} value={String(analyticsSummary.totals.emailReceived)} />
+              <Metric label={t('Verified docs')} value={String(analyticsSummary.totals.verifiedDocuments)} />
+              <Metric label={t('Review docs')} value={String(analyticsSummary.totals.reviewDocuments)} />
             </div>
 
             <div className="analytics-grid">
               <section className="analytics-card">
-                <h4>Usage events</h4>
+                <h4>{t('Usage events')}</h4>
                 {analyticsSummary.usageByDay.length ? analyticsSummary.usageByDay.map((item) => (
                   <div key={`${item.day}:${item.eventType}`} className="analytics-row">
                     <span>{item.day}</span>
                     <strong>{item.eventType.replaceAll('_', ' ')}</strong>
                     <small>{item.total}</small>
                   </div>
-                )) : <div className="empty-state compact">No usage events yet.</div>}
+                )) : <div className="empty-state compact">{t('No usage events yet.')}</div>}
               </section>
 
               <section className="analytics-card">
-                <h4>Top GEOs</h4>
+                <h4>{t('Top GEOs')}</h4>
                 {analyticsSummary.topGeos.length ? analyticsSummary.topGeos.map((item) => (
                   <div key={item.geoKey} className="analytics-row">
                     <span>{item.geoLabel}</span>
                     <strong>{item.geoKey}</strong>
                     <small>{item.count}</small>
                   </div>
-                )) : <div className="empty-state compact">No generated GEOs yet.</div>}
+                )) : <div className="empty-state compact">{t('No generated GEOs yet.')}</div>}
               </section>
             </div>
           </>
         ) : <SettingsSectionSkeleton />}
 
         <div className="section-subhead">
-          <h3>Active Alerts</h3>
-          <p>Limit and dataset warnings generated from the current workspace state.</p>
+          <h3>{t('Active Alerts')}</h3>
+          <p>{locale === 'ru' ? 'Лимиты и dataset warnings из текущего состояния workspace.' : 'Limit and dataset warnings generated from the current workspace state.'}</p>
         </div>
-        {alertItems.length ? <AlertsPanel items={alertItems} /> : <div className="empty-state compact">No active alerts.</div>}
+        {alertItems.length ? <AlertsPanel items={alertItems} locale={locale} /> : <div className="empty-state compact">{t('No active alerts.')}</div>}
       </section>
       ) : null}
 
       {settingsTab === 'activity' ? (
       <section className="settings-section settings-tab-panel">
         <div className="section-subhead">
-          <h3>Activity Log</h3>
-          <p>Workspace actions across generation, sharing, invites, members, workspaces, and sessions.</p>
+          <h3>{t('Activity Log')}</h3>
+          <p>{locale === 'ru' ? 'Действия workspace: генерация, sharing, invites, members, workspaces и sessions.' : 'Workspace actions across generation, sharing, invites, members, workspaces, and sessions.'}</p>
         </div>
         <div className="account-table-wrap activity-table-wrap">
           <table className="account-table activity-table">
             <thead>
               <tr>
-                <th>Event</th>
-                <th>Actor</th>
-                <th>Entity</th>
-                <th>Time</th>
+                <th>{locale === 'ru' ? 'Событие' : 'Event'}</th>
+                <th>{locale === 'ru' ? 'Автор' : 'Actor'}</th>
+                <th>{locale === 'ru' ? 'Объект' : 'Entity'}</th>
+                <th>{t('Time')}</th>
               </tr>
             </thead>
             <tbody>
@@ -3141,14 +3174,14 @@ function UtilityView({
                     <strong>{item.summary}</strong>
                     <span>{activityEventLabel(item.eventType)}</span>
                   </td>
-                  <td>{item.actorLogin || `User ${item.userId}`}</td>
-                  <td>{item.entityType ? `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}` : 'Workspace'}</td>
+                  <td>{item.actorLogin || `${t('User')} ${item.userId}`}</td>
+                  <td>{item.entityType ? `${item.entityType}${item.entityId ? ` #${item.entityId}` : ''}` : t('Workspace')}</td>
                   <td>{formatCompactDate(item.createdAt)}</td>
                 </tr>
               ))}
               {activityItems.length === 0 ? (
                 <tr>
-                  <td colSpan={4}>No workspace activity yet.</td>
+                  <td colSpan={4}>{t('No workspace activity yet.')}</td>
                 </tr>
               ) : null}
             </tbody>
@@ -3158,7 +3191,7 @@ function UtilityView({
       ) : null}
 
       <div className="settings-save-note">
-        Browser cache is still used for fast reloads, but backend settings are the source of truth after sign in.
+        {t('Browser cache is still used for fast reloads, but backend settings are the source of truth after sign in.')}
       </div>
     </section>
   );
@@ -3195,12 +3228,12 @@ function UsagePill({ label, used, limit }: { label: string; used: number; limit:
   );
 }
 
-function UsageStrip({ usage }: { usage: UsageSummary }) {
+function UsageStrip({ usage, locale = 'en' }: { usage: UsageSummary; locale?: Locale }) {
   return (
     <div className="usage-strip">
-      <UsagePill label="Accounts today" used={usage.limits.accountsPerDay.used} limit={usage.limits.accountsPerDay.limit} />
-      <UsagePill label="Mailboxes today" used={usage.limits.mailboxesPerDay.used} limit={usage.limits.mailboxesPerDay.limit} />
-      <UsagePill label="Inbox / min" used={usage.limits.inboxRefreshPerMinute.used} limit={usage.limits.inboxRefreshPerMinute.limit} />
+      <UsagePill label={tr(locale, 'Accounts today')} used={usage.limits.accountsPerDay.used} limit={usage.limits.accountsPerDay.limit} />
+      <UsagePill label={tr(locale, 'Mailboxes today')} used={usage.limits.mailboxesPerDay.used} limit={usage.limits.mailboxesPerDay.limit} />
+      <UsagePill label={tr(locale, 'Inbox / min')} used={usage.limits.inboxRefreshPerMinute.used} limit={usage.limits.inboxRefreshPerMinute.limit} />
     </div>
   );
 }
@@ -3224,6 +3257,7 @@ function EmailMessage({
   copied,
   onWaitRefresh,
   isRefreshing,
+  locale = 'en',
 }: {
   detail: Detail;
   activationLink: string;
@@ -3232,6 +3266,7 @@ function EmailMessage({
   copied: boolean;
   onWaitRefresh?: () => void;
   isRefreshing?: boolean;
+  locale?: Locale;
 }) {
   const hasEmail = detail.inbox.status === 'email_received' && Boolean(detail.inbox.subject || detail.inbox.plainText || detail.inbox.rawHtml);
   const emailHtml = detail.inbox.rawHtml ? buildEmailSrcDoc(detail.inbox.rawHtml) : '';
@@ -3241,18 +3276,18 @@ function EmailMessage({
     <section className="email-message-card">
       <div className="email-message-toolbar">
         <div>
-          <h3>Mailbox message</h3>
-          <p>{hasEmail ? 'Original inbox message' : 'No message captured yet'}</p>
+          <h3>{tr(locale, 'Mailbox message')}</h3>
+          <p>{hasEmail ? tr(locale, 'Original inbox message') : tr(locale, 'No message captured yet')}</p>
         </div>
         <div className="email-message-actions">
           {onWaitRefresh ? (
             <button className="micro-button email-wait-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>
-              {isRefreshing ? 'Waiting' : 'Wait & refresh'}
+              {isRefreshing ? tr(locale, 'Waiting') : tr(locale, 'Wait & refresh')}
             </button>
           ) : null}
-          <button className="micro-button email-open-button" onClick={onActivate} disabled={!activationLink}>Open verification</button>
+          <button className="micro-button email-open-button" onClick={onActivate} disabled={!activationLink}>{tr(locale, 'Open verification')}</button>
           {activationHost ? <span className="link-host-preview">{activationHost}</span> : null}
-          <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label="Copy email text" title={copied ? 'Copied' : 'Copy email text'}>
+          <button className="micro-button icon-copy-button" onClick={onCopyEmail} disabled={!hasEmail} aria-label={tr(locale, 'Copy email text')} title={copied ? tr(locale, 'Copied') : tr(locale, 'Copy email text')}>
             {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
         </div>
@@ -3262,15 +3297,15 @@ function EmailMessage({
         <article className="email-message">
           <div className="email-message-meta">
             <div>
-              <span>From</span>
-              <strong>{detail.inbox.sender || 'Unknown sender'}</strong>
+              <span>{tr(locale, 'From')}</span>
+              <strong>{detail.inbox.sender || tr(locale, 'Unknown sender')}</strong>
             </div>
             <div>
-              <span>Subject</span>
-              <strong>{detail.inbox.subject || 'No subject'}</strong>
+              <span>{tr(locale, 'Subject')}</span>
+              <strong>{detail.inbox.subject || tr(locale, 'No subject')}</strong>
             </div>
             <div>
-              <span>Received</span>
+              <span>{tr(locale, 'Received')}</span>
               <strong>{formatDate(detail.inbox.receivedAt)}</strong>
             </div>
           </div>
@@ -3289,24 +3324,24 @@ function EmailMessage({
         </article>
       ) : (
         <div className="email-empty-state">
-          <strong>{statusLabel(mapDetailStatus(detail))}</strong>
-          <span>Refresh inbox after the registration email is sent.</span>
-          {onWaitRefresh ? <button className="primary-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>{isRefreshing ? 'Waiting for email' : 'Wait & refresh inbox'}</button> : null}
+          <strong>{statusLabel(mapDetailStatus(detail), locale)}</strong>
+          <span>{tr(locale, 'Refresh inbox after the registration email is sent.')}</span>
+          {onWaitRefresh ? <button className="primary-button" onClick={onWaitRefresh} disabled={Boolean(isRefreshing)}>{isRefreshing ? tr(locale, 'Waiting for email') : tr(locale, 'Wait & refresh inbox')}</button> : null}
         </div>
       )}
     </section>
   );
 }
 
-function StandaloneInbox({ inbox, address }: { inbox: MailboxInbox | null; address: string }) {
+function StandaloneInbox({ inbox, address, locale = 'en' }: { inbox: MailboxInbox | null; address: string; locale?: Locale }) {
   const hasEmail = inbox?.status === 'email_received' && Boolean(inbox.subject || inbox.plainText || inbox.rawHtml);
   const emailHtml = inbox?.rawHtml ? buildEmailSrcDoc(inbox.rawHtml) : '';
 
   if (!inbox) {
     return (
       <div className="email-empty-state">
-        <strong>Inbox ready</strong>
-        <span>Refresh after sending mail to {address}.</span>
+        <strong>{tr(locale, 'Inbox ready')}</strong>
+        <span>{tr(locale, 'Refresh after sending mail to')} {address}.</span>
       </div>
     );
   }
@@ -3314,8 +3349,8 @@ function StandaloneInbox({ inbox, address }: { inbox: MailboxInbox | null; addre
   if (!hasEmail) {
     return (
       <div className="email-empty-state">
-        <strong>{statusLabel(inbox.status === 'email_received' ? 'email_received' : 'waiting')}</strong>
-        <span>No messages in this temporary inbox yet.</span>
+        <strong>{statusLabel(inbox.status === 'email_received' ? 'email_received' : 'waiting', locale)}</strong>
+        <span>{tr(locale, 'No messages in this temporary inbox yet.')}</span>
       </div>
     );
   }
@@ -3324,15 +3359,15 @@ function StandaloneInbox({ inbox, address }: { inbox: MailboxInbox | null; addre
     <article className="email-message">
       <div className="email-message-meta">
         <div>
-          <span>From</span>
-          <strong>{inbox.sender || 'Unknown sender'}</strong>
+          <span>{tr(locale, 'From')}</span>
+          <strong>{inbox.sender || tr(locale, 'Unknown sender')}</strong>
         </div>
         <div>
-          <span>Subject</span>
-          <strong>{inbox.subject || 'No subject'}</strong>
+          <span>{tr(locale, 'Subject')}</span>
+          <strong>{inbox.subject || tr(locale, 'No subject')}</strong>
         </div>
         <div>
-          <span>Received</span>
+          <span>{tr(locale, 'Received')}</span>
           <strong>{formatDate(inbox.receivedAt)}</strong>
         </div>
       </div>
@@ -3412,26 +3447,28 @@ function AccountsEmptyState({
   hasHistory,
   hasFilters,
   onClearFilters,
+  locale = 'en',
 }: {
   hasHistory: boolean;
   hasFilters: boolean;
   onClearFilters: () => void;
+  locale?: Locale;
 }) {
   if (hasHistory && hasFilters) {
     return (
       <div className="empty-state table-empty-state">
-        <h3>No matching test users</h3>
-        <p>Search or filters hide every account in this workspace.</p>
-        <button type="button" className="micro-button" onClick={onClearFilters}>Clear filters</button>
+        <h3>{tr(locale, 'No matching test users')}</h3>
+        <p>{tr(locale, 'Search or filters hide every account in this workspace.')}</p>
+        <button type="button" className="micro-button" onClick={onClearFilters}>{tr(locale, 'Clear filters')}</button>
       </div>
     );
   }
 
   return (
     <div className="empty-state table-empty-state">
-      <h3>No test users yet</h3>
-      <p>Generate accounts from Main. They will appear here as table rows.</p>
-      <Link className="micro-button" href="/main">Open generator</Link>
+      <h3>{tr(locale, 'No test users yet')}</h3>
+      <p>{tr(locale, 'Generate account from Main. They will appear here as table rows.')}</p>
+      <Link className="micro-button" href="/main">{tr(locale, 'Open generator')}</Link>
     </div>
   );
 }
@@ -3440,15 +3477,17 @@ function BalanceStatusField({
   value,
   onChange,
   disabled = false,
+  locale = 'en',
 }: {
   value: AccountBalanceStatus;
   onChange: (value: AccountBalanceStatus) => void;
   disabled?: boolean;
+  locale?: Locale;
 }) {
   return (
     <label className="account-id-field">
-      <span>Balance status</span>
-      <BalanceStatusSelect value={value} disabled={disabled} onChange={onChange} />
+      <span>{tr(locale, 'Balance status')}</span>
+      <BalanceStatusSelect value={value} disabled={disabled} onChange={onChange} locale={locale} />
     </label>
   );
 }
@@ -3457,25 +3496,27 @@ function BalanceStatusSelect({
   value,
   onChange,
   disabled = false,
+  locale = 'en',
 }: {
   value: AccountBalanceStatus;
   onChange: (value: AccountBalanceStatus) => void;
   disabled?: boolean;
+  locale?: Locale;
 }) {
   return (
     <select
       className={cn('input-field compact badge-select balance-status-select', `tone-${balanceStatusTone(value)}`)}
       name="balanceStatus"
       value={value}
-      aria-label="Balance status"
+      aria-label={tr(locale, 'Balance status')}
       aria-busy={disabled}
       disabled={disabled}
-      title={`Balance status: ${balanceStatusLabel(value)}`}
+      title={`${tr(locale, 'Balance status')}: ${balanceStatusLabel(value, locale)}`}
       onClick={(event) => event.stopPropagation()}
       onChange={(event) => onChange(event.target.value as AccountBalanceStatus)}
     >
       {BALANCE_STATUS_OPTIONS.map((item) => (
-        <option key={item.value} value={item.value}>{item.label}</option>
+        <option key={item.value} value={item.value}>{balanceStatusLabel(item.value, locale)}</option>
       ))}
     </select>
   );
@@ -3491,6 +3532,7 @@ function PhoneEditField({
   onRegenerate,
   onCopy,
   copied,
+  locale = 'en',
 }: {
   value: string;
   canEdit: boolean;
@@ -3501,10 +3543,11 @@ function PhoneEditField({
   onRegenerate: () => void;
   onCopy: () => void;
   copied: boolean;
+  locale?: Locale;
 }) {
   return (
     <label className="account-id-field">
-      <span>Phone</span>
+      <span>{tr(locale, 'Phone')}</span>
       <div>
         <input
           className="input-field compact"
@@ -3518,19 +3561,19 @@ function PhoneEditField({
               event.currentTarget.blur();
             }
           }}
-          placeholder="Paste phone number"
+          placeholder={locale === 'ru' ? 'Вставьте номер телефона' : 'Paste phone number'}
           readOnly={!canEdit}
         />
         <div className="inline-actions">
           {canEdit ? (
             <>
-              <button type="button" className="micro-button" onClick={onSave} disabled={!isSaving}>Save</button>
-              <button type="button" className="micro-button icon-copy-button" onClick={onRegenerate} disabled={isRegenerating} aria-label="Regenerate phone" title="Regenerate phone">
+              <button type="button" className="micro-button" onClick={onSave} disabled={!isSaving}>{tr(locale, 'Save')}</button>
+              <button type="button" className="micro-button icon-copy-button" onClick={onRegenerate} disabled={isRegenerating} aria-label={locale === 'ru' ? 'Перегенерировать телефон' : 'Regenerate phone'} title={locale === 'ru' ? 'Перегенерировать телефон' : 'Regenerate phone'}>
                 <RefreshIcon />
               </button>
             </>
           ) : null}
-          <button type="button" className="micro-button icon-copy-button" onClick={onCopy} aria-label="Copy Phone" title={copied ? 'Copied' : 'Copy'}>
+          <button type="button" className="micro-button icon-copy-button" onClick={onCopy} aria-label={`${tr(locale, 'Copy')} ${tr(locale, 'Phone')}`} title={copied ? tr(locale, 'Copied') : tr(locale, 'Copy')}>
             {copied ? <CheckIcon /> : <CopyIcon />}
           </button>
         </div>
@@ -3544,16 +3587,18 @@ function SharingField({
   canManage,
   isSaving = false,
   onToggle,
+  locale = 'en',
 }: {
   item: Detail;
   canManage: boolean;
   isSaving?: boolean;
   onToggle: (shared: boolean) => void;
+  locale?: Locale;
 }) {
   return (
     <label className="account-id-field">
-      <span>Workspace sharing</span>
-      <SharingControl item={item} canManage={canManage} isSaving={isSaving} onToggle={onToggle} />
+      <span>{tr(locale, 'Workspace sharing')}</span>
+      <SharingControl item={item} canManage={canManage} isSaving={isSaving} onToggle={onToggle} locale={locale} />
     </label>
   );
 }
@@ -3563,27 +3608,29 @@ function SharingControl({
   canManage,
   isSaving = false,
   onToggle,
+  locale = 'en',
 }: {
   item: Pick<HistoryItem, 'createdByLogin' | 'sharedWithWorkspace'> | Pick<Detail, 'createdByLogin' | 'sharedWithWorkspace'>;
   canManage: boolean;
   isSaving?: boolean;
   onToggle: (shared: boolean) => void;
+  locale?: Locale;
 }) {
   const shared = isWorkspaceShared(item);
   return (
     <div className="sharing-control">
-      <span className={cn('badge', `tone-${scopeTone(item)}`)} title={shared ? 'Visible to workspace members' : 'Visible only to creator'}>
-        {scopeLabel(item)}
+      <span className={cn('badge', `tone-${scopeTone(item)}`)} title={shared ? tr(locale, 'Visible to workspace members') : tr(locale, 'Visible only to creator')}>
+        {scopeLabel(item, locale)}
       </span>
       {canManage ? (
         <button type="button" className="micro-button" disabled={isSaving} onClick={(event) => {
           event.stopPropagation();
           onToggle(!shared);
         }}>
-          {isSaving ? 'Saving' : shared ? 'Make private' : 'Share'}
+          {isSaving ? tr(locale, 'Saving') : shared ? tr(locale, 'Make private') : tr(locale, 'Share')}
         </button>
       ) : (
-        <span className="sharing-owner">{item.createdByLogin ? `by ${item.createdByLogin}` : 'read only'}</span>
+        <span className="sharing-owner">{item.createdByLogin ? (locale === 'ru' ? `от ${item.createdByLogin}` : `by ${item.createdByLogin}`) : tr(locale, 'read only')}</span>
       )}
     </div>
   );
@@ -3593,25 +3640,27 @@ function PersonalInfoFields({
   detail,
   copiedField,
   onCopy,
+  locale = 'en',
 }: {
   detail: Detail;
   copiedField: string;
   onCopy: (key: string, value: string) => void;
+  locale?: Locale;
 }) {
   const address = `${detail.addressLine}, ${detail.postalCode}`;
   const fields = [
-    { key: 'last-name', label: 'Last name', value: detail.lastName },
-    { key: 'first-name', label: 'First name', value: detail.firstName },
-    { key: 'dob', label: 'Date of birth', value: detail.dateOfBirth },
-    { key: 'pob', label: 'Place of birth', value: detail.placeOfBirth },
-    { key: 'doc-type', label: 'Type of document', value: detail.documentType },
-    { key: 'doc', label: 'Document number', value: detail.documentValue },
-    { key: 'issue-date', label: 'Document issue date', value: detail.documentIssueDate },
-    { key: 'country', label: 'Country', value: detail.country },
-    { key: 'region', label: 'Region', value: detail.region },
-    { key: 'city', label: 'City', value: detail.city },
-    { key: 'gender', label: 'Sex', value: detail.gender },
-    { key: 'address', label: 'Address', value: address },
+    { key: 'last-name', label: tr(locale, 'Last name'), value: detail.lastName },
+    { key: 'first-name', label: tr(locale, 'First name'), value: detail.firstName },
+    { key: 'dob', label: tr(locale, 'Date of birth'), value: detail.dateOfBirth },
+    { key: 'pob', label: tr(locale, 'Place of birth'), value: detail.placeOfBirth },
+    { key: 'doc-type', label: tr(locale, 'Type of document'), value: detail.documentType },
+    { key: 'doc', label: tr(locale, 'Document number'), value: detail.documentValue },
+    { key: 'issue-date', label: tr(locale, 'Document issue date'), value: detail.documentIssueDate },
+    { key: 'country', label: tr(locale, 'Country'), value: detail.country },
+    { key: 'region', label: tr(locale, 'Region'), value: detail.region },
+    { key: 'city', label: tr(locale, 'City'), value: detail.city },
+    { key: 'gender', label: tr(locale, 'Sex'), value: detail.gender },
+    { key: 'address', label: tr(locale, 'Address'), value: address },
   ];
 
   return (
@@ -3623,6 +3672,7 @@ function PersonalInfoFields({
           value={field.value}
           onCopy={() => onCopy(`${field.key}:${detail.id}`, field.value)}
           copied={copiedField === `${field.key}:${detail.id}`}
+          locale={locale}
         />
       ))}
     </div>
@@ -3634,18 +3684,20 @@ function RegistrationInfoField({
   value,
   onCopy,
   copied,
+  locale = 'en',
 }: {
   label: string;
   value: string;
   onCopy: () => void;
   copied: boolean;
+  locale?: Locale;
 }) {
   return (
     <div className="inspector-row registration-info-field">
       <div className="inspector-label">{label}</div>
       <div className="inspector-value">{value || '—'}</div>
       <div className="inspector-actions">
-        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`Copy ${label}`} title={copied ? 'Copied' : 'Copy'}>
+        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`${tr(locale, 'Copy')} ${label}`} title={copied ? tr(locale, 'Copied') : tr(locale, 'Copy')}>
           {copied ? <CheckIcon /> : <CopyIcon />}
         </button>
       </div>
@@ -3662,6 +3714,7 @@ function InspectorRow({
   onToggleHidden,
   sensitive,
   action,
+  locale = 'en',
 }: {
   label: string;
   value: string;
@@ -3671,6 +3724,7 @@ function InspectorRow({
   onToggleHidden?: () => void;
   sensitive?: boolean;
   action?: React.ReactNode;
+  locale?: Locale;
 }) {
   const display = sensitive ? (hidden ? '••••••••••••' : value) : value;
 
@@ -3679,9 +3733,9 @@ function InspectorRow({
       <div className="inspector-label">{label}</div>
       <div className="inspector-value">{display || '—'}</div>
       <div className="inspector-actions">
-        {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? 'Reveal' : 'Hide'}</button> : null}
+        {sensitive && onToggleHidden ? <button className="micro-button" onClick={onToggleHidden}>{hidden ? tr(locale, 'Reveal') : tr(locale, 'Hide')}</button> : null}
         {action}
-        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`Copy ${label}`} title={copied ? 'Copied' : 'Copy'}>
+        <button className="micro-button icon-copy-button" onClick={onCopy} aria-label={`${tr(locale, 'Copy')} ${label}`} title={copied ? tr(locale, 'Copied') : tr(locale, 'Copy')}>
           {copied ? <CheckIcon /> : <CopyIcon />}
         </button>
       </div>

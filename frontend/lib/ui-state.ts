@@ -1,4 +1,5 @@
 import type { HistoryItem } from './api';
+import { translate, type Locale } from './i18n';
 
 export type HistoryStatus = 'generated' | 'email_received' | 'waiting';
 export type AccountBalanceStatus = 'unknown' | 'no_balance' | 'has_balance';
@@ -41,14 +42,14 @@ export function roleTone(role: string) {
   return 'warning';
 }
 
-export function statusLabel(status: HistoryStatus) {
-  if (status === 'email_received') return 'Email received';
-  if (status === 'generated') return 'Generated';
-  return 'Waiting';
+export function statusLabel(status: HistoryStatus, locale: Locale = 'en') {
+  if (status === 'email_received') return translate(locale, 'Email received');
+  if (status === 'generated') return translate(locale, 'Generated');
+  return translate(locale, 'Waiting');
 }
 
-export function balanceStatusLabel(status: AccountBalanceStatus) {
-  return BALANCE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? 'Unknown';
+export function balanceStatusLabel(status: AccountBalanceStatus, locale: Locale = 'en') {
+  return translate(locale, BALANCE_STATUS_OPTIONS.find((item) => item.value === status)?.label ?? 'Unknown');
 }
 
 export function balanceStatusTone(status: AccountBalanceStatus) {
@@ -65,8 +66,8 @@ export function scopeTone(item: { sharedWithWorkspace?: boolean | number }) {
   return isWorkspaceShared(item) ? 'success' : 'active';
 }
 
-export function scopeLabel(item: { sharedWithWorkspace?: boolean | number }) {
-  return isWorkspaceShared(item) ? 'Shared' : 'Private';
+export function scopeLabel(item: { sharedWithWorkspace?: boolean | number }, locale: Locale = 'en') {
+  return isWorkspaceShared(item) ? translate(locale, 'Shared') : translate(locale, 'Private');
 }
 
 export function buildSettingsTabs(input: {
@@ -77,14 +78,16 @@ export function buildSettingsTabs(input: {
   activeSessionCount: number;
   generated24h: number;
   activityCount: number;
+  locale?: Locale;
 }) {
+  const locale = input.locale ?? 'en';
   return [
-    { key: 'defaults', label: 'Defaults', meta: `${input.bulkCount} bulk` },
-    { key: 'workspace', label: 'Workspace', meta: input.workspaceName ?? 'No workspace' },
-    { key: 'invites', label: 'Invites', meta: `${input.inviteCount} links` },
-    { key: 'team', label: 'Team', meta: `${input.memberCount} members` },
-    { key: 'security', label: 'Security', meta: `${input.activeSessionCount} sessions` },
-    { key: 'analytics', label: 'Analytics', meta: `${input.generated24h} today` },
-    { key: 'activity', label: 'Activity', meta: `${input.activityCount} events` },
+    { key: 'defaults', label: translate(locale, 'Defaults'), meta: locale === 'ru' ? `${input.bulkCount} bulk` : `${input.bulkCount} bulk` },
+    { key: 'workspace', label: translate(locale, 'Workspace'), meta: input.workspaceName ?? translate(locale, 'No workspace') },
+    { key: 'invites', label: translate(locale, 'Invites'), meta: locale === 'ru' ? `${input.inviteCount} ссылок` : `${input.inviteCount} links` },
+    { key: 'team', label: translate(locale, 'Team'), meta: locale === 'ru' ? `${input.memberCount} участников` : `${input.memberCount} members` },
+    { key: 'security', label: translate(locale, 'Security'), meta: locale === 'ru' ? `${input.activeSessionCount} сессий` : `${input.activeSessionCount} sessions` },
+    { key: 'analytics', label: translate(locale, 'Analytics'), meta: locale === 'ru' ? `${input.generated24h} сегодня` : `${input.generated24h} today` },
+    { key: 'activity', label: translate(locale, 'Activity'), meta: locale === 'ru' ? `${input.activityCount} событий` : `${input.activityCount} events` },
   ] satisfies Array<{ key: SettingsTab; label: string; meta: string }>;
 }

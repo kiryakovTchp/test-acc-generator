@@ -7,16 +7,19 @@ const PERSONAS = ['standard_user', 'young_user', 'senior_user', 'male_user', 'fe
 const SHARED_ACCOUNT_EDITING = ['creator_only', 'owner_admin'] as const;
 const WORKSPACE_CREATION_POLICIES = ['active_users', 'owner_admin'] as const;
 const MAILBOX_PROVIDERS = ['mail_tm', 'mail_gw', 'mail_tm_mail_gw_fallback'] as const;
+const LOCALES = ['en', 'ru'] as const;
 
 export type SharedAccountEditing = typeof SHARED_ACCOUNT_EDITING[number];
 export type WorkspaceCreationPolicy = typeof WORKSPACE_CREATION_POLICIES[number];
 export type MailboxProviderKey = typeof MAILBOX_PROVIDERS[number];
+export type UserLocale = typeof LOCALES[number];
 
 export interface UserSettingsResponse {
   defaultGeo: string;
   defaultPersona: PersonaKey;
   defaultDocumentType: string;
   bulkCount: number;
+  locale: UserLocale;
 }
 
 export interface WorkspaceSettingsResponse {
@@ -35,7 +38,7 @@ export interface WorkspaceSettingsResponse {
 export function getUserSettings(userId: number): UserSettingsResponse {
   ensureUserSettings(userId);
   const row = db.prepare(`
-    SELECT default_geo, default_persona, default_document_type, bulk_count
+    SELECT default_geo, default_persona, default_document_type, bulk_count, locale
     FROM user_settings
     WHERE user_id = ?
   `).get(userId) as any;
@@ -45,6 +48,7 @@ export function getUserSettings(userId: number): UserSettingsResponse {
     defaultPersona: isPersona(row.default_persona) ? row.default_persona : 'standard_user',
     defaultDocumentType: row.default_document_type || 'nin',
     bulkCount: clampInt(row.bulk_count, 1, 100, 5),
+    locale: normalizeEnum(row.locale, LOCALES, 'en'),
   };
 }
 
@@ -56,6 +60,7 @@ export function updateUserSettings(userId: number, payload: any): UserSettingsRe
     defaultPersona: isPersona(payload?.defaultPersona) ? payload.defaultPersona : current.defaultPersona,
     defaultDocumentType: normalizeKey(payload?.defaultDocumentType, current.defaultDocumentType, 80),
     bulkCount: clampInt(payload?.bulkCount, 1, 100, current.bulkCount),
+    locale: normalizeEnum(payload?.locale, LOCALES, current.locale),
   };
 
   db.prepare(`
@@ -64,9 +69,10 @@ export function updateUserSettings(userId: number, payload: any): UserSettingsRe
         default_persona = ?,
         default_document_type = ?,
         bulk_count = ?,
+        locale = ?,
         updated_at = CURRENT_TIMESTAMP
     WHERE user_id = ?
-  `).run(next.defaultGeo, next.defaultPersona, next.defaultDocumentType, next.bulkCount, userId);
+  `).run(next.defaultGeo, next.defaultPersona, next.defaultDocumentType, next.bulkCount, next.locale, userId);
 
   return getUserSettings(userId);
 }

@@ -11,6 +11,7 @@ test('user settings can be stored and normalized', () => {
     defaultPersona: 'female_user',
     defaultDocumentType: 'national_id',
     bulkCount: 7,
+    locale: 'ru',
   });
 
   assert.deepEqual(updated, {
@@ -18,6 +19,7 @@ test('user settings can be stored and normalized', () => {
     defaultPersona: 'female_user',
     defaultDocumentType: 'national_id',
     bulkCount: 7,
+    locale: 'ru',
   });
   assert.deepEqual(getUserSettings(userId), updated);
 });
