@@ -1169,29 +1169,31 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <p>Defaults used by Generate identity and Generate bulk.</p>
       <div className="form-stack">
         <Field label="GEO">
-          <select className="input-field compact" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
+          <select className="input-field compact" id="generation-geo" name="generationGeo" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
             {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
           </select>
         </Field>
         <Field label="Form persona">
-          <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+          <select className="input-field compact" id="generation-persona" name="generationPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
             {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </Field>
         <Field label="Document type">
-          <select className="input-field compact" value={effectiveDocumentType} onChange={(e) => setDocumentType(e.target.value)}>
+          <select className="input-field compact" id="generation-document-type" name="generationDocumentType" value={effectiveDocumentType} onChange={(e) => setDocumentType(e.target.value)}>
             {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
             <option value="missing_rule_probe">missing_rule_probe</option>
           </select>
         </Field>
         <Field label="Mailbox provider">
-          <select className="input-field compact" value={mailboxProvider} onChange={(e) => selectMailboxProvider(e.target.value as MailboxProviderKey)}>
+          <select className="input-field compact" id="generation-mailbox-provider" name="generationMailboxProvider" value={mailboxProvider} onChange={(e) => selectMailboxProvider(e.target.value as MailboxProviderKey)}>
             {MAILBOX_PROVIDER_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
           </select>
         </Field>
         <Field label="Bulk count">
           <input
             className="input-field compact"
+            id="generation-bulk-count"
+            name="generationBulkCount"
             type="number"
             min="1"
             max={maxBulkCount}
@@ -1223,8 +1225,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <h1>Test User Console</h1>
           <p>Generate test identities, copy registration data, and inspect mailbox verification.</p>
           <div className="login-fields">
-            <input className="input-field" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" />
-            <input className="input-field" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" />
+            <input className="input-field" id="login" name="login" value={login} onChange={(e) => setLogin(e.target.value)} placeholder="login" autoComplete="username" />
+            <input className="input-field" id="password" name="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="password" type="password" autoComplete="current-password" />
           </div>
           {error ? <p className="alert alert-error">{error}</p> : null}
           <button className="primary-button w-full">Sign in</button>
@@ -1256,6 +1258,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             <div className="flow-label">Workspace</div>
             <select
               className="workspace-switcher"
+              id="workspace-switcher"
+              name="workspaceSwitcher"
               value={user.workspaceId ?? ''}
               onChange={(event) => void switchWorkspace(Number(event.target.value))}
               disabled={isWorkspaceLoading}
@@ -1389,19 +1393,19 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
 
             {showFilters ? (
               <div className="list-controls">
-                <input className="input-field compact" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
+                <input className="input-field compact" id="main-account-search" name="mainAccountSearch" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search test users..." />
                 <div className="control-row">
-                  <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
+                  <select className="input-field compact" id="main-status-filter" name="mainStatusFilter" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
                     <option value="generated">Generated</option>
                     <option value="email_received">Email received</option>
                     <option value="waiting">Waiting</option>
                   </select>
-                  <select className="input-field compact" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
+                  <select className="input-field compact" id="main-balance-filter" name="mainBalanceFilter" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
                     <option value="all">All balances</option>
                     {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
                   </select>
-                  <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
+                  <select className="input-field compact" id="main-sort-mode" name="mainSortMode" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
                     <option value="newest">Newest first</option>
                     <option value="oldest">Oldest first</option>
                   </select>
@@ -1457,6 +1461,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <div>
                         <input
                           className="input-field compact"
+                          id={`site-account-id-${detail.id}`}
+                          name="siteAccountId"
                           value={siteAccountIdDraft}
                           onBlur={saveSiteAccountId}
                           onChange={(e) => setSiteAccountIdDraft(e.target.value)}
@@ -1565,23 +1571,23 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             </div>
 
             <div className="list-controls accounts-controls">
-              <input className="input-field compact account-search-field" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search by user, email, GEO, or account ID" />
+              <input className="input-field compact account-search-field" id="accounts-search" name="accountsSearch" value={accountSearch} onChange={(e) => setAccountSearch(e.target.value)} placeholder="Search by user, email, GEO, or account ID" />
               <div className="control-row accounts-filter-row">
-                  <select className="input-field compact" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
+                  <select className="input-field compact" id="accounts-status-filter" name="accountsStatusFilter" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value as 'all' | HistoryStatus)}>
                     <option value="all">All statuses</option>
                     <option value="generated">Generated</option>
                     <option value="email_received">Email received</option>
                     <option value="waiting">Waiting</option>
                   </select>
-                  <select className="input-field compact" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
+                  <select className="input-field compact" id="accounts-balance-filter" name="accountsBalanceFilter" value={balanceFilter} onChange={(e) => setBalanceFilter(e.target.value as 'all' | AccountBalanceStatus)}>
                     <option value="all">All balances</option>
                     {BALANCE_STATUS_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
                   </select>
-                  <select className="input-field compact" value={accountGeoFilter} onChange={(e) => setAccountGeoFilter(e.target.value)}>
+                  <select className="input-field compact" id="accounts-geo-filter" name="accountsGeoFilter" value={accountGeoFilter} onChange={(e) => setAccountGeoFilter(e.target.value)}>
                     <option value="all">All GEOs</option>
                     {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
                   </select>
-                  <select className="input-field compact" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
+                  <select className="input-field compact" id="accounts-sort-mode" name="accountsSortMode" value={sortMode} onChange={(e) => setSortMode(e.target.value as 'newest' | 'oldest')}>
                     <option value="newest">Newest first</option>
                     <option value="oldest">Oldest first</option>
                   </select>
@@ -1670,6 +1676,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                       <div>
                         <input
                           className="input-field compact"
+                          id={`modal-site-account-id-${detail.id}`}
+                          name="modalSiteAccountId"
                           value={siteAccountIdDraft}
                           onBlur={saveSiteAccountId}
                           onChange={(e) => setSiteAccountIdDraft(e.target.value)}
@@ -2352,17 +2360,17 @@ function UtilityView({
 
         <div className="settings-grid">
           <Field label="Default GEO">
-            <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+            <select className="input-field compact" id="form-data-default-geo" name="formDataDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
           </Field>
           <Field label="Persona">
-            <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+            <select className="input-field compact" id="form-data-persona" name="formDataPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
               {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </Field>
           <Field label="Document type">
-            <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+            <select className="input-field compact" id="form-data-document-type" name="formDataDocumentType" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
               {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
               <option value="missing_rule_probe">missing_rule_probe</option>
             </select>
@@ -2538,23 +2546,23 @@ function UtilityView({
         </div>
         <div className="settings-grid">
           <Field label="Default GEO">
-            <select className="input-field compact" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
+            <select className="input-field compact" id="settings-default-geo" name="settingsDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
           </Field>
           <Field label="Default persona">
-            <select className="input-field compact" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
+            <select className="input-field compact" id="settings-default-persona" name="settingsDefaultPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
               {PERSONAS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
             </select>
           </Field>
           <Field label="Default document">
-            <select className="input-field compact" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
+            <select className="input-field compact" id="settings-default-document" name="settingsDefaultDocument" value={documentType} onChange={(e) => setDocumentType(e.target.value)}>
               {(currentGeo?.documentTypes ?? []).map((item) => <option key={item} value={item}>{item}</option>)}
               <option value="missing_rule_probe">missing_rule_probe</option>
             </select>
           </Field>
           <Field label="Bulk count">
-            <input className="input-field compact" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
+            <input className="input-field compact" id="settings-bulk-count" name="settingsBulkCount" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
           </Field>
         </div>
         <div className="settings-actions">
@@ -2579,6 +2587,8 @@ function UtilityView({
           </div>
           <input
             className="input-field compact"
+            id="new-workspace-name"
+            name="newWorkspaceName"
             value={newWorkspaceName}
             onChange={(e) => setNewWorkspaceName(e.target.value)}
             placeholder="New workspace name"
@@ -2630,47 +2640,47 @@ function UtilityView({
         </div>
         <div className="settings-grid">
           <Field label="History retention days">
-            <input className="input-field compact" type="number" min="1" max="3650" value={editableWorkspaceSettings.historyRetentionDays} onChange={(e) => updateWorkspaceDraft({ historyRetentionDays: Number(e.target.value) || 1 })} />
+            <input className="input-field compact" id="history-retention-days" name="historyRetentionDays" type="number" min="1" max="3650" value={editableWorkspaceSettings.historyRetentionDays} onChange={(e) => updateWorkspaceDraft({ historyRetentionDays: Number(e.target.value) || 1 })} />
           </Field>
           <Field label="History limit">
-            <input className="input-field compact" type="number" min="1" max="1000" value={editableWorkspaceSettings.historyLimit} onChange={(e) => updateWorkspaceDraft({ historyLimit: Number(e.target.value) || 1 })} />
+            <input className="input-field compact" id="history-limit" name="historyLimit" type="number" min="1" max="1000" value={editableWorkspaceSettings.historyLimit} onChange={(e) => updateWorkspaceDraft({ historyLimit: Number(e.target.value) || 1 })} />
           </Field>
           <Field label="Max bulk count">
-            <input className="input-field compact" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
+            <input className="input-field compact" id="max-bulk-count" name="maxBulkCount" type="number" min="1" max="100" value={editableWorkspaceSettings.maxBulkCount} onChange={(e) => updateWorkspaceDraft({ maxBulkCount: Number(e.target.value) || 1 })} />
           </Field>
           <Field label="Mailbox provider">
-            <select className="input-field compact" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value as ServerWorkspaceSettings['mailboxProvider'] })}>
+            <select className="input-field compact" id="workspace-mailbox-provider" name="workspaceMailboxProvider" value={editableWorkspaceSettings.mailboxProvider} onChange={(e) => updateWorkspaceDraft({ mailboxProvider: e.target.value as ServerWorkspaceSettings['mailboxProvider'] })}>
               <option value="mail_tm">mail.tm</option>
               <option value="mail_gw">mail.gw</option>
               <option value="mail_tm_mail_gw_fallback">mail.tm → mail.gw fallback</option>
             </select>
           </Field>
           <Field label="Shared account editing">
-            <select className="input-field compact" value={editableWorkspaceSettings.sharedAccountEditing} onChange={(e) => updateWorkspaceDraft({ sharedAccountEditing: e.target.value as ServerWorkspaceSettings['sharedAccountEditing'] })}>
+            <select className="input-field compact" id="shared-account-editing" name="sharedAccountEditing" value={editableWorkspaceSettings.sharedAccountEditing} onChange={(e) => updateWorkspaceDraft({ sharedAccountEditing: e.target.value as ServerWorkspaceSettings['sharedAccountEditing'] })}>
               <option value="creator_only">Creator only</option>
               <option value="owner_admin">Owner/admin can edit shared</option>
             </select>
           </Field>
           <Field label="Workspace creation">
-            <select className="input-field compact" value={editableWorkspaceSettings.workspaceCreationPolicy} onChange={(e) => updateWorkspaceDraft({ workspaceCreationPolicy: e.target.value as ServerWorkspaceSettings['workspaceCreationPolicy'] })}>
+            <select className="input-field compact" id="workspace-creation-policy" name="workspaceCreationPolicy" value={editableWorkspaceSettings.workspaceCreationPolicy} onChange={(e) => updateWorkspaceDraft({ workspaceCreationPolicy: e.target.value as ServerWorkspaceSettings['workspaceCreationPolicy'] })}>
               <option value="active_users">Any active user</option>
               <option value="owner_admin">Current owner/admin only</option>
             </select>
           </Field>
           <label className="settings-toggle">
-            <input type="checkbox" checked={editableWorkspaceSettings.allowBulkGeneration} onChange={(e) => updateWorkspaceDraft({ allowBulkGeneration: e.target.checked })} />
+            <input id="allow-bulk-generation" name="allowBulkGeneration" type="checkbox" checked={editableWorkspaceSettings.allowBulkGeneration} onChange={(e) => updateWorkspaceDraft({ allowBulkGeneration: e.target.checked })} />
             <span>Allow bulk generation</span>
           </label>
         </div>
         <div className="settings-grid quota-grid">
           <Field label="Accounts per day">
-            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
+            <input className="input-field compact" id="accounts-per-day" name="accountsPerDay" type="number" min="0" max="10000" value={editableWorkspaceSettings.accountsPerDay} onChange={(e) => updateWorkspaceDraft({ accountsPerDay: Number(e.target.value) || 0 })} />
           </Field>
           <Field label="Mailboxes per day">
-            <input className="input-field compact" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
+            <input className="input-field compact" id="mailboxes-per-day" name="mailboxesPerDay" type="number" min="0" max="10000" value={editableWorkspaceSettings.mailboxCreatePerDay} onChange={(e) => updateWorkspaceDraft({ mailboxCreatePerDay: Number(e.target.value) || 0 })} />
           </Field>
           <Field label="Inbox refresh per minute">
-            <input className="input-field compact" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
+            <input className="input-field compact" id="inbox-refresh-per-minute" name="inboxRefreshPerMinute" type="number" min="0" max="1000" value={editableWorkspaceSettings.inboxRefreshPerMinute} onChange={(e) => updateWorkspaceDraft({ inboxRefreshPerMinute: Number(e.target.value) || 0 })} />
           </Field>
         </div>
         {usageSummary ? <UsageStrip usage={usageSummary} /> : null}
@@ -2699,12 +2709,14 @@ function UtilityView({
         <div className="member-add-row invite-create-row">
           <input
             className="input-field compact"
+            id="invite-email"
+            name="inviteEmail"
             value={inviteEmail}
             onChange={(e) => setInviteEmail(e.target.value)}
             placeholder="email for invite"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} value={inviteRole} title={`Invite role: ${inviteRole}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(inviteRole)}`)} id="invite-role" name="inviteRole" value={inviteRole} title={`Invite role: ${inviteRole}`} onChange={(e) => setInviteRole(e.target.value as WorkspaceInvite['role'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2778,12 +2790,14 @@ function UtilityView({
         <div className="member-add-row">
           <input
             className="input-field compact"
+            id="member-lookup"
+            name="memberLookup"
             value={memberLookup}
             onChange={(e) => setMemberLookup(e.target.value)}
             placeholder="login, email, or username"
             disabled={!canManageWorkspaceSettings}
           />
-          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} value={memberRole} title={`Workspace role: ${memberRole}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
+          <select className={cn('input-field compact badge-select role-select', `tone-${roleTone(memberRole)}`)} id="member-role" name="memberRole" value={memberRole} title={`Workspace role: ${memberRole}`} onChange={(e) => setMemberRole(e.target.value as WorkspaceMember['workspaceRole'])} disabled={!canManageWorkspaceSettings}>
             <option value="member">member</option>
             <option value="viewer">viewer</option>
             <option value="admin">admin</option>
@@ -2809,6 +2823,8 @@ function UtilityView({
                   <td>
                     <select
                       className={cn('input-field compact badge-select role-select', `tone-${roleTone(member.workspaceRole)}`)}
+                      id={`member-role-${member.userId}`}
+                      name={`memberRole-${member.userId}`}
                       value={member.workspaceRole}
                       title={`Workspace role: ${member.workspaceRole}`}
                       onChange={(e) => onUpdateMemberRole(member.userId, e.target.value as WorkspaceMember['workspaceRole'])}
@@ -2843,10 +2859,10 @@ function UtilityView({
 
         <div className="settings-grid account-settings-grid">
           <Field label="Email">
-            <input className="input-field compact" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} placeholder="email" />
+            <input className="input-field compact" id="account-email" name="accountEmail" value={accountEmail} onChange={(event) => setAccountEmail(event.target.value)} placeholder="email" autoComplete="email" />
           </Field>
           <Field label="Username">
-            <input className="input-field compact" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" />
+            <input className="input-field compact" id="account-username" name="accountUsername" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" autoComplete="username" />
           </Field>
         </div>
         <div className="settings-actions">
@@ -2858,13 +2874,13 @@ function UtilityView({
 
         <div className="settings-grid password-settings-grid">
           <Field label="Current password">
-            <input className="input-field compact" type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
+            <input className="input-field compact" id="current-password" name="currentPassword" type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" />
           </Field>
           <Field label="New password">
-            <input className="input-field compact" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" />
+            <input className="input-field compact" id="new-password" name="newPassword" type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" />
           </Field>
           <Field label="Confirm new password">
-            <input className="input-field compact" type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" />
+            <input className="input-field compact" id="confirm-new-password" name="confirmNewPassword" type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" />
           </Field>
         </div>
         <div className="settings-actions">
@@ -3312,6 +3328,7 @@ function BalanceStatusSelect({
   return (
     <select
       className={cn('input-field compact badge-select balance-status-select', `tone-${balanceStatusTone(value)}`)}
+      name="balanceStatus"
       value={value}
       aria-label="Balance status"
       aria-busy={disabled}
@@ -3354,6 +3371,8 @@ function PhoneEditField({
       <div>
         <input
           className="input-field compact"
+          id="phone"
+          name="phone"
           value={value}
           onBlur={canEdit ? onSave : undefined}
           onChange={(event) => onChange(event.target.value)}
