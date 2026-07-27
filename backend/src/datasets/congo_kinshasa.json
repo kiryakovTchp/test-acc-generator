@@ -1,0 +1,12 @@
+{
+  "key": "congo_kinshasa",
+  "label": "Congo (Kinshasa)",
+  "countryCode": "CD",
+  "country": "Congo (Kinshasa)",
+  "locale": "fr-CD",
+  "availability": "review",
+  "names": { "male": ["Jean", "Patrice", "Cedric", "Joseph"], "female": ["Marie", "Grace", "Chantal", "Nadine"], "last": ["Ilunga", "Kabila", "Mbuyi", "Tshibanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+243", "nationalLength": 9, "prefixes": ["8", "9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Kinshasa", "cities": [{ "name": "Kinshasa", "postalPrefixes": ["100"], "streets": ["Boulevard du 30 Juin", "Avenue Kasa-Vubu"] }] }, { "name": "Haut-Katanga", "cities": [{ "name": "Lubumbashi", "postalPrefixes": ["200"], "streets": ["Avenue Lumumba", "Avenue Kasavubu"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

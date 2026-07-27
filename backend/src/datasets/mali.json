@@ -1,0 +1,12 @@
+{
+  "key": "mali",
+  "label": "Mali",
+  "countryCode": "ML",
+  "country": "Mali",
+  "locale": "fr-ML",
+  "availability": "review",
+  "names": { "male": ["Moussa", "Ibrahim", "Modibo", "Oumar"], "female": ["Aminata", "Fatoumata", "Mariam", "Awa"], "last": ["Traore", "Keita", "Coulibaly", "Diarra"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+223", "nationalLength": 8, "prefixes": ["6", "7", "9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Bamako", "cities": [{ "name": "Bamako", "postalPrefixes": ["100"], "streets": ["Avenue de l'Independance", "Rue 311"] }] }, { "name": "Sikasso", "cities": [{ "name": "Sikasso", "postalPrefixes": ["300"], "streets": ["Avenue Modibo Keita", "Rue du Marche"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Mali was listed as not suitable for verified document generation yet." } }
+}

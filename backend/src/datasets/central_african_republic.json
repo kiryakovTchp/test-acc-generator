@@ -1,0 +1,12 @@
+{
+  "key": "central_african_republic",
+  "label": "Central African Republic",
+  "countryCode": "CF",
+  "country": "Central African Republic",
+  "locale": "fr-CF",
+  "availability": "review",
+  "names": { "male": ["Jean", "Bienvenu", "Armel", "Patrick"], "female": ["Marie", "Grace", "Nadine", "Clarisse"], "last": ["Koyara", "Dologuele", "Ngakola", "Bemba"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+236", "nationalLength": 8, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Bangui", "cities": [{ "name": "Bangui", "postalPrefixes": ["100"], "streets": ["Avenue Boganda", "Avenue de l'Independance"] }] }, { "name": "Ombella-Mpoko", "cities": [{ "name": "Bimbo", "postalPrefixes": ["200"], "streets": ["Route de Mbaiki", "Rue Centrale"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Central African Republic was listed as not suitable for verified document generation yet." } }
+}

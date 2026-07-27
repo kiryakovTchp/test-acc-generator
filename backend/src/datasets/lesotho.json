@@ -1,0 +1,12 @@
+{
+  "key": "lesotho",
+  "label": "Lesotho",
+  "countryCode": "LS",
+  "country": "Lesotho",
+  "locale": "en-LS",
+  "availability": "review",
+  "names": { "male": ["Thabo", "Mpho", "Lerato", "Khotso"], "female": ["Palesa", "Masego", "Nthabiseng", "Boitumelo"], "last": ["Mokoena", "Molefe", "Mofokeng", "Ntaote"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+266", "nationalLength": 8, "prefixes": ["5", "6"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Maseru", "cities": [{ "name": "Maseru", "postalPrefixes": ["100"], "streets": ["Kingsway Road", "Moshoeshoe Road"] }] }, { "name": "Leribe", "cities": [{ "name": "Hlotse", "postalPrefixes": ["300"], "streets": ["Main North Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

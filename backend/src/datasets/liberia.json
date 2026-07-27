@@ -1,0 +1,12 @@
+{
+  "key": "liberia",
+  "label": "Liberia",
+  "countryCode": "LR",
+  "country": "Liberia",
+  "locale": "en-LR",
+  "availability": "review",
+  "names": { "male": ["James", "Joseph", "Emmanuel", "Prince"], "female": ["Mary", "Grace", "Martha", "Princess"], "last": ["Johnson", "Kollie", "Kamara", "Toe"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+231", "nationalLength": 8, "prefixes": ["7", "8"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Montserrado", "cities": [{ "name": "Monrovia", "postalPrefixes": ["100"], "streets": ["Broad Street", "Tubman Boulevard"] }] }, { "name": "Nimba", "cities": [{ "name": "Ganta", "postalPrefixes": ["500"], "streets": ["Main Street", "Ganta Highway"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Liberia was listed as not suitable for verified document generation yet." } }
+}

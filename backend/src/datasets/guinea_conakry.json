@@ -1,0 +1,12 @@
+{
+  "key": "guinea_conakry",
+  "label": "Guinea Conakry",
+  "countryCode": "GN",
+  "country": "Guinea Conakry",
+  "locale": "fr-GN",
+  "availability": "review",
+  "names": { "male": ["Mamadou", "Ibrahima", "Sekou", "Abdoulaye"], "female": ["Aminata", "Aissatou", "Binta", "Kadiatou"], "last": ["Camara", "Diallo", "Conte", "Keita"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "User requested Guinea Conakry as a separate product GEO even though the country code matches Guinea." },
+  "phones": { "countryCallingCode": "+224", "nationalLength": 9, "prefixes": ["6"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Shares Guinea numbering assumptions until validated separately." },
+  "locations": { "regions": [{ "name": "Conakry", "cities": [{ "name": "Conakry", "postalPrefixes": ["001"], "streets": ["Corniche Nord", "Avenue de la Republique"] }] }, { "name": "Kindia", "cities": [{ "name": "Kindia", "postalPrefixes": ["300"], "streets": ["Route Nationale", "Rue du Centre"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; previous Guinea candidate was rejected as generic filler." } }
+}

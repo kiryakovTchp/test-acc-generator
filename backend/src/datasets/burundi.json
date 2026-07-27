@@ -1,0 +1,12 @@
+{
+  "key": "burundi",
+  "label": "Burundi",
+  "countryCode": "BI",
+  "country": "Burundi",
+  "locale": "fr-BI",
+  "availability": "review",
+  "names": { "male": ["Jean", "Emmanuel", "Claude", "Ndayisaba"], "female": ["Aline", "Claudine", "Jeanne", "Francine"], "last": ["Nkurunziza", "Niyongabo", "Hakizimana", "Nsengiyumva"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burundi name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+257", "nationalLength": 8, "prefixes": ["6", "7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burundi phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Bujumbura Mairie", "cities": [{ "name": "Bujumbura", "postalPrefixes": ["100"], "streets": ["Avenue de l'Independance", "Boulevard de l'Uprona"] }] }, { "name": "Gitega", "cities": [{ "name": "Gitega", "postalPrefixes": ["200"], "streets": ["Avenue du Cinquantenaire", "Rue du Marche"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burundi location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Burundi was listed as not suitable for verified document generation yet." } }
+}

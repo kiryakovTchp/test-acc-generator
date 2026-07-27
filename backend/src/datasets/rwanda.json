@@ -1,0 +1,12 @@
+{
+  "key": "rwanda",
+  "label": "Rwanda",
+  "countryCode": "RW",
+  "country": "Rwanda",
+  "locale": "en-RW",
+  "availability": "review",
+  "names": { "male": ["Jean", "Emmanuel", "Eric", "Patrick"], "female": ["Claudine", "Aline", "Diane", "Grace"], "last": ["Niyonsenga", "Uwimana", "Habimana", "Mugisha"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+250", "nationalLength": 9, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Kigali", "cities": [{ "name": "Kigali", "postalPrefixes": ["000"], "streets": ["KN 3 Road", "KG 7 Avenue"] }] }, { "name": "Northern Province", "cities": [{ "name": "Musanze", "postalPrefixes": ["400"], "streets": ["RN4 Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

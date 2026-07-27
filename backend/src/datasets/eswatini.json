@@ -1,0 +1,12 @@
+{
+  "key": "eswatini",
+  "label": "Eswatini",
+  "countryCode": "SZ",
+  "country": "Eswatini",
+  "locale": "en-SZ",
+  "availability": "review",
+  "names": { "male": ["Sibusiso", "Mandla", "Musa", "Bongani"], "female": ["Nomsa", "Thandiwe", "Sibongile", "Zanele"], "last": ["Dlamini", "Nkosi", "Mamba", "Simelane"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Eswatini name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "User requested Eswatini as a separate product GEO from Swaziland." },
+  "phones": { "countryCallingCode": "+268", "nationalLength": 8, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Eswatini phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Shares Swaziland numbering assumptions until validated separately." },
+  "locations": { "regions": [{ "name": "Hhohho", "cities": [{ "name": "Mbabane", "postalPrefixes": ["H1"], "streets": ["Gwamile Street", "Sozisa Road"] }] }, { "name": "Manzini", "cities": [{ "name": "Manzini", "postalPrefixes": ["M2"], "streets": ["Ngwane Street", "Nkoseluhlaza Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Eswatini location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Eswatini passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

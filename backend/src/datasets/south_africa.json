@@ -1,0 +1,12 @@
+{
+  "key": "south_africa",
+  "label": "South Africa",
+  "countryCode": "ZA",
+  "country": "South Africa",
+  "locale": "en-ZA",
+  "availability": "review",
+  "names": { "male": ["Thabo", "Sipho", "Sibusiso", "Daniel"], "female": ["Nomsa", "Lerato", "Thandiwe", "Ayesha"], "last": ["Mokoena", "Dlamini", "Naidoo", "Botha"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+27", "nationalLength": 9, "prefixes": ["6", "7", "8"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "National number is generated without domestic trunk 0." },
+  "locations": { "regions": [{ "name": "Gauteng", "cities": [{ "name": "Johannesburg", "postalPrefixes": ["200"], "streets": ["Commissioner Street", "Rivonia Road"] }] }, { "name": "Western Cape", "cities": [{ "name": "Cape Town", "postalPrefixes": ["800"], "streets": ["Long Street", "Adderley Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

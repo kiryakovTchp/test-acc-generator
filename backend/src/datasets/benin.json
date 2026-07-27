@@ -1,0 +1,12 @@
+{
+  "key": "benin",
+  "label": "Benin",
+  "countryCode": "BJ",
+  "country": "Benin",
+  "locale": "fr-BJ",
+  "availability": "review",
+  "names": { "male": ["Jean", "Michel", "Koffi", "Youssouf"], "female": ["Aminata", "Marie", "Chantal", "Fatou"], "last": ["Hounkpe", "Soglo", "Dossou", "Adandedjan"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+229", "nationalLength": 10, "prefixes": ["01"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative placeholder for review dataset." },
+  "locations": { "regions": [{ "name": "Littoral", "cities": [{ "name": "Cotonou", "postalPrefixes": ["01"], "streets": ["Avenue Steinmetz", "Boulevard Saint Michel"] }] }, { "name": "Atlantique", "cities": [{ "name": "Abomey-Calavi", "postalPrefixes": ["02"], "streets": ["Route de Calavi", "Rue des Palmiers"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Benin was listed as not suitable for verified document generation yet." } }
+}

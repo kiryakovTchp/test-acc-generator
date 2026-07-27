@@ -101,11 +101,12 @@ test('country dataset loader rejects unknown generators and duplicate identities
   );
 });
 
-test('country dataset keys and country codes are unique', () => {
+test('country dataset keys are unique and country code aliases are allowed', () => {
   const datasets = listCountryDatasets();
 
   assert.equal(new Set(datasets.map((item) => item.key)).size, datasets.length);
-  assert.equal(new Set(datasets.map((item) => item.countryCode)).size, datasets.length);
+  assert.equal(getDataset('guinea').countryCode, getDataset('guinea_conakry').countryCode);
+  assert.equal(getDataset('swaziland').countryCode, getDataset('eswatini').countryCode);
 });
 
 test('all country datasets generate linked profiles and matching documents', () => {

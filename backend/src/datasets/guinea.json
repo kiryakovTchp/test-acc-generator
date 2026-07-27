@@ -1,0 +1,12 @@
+{
+  "key": "guinea",
+  "label": "Guinea",
+  "countryCode": "GN",
+  "country": "Guinea",
+  "locale": "fr-GN",
+  "availability": "review",
+  "names": { "male": ["Mamadou", "Ibrahima", "Alpha", "Ousmane"], "female": ["Aissatou", "Fatoumata", "Mariam", "Hawa"], "last": ["Diallo", "Barry", "Bah", "Camara"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; separate product GEO from guinea_conakry by user decision." },
+  "phones": { "countryCallingCode": "+224", "nationalLength": 9, "prefixes": ["6"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Conakry", "cities": [{ "name": "Conakry", "postalPrefixes": ["001"], "streets": ["Route Le Prince", "Avenue de la Republique"] }] }, { "name": "Kankan", "cities": [{ "name": "Kankan", "postalPrefixes": ["200"], "streets": ["Avenue de l'Independance", "Rue du Marche"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; previous Guinea candidate was rejected as generic filler." } }
+}

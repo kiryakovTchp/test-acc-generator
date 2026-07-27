@@ -1,24 +1,50 @@
 import angolaDataset from './datasets/angola.json' with { type: 'json' };
+import beninDataset from './datasets/benin.json' with { type: 'json' };
+import botswanaDataset from './datasets/botswana.json' with { type: 'json' };
+import burkinaFasoDataset from './datasets/burkina_faso.json' with { type: 'json' };
+import burundiDataset from './datasets/burundi.json' with { type: 'json' };
+import caboVerdeDataset from './datasets/cabo_verde.json' with { type: 'json' };
 import cameroonDataset from './datasets/cameroon.json' with { type: 'json' };
+import centralAfricanRepublicDataset from './datasets/central_african_republic.json' with { type: 'json' };
+import congoBrazzavilleDataset from './datasets/congo_brazzaville.json' with { type: 'json' };
+import congoKinshasaDataset from './datasets/congo_kinshasa.json' with { type: 'json' };
 import coteDivoireDataset from './datasets/cote_divoire.json' with { type: 'json' };
+import equatorialGuineaDataset from './datasets/equatorial_guinea.json' with { type: 'json' };
+import eswatiniDataset from './datasets/eswatini.json' with { type: 'json' };
 import ethiopiaDataset from './datasets/ethiopia.json' with { type: 'json' };
 import gabonDataset from './datasets/gabon.json' with { type: 'json' };
 import gambiaDataset from './datasets/gambia.json' with { type: 'json' };
 import genericIntlDataset from './datasets/generic_intl.json' with { type: 'json' };
 import georgiaDataset from './datasets/georgia.json' with { type: 'json' };
 import ghanaDataset from './datasets/ghana.json' with { type: 'json' };
+import guineaDataset from './datasets/guinea.json' with { type: 'json' };
+import guineaBissauDataset from './datasets/guinea_bissau.json' with { type: 'json' };
+import guineaConakryDataset from './datasets/guinea_conakry.json' with { type: 'json' };
 import irelandDataset from './datasets/ireland.json' with { type: 'json' };
 import kazakhstanDataset from './datasets/kazakhstan.json' with { type: 'json' };
 import kenyaDataset from './datasets/kenya.json' with { type: 'json' };
+import lesothoDataset from './datasets/lesotho.json' with { type: 'json' };
+import liberiaDataset from './datasets/liberia.json' with { type: 'json' };
 import malawiDataset from './datasets/malawi.json' with { type: 'json' };
+import maliDataset from './datasets/mali.json' with { type: 'json' };
+import mauritiusDataset from './datasets/mauritius.json' with { type: 'json' };
+import mozambiqueDataset from './datasets/mozambique.json' with { type: 'json' };
+import namibiaDataset from './datasets/namibia.json' with { type: 'json' };
+import nigerDataset from './datasets/niger.json' with { type: 'json' };
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
+import rwandaDataset from './datasets/rwanda.json' with { type: 'json' };
 import senegalDataset from './datasets/senegal.json' with { type: 'json' };
 import sierraLeoneDataset from './datasets/sierra_leone.json' with { type: 'json' };
+import southAfricaDataset from './datasets/south_africa.json' with { type: 'json' };
+import southSudanDataset from './datasets/south_sudan.json' with { type: 'json' };
+import swazilandDataset from './datasets/swaziland.json' with { type: 'json' };
 import tanzaniaDataset from './datasets/tanzania.json' with { type: 'json' };
 import togoDataset from './datasets/togo.json' with { type: 'json' };
 import ugandaDataset from './datasets/uganda.json' with { type: 'json' };
 import uzbekistanDataset from './datasets/uzbekistan.json' with { type: 'json' };
+import westernSaharaDataset from './datasets/western_sahara.json' with { type: 'json' };
 import zambiaDataset from './datasets/zambia.json' with { type: 'json' };
+import zimbabweDataset from './datasets/zimbabwe.json' with { type: 'json' };
 import type { Gender } from './types.js';
 import crypto from 'node:crypto';
 import { z } from 'zod';
@@ -124,26 +150,52 @@ const documentGenerators: Record<string, DocumentGenerator> = {
 
 const countryDatasets = loadCountryDatasets([
   angolaDataset,
+  beninDataset,
+  botswanaDataset,
+  burkinaFasoDataset,
+  burundiDataset,
+  caboVerdeDataset,
   cameroonDataset,
+  centralAfricanRepublicDataset,
+  congoBrazzavilleDataset,
+  congoKinshasaDataset,
   coteDivoireDataset,
+  equatorialGuineaDataset,
+  eswatiniDataset,
   ethiopiaDataset,
   gabonDataset,
   gambiaDataset,
   genericIntlDataset,
   georgiaDataset,
   ghanaDataset,
+  guineaDataset,
+  guineaBissauDataset,
+  guineaConakryDataset,
   irelandDataset,
   kazakhstanDataset,
   kenyaDataset,
+  lesothoDataset,
+  liberiaDataset,
   malawiDataset,
+  maliDataset,
+  mauritiusDataset,
+  mozambiqueDataset,
+  namibiaDataset,
+  nigerDataset,
   nigeriaDataset,
+  rwandaDataset,
   senegalDataset,
   sierraLeoneDataset,
+  southAfricaDataset,
+  southSudanDataset,
+  swazilandDataset,
   tanzaniaDataset,
   togoDataset,
   ugandaDataset,
   uzbekistanDataset,
+  westernSaharaDataset,
   zambiaDataset,
+  zimbabweDataset,
 ]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 
@@ -194,13 +246,10 @@ export class DatasetError extends Error {
 
 function validateCountryDatasets(datasets: CountryDataset[]) {
   const keys = new Set<string>();
-  const countryCodes = new Set<string>();
 
   for (const dataset of datasets) {
     if (keys.has(dataset.key)) throw new DatasetError(`Duplicate country dataset key: ${dataset.key}`);
-    if (countryCodes.has(dataset.countryCode)) throw new DatasetError(`Duplicate country dataset countryCode: ${dataset.countryCode}`);
     keys.add(dataset.key);
-    countryCodes.add(dataset.countryCode);
 
     for (const [documentType, rule] of Object.entries(dataset.documents)) {
       if (rule.generator && !documentGenerators[rule.generator]) {

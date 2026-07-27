@@ -1,0 +1,12 @@
+{
+  "key": "western_sahara",
+  "label": "Western Sahara",
+  "countryCode": "EH",
+  "country": "Western Sahara",
+  "locale": "ar-EH",
+  "availability": "review",
+  "names": { "male": ["Mohamed", "Ahmed", "Hassan", "Ali"], "female": ["Fatima", "Aicha", "Mariam", "Zahra"], "last": ["Salek", "Mohamed", "Ahmed", "Ali"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed for disputed territory GEO." },
+  "phones": { "countryCallingCode": "+212", "nationalLength": 9, "prefixes": ["528", "529", "6", "7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Uses Morocco-linked numbering assumptions until separately validated." },
+  "locations": { "regions": [{ "name": "Laayoune-Sakia El Hamra", "cities": [{ "name": "Laayoune", "postalPrefixes": ["700"], "streets": ["Avenue Mekka", "Avenue Smara"] }] }, { "name": "Dakhla-Oued Ed-Dahab", "cities": [{ "name": "Dakhla", "postalPrefixes": ["730"], "streets": ["Avenue Al Massira", "Boulevard Mohammed V"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

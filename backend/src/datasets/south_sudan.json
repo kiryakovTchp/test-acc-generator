@@ -1,0 +1,12 @@
+{
+  "key": "south_sudan",
+  "label": "South Sudan",
+  "countryCode": "SS",
+  "country": "South Sudan",
+  "locale": "en-SS",
+  "availability": "review",
+  "names": { "male": ["Deng", "James", "Garang", "Peter"], "female": ["Nyandeng", "Mary", "Adut", "Grace"], "last": ["Deng", "Ajak", "Lual", "Atem"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+211", "nationalLength": 9, "prefixes": ["9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Central Equatoria", "cities": [{ "name": "Juba", "postalPrefixes": ["100"], "streets": ["Airport Road", "Nimule Street"] }] }, { "name": "Upper Nile", "cities": [{ "name": "Malakal", "postalPrefixes": ["300"], "streets": ["Nile Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; South Sudan document data was flagged to avoid Sudan/South Sudan conflation." } }
+}

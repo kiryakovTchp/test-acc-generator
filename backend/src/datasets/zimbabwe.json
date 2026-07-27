@@ -1,0 +1,12 @@
+{
+  "key": "zimbabwe",
+  "label": "Zimbabwe",
+  "countryCode": "ZW",
+  "country": "Zimbabwe",
+  "locale": "en-ZW",
+  "availability": "review",
+  "names": { "male": ["Tawanda", "Kudakwashe", "Tendai", "Simba"], "female": ["Rumbidzai", "Chipo", "Nyasha", "Tariro"], "last": ["Moyo", "Ncube", "Dube", "Sibanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+263", "nationalLength": 9, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Harare", "cities": [{ "name": "Harare", "postalPrefixes": ["000"], "streets": ["Samora Machel Avenue", "Nelson Mandela Avenue"] }] }, { "name": "Bulawayo", "cities": [{ "name": "Bulawayo", "postalPrefixes": ["900"], "streets": ["Fife Street", "Leopold Takawira Avenue"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

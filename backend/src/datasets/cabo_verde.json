@@ -1,0 +1,12 @@
+{
+  "key": "cabo_verde",
+  "label": "Cabo Verde",
+  "countryCode": "CV",
+  "country": "Cabo Verde",
+  "locale": "pt-CV",
+  "availability": "review",
+  "names": { "male": ["Carlos", "Joao", "Manuel", "Antonio"], "female": ["Maria", "Ana", "Claudia", "Helena"], "last": ["Silva", "Fernandes", "Tavares", "Pereira"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+238", "nationalLength": 7, "prefixes": ["9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Santiago", "cities": [{ "name": "Praia", "postalPrefixes": ["760"], "streets": ["Avenida Cidade de Lisboa", "Rua 5 de Julho"] }] }, { "name": "Sao Vicente", "cities": [{ "name": "Mindelo", "postalPrefixes": ["211"], "streets": ["Avenida Marginal", "Rua de Lisboa"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+}

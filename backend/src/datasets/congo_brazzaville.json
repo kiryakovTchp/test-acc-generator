@@ -1,0 +1,12 @@
+{
+  "key": "congo_brazzaville",
+  "label": "Congo (Brazzaville)",
+  "countryCode": "CG",
+  "country": "Congo (Brazzaville)",
+  "locale": "fr-CG",
+  "availability": "review",
+  "names": { "male": ["Jean", "Patrick", "Alain", "Didier"], "female": ["Marie", "Chantal", "Grace", "Francine"], "last": ["Makoumbou", "Mbemba", "Ngoma", "Mouanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+242", "nationalLength": 9, "prefixes": ["04", "05", "06"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Brazzaville", "cities": [{ "name": "Brazzaville", "postalPrefixes": ["100"], "streets": ["Avenue de la Paix", "Boulevard Denis Sassou Nguesso"] }] }, { "name": "Pointe-Noire", "cities": [{ "name": "Pointe-Noire", "postalPrefixes": ["200"], "streets": ["Avenue Charles de Gaulle", "Rue du Commerce"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Republic of the Congo was listed as not suitable for verified document generation yet." } }
+}

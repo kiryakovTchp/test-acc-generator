@@ -1,0 +1,12 @@
+{
+  "key": "guinea_bissau",
+  "label": "Guinea-Bissau",
+  "countryCode": "GW",
+  "country": "Guinea-Bissau",
+  "locale": "pt-GW",
+  "availability": "review",
+  "names": { "male": ["Carlos", "Joao", "Amilcar", "Baciro"], "female": ["Maria", "Fatima", "Binta", "Adriana"], "last": ["Gomes", "Sane", "Mendes", "Correia"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea-Bissau name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+245", "nationalLength": 9, "prefixes": ["9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea-Bissau phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
+  "locations": { "regions": [{ "name": "Bissau", "cities": [{ "name": "Bissau", "postalPrefixes": ["100"], "streets": ["Avenida Amilcar Cabral", "Avenida dos Combatentes"] }] }, { "name": "Gabu", "cities": [{ "name": "Gabu", "postalPrefixes": ["300"], "streets": ["Rua Principal", "Avenida Central"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea-Bissau location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Guinea-Bissau was listed as not suitable for verified document generation yet." } }
+}

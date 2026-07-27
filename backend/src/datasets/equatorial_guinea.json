@@ -1,0 +1,12 @@
+{
+  "key": "equatorial_guinea",
+  "label": "Equatorial Guinea",
+  "countryCode": "GQ",
+  "country": "Equatorial Guinea",
+  "locale": "es-GQ",
+  "availability": "review",
+  "names": { "male": ["Jose", "Juan", "Miguel", "Francisco"], "female": ["Maria", "Ana", "Isabel", "Dolores"], "last": ["Nguema", "Ondo", "Obiang", "Nsue"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
+  "phones": { "countryCallingCode": "+240", "nationalLength": 9, "prefixes": ["222", "55"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative prefixes for review dataset." },
+  "locations": { "regions": [{ "name": "Bioko Norte", "cities": [{ "name": "Malabo", "postalPrefixes": ["100"], "streets": ["Avenida de la Independencia", "Calle Rey Boncoro"] }] }, { "name": "Litoral", "cities": [{ "name": "Bata", "postalPrefixes": ["200"], "streets": ["Avenida de la Libertad", "Calle Centro"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
+  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Equatorial Guinea was listed as not suitable for verified document generation yet." } }
+}
