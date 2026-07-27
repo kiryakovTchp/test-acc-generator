@@ -242,6 +242,7 @@ test('burundi dataset generates internally consistent profiles', () => {
   const femaleNames = new Set(dataset.names.female);
   const lastNames = new Set(dataset.names.last);
   const regionMap = new Map(dataset.locations.regions.map((region) => [region.name, region]));
+  assert.ok(regionMap.get('Burunga')?.cities.some((city) => city.name === 'Makamba'));
 
   for (let i = 0; i < 1000; i += 1) {
     const profile = generatePersonaProfile(dataset.key, 'standard_user');
@@ -257,6 +258,7 @@ test('burundi dataset generates internally consistent profiles', () => {
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
     assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
     assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)));
+    assert.match(profile.postalCode, /^BP \d{3}$/);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);

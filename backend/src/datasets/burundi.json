@@ -113,7 +113,7 @@
           {
             "name": "Bujumbura",
             "postalPrefixes": [
-              "BP"
+              "BP "
             ],
             "streets": [
               "Avenue de l'Independance",
@@ -130,7 +130,7 @@
           {
             "name": "Gitega",
             "postalPrefixes": [
-              "BP"
+              "BP "
             ],
             "streets": [
               "Avenue du Cinquantenaire",
@@ -146,7 +146,7 @@
           {
             "name": "Muyinga",
             "postalPrefixes": [
-              "BP"
+              "BP "
             ],
             "streets": [
               "Avenue du Stade",
@@ -162,12 +162,29 @@
           {
             "name": "Ngozi",
             "postalPrefixes": [
-              "BP"
+              "BP "
             ],
             "streets": [
               "Avenue de l'Hopital",
               "Route de Kayanza",
               "Rue du Marche Central"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Burunga",
+        "cities": [
+          {
+            "name": "Makamba",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Paix",
+              "Route de Nyanza-Lac",
+              "Quartier Centre",
+              "Quartier Nyange"
             ]
           }
         ]
@@ -180,7 +197,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-27"
     },
-    "notes": "UPU/RNP examples show Burundi addresses using P.O. box/BP, commune and province lines rather than a postcode. Region-city mapping follows the current five-province public geography; postalPrefixes use BP as a generator marker for P.O. box-style addresses and are not postcodes."
+    "notes": "UPU/RNP examples show Burundi addresses using P.O. box/BP, commune and province lines rather than a postcode. Region-city mapping follows the current five-province public geography. postalPrefixes use 'BP ' as a generator marker for P.O. box-style addresses and append a fixed three synthetic digits, while real BP numbers can have variable length."
   },
   "documents": {
     "national_identity_card_number": {
