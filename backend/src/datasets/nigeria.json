@@ -1,0 +1,109 @@
+{
+  "key": "nigeria",
+  "label": "Nigeria",
+  "countryCode": "NG",
+  "country": "Nigeria",
+  "locale": "en-NG",
+  "availability": "review",
+  "names": {
+    "male": ["Chinedu", "Emeka", "Ibrahim", "Tunde", "Ade", "Musa", "Uche", "Olumide"],
+    "female": ["Ngozi", "Amina", "Funke", "Chioma", "Aisha", "Adaeze", "Yetunde", "Zainab"],
+    "last": ["Okafor", "Adebayo", "Musa", "Eze", "Balogun", "Ibrahim", "Okeke", "Adeyemi"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Common Nigeria name sample",
+      "url": "https://en.wikipedia.org/wiki/Nigerian_name",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Representative Nigerian personal names; this is intentionally marked sample_verified until curated regional name pools are added."
+  },
+  "phones": {
+    "countryCallingCode": "+234",
+    "nationalLength": 10,
+    "prefixes": ["701", "703", "704", "705", "706", "708", "802", "803", "805", "806", "807", "808", "809", "810", "811", "812", "813", "814", "815", "816", "817", "818", "901", "902", "903", "904", "905", "906", "907", "908", "909", "911", "912", "913", "915", "916"],
+    "quality": "verified",
+    "source": {
+      "title": "Nigeria national numbering plan update",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200009C0002PDFE.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Use international format without the domestic trunk prefix 0. National significant mobile number length is 10 digits."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Lagos",
+        "cities": [
+          {
+            "name": "Lagos",
+            "postalPrefixes": ["101"],
+            "streets": ["Broad Street", "Marina Road", "Adeniji Adele Road"]
+          },
+          {
+            "name": "Ikeja",
+            "postalPrefixes": ["100"],
+            "streets": ["Allen Avenue", "Awolowo Way", "Mobolaji Bank Anthony Way"]
+          }
+        ]
+      },
+      {
+        "name": "Federal Capital Territory",
+        "cities": [
+          {
+            "name": "Abuja",
+            "postalPrefixes": ["900"],
+            "streets": ["Adetokunbo Ademola Crescent", "Ahmadu Bello Way", "Constitution Avenue"]
+          }
+        ]
+      },
+      {
+        "name": "Rivers",
+        "cities": [
+          {
+            "name": "Port Harcourt",
+            "postalPrefixes": ["500"],
+            "streets": ["Aba Road", "Peter Odili Road", "Stadium Road"]
+          }
+        ]
+      }
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Nigerian postal references and public address samples",
+      "url": "https://ipms.nipost.gov.ng/nipost/HTMLPages/ContactUs.aspx",
+      "type": "government_sample",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Region, city, postal prefix, and street lists are linked structurally. Postal prefixes are coarse prefixes for synthetic addresses, not full official postcode coverage."
+  },
+  "documents": {
+    "nin": {
+      "label": "National Identification Number",
+      "generator": "nigeria_nin",
+      "pattern": "^\\d{11}$",
+      "quality": "verified",
+      "source": {
+        "title": "NIMC National Identification Number description",
+        "url": "https://www.nimc.gov.ng/",
+        "type": "official",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "NIN is generated as 11 non-intelligent digits. No checksum rule is documented in the reviewed source."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["A{RAND8}"],
+      "pattern": "^A\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Nigeria Immigration Service passport application reference",
+        "url": "https://immigration.gov.ng/passports/",
+        "type": "official",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Official source confirms passport context but not public serial grammar; keep synthetic_pattern until sample-level confirmation."
+    }
+  }
+}

@@ -2,6 +2,7 @@ import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js'
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role, AccountBalanceStatus } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
+import { generateDatasetDocument, getCountryDataset, listCountryDatasets } from '../datasets.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 import { recordActivity } from '../activity.js';
@@ -12,11 +13,19 @@ const rules = geoRules as unknown as GeoRule[];
 const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
 
 export function listGeoRules() {
-  return rules.map((rule) => ({
-    key: rule.key,
-    label: rule.label,
-    documentTypes: Object.keys(rule.documents),
-  }));
+  const datasetKeys = new Set(listCountryDatasets().map((dataset) => dataset.key));
+  return [
+    ...listCountryDatasets().map((dataset) => ({
+      key: dataset.key,
+      label: dataset.label,
+      documentTypes: Object.keys(dataset.documents),
+    })),
+    ...rules.filter((rule) => !datasetKeys.has(rule.key)).map((rule) => ({
+      key: rule.key,
+      label: rule.label,
+      documentTypes: Object.keys(rule.documents),
+    })),
+  ];
 }
 
 export async function generateAccount(input: {
@@ -32,7 +41,8 @@ export async function generateAccount(input: {
 }) {
   cleanupOldHistory();
   const workspaceId = resolveWorkspace(input.userId, input.workspaceId);
-  const geo = rules.find((rule) => rule.key === input.geoKey);
+  const dataset = getCountryDataset(input.geoKey);
+  const geo = dataset ?? rules.find((rule) => rule.key === input.geoKey);
   if (!geo) throw new ApiError('unsupported_geo', 'Unsupported GEO');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
@@ -44,8 +54,20 @@ export async function generateAccount(input: {
   let documentValue = 'Missing Rules';
   let quality: DocumentQuality = 'missing_rules';
   if (docRule) {
-    documentValue = fillTemplate(pickTemplate(docRule.templates), { dateOfBirth: profile.dateOfBirth });
-    quality = docRule.quality;
+    if (dataset) {
+      documentValue = generateDatasetDocument(dataset.documents[input.documentType], {
+        dateOfBirth: profile.dateOfBirth,
+        gender: profile.gender,
+        region: profile.region,
+      });
+    } else {
+      const legacyDocRule = docRule as GeoRule['documents'][string];
+      documentValue = fillTemplate(pickTemplate(legacyDocRule.templates), { dateOfBirth: profile.dateOfBirth });
+    }
+    if ('pattern' in docRule && !new RegExp(docRule.pattern).test(documentValue)) {
+      throw new ApiError('dataset_document_pattern_mismatch', `Generated ${geo.label} ${input.documentType} does not match dataset pattern`);
+    }
+    quality = docRule.quality === 'sample_verified' ? 'synthetic_pattern' : docRule.quality;
   }
 
   const username = `${geo.key}_${randomString(8)}`;

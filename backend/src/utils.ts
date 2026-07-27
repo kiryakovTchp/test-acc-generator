@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 import type { Gender, PersonaKey } from './types.js';
+import { DatasetError, generateDatasetPhone, getCountryDataset } from './datasets.js';
 
 const MALE_FIRST_NAMES = ['John', 'Michael', 'David', 'Daniel', 'James', 'Alex', 'Samuel', 'Peter', 'Joseph', 'Brian'];
 const FEMALE_FIRST_NAMES = ['Grace', 'Mary', 'Esther', 'Ruth', 'Anna', 'Joy', 'Alice', 'Sarah', 'Diana', 'Lydia'];
@@ -332,19 +333,24 @@ export function extractCodes(text: string) {
 
 export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
   const gender = pickGender(persona);
+  const dataset = getCountryDataset(geoKey);
   const nameProfile = GEO_NAME_DEFAULTS[geoKey];
-  const firstNamePool = gender === 'male' ? (nameProfile?.maleFirstNames ?? MALE_FIRST_NAMES) : (nameProfile?.femaleFirstNames ?? FEMALE_FIRST_NAMES);
-  const lastNamePool = nameProfile?.lastNames ?? LAST_NAMES;
+  const firstNamePool = gender === 'male'
+    ? (dataset?.names.male ?? nameProfile?.maleFirstNames ?? MALE_FIRST_NAMES)
+    : (dataset?.names.female ?? nameProfile?.femaleFirstNames ?? FEMALE_FIRST_NAMES);
+  const lastNamePool = dataset?.names.last ?? nameProfile?.lastNames ?? LAST_NAMES;
   const firstName = firstNamePool[randomIndex(firstNamePool.length)];
   const lastName = lastNamePool[randomIndex(lastNamePool.length)];
-  const age = randomAge(persona);
-  const dateOfBirth = buildDateOfBirth(age);
-  const geo = GEO_PROFILE_DEFAULTS[geoKey] ?? GEO_PROFILE_DEFAULTS.generic_intl;
-  const region = geo.regions[randomIndex(geo.regions.length)] ?? GEO_PROFILE_DEFAULTS.generic_intl.regions[0];
-  const city = region.cities[randomIndex(region.cities.length)];
-  const postalBase = region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
+  const dateOfBirth = buildDateOfBirth(persona);
+  const age = calculateAge(dateOfBirth);
+  const geo = dataset ? null : (GEO_PROFILE_DEFAULTS[geoKey] ?? GEO_PROFILE_DEFAULTS.generic_intl);
+  const datasetRegion = dataset?.locations.regions[randomIndex(dataset.locations.regions.length)];
+  const datasetCity = datasetRegion?.cities[randomIndex(datasetRegion.cities.length)];
+  const region = geo?.regions[randomIndex(geo.regions.length)] ?? GEO_PROFILE_DEFAULTS.generic_intl.regions[0];
+  const city = datasetCity?.name ?? region.cities[randomIndex(region.cities.length)];
+  const postalBase = datasetCity?.postalPrefixes[randomIndex(datasetCity.postalPrefixes.length)] ?? region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
   const postalCode = `${postalBase}${randomDigits(3)}`;
-  const street = region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
+  const street = datasetCity?.streets[randomIndex(datasetCity.streets.length)] ?? region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
   const addressLine = `${1 + crypto.randomInt(1, 250)} ${street}`;
   const placeOfBirth = city;
   const documentIssueDate = buildDocumentIssueDate(dateOfBirth);
@@ -355,14 +361,14 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
     gender,
     age,
     dateOfBirth,
-    country: geo.country,
-    region: region.name?.trim() || 'Not specified',
+    country: dataset?.country ?? geo?.country ?? GEO_PROFILE_DEFAULTS.generic_intl.country,
+    region: datasetRegion?.name ?? (region.name?.trim() || 'Not specified'),
     city,
     placeOfBirth,
     addressLine,
     postalCode,
     documentIssueDate,
-    phone: randomPhone(geoKey),
+    phone: dataset ? generateDatasetPhone(dataset) : randomPhone(geoKey),
     persona,
   };
 }
@@ -407,19 +413,12 @@ function formatDateOfBirthYyMmDd(dateOfBirth?: string) {
   return `${match[1].slice(-2)}${match[2]}${match[3]}`;
 }
 
-function randomAge(persona: PersonaKey) {
-  switch (persona) {
-    case 'young_user':
-      return 18 + crypto.randomInt(0, 7);
-    case 'senior_user':
-      return 55 + crypto.randomInt(0, 21);
-    case 'standard_user':
-      return 25 + crypto.randomInt(0, 16);
-    case 'male_user':
-    case 'female_user':
-    default:
-      return 25 + crypto.randomInt(0, 31);
-  }
+export function calculateAge(dateOfBirth: string, now = new Date()) {
+  const birthDate = new Date(`${dateOfBirth}T00:00:00Z`);
+  let age = now.getUTCFullYear() - birthDate.getUTCFullYear();
+  const birthdayThisYear = Date.UTC(now.getUTCFullYear(), birthDate.getUTCMonth(), birthDate.getUTCDate());
+  if (now.getTime() < birthdayThisYear) age -= 1;
+  return age;
 }
 
 function pickGender(persona: PersonaKey): Gender {
@@ -428,12 +427,38 @@ function pickGender(persona: PersonaKey): Gender {
   return crypto.randomInt(0, 2) === 0 ? 'male' : 'female';
 }
 
-function buildDateOfBirth(age: number) {
+function buildDateOfBirth(persona: PersonaKey) {
   const now = new Date();
-  const year = now.getUTCFullYear() - age;
-  const month = 1 + crypto.randomInt(0, 12);
-  const day = 1 + crypto.randomInt(0, 28);
-  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const { minAge, maxAge } = ageRange(persona);
+  const latestBirthDate = subtractYears(now, minAge);
+  const earliestBirthDate = subtractYears(now, maxAge + 1);
+  const earliestTs = Date.UTC(earliestBirthDate.getUTCFullYear(), earliestBirthDate.getUTCMonth(), earliestBirthDate.getUTCDate() + 1);
+  const latestTs = Date.UTC(latestBirthDate.getUTCFullYear(), latestBirthDate.getUTCMonth(), latestBirthDate.getUTCDate());
+  if (earliestTs > latestTs) throw new DatasetError(`Invalid age range: ${minAge}-${maxAge}`);
+  return formatDate(new Date(earliestTs + crypto.randomInt(0, latestTs - earliestTs + 1)));
+}
+
+function ageRange(persona: PersonaKey) {
+  switch (persona) {
+    case 'young_user':
+      return { minAge: 18, maxAge: 24 };
+    case 'senior_user':
+      return { minAge: 55, maxAge: 75 };
+    case 'standard_user':
+      return { minAge: 25, maxAge: 40 };
+    case 'male_user':
+    case 'female_user':
+    default:
+      return { minAge: 25, maxAge: 55 };
+  }
+}
+
+function subtractYears(date: Date, years: number) {
+  const result = new Date(Date.UTC(date.getUTCFullYear() - years, date.getUTCMonth(), date.getUTCDate()));
+  if (result.getUTCMonth() !== date.getUTCMonth()) {
+    result.setUTCDate(0);
+  }
+  return result;
 }
 
 function buildDocumentIssueDate(dateOfBirth: string) {

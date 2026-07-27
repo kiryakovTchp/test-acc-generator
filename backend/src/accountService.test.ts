@@ -219,7 +219,8 @@ test('confirmed document rules are marked verified', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'nigeria', documentType: 'nin', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(item?.documentQuality, 'verified');
   assert.match(item?.documentValue ?? '', /^\d{11}$/);
-  assert.match(item?.phone ?? '', /^\+23480\d{8}$/);
+  assert.match(item?.phone ?? '', /^\+234\d{10}$/);
+  assert.equal(item?.phone.startsWith('+2340'), false);
 });
 
 test('phone can be manually edited after generation', async () => {
