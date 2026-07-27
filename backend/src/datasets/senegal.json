@@ -1,0 +1,50 @@
+{
+  "key": "senegal",
+  "label": "Senegal",
+  "countryCode": "SN",
+  "country": "Senegal",
+  "locale": "fr-SN",
+  "availability": "review",
+  "names": {
+    "male": ["Mamadou", "Cheikh", "Ibrahima", "Ousmane", "Moussa", "Abdou"],
+    "female": ["Fatou", "Awa", "Aminata", "Mariama", "Coumba", "Sokhna"],
+    "last": ["Diop", "Ndiaye", "Sow", "Fall", "Ba", "Gueye"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Senegal name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Senegalese names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+221",
+    "nationalLength": 9,
+    "prefixes": ["70"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Senegal phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +22170 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Dakar",
+        "cities": [
+          { "name": "Dakar", "postalPrefixes": ["110"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot"] },
+          { "name": "Pikine", "postalPrefixes": ["110"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot"] }
+        ]
+      },
+      { "name": "Thies", "cities": [{ "name": "Thies", "postalPrefixes": ["210"], "streets": ["Avenue General de Gaulle", "Route de Mbour"] }] },
+      { "name": "Diourbel", "cities": [{ "name": "Touba", "postalPrefixes": ["310"], "streets": ["Avenue Cheikh Ahmadou Bamba", "Route de Darou"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Senegal location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "ecowas_id_card_number": {
+      "label": "ECOWAS ID Card Number",
+      "templates": ["{RAND17}"],
+      "pattern": "^\\d{17}$",
+      "quality": "verified",
+      "source": { "title": "Senegal ECOWAS biometric identity card decree", "url": "https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/", "type": "official", "checkedAt": "2026-07-27" },
+      "notes": "Senegal decree states the ECOWAS identity card number contains 17 digits. Generated values are synthetic and not registry-checked."
+    }
+  }
+}

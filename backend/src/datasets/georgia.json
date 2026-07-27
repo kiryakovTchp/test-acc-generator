@@ -1,0 +1,44 @@
+{
+  "key": "georgia",
+  "label": "Georgia",
+  "countryCode": "GE",
+  "country": "Georgia",
+  "locale": "ka-GE",
+  "availability": "review",
+  "names": {
+    "male": ["Giorgi", "Davit", "Luka", "Nikoloz", "Irakli", "Levan"],
+    "female": ["Nino", "Mariam", "Ana", "Tamar", "Salome", "Ketevan"],
+    "last": ["Beridze", "Kapanadze", "Gelashvili", "Maisuradze", "Giorgadze", "Lomidze"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Georgia name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Georgian names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+995",
+    "nationalLength": 9,
+    "prefixes": ["555"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Georgia phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +995555 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Tbilisi", "cities": [{ "name": "Tbilisi", "postalPrefixes": ["010"], "streets": ["Rustaveli Avenue", "Aghmashenebeli Avenue"] }] },
+      { "name": "Adjara", "cities": [{ "name": "Batumi", "postalPrefixes": ["600"], "streets": ["Chavchavadze Street", "Gorgiladze Street"] }] },
+      { "name": "Imereti", "cities": [{ "name": "Kutaisi", "postalPrefixes": ["460"], "streets": ["Tsereteli Street", "Queen Tamar Avenue"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Georgia location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "personal_number": {
+      "label": "Personal Number",
+      "templates": ["{RAND11}"],
+      "pattern": "^\\d{11}$",
+      "quality": "verified",
+      "source": { "title": "OECD Georgia TIN guidance", "url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/georgia-tin.pdf", "type": "trusted_reference", "checkedAt": "2026-07-27" },
+      "notes": "OECD Georgia TIN guidance confirms citizen personal number is 11 digits. Generated values are synthetic and not registry-checked."
+    }
+  }
+}

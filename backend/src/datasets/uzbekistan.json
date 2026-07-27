@@ -1,0 +1,57 @@
+{
+  "key": "uzbekistan",
+  "label": "Uzbekistan",
+  "countryCode": "UZ",
+  "country": "Uzbekistan",
+  "locale": "uz-UZ",
+  "availability": "review",
+  "names": {
+    "male": ["Aziz", "Sardor", "Bekzod", "Jasur", "Dilshod", "Farrukh"],
+    "female": ["Madina", "Malika", "Gulnoza", "Sevara", "Dildora", "Shahnoza"],
+    "last": ["Karimov", "Tursunov", "Rakhimov", "Yusupov", "Saidov", "Khamidov"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Uzbekistan name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Latin-transliterated names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+998",
+    "nationalLength": 9,
+    "prefixes": ["91"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Uzbekistan phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +99891 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Tashkent Region", "cities": [{ "name": "Tashkent", "postalPrefixes": ["100"], "streets": ["Amir Temur", "Mustaqillik"] }] },
+      {
+        "name": "Samarkand Region",
+        "cities": [
+          { "name": "Samarkand", "postalPrefixes": ["140"], "streets": ["Navoi Street", "Registan Street"] },
+          { "name": "Bukhara", "postalPrefixes": ["200"], "streets": ["Navoi Street", "Registan Street"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Uzbekistan location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "pinfl": {
+      "label": "Personal Identification Number",
+      "templates": ["{RAND14}"],
+      "pattern": "^\\d{14}$",
+      "quality": "verified",
+      "source": { "title": "Uzbekistan PINFL/JSHSHIR reference", "url": "https://my.gov.uz/ru/static/jshshir-for-foreigners", "type": "official", "checkedAt": "2026-07-27" },
+      "notes": "my.gov.uz confirms PINFL/JSHSHIR is a unique 14-digit number. Generated values are synthetic and not registry-checked."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["AA{RAND7}"],
+      "pattern": "^[A-Z]{2}\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Uzbekistan passport visual candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+      "notes": "Probable visual pattern; keep review until an official/sample source confirms it."
+    }
+  }
+}
