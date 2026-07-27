@@ -144,6 +144,7 @@ export interface DocumentGeneratorContext {
 type DocumentGenerator = (context: DocumentGeneratorContext) => string;
 
 const documentGenerators: Record<string, DocumentGenerator> = {
+  gabon_nip: generateGabonNip,
   kazakhstan_iin: generateKazakhstanIin,
   nigeria_nin: () => randomDigits(11),
 };
@@ -261,6 +262,13 @@ function validateCountryDatasets(datasets: CountryDataset[]) {
   return datasets;
 }
 
+function generateGabonNip(context: DocumentGeneratorContext) {
+  const birthDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(context.dateOfBirth);
+  if (!birthDateMatch) throw new DatasetError(`Invalid Gabon NIP birth date: ${context.dateOfBirth}`);
+
+  return `${randomAlphaNumeric(2)}${randomDigits(4)}${birthDateMatch[1]}${birthDateMatch[2]}${birthDateMatch[3]}`;
+}
+
 function generateKazakhstanIin(context: DocumentGeneratorContext) {
   const birthDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(context.dateOfBirth);
   if (!birthDateMatch) throw new DatasetError(`Invalid Kazakhstan IIN birth date: ${context.dateOfBirth}`);
@@ -315,6 +323,12 @@ function randomDigits(length: number) {
 function randomLetters(length: number) {
   const bytes = crypto.randomBytes(length);
   return Array.from({ length }, (_, i) => 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'[bytes[i] % 26]).join('');
+}
+
+function randomAlphaNumeric(length: number) {
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const bytes = crypto.randomBytes(length);
+  return Array.from({ length }, (_, i) => alphabet[bytes[i] % alphabet.length]).join('');
 }
 
 function formatDateOfBirthYyMmDd(dateOfBirth?: string) {

@@ -455,8 +455,9 @@ test('burundi document rules match configured public-source limits', () => {
 
 test('gabon document rules match configured public-source limits', () => {
   const dataset = getDataset('gabon');
+  const nipRule = dataset.documents.personal_identification_number;
 
-  assert.equal(dataset.documents.personal_identification_number.quality, 'synthetic_pattern');
+  assert.equal(nipRule.quality, 'synthetic_pattern');
   assert.equal(dataset.documents.passport.quality, 'synthetic_pattern');
 
   for (let i = 0; i < 1000; i += 1) {
@@ -465,6 +466,10 @@ test('gabon document rules match configured public-source limits', () => {
       assert.match(value, new RegExp(rule.pattern), `${rule.label}: ${value} did not match ${rule.pattern}`);
     }
   }
+
+  const nip = generateDatasetDocument(nipRule, { dateOfBirth: '1991-07-27', gender: 'male', region: 'Estuaire' });
+  assert.match(nip, /^[A-Z0-9]{2}\d{12}$/);
+  assert.equal(nip.slice(6), '19910727');
 });
 
 test('kazakhstan iin document matches birth date gender and checksum', () => {

@@ -68,6 +68,31 @@ The current Nigeria rules do not write `sample_verified` document quality, so pr
 - Run it in staging/local DB first with representative history rows.
 - Deploy separately from a large dataset expansion so rollback is simple.
 
+## P2 - Split Postal Code and P.O. Box Address Fields
+
+Status: planned
+Source: 2026-07-27 Gabon dataset review
+Owner: Developer + Project
+
+### Problem
+
+Some country datasets need P.O. box/BP addressing, while the current profile shape exposes only `postalCode`. Gabon and Burundi currently use `BP 123`-style values in `postalCode` as a generator marker, but UPU examples separate BP/P.O. box lines from postcode/locality/delivery-office lines.
+
+### Required Behavior
+
+- Add a separate optional `poBox` field without breaking existing generated account history.
+- Keep `postalCode` for actual postcode/locality code values where an authoritative or clearly labeled synthetic postcode shape exists.
+- For BP/P.O. box countries, generate `poBox` separately and leave `postalCode` empty or set it from a verified postcode/locality rule.
+- Update export/copy/detail UI labels so users do not receive a BP value mislabeled as a postal code.
+- Migrate affected review datasets incrementally, starting with Gabon and Burundi.
+
+### Recommended Technical Shape
+
+- Extend profile/API/frontend types with `poBox?: string`.
+- Add an optional `po_box` column to `account_history`.
+- Extend dataset location metadata with explicit postal and P.O. box generation fields instead of overloading `postalPrefixes`.
+- Preserve backward-compatible display of existing rows where only `postal_code` exists.
+
 ## P1 - Personal Account Access ACL
 
 Status: planned

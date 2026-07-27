@@ -171,18 +171,16 @@
   "documents": {
     "personal_identification_number": {
       "label": "Personal Identification Number (NIP)",
-      "templates": [
-        "{RANDL4}{RAND10}"
-      ],
-      "pattern": "^[A-Z0-9]{14}$",
+      "generator": "gabon_nip",
+      "pattern": "^[A-Z0-9]{2}\\d{12}$",
       "quality": "synthetic_pattern",
       "source": {
-        "title": "Gabon Ministry of Interior NIP and CNIE campaign notice",
-        "url": "https://www.interieur.gouv.ga/9-actualites/562-delivrance-du-numero-d-identification-personnel-nip-/",
-        "type": "official",
+        "title": "ID4Africa Gabon identity project presentation",
+        "url": "https://www.id4africa.com/2019_event/presentations/InF16/1-Aime-Massamba-Gabon.pdf",
+        "type": "trusted_reference",
         "checkedAt": "2026-07-27"
       },
-      "notes": "The official Ministry of Interior source confirms NIP issuance as the prerequisite for the electronic national identity card. Public secondary reports describe a fourteen-character alphanumeric NIP, but no official checksum, semantic digit rule or full public format specification was found; generated values are synthetic placeholders."
+      "notes": "The official Ministry of Interior source confirms NIP issuance as the prerequisite for the electronic national identity card. The ID4Africa project presentation and public examples indicate a XX-NNNN-YYYYMMDD structure; generated values omit separators, use the profile birth date, and keep the first two alphanumeric characters synthetic because the control algorithm is not public."
     },
     "passport": {
       "label": "Passport",
