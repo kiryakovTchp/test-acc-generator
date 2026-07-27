@@ -80,12 +80,14 @@
       "75",
       "76",
       "77",
-      "78",
-      "81",
-      "82",
-      "83",
-      "84",
-      "85"
+      "780",
+      "781",
+      "782",
+      "783",
+      "784",
+      "785",
+      "786",
+      "787"
     ],
     "quality": "verified",
     "source": {
@@ -94,7 +96,7 @@
       "type": "official",
       "checkedAt": "2026-07-27"
     },
-    "notes": "ITU/BOCRA confirms country code +267 and that level 7 and part of level 8 are eight-digit mobile number ranges from 71 XXX XXX to 85 XXX XXX. Generated numbers are synthetic and are not checked for current subscriber assignment, portability or M2M/non-geographic subdivision."
+    "notes": "ITU/BOCRA confirms country code +267 and eight-digit active mobile allocations. This dataset deliberately uses only fully active 71-77 ranges and the confirmed 780-787 slices; active 79 sub-blocks are omitted until represented with finer-grained prefixes, and unlisted 81-85 plan space is not generated."
   },
   "locations": {
     "regions": [
