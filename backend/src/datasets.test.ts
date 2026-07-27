@@ -226,6 +226,7 @@ test('burkina faso dataset generates internally consistent profiles', () => {
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
     assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
     assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)));
+    assert.match(profile.postalCode, /^\d{5}$/);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);

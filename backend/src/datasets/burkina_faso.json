@@ -125,7 +125,7 @@
           {
             "name": "Ouagadougou",
             "postalPrefixes": [
-              "100"
+              "10"
             ],
             "streets": [
               "Avenue Kwame Nkrumah",
@@ -142,7 +142,7 @@
           {
             "name": "Bobo-Dioulasso",
             "postalPrefixes": [
-              "BOB"
+              "00"
             ],
             "streets": [
               "Avenue de la Nation",
@@ -159,7 +159,7 @@
           {
             "name": "Koudougou",
             "postalPrefixes": [
-              "KDG"
+              "00"
             ],
             "streets": [
               "Avenue Maurice Yameogo",
@@ -175,7 +175,7 @@
           {
             "name": "Ouahigouya",
             "postalPrefixes": [
-              "OUG"
+              "00"
             ],
             "streets": [
               "Avenue de l'Independance",
@@ -193,7 +193,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-27"
     },
-    "notes": "UPU confirms Burkina Faso addressing structure and public examples including Ouagadougou, Avenue de la Nation and five-digit postal-office style codes. Region-city mapping uses common public geography; non-Ouagadougou postalPrefixes are internal generator markers pending authoritative city-level postal-code coverage."
+    "notes": "UPU confirms Burkina Faso addressing structure and public examples including Ouagadougou, Avenue de la Nation and five-digit postal-office style codes. Region-city mapping uses common public geography; non-Ouagadougou postalPrefixes are numeric synthetic placeholders preserving the official five-digit postcode shape and are not confirmed city-level allocations."
   },
   "documents": {
     "national_personal_identification_number": {
