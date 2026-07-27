@@ -5,8 +5,223 @@
   "country": "Benin",
   "locale": "fr-BJ",
   "availability": "review",
-  "names": { "male": ["Jean", "Michel", "Koffi", "Youssouf"], "female": ["Aminata", "Marie", "Chantal", "Fatou"], "last": ["Hounkpe", "Soglo", "Dossou", "Adandedjan"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+229", "nationalLength": 10, "prefixes": ["01"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative placeholder for review dataset." },
-  "locations": { "regions": [{ "name": "Littoral", "cities": [{ "name": "Cotonou", "postalPrefixes": ["01"], "streets": ["Avenue Steinmetz", "Boulevard Saint Michel"] }] }, { "name": "Atlantique", "cities": [{ "name": "Abomey-Calavi", "postalPrefixes": ["02"], "streets": ["Route de Calavi", "Rue des Palmiers"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Benin location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Benin was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": [
+      "Jean",
+      "Pierre",
+      "Amadou",
+      "Moussa",
+      "Comlan",
+      "Antoine",
+      "Joseph",
+      "Daniel",
+      "Mathieu",
+      "Pascal",
+      "Emmanuel",
+      "Michel",
+      "Issa",
+      "Ibrahim",
+      "Oumarou",
+      "Idrissou"
+    ],
+    "female": [
+      "Marie",
+      "Elisabeth",
+      "Jeanne",
+      "Julienne",
+      "Christine",
+      "Josephine",
+      "Justine",
+      "Pauline",
+      "Fati",
+      "Cecile",
+      "Philomene",
+      "Celestine",
+      "Amina",
+      "Mariam",
+      "Awaou",
+      "Fatouma"
+    ],
+    "last": [
+      "Bio",
+      "Dossou",
+      "Hounkpe",
+      "Soglo",
+      "Adandedjan",
+      "Tossou",
+      "Houngbedji",
+      "Adegbola",
+      "Chabi",
+      "Sabi",
+      "Codjo",
+      "Orou"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Benin forenames and surnames frequency tables",
+      "url": "https://forebears.io/benin/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. Gender grouping follows the public gender field for high-frequency forenames; this is not an official civil registry dataset."
+  },
+  "phones": {
+    "countryCallingCode": "+229",
+    "nationalLength": 10,
+    "prefixes": [
+      "0140",
+      "0141",
+      "0142",
+      "0143",
+      "0144",
+      "0145",
+      "0146",
+      "0147",
+      "0150",
+      "0151",
+      "0152",
+      "0153",
+      "0154",
+      "0155",
+      "0156",
+      "0157",
+      "0158",
+      "0159",
+      "0160",
+      "0161",
+      "0162",
+      "0163",
+      "0164",
+      "0165",
+      "0166",
+      "0167",
+      "0168",
+      "0169",
+      "0190",
+      "0191",
+      "0194",
+      "0195",
+      "0196",
+      "0197",
+      "0198",
+      "0199"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Operational Bulletin: Benin national numbering plan communication of 24.IV.2024",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000170002PDFF.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "ITU/ARCEP confirms country code +229, migration to ten-digit national significant numbers, and mobile assigned ranges including 0140-0147, 0150-0169 and 0190-0199 except unassigned 0192/0193. Numbers are synthetic and not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Littoral",
+        "cities": [
+          {
+            "name": "Cotonou",
+            "postalPrefixes": [
+              "01"
+            ],
+            "streets": [
+              "Avenue Steinmetz",
+              "Boulevard Saint Michel",
+              "Avenue Jean-Paul II",
+              "Rue du Gouverneur Bayol"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Atlantique",
+        "cities": [
+          {
+            "name": "Abomey-Calavi",
+            "postalPrefixes": [
+              "02"
+            ],
+            "streets": [
+              "Route de Calavi",
+              "Rue des Palmiers",
+              "Route de Godomey"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Oueme",
+        "cities": [
+          {
+            "name": "Porto-Novo",
+            "postalPrefixes": [
+              "03"
+            ],
+            "streets": [
+              "Avenue Victor Ballot",
+              "Boulevard Tokpota",
+              "Rue Akonaboue"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Borgou",
+        "cities": [
+          {
+            "name": "Parakou",
+            "postalPrefixes": [
+              "04"
+            ],
+            "streets": [
+              "Avenue de la Gare",
+              "Route de Malanville",
+              "Rue de l'Hotel de Ville"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Benin Ministry of Living Environment asphaltage project city list",
+      "url": "https://cadredevie.gouv.bj/projets/219-rehabilitation-et-amenagement-des-voiries-dans-certaines-villes-du-benin-asphaltage/",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Official project source confirms key city names used in the dataset. Department-city mapping is conventional public geography; street names and postal prefixes remain sample/synthetic because Benin does not use national postcodes in the same way as many countries and public postal-office prefixes require separate authoritative coverage."
+  },
+  "documents": {
+    "national_personal_identification_number": {
+      "label": "National Personal Identification Number",
+      "templates": [
+        "{RAND10}"
+      ],
+      "pattern": "^\\d{10}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "ANIP Carte Nationale d'Identite Biometrique specimen",
+        "url": "https://anip.bj/wp-content/uploads/2025/05/CNIB-1.pdf",
+        "type": "government_sample",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "ANIP public CNIB specimen displays a ten-digit NPI example, and ANIP describes the CNIB as based on the personal identification number. No public rule, checksum, semantic digits or allocated-range validation was found, so generation remains a synthetic numeric template."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Benin ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/ben/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "PRADO confirms Benin ordinary passport document versions, but the public entry reviewed does not confirm the passport number grammar. The template is retained only as a conservative synthetic placeholder until multiple public samples or an official number-format rule are available."
+    }
+  }
 }
