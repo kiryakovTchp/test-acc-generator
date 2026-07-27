@@ -167,6 +167,33 @@ test('kazakhstan dataset generates internally consistent profiles', () => {
   }
 });
 
+test("cote d'ivoire dataset generates internally consistent profiles", () => {
+  const dataset = getDataset('cote_divoire');
+  const maleNames = new Set(dataset.names.male);
+  const femaleNames = new Set(dataset.names.female);
+  const lastNames = new Set(dataset.names.last);
+  const regionMap = new Map(dataset.locations.regions.map((region) => [region.name, region]));
+
+  for (let i = 0; i < 1000; i += 1) {
+    const profile = generatePersonaProfile(dataset.key, 'standard_user');
+    assert.ok(maleNames.has(profile.firstName) || femaleNames.has(profile.firstName));
+    assert.ok(lastNames.has(profile.lastName));
+    assert.equal(profile.country, dataset.country);
+    assert.equal(profile.age, calculateAge(profile.dateOfBirth));
+
+    const selectedRegion = regionMap.get(profile.region);
+    assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
+    const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
+    assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
+    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
+    assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)));
+
+    const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
+    assert.equal(nationalNumber.length, dataset.phones.nationalLength);
+    assert.ok(dataset.phones.prefixes.some((prefix) => nationalNumber.startsWith(prefix)));
+  }
+});
+
 test('nigeria document rules match their configured patterns', () => {
   const dataset = getDataset('nigeria');
 
@@ -190,6 +217,17 @@ test('kazakhstan iin document matches birth date gender and checksum', () => {
     assert.equal(value.slice(0, 6), dateOfBirth.replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2})$/, '$2$3$4'));
     assert.equal(Number(value[6]) % 2 === 1, gender === 'male');
     assert.equal(validateKazakhstanIin(value), true);
+  }
+});
+
+test("cote d'ivoire document rules match provided patterns", () => {
+  const dataset = getDataset('cote_divoire');
+
+  for (let i = 0; i < 1000; i += 1) {
+    for (const rule of Object.values(dataset.documents)) {
+      const value = generateDatasetDocument(rule, { dateOfBirth: '1991-07-27', gender: 'female', region: 'Abidjan' });
+      assert.match(value, new RegExp(rule.pattern), `${rule.label}: ${value} did not match ${rule.pattern}`);
+    }
   }
 });
 

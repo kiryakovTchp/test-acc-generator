@@ -1,3 +1,4 @@
+import coteDivoireDataset from './datasets/cote_divoire.json' with { type: 'json' };
 import kazakhstanDataset from './datasets/kazakhstan.json' with { type: 'json' };
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
 import type { Gender } from './types.js';
@@ -103,7 +104,7 @@ const documentGenerators: Record<string, DocumentGenerator> = {
   nigeria_nin: () => randomDigits(11),
 };
 
-const countryDatasets = loadCountryDatasets([kazakhstanDataset, nigeriaDataset]);
+const countryDatasets = loadCountryDatasets([coteDivoireDataset, kazakhstanDataset, nigeriaDataset]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 
 export function loadCountryDatasets(rawDatasets: unknown[]) {
