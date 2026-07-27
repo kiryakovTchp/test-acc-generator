@@ -1186,6 +1186,36 @@ select.input-field.badge-select {
   color: #1d4ed8;
 }
 
+.generation-toast {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 80;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  max-width: min(420px, calc(100vw - 32px));
+  min-height: 38px;
+  border: 1px solid rgba(37, 99, 235, 0.18);
+  border-radius: 8px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.96);
+  color: #1f2937;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.generation-toast-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--active);
+  box-shadow: 0 0 0 5px rgba(59, 130, 246, 0.12);
+}
+
 .alerts-panel {
   width: 100%;
   display: grid;
@@ -2732,6 +2762,48 @@ body {
   font-size: 12px;
 }
 
+.changelog-list {
+  display: grid;
+  gap: 10px;
+}
+
+.changelog-entry {
+  display: grid;
+  grid-template-columns: minmax(170px, 0.28fr) minmax(0, 1fr);
+  gap: 18px;
+  border: 1px solid #edf0f4;
+  border-radius: 6px;
+  padding: 14px;
+  background: #fff;
+}
+
+.changelog-entry-meta {
+  display: grid;
+  align-content: start;
+  gap: 5px;
+}
+
+.changelog-entry-meta strong {
+  font-size: 13px;
+}
+
+.changelog-entry-meta span,
+.changelog-entry-meta small {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.changelog-entry ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 18px;
+  color: #374151;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
 .settings-toggle {
   display: flex;
   align-items: center;
@@ -4022,6 +4094,17 @@ kbd {
   .logout-button {
     width: 100%;
     min-width: 0;
+  }
+
+  .generation-toast {
+    right: 10px;
+    bottom: 10px;
+    max-width: calc(100vw - 20px);
+  }
+
+  .changelog-entry {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .mailbox-control-actions {

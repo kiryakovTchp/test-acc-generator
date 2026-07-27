@@ -11,6 +11,35 @@ This file tracks product and engineering improvements that are not yet implement
 - `P2`: useful improvement;
 - `P3`: polish or optional enhancement.
 
+## P1 - New Release Preparation Checklist
+
+Status: planned
+Source: 2026-07-27 Telegram release-prep request
+Owner: Developer + Project
+
+### Problem
+
+The next production release includes the dataset architecture line plus follow-up UI fixes. Before deploying it, the project needs one visible checklist so release readiness is reviewed consistently.
+
+### Check Match
+
+- [ ] Confirm the exact release commit range from production SHA to target main SHA.
+- [ ] Review backlog blockers that must ship before the release.
+- [ ] Run `npm run validate:datasets`.
+- [ ] Run `npm test`.
+- [ ] Run `npm run build`.
+- [ ] Run `git diff --check`.
+- [ ] Confirm GitHub Security is green for the target SHA.
+- [ ] Confirm production DB migrations needed for `sample_verified` document quality before deploying any commit that writes it.
+- [ ] Smoke test authenticated pages and generation flow after deploy.
+- [ ] Add the shipped release notes to `/changelog`.
+
+### Required Behavior
+
+- Keep the checklist in the backlog until the release is fully deployed and smoke-tested.
+- Treat this as a release gate, not a UI-only task.
+- Do not deploy production from this item unless deployment is explicitly approved.
+
 ## P1 - Sample-Verified Document Quality DB Migration
 
 Status: planned

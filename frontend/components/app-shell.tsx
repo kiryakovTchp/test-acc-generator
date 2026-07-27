@@ -9,7 +9,7 @@ import { LOCALE_OPTIONS, normalizeLocale, translate, type Locale } from '@/lib/i
 import { BALANCE_STATUS_OPTIONS, balanceStatusLabel, balanceStatusTone, buildSettingsTabs, inviteStatusTone, isWorkspaceShared, mapDetailStatus, mapHistoryStatus, roleLabel, roleTone, scopeLabel, scopeTone, statusLabel, statusTone, workspaceStatusLabel, type AccountBalanceStatus, type HistoryStatus, type SettingsTab } from '@/lib/ui-state';
 
 type PersonaKey = 'standard_user' | 'young_user' | 'senior_user' | 'male_user' | 'female_user';
-type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings';
+type AppView = 'main' | 'accounts' | 'mailboxes' | 'form_data' | 'codes' | 'settings' | 'changelog';
 type NavKey = Exclude<AppView, 'main'>;
 type BrowserGenerationSettings = {
   selectedGeo: string;
@@ -99,6 +99,7 @@ const NAV_ITEMS: Array<{ key: AppView; label: string; short: string; href: strin
   { key: 'mailboxes', label: 'Mailboxes', short: 'MB', href: '/mailboxes' },
   { key: 'codes', label: 'Verification', short: 'VF', href: '/codes' },
   { key: 'settings', label: 'Settings', short: 'ST', href: '/settings' },
+  { key: 'changelog', label: 'Changelog', short: 'CL', href: '/changelog' },
 ];
 
 const SETTINGS_STORAGE_KEY = 'tag-workspace-settings';
@@ -1547,8 +1548,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         </div>
 
         {error ? <div className="alert alert-error slim">{error}</div> : null}
-        {isGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? 'Создаю почтовый ящик, учетные данные и первый снимок входящих.' : 'Creating mailbox, credentials, and first inbox snapshot.'}</div> : null}
-        {isBulkGenerating ? <div className="alert alert-info slim">{locale === 'ru' ? `Создаю профили и почтовые снимки: ${bulkCount}.` : `Creating ${bulkCount} identities and mailbox snapshots.`}</div> : null}
         {activeNav === 'main' ? <AlertsPanel items={alertItems} locale={locale} /> : null}
 
         {showQuickActions ? (
@@ -2053,6 +2052,16 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             />
           )}
         </div>
+        {isGenerating || isBulkGenerating ? (
+          <div className="generation-toast" role="status" aria-live="polite">
+            <span className="generation-toast-dot" aria-hidden="true" />
+            <span>
+              {isBulkGenerating
+                ? (locale === 'ru' ? `Создаю профили и почтовые снимки: ${bulkCount}.` : `Creating ${bulkCount} identities and mailbox snapshots.`)
+                : (locale === 'ru' ? 'Создаю почтовый ящик, учетные данные и первый снимок входящих.' : 'Creating mailbox, credentials, and first inbox snapshot.')}
+            </span>
+          </div>
+        ) : null}
       </section>
     </main>
   );
@@ -2440,6 +2449,10 @@ function UtilityView({
   const [settingsTab, setSettingsTab] = useState<SettingsTab>('defaults');
   const t = (text: string) => tr(locale, text);
 
+  if (activeNav === 'changelog') {
+    return <ChangelogView locale={locale} />;
+  }
+
   if (activeNav === 'mailboxes') {
     return (
       <section className="panel utility-panel">
@@ -2779,6 +2792,11 @@ function UtilityView({
           <Field label={t('Bulk count')}>
             <input className="input-field compact" id="settings-bulk-count" name="settingsBulkCount" type="number" min="1" max={usageSummary?.settings.maxBulkCount ?? 25} value={bulkCount} onChange={(e) => setBulkCount(Math.min(usageSummary?.settings.maxBulkCount ?? 25, Math.max(1, Number(e.target.value) || 1)))} />
           </Field>
+          <Field label={t('Interface language')}>
+            <select className="input-field compact" id="settings-interface-language" name="settingsInterfaceLanguage" value={locale} onChange={(e) => setLocale(normalizeLocale(e.target.value))}>
+              {LOCALE_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
+          </Field>
         </div>
         <div className="settings-actions">
           <span>{userSettings ? (locale === 'ru' ? `На сервере: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}` : `Server default: ${userSettings.defaultGeo} / ${userSettings.defaultDocumentType} / ${userSettings.locale}`) : (locale === 'ru' ? 'Серверные настройки загружаются' : 'Server defaults loading')}</span>
@@ -3079,11 +3097,6 @@ function UtilityView({
           <Field label={t('Username')}>
             <input className="input-field compact" id="account-username" name="accountUsername" value={accountUsername} onChange={(event) => setAccountUsername(event.target.value)} placeholder="username" autoComplete="username" />
           </Field>
-          <Field label={t('Interface language')}>
-            <select className="input-field compact" id="account-interface-language" name="accountInterfaceLanguage" value={locale} onChange={(e) => setLocale(normalizeLocale(e.target.value))}>
-              {LOCALE_OPTIONS.map((item) => <option key={item.value} value={item.value}>{item.label}</option>)}
-            </select>
-          </Field>
         </div>
         <div className="settings-actions">
           <span>{t(accountStatus)}</span>
@@ -3253,6 +3266,59 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span>{label}</span>
       {children}
     </label>
+  );
+}
+
+function ChangelogView({ locale = 'en' }: { locale?: Locale }) {
+  const t = (text: string) => tr(locale, text);
+  const releases = [
+    {
+      version: 'Next release',
+      status: locale === 'ru' ? 'готовится' : 'planned',
+      date: locale === 'ru' ? 'следующий релиз' : 'next release',
+      items: [
+        locale === 'ru' ? 'Кураторская проверка country datasets и статусов качества.' : 'Curated country datasets with quality status notes.',
+        locale === 'ru' ? 'Аккуратные уведомления генерации без перекрытия рабочего экрана.' : 'Compact generation notifications that keep the workspace usable.',
+        locale === 'ru' ? 'Отдельное сохранение языка интерфейса без смены пароля.' : 'Interface language saved independently from password changes.',
+      ],
+    },
+    {
+      version: 'Dataset architecture',
+      status: locale === 'ru' ? 'в проде' : 'in production',
+      date: '2026-07-27',
+      items: [
+        locale === 'ru' ? 'Единая country dataset schema для генерации профилей.' : 'Unified country dataset schema for identity generation.',
+        locale === 'ru' ? 'Метаданные источников и качества по блокам данных.' : 'Per-block source and quality metadata.',
+        locale === 'ru' ? 'Валидация датасетов и 1000-profile проверки.' : 'Dataset validation and 1000-profile checks.',
+      ],
+    },
+  ];
+
+  return (
+    <section className="panel utility-panel">
+      <div className="utility-header changelog-header">
+        <div>
+          <h2>{t('Changelog')}</h2>
+          <p>{locale === 'ru' ? 'Страница для заметок по релизам перед выкладкой и после нее.' : 'Release notes for preparation and post-release tracking.'}</p>
+        </div>
+        <span className="badge tone-active">{locale === 'ru' ? 'черновик' : 'draft'}</span>
+      </div>
+
+      <div className="changelog-list">
+        {releases.map((release) => (
+          <article className="changelog-entry" key={release.version}>
+            <div className="changelog-entry-meta">
+              <strong>{release.version}</strong>
+              <span>{release.date}</span>
+              <small>{release.status}</small>
+            </div>
+            <ul>
+              {release.items.map((item) => <li key={item}>{item}</li>)}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </section>
   );
 }
 

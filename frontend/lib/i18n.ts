@@ -41,6 +41,7 @@ const RU: Record<string, string> = {
   'Password change failed': 'Смена пароля не удалась',
   'Password changed': 'Пароль изменен',
   'Changing password revokes other active sessions.': 'Смена пароля отзывает другие активные сессии.',
+  'Changelog': 'История релизов',
   'Check mailbox provider': 'Проверить провайдера почты',
   'Check now': 'Проверить',
   'Checking inbox': 'Проверка почты',
