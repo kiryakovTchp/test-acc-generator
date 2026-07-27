@@ -5,8 +5,226 @@
   "country": "Burkina Faso",
   "locale": "fr-BF",
   "availability": "review",
-  "names": { "male": ["Moussa", "Issa", "Adama", "Oumar"], "female": ["Awa", "Fatimata", "Mariam", "Rokia"], "last": ["Ouedraogo", "Traore", "Sawadogo", "Kabore"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burkina Faso name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+226", "nationalLength": 8, "prefixes": ["5", "6", "7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burkina Faso phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Centre", "cities": [{ "name": "Ouagadougou", "postalPrefixes": ["01"], "streets": ["Avenue Kwame Nkrumah", "Avenue Charles de Gaulle"] }] }, { "name": "Hauts-Bassins", "cities": [{ "name": "Bobo-Dioulasso", "postalPrefixes": ["02"], "streets": ["Avenue de la Nation", "Rue de la Gare"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Burkina Faso location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Burkina Faso was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": [
+      "Adama",
+      "Moussa",
+      "Boureima",
+      "Abdoulaye",
+      "Issa",
+      "Oumarou",
+      "Souleymane",
+      "Ibrahim",
+      "Harouna",
+      "Seydou",
+      "Karim",
+      "Oumar",
+      "Mahamadi",
+      "Blaise",
+      "Paul",
+      "Dieudonne"
+    ],
+    "female": [
+      "Mariam",
+      "Fatimata",
+      "Aminata",
+      "Awa",
+      "Rasmata",
+      "Salimata",
+      "Assita",
+      "Fati",
+      "Hadja",
+      "Safiatou",
+      "Rokia",
+      "Alimata",
+      "Adjaratou",
+      "Kadidia",
+      "Christine",
+      "Odile"
+    ],
+    "last": [
+      "Ouedraogo",
+      "Sawadogo",
+      "Kabore",
+      "Traore",
+      "Diallo",
+      "Ouattara",
+      "Dicko",
+      "Zongo",
+      "Sanou",
+      "Savadogo",
+      "Compaore",
+      "Nikiema",
+      "Barry",
+      "Some",
+      "Ilboudo",
+      "Coulibaly"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Burkina Faso forenames and surnames frequency tables",
+      "url": "https://forebears.io/burkina-faso/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. Gender buckets follow Forebears gender-majority data for high-frequency forenames and are not an official civil registry sample; surnames were cross-filled from the public Burkina Faso surname table."
+  },
+  "phones": {
+    "countryCallingCode": "+226",
+    "nationalLength": 8,
+    "prefixes": [
+      "01",
+      "02",
+      "03",
+      "05",
+      "06",
+      "07",
+      "50",
+      "51",
+      "52",
+      "54",
+      "55",
+      "56",
+      "57",
+      "58",
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Burkina Faso national numbering plan communication of 4.V.2023",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000210020PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "ITU/ARCEP confirms country code +226, fixed national significant number length of eight digits, and the listed non-geographic mobile prefixes. Generated numbers are synthetic and are not checked for current subscriber assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Centre",
+        "cities": [
+          {
+            "name": "Ouagadougou",
+            "postalPrefixes": [
+              "100"
+            ],
+            "streets": [
+              "Avenue Kwame Nkrumah",
+              "Avenue Charles de Gaulle",
+              "Avenue de la Nation",
+              "Boulevard Tansoba"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Hauts-Bassins",
+        "cities": [
+          {
+            "name": "Bobo-Dioulasso",
+            "postalPrefixes": [
+              "BOB"
+            ],
+            "streets": [
+              "Avenue de la Nation",
+              "Rue de la Gare",
+              "Avenue du Gouverneur Binger",
+              "Boulevard de la Revolution"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Centre-Ouest",
+        "cities": [
+          {
+            "name": "Koudougou",
+            "postalPrefixes": [
+              "KDG"
+            ],
+            "streets": [
+              "Avenue Maurice Yameogo",
+              "Route de Ouagadougou",
+              "Rue du Marche"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Nord",
+        "cities": [
+          {
+            "name": "Ouahigouya",
+            "postalPrefixes": [
+              "OUG"
+            ],
+            "streets": [
+              "Avenue de l'Independance",
+              "Route de Kongoussi",
+              "Rue du Grand Marche"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Burkina Faso addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/bfaEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "UPU confirms Burkina Faso addressing structure and public examples including Ouagadougou, Avenue de la Nation and five-digit postal-office style codes. Region-city mapping uses common public geography; non-Ouagadougou postalPrefixes are internal generator markers pending authoritative city-level postal-code coverage."
+  },
+  "documents": {
+    "national_personal_identification_number": {
+      "label": "National Personal Identification Number",
+      "templates": [
+        "{RAND17}"
+      ],
+      "pattern": "^\\d{17}$",
+      "quality": "verified",
+      "source": {
+        "title": "Burkina Faso Embassy passport requirements: N.I.P. a 17 chiffres",
+        "url": "https://autriche.diplomatie.gov.bf/index.php/services/passeport/",
+        "type": "official",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Official passport requirements state that the personal identification number on the CNIB has 17 digits. No public checksum, semantic digit rule or live registry validation was found, so the generated value is synthetic but the length/pattern is directly confirmed."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Burkina Faso ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/bfa/all/docs-all.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "PRADO confirms Burkina Faso passport document families and versions, but the public entry reviewed does not confirm the visible passport number grammar. The template remains a synthetic placeholder until an official rule or multiple public samples are available."
+    }
+  }
 }
