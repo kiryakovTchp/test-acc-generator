@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets, loadCountryDatasets } from './datasets.js';
+import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets, loadCountryDatasets, validateKazakhstanIin } from './datasets.js';
 import { calculateAge, generatePersonaProfile } from './utils.js';
 
 test('country datasets have required blocks and sources', () => {
@@ -50,7 +50,7 @@ test('country dataset schema rejects misspelled required fields and invalid sour
 });
 
 test('country dataset schema rejects unknown fields and ambiguous document generation', () => {
-  const dataset = listCountryDatasets()[0];
+  const dataset = getDataset('nigeria');
 
   assert.throws(
     () => countryDatasetSchema.parse({
@@ -79,7 +79,7 @@ test('country dataset schema rejects unknown fields and ambiguous document gener
 });
 
 test('country dataset loader rejects unknown generators and duplicate identities', () => {
-  const dataset = listCountryDatasets()[0];
+  const dataset = getDataset('nigeria');
 
   assert.throws(
     () => loadCountryDatasets([{
@@ -109,8 +109,7 @@ test('country dataset keys and country codes are unique', () => {
 });
 
 test('nigeria dataset generates internally consistent profiles', () => {
-  const dataset = listCountryDatasets().find((item) => item.key === 'nigeria');
-  assert.ok(dataset);
+  const dataset = getDataset('nigeria');
 
   const maleNames = new Set(dataset.names.male);
   const femaleNames = new Set(dataset.names.female);
@@ -141,9 +140,35 @@ test('nigeria dataset generates internally consistent profiles', () => {
   }
 });
 
+test('kazakhstan dataset generates internally consistent profiles', () => {
+  const dataset = getDataset('kazakhstan');
+  const maleNames = new Set(dataset.names.male);
+  const femaleNames = new Set(dataset.names.female);
+  const lastNames = new Set(dataset.names.last);
+  const regionMap = new Map(dataset.locations.regions.map((region) => [region.name, region]));
+
+  for (let i = 0; i < 1000; i += 1) {
+    const profile = generatePersonaProfile(dataset.key, 'standard_user');
+    assert.ok(maleNames.has(profile.firstName) || femaleNames.has(profile.firstName));
+    assert.ok(lastNames.has(profile.lastName));
+    assert.equal(profile.country, dataset.country);
+    assert.equal(profile.age, calculateAge(profile.dateOfBirth));
+
+    const selectedRegion = regionMap.get(profile.region);
+    assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
+    const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
+    assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
+    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
+    assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)));
+
+    const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
+    assert.equal(nationalNumber.length, dataset.phones.nationalLength);
+    assert.ok(dataset.phones.prefixes.some((prefix) => nationalNumber.startsWith(prefix)));
+  }
+});
+
 test('nigeria document rules match their configured patterns', () => {
-  const dataset = listCountryDatasets().find((item) => item.key === 'nigeria');
-  assert.ok(dataset);
+  const dataset = getDataset('nigeria');
 
   for (let i = 0; i < 1000; i += 1) {
     for (const rule of Object.values(dataset.documents)) {
@@ -153,9 +178,23 @@ test('nigeria document rules match their configured patterns', () => {
   }
 });
 
+test('kazakhstan iin document matches birth date gender and checksum', () => {
+  const dataset = getDataset('kazakhstan');
+  const iinRule = dataset.documents.iin;
+
+  for (let i = 0; i < 1000; i += 1) {
+    const gender = i % 2 === 0 ? 'male' : 'female';
+    const dateOfBirth = i % 3 === 0 ? '1991-07-27' : '2001-02-03';
+    const value = generateDatasetDocument(iinRule, { dateOfBirth, gender, region: 'Almaty' });
+    assert.match(value, /^\d{12}$/);
+    assert.equal(value.slice(0, 6), dateOfBirth.replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2})$/, '$2$3$4'));
+    assert.equal(Number(value[6]) % 2 === 1, gender === 'male');
+    assert.equal(validateKazakhstanIin(value), true);
+  }
+});
+
 test('nigeria phone generator follows national length and allowed prefixes', () => {
-  const dataset = listCountryDatasets().find((item) => item.key === 'nigeria');
-  assert.ok(dataset);
+  const dataset = getDataset('nigeria');
 
   for (let i = 0; i < 1000; i += 1) {
     const phone = generateDatasetPhone(dataset);
@@ -166,3 +205,9 @@ test('nigeria phone generator follows national length and allowed prefixes', () 
     assert.equal(nationalNumber.startsWith('0'), false);
   }
 });
+
+function getDataset(key: string) {
+  const dataset = listCountryDatasets().find((item) => item.key === key);
+  assert.ok(dataset);
+  return dataset;
+}

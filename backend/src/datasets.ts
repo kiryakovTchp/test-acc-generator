@@ -1,3 +1,4 @@
+import kazakhstanDataset from './datasets/kazakhstan.json' with { type: 'json' };
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
 import type { Gender } from './types.js';
 import crypto from 'node:crypto';
@@ -98,10 +99,11 @@ export interface DocumentGeneratorContext {
 type DocumentGenerator = (context: DocumentGeneratorContext) => string;
 
 const documentGenerators: Record<string, DocumentGenerator> = {
+  kazakhstan_iin: generateKazakhstanIin,
   nigeria_nin: () => randomDigits(11),
 };
 
-const countryDatasets = loadCountryDatasets([nigeriaDataset]);
+const countryDatasets = loadCountryDatasets([kazakhstanDataset, nigeriaDataset]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 
 export function loadCountryDatasets(rawDatasets: unknown[]) {
@@ -137,6 +139,11 @@ export function generateDatasetPhone(dataset: CountryDataset) {
   return `${dataset.phones.countryCallingCode}${prefix}${randomDigits(remaining)}`;
 }
 
+export function validateKazakhstanIin(value: string) {
+  if (!/^\d{12}$/.test(value)) return false;
+  return calculateKazakhstanIinCheckDigit(value.slice(0, 11)) === Number(value[11]);
+}
+
 export class DatasetError extends Error {
   constructor(message: string) {
     super(message);
@@ -162,6 +169,41 @@ function validateCountryDatasets(datasets: CountryDataset[]) {
   }
 
   return datasets;
+}
+
+function generateKazakhstanIin(context: DocumentGeneratorContext) {
+  const birthDateMatch = /^(\d{4})-(\d{2})-(\d{2})$/.exec(context.dateOfBirth);
+  if (!birthDateMatch) throw new DatasetError(`Invalid Kazakhstan IIN birth date: ${context.dateOfBirth}`);
+
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    const body = `${birthDateMatch[1].slice(-2)}${birthDateMatch[2]}${birthDateMatch[3]}${kazakhstanCenturyGenderDigit(Number(birthDateMatch[1]), context.gender)}${randomDigits(4)}`;
+    const checkDigit = calculateKazakhstanIinCheckDigit(body);
+    if (checkDigit !== null) return `${body}${checkDigit}`;
+  }
+
+  throw new DatasetError('Unable to generate Kazakhstan IIN with a valid checksum');
+}
+
+function kazakhstanCenturyGenderDigit(year: number, gender: Gender) {
+  if (year >= 2000 && year <= 2099) return gender === 'male' ? '5' : '6';
+  if (year >= 1900 && year <= 1999) return gender === 'male' ? '3' : '4';
+  if (year >= 1800 && year <= 1899) return gender === 'male' ? '1' : '2';
+  throw new DatasetError(`Kazakhstan IIN unsupported birth year: ${year}`);
+}
+
+function calculateKazakhstanIinCheckDigit(body: string) {
+  if (!/^\d{11}$/.test(body)) return null;
+  const digits = [...body].map(Number);
+  const firstWeights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+  const secondWeights = [3, 4, 5, 6, 7, 8, 9, 10, 11, 1, 2];
+  const first = weightedMod11(digits, firstWeights);
+  if (first !== 10) return first;
+  const second = weightedMod11(digits, secondWeights);
+  return second === 10 ? null : second;
+}
+
+function weightedMod11(digits: number[], weights: number[]) {
+  return digits.reduce((sum, digit, index) => sum + digit * weights[index], 0) % 11;
 }
 
 function fillTemplate(template: string, context: { dateOfBirth?: string } = {}) {

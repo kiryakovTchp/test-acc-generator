@@ -1,0 +1,91 @@
+{
+  "key": "kazakhstan",
+  "label": "Kazakhstan",
+  "countryCode": "KZ",
+  "country": "Kazakhstan",
+  "locale": "kk-KZ",
+  "availability": "review",
+  "names": {
+    "male": ["Arman", "Dias", "Nursultan", "Alikhan", "Timur", "Marat", "Kanat", "Bulat"],
+    "female": ["Aigerim", "Aruzhan", "Dinara", "Madina", "Saule", "Ainur", "Aliya", "Dana"],
+    "last": ["Akhmetov", "Omarov", "Ospanov", "Suleimenov", "Iskakov", "Sadykov", "Kusainov", "Tulegenov"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Kazakhstan common names and surnames references",
+      "url": "https://forebears.io/kazakhstan/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Representative Latin-transliterated Kazakh and Kazakhstan-common names. Surname pool is intentionally masculine-neutral for synthetic form filling."
+  },
+  "phones": {
+    "countryCallingCode": "+7",
+    "nationalLength": 10,
+    "prefixes": ["700", "701", "702", "705", "707", "708", "747", "750", "751", "760", "761", "762", "763", "764", "771", "775", "776", "777", "778"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Kazakhstan telephone numbering plan summary",
+      "url": "https://en.wikipedia.org/wiki/Telephone_numbers_in_Kazakhstan",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Use international +7 format with 10 national digits. Prefixes cover common 70x/77x mobile ranges plus selected current non-geographic/mobile allocations; verify against the regulator before marking active."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Almaty",
+        "cities": [
+          {
+            "name": "Almaty",
+            "postalPrefixes": ["050"],
+            "streets": ["Abay Avenue", "Dostyk Avenue", "Nazarbayev Avenue"]
+          }
+        ]
+      },
+      {
+        "name": "Astana",
+        "cities": [
+          {
+            "name": "Astana",
+            "postalPrefixes": ["010"],
+            "streets": ["Tauelsizdik Avenue", "Kabanbay Batyr Avenue", "Mangilik El Avenue"]
+          }
+        ]
+      },
+      {
+        "name": "Shymkent",
+        "cities": [
+          {
+            "name": "Shymkent",
+            "postalPrefixes": ["160"],
+            "streets": ["Tauke Khan Avenue", "Baidibek Bi Avenue", "Republic Avenue"]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Kazakhstan postal code samples",
+      "url": "https://postal-codes.cybo.com/kazakhstan",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Postal prefixes and streets are synthetic samples tied to their city. Use as form-fill data, not as complete official postcode coverage."
+  },
+  "documents": {
+    "iin": {
+      "label": "Individual Identification Number",
+      "generator": "kazakhstan_iin",
+      "pattern": "^\\d{12}$",
+      "quality": "verified",
+      "source": {
+        "title": "Kazakhstan TIN structure and IIN checksum algorithm",
+        "url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/kazakhstan-tin.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Generated IIN follows YYMMDD, century/gender digit, random sequence, and two-cycle checksum. Values are synthetic and are not checked against the government registry; official materials note that assigned IINs are immutable and may have historical exceptions."
+    }
+  }
+}

@@ -7,6 +7,7 @@ import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_E
 import { listActivityEvents } from './activity.js';
 import { updateWorkspaceSettings } from './settings.js';
 import { isEncryptedSensitive } from './sensitiveData.js';
+import { validateKazakhstanIin } from './datasets.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -129,6 +130,9 @@ test('kazakhstan iin starts with profile date of birth', async () => {
   assert.equal(item?.documentQuality, 'verified');
   assert.match(item?.documentValue ?? '', /^\d{12}$/);
   assert.equal(item?.documentValue.slice(0, 6), birthPrefix);
+  assert.equal(validateKazakhstanIin(item?.documentValue ?? ''), true);
+  assert.equal(Number(item?.documentValue[6]) % 2 === 1, item?.gender === 'male');
+  assert.match(item?.phone ?? '', /^\+7\d{10}$/);
 });
 
 test('gabon generated names come from the Gabon profile pool', async () => {
