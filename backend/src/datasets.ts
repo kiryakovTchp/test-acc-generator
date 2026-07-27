@@ -1,66 +1,93 @@
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
-import type { DocumentQuality, Gender } from './types.js';
+import type { Gender } from './types.js';
 import crypto from 'node:crypto';
+import { z } from 'zod';
 
-export type DatasetQuality = 'verified' | 'sample_verified' | 'synthetic_pattern' | 'missing';
-export type SourceType = 'official' | 'government_sample' | 'trusted_reference' | 'user_sample' | 'assumption';
-export type Availability = 'draft' | 'review' | 'active';
+const datasetQualitySchema = z.enum(['verified', 'sample_verified', 'synthetic_pattern', 'missing']);
+const sourceTypeSchema = z.enum(['official', 'government_sample', 'trusted_reference', 'user_sample', 'assumption']);
+const availabilitySchema = z.enum(['draft', 'review', 'active']);
+const checkedAtSchema = z.iso.date().refine((value) => Date.parse(`${value}T00:00:00Z`) <= Date.now(), {
+  message: 'checkedAt cannot be in the future',
+});
 
-export interface DatasetSource {
-  title: string;
-  url: string;
-  type: SourceType;
-  checkedAt: string;
-}
+const datasetSourceSchema = z.object({
+  title: z.string().min(1),
+  url: z.string().url(),
+  type: sourceTypeSchema,
+  checkedAt: checkedAtSchema,
+});
 
-export interface CountryDataset {
-  key: string;
-  label: string;
-  countryCode: string;
-  country: string;
-  locale: string;
-  availability: Availability;
-  names: {
-    male: string[];
-    female: string[];
-    last: string[];
-    quality: DatasetQuality;
-    source: DatasetSource;
-    notes?: string;
-  };
-  phones: {
-    countryCallingCode: string;
-    nationalLength: number;
-    prefixes: string[];
-    quality: DatasetQuality;
-    source: DatasetSource;
-    notes?: string;
-  };
-  locations: {
-    regions: Array<{
-      name: string;
-      cities: Array<{
-        name: string;
-        postalPrefixes: string[];
-        streets: string[];
-      }>;
-    }>;
-    quality: DatasetQuality;
-    source: DatasetSource;
-    notes?: string;
-  };
-  documents: Record<string, CountryDocumentRule>;
-}
+const citySchema = z.object({
+  name: z.string().min(1),
+  postalPrefixes: z.array(z.string().min(1)).min(1),
+  streets: z.array(z.string().min(1)).min(1),
+});
 
-export interface CountryDocumentRule {
-  label: string;
-  templates?: string[];
-  generator?: string;
-  pattern: string;
-  quality: Exclude<DocumentQuality, 'missing_rules'> | 'sample_verified';
-  source: DatasetSource;
-  notes?: string;
-}
+const documentRuleSchema = z.object({
+  label: z.string().min(1),
+  templates: z.array(z.string().min(1)).min(1).optional(),
+  generator: z.string().min(1).optional(),
+  pattern: z.string().min(1),
+  quality: z.enum(['verified', 'sample_verified', 'synthetic_pattern']),
+  source: datasetSourceSchema,
+  notes: z.string().min(1).optional(),
+}).refine((rule) => Boolean(rule.generator || rule.templates?.length), {
+  message: 'Document rule must define either generator or templates',
+});
+
+export const countryDatasetSchema = z.object({
+  key: z.string().regex(/^[a-z][a-z_]*$/),
+  label: z.string().min(1),
+  countryCode: z.string().regex(/^[A-Z]{2}$/),
+  country: z.string().min(1),
+  locale: z.string().min(2),
+  availability: availabilitySchema,
+  names: z.object({
+    male: z.array(z.string().min(1)).min(1),
+    female: z.array(z.string().min(1)).min(1),
+    last: z.array(z.string().min(1)).min(1),
+    quality: datasetQualitySchema,
+    source: datasetSourceSchema,
+    notes: z.string().min(1).optional(),
+  }),
+  phones: z.object({
+    countryCallingCode: z.string().regex(/^\+\d+$/),
+    nationalLength: z.number().int().positive(),
+    prefixes: z.array(z.string().regex(/^\d+$/)).min(1),
+    quality: datasetQualitySchema,
+    source: datasetSourceSchema,
+    notes: z.string().min(1).optional(),
+  }),
+  locations: z.object({
+    regions: z.array(z.object({
+      name: z.string().min(1),
+      cities: z.array(citySchema).min(1),
+    })).min(1),
+    quality: datasetQualitySchema,
+    source: datasetSourceSchema,
+    notes: z.string().min(1).optional(),
+  }),
+  documents: z.record(z.string().regex(/^[a-z][a-z0-9_]*$/), documentRuleSchema).refine((documents) => Object.keys(documents).length > 0, {
+    message: 'At least one document rule is required',
+  }),
+}).superRefine((dataset, ctx) => {
+  for (const prefix of dataset.phones.prefixes) {
+    if (prefix.length > dataset.phones.nationalLength) {
+      ctx.addIssue({
+        code: 'custom',
+        path: ['phones', 'prefixes'],
+        message: `Phone prefix ${prefix} exceeds nationalLength`,
+      });
+    }
+  }
+});
+
+export type DatasetQuality = z.infer<typeof datasetQualitySchema>;
+export type SourceType = z.infer<typeof sourceTypeSchema>;
+export type Availability = z.infer<typeof availabilitySchema>;
+export type DatasetSource = z.infer<typeof datasetSourceSchema>;
+export type CountryDocumentRule = z.infer<typeof documentRuleSchema>;
+export type CountryDataset = z.infer<typeof countryDatasetSchema>;
 
 export interface DocumentGeneratorContext {
   dateOfBirth: string;
@@ -74,7 +101,7 @@ const documentGenerators: Record<string, DocumentGenerator> = {
   nigeria_nin: () => randomDigits(11),
 };
 
-const countryDatasets = [nigeriaDataset as CountryDataset];
+const countryDatasets = [countryDatasetSchema.parse(nigeriaDataset)];
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 
 export function listCountryDatasets() {

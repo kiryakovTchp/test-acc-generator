@@ -16,6 +16,7 @@ export interface GeoItem {
   key: string;
   label: string;
   documentTypes: string[];
+  availability?: 'review' | 'active';
 }
 export interface HistoryItem {
   id: number;
@@ -46,7 +47,7 @@ export interface HistoryItem {
   createdAt: string;
   documentType: string;
   documentIssueDate: string;
-  documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
+  documentQuality: 'verified' | 'sample_verified' | 'synthetic_pattern' | 'missing_rules';
   mailboxProvider?: 'mail_tm' | 'mail_gw' | 'mail_tm_mail_gw_fallback';
   inboxStatus?: 'waiting_for_email' | 'email_received' | 'no_email_found';
 }

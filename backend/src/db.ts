@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS account_history (
   document_type TEXT NOT NULL,
   document_value TEXT NOT NULL,
   document_issue_date TEXT NOT NULL DEFAULT '',
-  document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','synthetic_pattern','missing_rules')),
+  document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','sample_verified','synthetic_pattern','missing_rules')),
   registration_url TEXT NOT NULL,
   inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
   inbox_sender TEXT NOT NULL DEFAULT '',

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { generateDatasetDocument, generateDatasetPhone, listCountryDatasets } from './datasets.js';
+import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets } from './datasets.js';
 import { calculateAge, generatePersonaProfile } from './utils.js';
 
 test('country datasets have required blocks and sources', () => {
@@ -16,6 +16,37 @@ test('country datasets have required blocks and sources', () => {
     assert.match(dataset.phones.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
     assert.match(dataset.locations.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
   }
+});
+
+test('country dataset schema rejects misspelled required fields and invalid source dates', () => {
+  const dataset = listCountryDatasets()[0];
+  assert.throws(
+    () => countryDatasetSchema.parse({
+      ...dataset,
+      phones: {
+        countryCallingCode: dataset.phones.countryCallingCode,
+        nationalLenght: dataset.phones.nationalLength,
+        prefixes: dataset.phones.prefixes,
+        quality: dataset.phones.quality,
+        source: dataset.phones.source,
+      },
+    }),
+    /nationalLength/,
+  );
+
+  assert.throws(
+    () => countryDatasetSchema.parse({
+      ...dataset,
+      names: {
+        ...dataset.names,
+        source: {
+          ...dataset.names.source,
+          checkedAt: '2026-99-99',
+        },
+      },
+    }),
+    /checkedAt/,
+  );
 });
 
 test('nigeria dataset generates internally consistent profiles', () => {

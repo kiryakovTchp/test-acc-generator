@@ -54,7 +54,7 @@ interface Detail {
   documentType: string;
   documentValue: string;
   documentIssueDate: string;
-  documentQuality: 'verified' | 'synthetic_pattern' | 'missing_rules';
+  documentQuality: 'verified' | 'sample_verified' | 'synthetic_pattern' | 'missing_rules';
   mailboxProvider?: MailboxProviderKey;
   fullProfileText: string;
   inbox: {
@@ -1333,6 +1333,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
           <select className="input-field compact" id="generation-geo" name="generationGeo" value={selectedGeo} onChange={(e) => selectGeo(e.target.value)}>
             {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
           </select>
+          <GeoAvailabilityNotice geo={currentGeo} locale={locale} />
         </Field>
         <Field label={t('Form persona')}>
           <select className="input-field compact" id="generation-persona" name="generationPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
@@ -2189,6 +2190,8 @@ function AlertsPanel({ items, locale = 'en' }: { items: AlertItem[]; locale?: Lo
 function DatasetNotice({ quality, locale = 'en' }: { quality: Detail['documentQuality']; locale?: Locale }) {
   const title = quality === 'verified'
     ? tr(locale, 'Verified format, synthetic data')
+    : quality === 'sample_verified'
+      ? tr(locale, 'Sample-verified format')
     : quality === 'missing_rules'
       ? tr(locale, 'Dataset rule missing')
       : tr(locale, 'Dataset under review');
@@ -2198,6 +2201,16 @@ function DatasetNotice({ quality, locale = 'en' }: { quality: Detail['documentQu
       <strong>{title}</strong>
       <span>{tr(locale, 'Identity data is still being reviewed and may not be 100% accurate. Use it as test data only.')}</span>
     </div>
+  );
+}
+
+function GeoAvailabilityNotice({ geo, locale = 'en' }: { geo?: GeoItem; locale?: Locale }) {
+  if (geo?.availability !== 'review') return null;
+
+  return (
+    <span className="field-hint tone-review">
+      {locale === 'ru' ? 'GEO на проверке: часть правил может быть синтетической.' : 'GEO under review: some rules may still be synthetic.'}
+    </span>
   );
 }
 
@@ -2562,6 +2575,7 @@ function UtilityView({
             <select className="input-field compact" id="form-data-default-geo" name="formDataDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
+            <GeoAvailabilityNotice geo={currentGeo} locale={locale} />
           </Field>
           <Field label="Persona">
             <select className="input-field compact" id="form-data-persona" name="formDataPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>
@@ -2749,6 +2763,7 @@ function UtilityView({
             <select className="input-field compact" id="settings-default-geo" name="settingsDefaultGeo" value={selectedGeo} onChange={(e) => setSelectedGeo(e.target.value)}>
               {geoItems.map((item) => <option key={item.key} value={item.key}>{item.label}</option>)}
             </select>
+            <GeoAvailabilityNotice geo={currentGeo} locale={locale} />
           </Field>
           <Field label={t('Default persona')}>
             <select className="input-field compact" id="settings-default-persona" name="settingsDefaultPersona" value={persona} onChange={(e) => setPersona(e.target.value as PersonaKey)}>

@@ -21,7 +21,7 @@
   "phones": {
     "countryCallingCode": "+234",
     "nationalLength": 10,
-    "prefixes": ["701", "703", "704", "705", "706", "708", "802", "803", "805", "806", "807", "808", "809", "810", "811", "812", "813", "814", "815", "816", "817", "818", "901", "902", "903", "904", "905", "906", "907", "908", "909", "911", "912", "913", "915", "916"],
+    "prefixes": ["701", "702", "703", "704", "705", "706", "708", "801", "802", "803", "804", "805", "806", "807", "808", "809", "810", "811", "812", "813", "814", "815", "816", "817", "818", "901", "902", "903", "904", "905", "906", "907", "908", "909", "911", "912", "913", "914", "915", "916"],
     "quality": "verified",
     "source": {
       "title": "Nigeria national numbering plan update",
@@ -69,14 +69,14 @@
         ]
       }
     ],
-    "quality": "sample_verified",
+    "quality": "synthetic_pattern",
     "source": {
       "title": "Nigerian postal references and public address samples",
       "url": "https://ipms.nipost.gov.ng/nipost/HTMLPages/ContactUs.aspx",
       "type": "government_sample",
       "checkedAt": "2026-07-27"
     },
-    "notes": "Region, city, postal prefix, and street lists are linked structurally. Postal prefixes are coarse prefixes for synthetic addresses, not full official postcode coverage."
+    "notes": "Some streets are verified by public address samples; postal prefixes and remaining streets require separate confirmation. Region, city, postal prefix, and street lists are still linked structurally."
   },
   "documents": {
     "nin": {
@@ -90,7 +90,7 @@
         "type": "official",
         "checkedAt": "2026-07-27"
       },
-      "notes": "NIN is generated as 11 non-intelligent digits. No checksum rule is documented in the reviewed source."
+      "notes": "Verified means the generated format is confirmed: 11 digits. Values are synthetic, are not checked against the government registry, and do not represent a real assigned NIN."
     },
     "passport": {
       "label": "Passport",

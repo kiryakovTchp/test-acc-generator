@@ -3,6 +3,7 @@ import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role, AccountBalanceStatus } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
 import { generateDatasetDocument, getCountryDataset, listCountryDatasets } from '../datasets.js';
+import type { Availability } from '../datasets.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
 import { recordActivity } from '../activity.js';
@@ -12,13 +13,14 @@ import { decryptSensitive, decryptSensitiveNullable, encryptSensitive, encryptSe
 const rules = geoRules as unknown as GeoRule[];
 const generationInboxWaitMs = Math.min(60000, Math.max(0, Number(process.env.GENERATION_INBOX_WAIT_MS ?? 15000)));
 
-export function listGeoRules() {
+export function listGeoRules(): Array<{ key: string; label: string; documentTypes: string[]; availability?: Exclude<Availability, 'draft'> }> {
   const datasetKeys = new Set(listCountryDatasets().map((dataset) => dataset.key));
   return [
-    ...listCountryDatasets().map((dataset) => ({
+    ...listCountryDatasets().filter((dataset) => dataset.availability !== 'draft').map((dataset) => ({
       key: dataset.key,
       label: dataset.label,
       documentTypes: Object.keys(dataset.documents),
+      availability: dataset.availability,
     })),
     ...rules.filter((rule) => !datasetKeys.has(rule.key)).map((rule) => ({
       key: rule.key,
@@ -44,6 +46,7 @@ export async function generateAccount(input: {
   const dataset = getCountryDataset(input.geoKey);
   const geo = dataset ?? rules.find((rule) => rule.key === input.geoKey);
   if (!geo) throw new ApiError('unsupported_geo', 'Unsupported GEO');
+  if (dataset?.availability === 'draft') throw new ApiError('draft_geo_unavailable', 'Draft GEO is not available for generation');
   const docRule = geo.documents[input.documentType];
   const emailAccount = await input.emailProvider.createAccount();
   const inboxProvider = input.emailProviderForAccount?.(emailAccount.provider) ?? input.emailProvider;
@@ -67,7 +70,7 @@ export async function generateAccount(input: {
     if ('pattern' in docRule && !new RegExp(docRule.pattern).test(documentValue)) {
       throw new ApiError('dataset_document_pattern_mismatch', `Generated ${geo.label} ${input.documentType} does not match dataset pattern`);
     }
-    quality = docRule.quality === 'sample_verified' ? 'synthetic_pattern' : docRule.quality;
+    quality = docRule.quality;
   }
 
   const username = `${geo.key}_${randomString(8)}`;

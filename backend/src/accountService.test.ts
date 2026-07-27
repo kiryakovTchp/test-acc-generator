@@ -238,6 +238,12 @@ test('geo rules expose document options without registration URLs', async () => 
   assert.deepEqual(geoRule?.documentTypes.sort(), ['national_registration_card_number', 'passport']);
 });
 
+test('review dataset geos expose availability to clients', async () => {
+  const geoRule = listGeoRules().find((item) => item.key === 'nigeria');
+  assert.equal(geoRule?.availability, 'review');
+  assert.deepEqual(geoRule?.documentTypes.sort(), ['nin', 'passport']);
+});
+
 test('generic geo fallback uses not specified region', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'generic_intl', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(item?.country, 'United Kingdom');
