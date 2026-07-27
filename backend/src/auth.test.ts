@@ -118,6 +118,101 @@ test('startup migrates plaintext sensitive account history when encryption key i
   }
 });
 
+test('startup migrates account history document quality check for sample verified values', () => {
+  const cwd = mkdtempSync(path.join(tmpdir(), 'tag-document-quality-migration-'));
+  try {
+    const result = runDbImport(cwd, {}, `
+      const { mkdirSync } = await import('node:fs');
+      const path = await import('node:path');
+      const { createRequire } = await import('node:module');
+      const require = createRequire(${JSON.stringify(new URL('./db.ts', import.meta.url).href)});
+      const Database = require('better-sqlite3');
+      const dataDir = path.resolve(process.cwd(), 'backend', 'data');
+      mkdirSync(dataDir, { recursive: true });
+      const legacyDb = new Database(path.join(dataDir, 'app.db'));
+      legacyDb.exec(\`
+        CREATE TABLE account_history (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          user_id INTEGER NOT NULL,
+          geo_key TEXT NOT NULL,
+          geo_label TEXT NOT NULL,
+          email TEXT NOT NULL,
+          email_password TEXT NOT NULL,
+          username TEXT NOT NULL,
+          site_account_id TEXT NOT NULL DEFAULT '',
+          balance_status TEXT NOT NULL DEFAULT 'unknown',
+          first_name TEXT NOT NULL DEFAULT '',
+          last_name TEXT NOT NULL DEFAULT '',
+          phone TEXT NOT NULL DEFAULT '',
+          age INTEGER NOT NULL DEFAULT 0,
+          gender TEXT NOT NULL DEFAULT 'male',
+          date_of_birth TEXT NOT NULL DEFAULT '',
+          country TEXT NOT NULL DEFAULT '',
+          region TEXT NOT NULL DEFAULT 'Not specified',
+          city TEXT NOT NULL DEFAULT '',
+          place_of_birth TEXT NOT NULL DEFAULT '',
+          address_line TEXT NOT NULL DEFAULT '',
+          postal_code TEXT NOT NULL DEFAULT '',
+          persona TEXT NOT NULL DEFAULT 'standard_user',
+          account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
+          document_type TEXT NOT NULL,
+          document_value TEXT NOT NULL,
+          document_issue_date TEXT NOT NULL DEFAULT '',
+          document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','synthetic_pattern','missing_rules')),
+          registration_url TEXT NOT NULL,
+          inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
+          inbox_sender TEXT NOT NULL DEFAULT '',
+          inbox_subject TEXT NOT NULL DEFAULT '',
+          inbox_received_at TEXT NOT NULL DEFAULT '',
+          inbox_plain_text TEXT,
+          inbox_links_json TEXT NOT NULL DEFAULT '[]',
+          inbox_codes_json TEXT NOT NULL DEFAULT '[]',
+          inbox_html TEXT,
+          created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+        );
+        INSERT INTO account_history (
+          user_id, geo_key, geo_label, email, email_password, username,
+          account_role, document_type, document_value, document_quality, registration_url
+        ) VALUES (1, 'zambia', 'Zambia', 'legacy@example.test', 'secret', 'legacy_user',
+          'user', 'passport', 'A123', 'synthetic_pattern', '');
+      \`);
+      legacyDb.close();
+
+      const db = (await import(${JSON.stringify(new URL('./db.ts', import.meta.url).href)})).default;
+      const schema = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'account_history'").get().sql;
+      if (!schema.includes("'sample_verified'")) {
+        throw new Error('sample_verified was not added to document_quality CHECK');
+      }
+      const { generateAccount } = await import(${JSON.stringify(new URL('./services/accountService.ts', import.meta.url).href)});
+      const item = await generateAccount({
+        userId: 1,
+        geoKey: 'botswana',
+        documentType: 'omang',
+        role: 'user',
+        persona: 'standard_user',
+        emailProvider: {
+          async createAccount() {
+            return { address: 'sample@example.test', password: 'secret' };
+          },
+          async fetchInbox() {
+            return [];
+          }
+        }
+      });
+      if (item?.documentQuality !== 'sample_verified') {
+        throw new Error('Botswana Omang generation did not persist sample_verified');
+      }
+      const preserved = db.prepare("SELECT COUNT(*) AS count FROM account_history WHERE email = 'legacy@example.test'").get().count;
+      if (preserved !== 1) {
+        throw new Error('legacy account_history row was not preserved');
+      }
+    `);
+    assert.equal(result.status, 0, result.stderr);
+  } finally {
+    rmSync(cwd, { recursive: true, force: true });
+  }
+});
+
 function runDbImport(cwd: string, env: Record<string, string>, script?: string) {
   return spawnSync(process.execPath, ['--import', tsxLoaderPath, '-e', script ?? `await import(${JSON.stringify(new URL('./db.ts', import.meta.url).href)});`], {
     cwd,

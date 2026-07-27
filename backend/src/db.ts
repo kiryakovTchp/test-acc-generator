@@ -12,6 +12,51 @@ db.pragma('journal_mode = WAL');
 db.pragma('busy_timeout = 5000');
 assertDataEncryptionReady();
 
+const accountHistoryColumns = [
+  'id',
+  'user_id',
+  'workspace_id',
+  'created_by_user_id',
+  'shared_with_workspace',
+  'shared_at',
+  'geo_key',
+  'geo_label',
+  'email',
+  'email_password',
+  'username',
+  'mailbox_provider',
+  'site_account_id',
+  'balance_status',
+  'first_name',
+  'last_name',
+  'phone',
+  'age',
+  'gender',
+  'date_of_birth',
+  'country',
+  'region',
+  'city',
+  'place_of_birth',
+  'address_line',
+  'postal_code',
+  'persona',
+  'account_role',
+  'document_type',
+  'document_value',
+  'document_issue_date',
+  'document_quality',
+  'registration_url',
+  'inbox_status',
+  'inbox_sender',
+  'inbox_subject',
+  'inbox_received_at',
+  'inbox_plain_text',
+  'inbox_links_json',
+  'inbox_codes_json',
+  'inbox_html',
+  'created_at',
+] as const;
+
 db.exec(`
 CREATE TABLE IF NOT EXISTS users (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -20,46 +65,7 @@ CREATE TABLE IF NOT EXISTS users (
   role TEXT NOT NULL CHECK(role IN ('admin','user')),
   created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-CREATE TABLE IF NOT EXISTS account_history (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user_id INTEGER NOT NULL,
-  geo_key TEXT NOT NULL,
-  geo_label TEXT NOT NULL,
-  email TEXT NOT NULL,
-  email_password TEXT NOT NULL,
-  username TEXT NOT NULL,
-  site_account_id TEXT NOT NULL DEFAULT '',
-  balance_status TEXT NOT NULL DEFAULT 'unknown',
-  first_name TEXT NOT NULL DEFAULT '',
-  last_name TEXT NOT NULL DEFAULT '',
-  phone TEXT NOT NULL DEFAULT '',
-  age INTEGER NOT NULL DEFAULT 0,
-  gender TEXT NOT NULL DEFAULT 'male',
-  date_of_birth TEXT NOT NULL DEFAULT '',
-  country TEXT NOT NULL DEFAULT '',
-  region TEXT NOT NULL DEFAULT 'Not specified',
-  city TEXT NOT NULL DEFAULT '',
-  place_of_birth TEXT NOT NULL DEFAULT '',
-  address_line TEXT NOT NULL DEFAULT '',
-  postal_code TEXT NOT NULL DEFAULT '',
-  persona TEXT NOT NULL DEFAULT 'standard_user',
-  account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
-  document_type TEXT NOT NULL,
-  document_value TEXT NOT NULL,
-  document_issue_date TEXT NOT NULL DEFAULT '',
-  document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','sample_verified','synthetic_pattern','missing_rules')),
-  registration_url TEXT NOT NULL,
-  inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
-  inbox_sender TEXT NOT NULL DEFAULT '',
-  inbox_subject TEXT NOT NULL DEFAULT '',
-  inbox_received_at TEXT NOT NULL DEFAULT '',
-  inbox_plain_text TEXT,
-  inbox_links_json TEXT NOT NULL DEFAULT '[]',
-  inbox_codes_json TEXT NOT NULL DEFAULT '[]',
-  inbox_html TEXT,
-  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id)
-);
+${accountHistoryTableSql('account_history')}
 CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_history(user_id, created_at DESC);
 `);
 
@@ -95,7 +101,10 @@ ensureColumn('account_history', 'inbox_sender', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_subject', "TEXT NOT NULL DEFAULT ''");
 ensureColumn('account_history', 'inbox_received_at', "TEXT NOT NULL DEFAULT ''");
 
+migrateAccountHistoryDocumentQualityCheck();
+
 db.exec(`
+CREATE INDEX IF NOT EXISTS idx_account_history_user_created_at ON account_history(user_id, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_email_unique ON users(email) WHERE email IS NOT NULL AND email != '';
 CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username_unique ON users(username) WHERE username IS NOT NULL AND username != '';
 
@@ -390,6 +399,87 @@ export function assertWorkspaceAccess(userId: number, workspaceId: number): numb
 }
 
 export default db;
+
+function accountHistoryTableSql(tableName: string) {
+  return `
+CREATE TABLE IF NOT EXISTS ${tableName} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id INTEGER NOT NULL,
+  workspace_id INTEGER,
+  created_by_user_id INTEGER,
+  shared_with_workspace INTEGER NOT NULL DEFAULT 0,
+  shared_at TEXT,
+  geo_key TEXT NOT NULL,
+  geo_label TEXT NOT NULL,
+  email TEXT NOT NULL,
+  email_password TEXT NOT NULL,
+  username TEXT NOT NULL,
+  mailbox_provider TEXT NOT NULL DEFAULT 'mail_tm',
+  site_account_id TEXT NOT NULL DEFAULT '',
+  balance_status TEXT NOT NULL DEFAULT 'unknown',
+  first_name TEXT NOT NULL DEFAULT '',
+  last_name TEXT NOT NULL DEFAULT '',
+  phone TEXT NOT NULL DEFAULT '',
+  age INTEGER NOT NULL DEFAULT 0,
+  gender TEXT NOT NULL DEFAULT 'male',
+  date_of_birth TEXT NOT NULL DEFAULT '',
+  country TEXT NOT NULL DEFAULT '',
+  region TEXT NOT NULL DEFAULT 'Not specified',
+  city TEXT NOT NULL DEFAULT '',
+  place_of_birth TEXT NOT NULL DEFAULT '',
+  address_line TEXT NOT NULL DEFAULT '',
+  postal_code TEXT NOT NULL DEFAULT '',
+  persona TEXT NOT NULL DEFAULT 'standard_user',
+  account_role TEXT NOT NULL CHECK(account_role IN ('admin','user')),
+  document_type TEXT NOT NULL,
+  document_value TEXT NOT NULL,
+  document_issue_date TEXT NOT NULL DEFAULT '',
+  document_quality TEXT NOT NULL CHECK(document_quality IN ('verified','sample_verified','synthetic_pattern','missing_rules')),
+  registration_url TEXT NOT NULL,
+  inbox_status TEXT NOT NULL DEFAULT 'no_email_found',
+  inbox_sender TEXT NOT NULL DEFAULT '',
+  inbox_subject TEXT NOT NULL DEFAULT '',
+  inbox_received_at TEXT NOT NULL DEFAULT '',
+  inbox_plain_text TEXT,
+  inbox_links_json TEXT NOT NULL DEFAULT '[]',
+  inbox_codes_json TEXT NOT NULL DEFAULT '[]',
+  inbox_html TEXT,
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id)
+);`;
+}
+
+function migrateAccountHistoryDocumentQualityCheck() {
+  const schema = db.prepare(`
+    SELECT sql
+    FROM sqlite_master
+    WHERE type = 'table' AND name = 'account_history'
+  `).get() as { sql: string } | undefined;
+
+  if (!schema || schema.sql.includes("'sample_verified'")) return;
+
+  const columns = accountHistoryColumns.join(', ');
+  const wasForeignKeysEnabled = Number(db.pragma('foreign_keys', { simple: true })) === 1;
+
+  try {
+    db.pragma('foreign_keys = OFF');
+    db.transaction(() => {
+      db.exec('DROP TABLE IF EXISTS account_history_migrating_document_quality');
+      db.exec(accountHistoryTableSql('account_history_migrating_document_quality'));
+      db.prepare(`
+        INSERT INTO account_history_migrating_document_quality (${columns})
+        SELECT ${columns}
+        FROM account_history
+      `).run();
+      db.exec(`
+        DROP TABLE account_history;
+        ALTER TABLE account_history_migrating_document_quality RENAME TO account_history;
+      `);
+    })();
+  } finally {
+    db.pragma(`foreign_keys = ${wasForeignKeysEnabled ? 'ON' : 'OFF'}`);
+  }
+}
 
 function ensureColumn(table: string, column: string, definition: string) {
   const columns = db.prepare(`PRAGMA table_info(${table})`).all() as Array<{ name: string }>;
