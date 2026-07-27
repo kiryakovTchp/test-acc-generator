@@ -5,8 +5,205 @@
   "country": "Botswana",
   "locale": "en-BW",
   "availability": "review",
-  "names": { "male": ["Thabo", "Kagiso", "Mpho", "Tebogo"], "female": ["Naledi", "Boitumelo", "Lesego", "Kgomotso"], "last": ["Molefe", "Mokoena", "Kgosi", "Dube"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Botswana name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+267", "nationalLength": 8, "prefixes": ["71", "72", "73", "74", "75", "76", "77"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Botswana phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "South-East", "cities": [{ "name": "Gaborone", "postalPrefixes": ["000"], "streets": ["Independence Avenue", "Queens Road"] }] }, { "name": "North-East", "cities": [{ "name": "Francistown", "postalPrefixes": ["100"], "streets": ["Blue Jacket Street", "Haskins Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Botswana location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Botswana passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": [
+      "Kabelo",
+      "Kagiso",
+      "Thabo",
+      "Thabang",
+      "Thabiso",
+      "Tshepo",
+      "Joseph",
+      "Emmanuel",
+      "Oteng",
+      "Mpho",
+      "Tebogo",
+      "Kabo",
+      "Neo",
+      "Tumelo",
+      "Thapelo",
+      "Ofentse"
+    ],
+    "female": [
+      "Boitumelo",
+      "Kelebogile",
+      "Masego",
+      "Kefilwe",
+      "Malebogo",
+      "Gorata",
+      "Kgomotso",
+      "Lorato",
+      "Refilwe",
+      "Keitumetse",
+      "Naledi",
+      "Lesego",
+      "Katlego",
+      "Onalenna",
+      "Tshegofatso",
+      "Keneilwe"
+    ],
+    "last": [
+      "Molefe",
+      "Modise",
+      "Mooketsi",
+      "Mosweu",
+      "Phiri",
+      "Moseki",
+      "Pule",
+      "Moloi",
+      "Moalosi",
+      "Moeng",
+      "Kenosi",
+      "Mogotsi",
+      "Motsumi",
+      "Marumo",
+      "Morapedi",
+      "Mogapi"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Botswana forenames and surnames frequency tables",
+      "url": "https://forebears.io/botswana/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Public frequency tables were used to seed localized names. Gender buckets follow Forebears gender-majority data for high-frequency forenames and are not an official civil registry sample; surnames were cross-filled from the public Botswana surname table."
+  },
+  "phones": {
+    "countryCallingCode": "+267",
+    "nationalLength": 8,
+    "prefixes": [
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "81",
+      "82",
+      "83",
+      "84",
+      "85"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Botswana national numbering plan communication of 27.III.2025",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200001C0010PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "ITU/BOCRA confirms country code +267 and that level 7 and part of level 8 are eight-digit mobile number ranges from 71 XXX XXX to 85 XXX XXX. Generated numbers are synthetic and are not checked for current subscriber assignment, portability or M2M/non-geographic subdivision."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Gaborone City",
+        "cities": [
+          {
+            "name": "Gaborone",
+            "postalPrefixes": [
+              "GAB"
+            ],
+            "streets": [
+              "Independence Avenue",
+              "Queens Road",
+              "Nelson Mandela Drive",
+              "Machel Drive"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Francistown City",
+        "cities": [
+          {
+            "name": "Francistown",
+            "postalPrefixes": [
+              "FRN"
+            ],
+            "streets": [
+              "Blue Jacket Street",
+              "Haskins Street",
+              "St Patrick Street",
+              "Airport Road"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "North-West District",
+        "cities": [
+          {
+            "name": "Maun",
+            "postalPrefixes": [
+              "MAU"
+            ],
+            "streets": [
+              "Sir Seretse Khama Road",
+              "Moeti Road",
+              "Airport Road"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Central District",
+        "cities": [
+          {
+            "name": "Serowe",
+            "postalPrefixes": [
+              "SER"
+            ],
+            "streets": [
+              "Main Mall Road",
+              "Khama Road",
+              "Hospital Road"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Botswana Ministry of Local Government local authorities contacts",
+      "url": "https://www.gov.bw/sites/default/files/2020-02/Local%20Authorities%20Contacts_4.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Official local authority contacts confirm city/district names used here. UPU address guidance shows Botswana uses P.O. Box and Private Bag style addressing; public sources reviewed do not provide national postcodes, so postalPrefixes are synthetic internal area markers for generator consistency rather than real postal codes."
+  },
+  "documents": {
+    "omang": {
+      "label": "National Identity Card (Omang)",
+      "templates": [
+        "{RAND9}"
+      ],
+      "pattern": "^\\d{9}$",
+      "quality": "sample_verified",
+      "source": {
+        "title": "Botswana Examination Council registration form Omang input rule",
+        "url": "https://malepa.bec.co.bw/MalepaonlineBGCSE/xpgRegistration.aspx",
+        "type": "government_sample",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Government services confirm Omang is the national identity document; a public Botswana Examination Council registration form validates Omang as nine numeric digits. No official checksum, semantic digit rule or live registry validation was found, so generation is a simple synthetic nine-digit value."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND7}"
+      ],
+      "pattern": "^[A-Z]\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Botswana ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/bwa/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "PRADO confirms Botswana ordinary, diplomatic and official passport document families. The public PRADO category page reviewed does not confirm the visible passport number grammar; this template remains a synthetic placeholder until an official rule or multiple public samples are available."
+    }
+  }
 }
