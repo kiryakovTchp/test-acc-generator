@@ -10,20 +10,20 @@ const checkedAtSchema = z.iso.date().refine((value) => Date.parse(`${value}T00:0
   message: 'checkedAt cannot be in the future',
 });
 
-const datasetSourceSchema = z.object({
+const datasetSourceSchema = z.strictObject({
   title: z.string().min(1),
   url: z.string().url(),
   type: sourceTypeSchema,
   checkedAt: checkedAtSchema,
 });
 
-const citySchema = z.object({
+const citySchema = z.strictObject({
   name: z.string().min(1),
   postalPrefixes: z.array(z.string().min(1)).min(1),
   streets: z.array(z.string().min(1)).min(1),
 });
 
-const documentRuleSchema = z.object({
+const documentRuleSchema = z.strictObject({
   label: z.string().min(1),
   templates: z.array(z.string().min(1)).min(1).optional(),
   generator: z.string().min(1).optional(),
@@ -31,18 +31,18 @@ const documentRuleSchema = z.object({
   quality: z.enum(['verified', 'sample_verified', 'synthetic_pattern']),
   source: datasetSourceSchema,
   notes: z.string().min(1).optional(),
-}).refine((rule) => Boolean(rule.generator || rule.templates?.length), {
-  message: 'Document rule must define either generator or templates',
+}).refine((rule) => Boolean(rule.generator) !== Boolean(rule.templates?.length), {
+  message: 'Document rule must define exactly one of generator or templates',
 });
 
-export const countryDatasetSchema = z.object({
+export const countryDatasetSchema = z.strictObject({
   key: z.string().regex(/^[a-z][a-z_]*$/),
   label: z.string().min(1),
   countryCode: z.string().regex(/^[A-Z]{2}$/),
   country: z.string().min(1),
   locale: z.string().min(2),
   availability: availabilitySchema,
-  names: z.object({
+  names: z.strictObject({
     male: z.array(z.string().min(1)).min(1),
     female: z.array(z.string().min(1)).min(1),
     last: z.array(z.string().min(1)).min(1),
@@ -50,7 +50,7 @@ export const countryDatasetSchema = z.object({
     source: datasetSourceSchema,
     notes: z.string().min(1).optional(),
   }),
-  phones: z.object({
+  phones: z.strictObject({
     countryCallingCode: z.string().regex(/^\+\d+$/),
     nationalLength: z.number().int().positive(),
     prefixes: z.array(z.string().regex(/^\d+$/)).min(1),
@@ -58,8 +58,8 @@ export const countryDatasetSchema = z.object({
     source: datasetSourceSchema,
     notes: z.string().min(1).optional(),
   }),
-  locations: z.object({
-    regions: z.array(z.object({
+  locations: z.strictObject({
+    regions: z.array(z.strictObject({
       name: z.string().min(1),
       cities: z.array(citySchema).min(1),
     })).min(1),
@@ -101,8 +101,12 @@ const documentGenerators: Record<string, DocumentGenerator> = {
   nigeria_nin: () => randomDigits(11),
 };
 
-const countryDatasets = [countryDatasetSchema.parse(nigeriaDataset)];
+const countryDatasets = loadCountryDatasets([nigeriaDataset]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
+
+export function loadCountryDatasets(rawDatasets: unknown[]) {
+  return validateCountryDatasets(rawDatasets.map((dataset) => countryDatasetSchema.parse(dataset)));
+}
 
 export function listCountryDatasets() {
   return countryDatasets;
@@ -138,6 +142,26 @@ export class DatasetError extends Error {
     super(message);
     this.name = 'DatasetError';
   }
+}
+
+function validateCountryDatasets(datasets: CountryDataset[]) {
+  const keys = new Set<string>();
+  const countryCodes = new Set<string>();
+
+  for (const dataset of datasets) {
+    if (keys.has(dataset.key)) throw new DatasetError(`Duplicate country dataset key: ${dataset.key}`);
+    if (countryCodes.has(dataset.countryCode)) throw new DatasetError(`Duplicate country dataset countryCode: ${dataset.countryCode}`);
+    keys.add(dataset.key);
+    countryCodes.add(dataset.countryCode);
+
+    for (const [documentType, rule] of Object.entries(dataset.documents)) {
+      if (rule.generator && !documentGenerators[rule.generator]) {
+        throw new DatasetError(`${dataset.key}.${documentType}: unknown generator ${rule.generator}`);
+      }
+    }
+  }
+
+  return datasets;
 }
 
 function fillTemplate(template: string, context: { dateOfBirth?: string } = {}) {

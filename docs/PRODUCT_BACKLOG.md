@@ -1,6 +1,6 @@
 # Product Backlog
 
-Last updated: 2026-07-24
+Last updated: 2026-07-27
 
 This file tracks product and engineering improvements that are not yet implemented. Keep it current when new requirements appear in chat or during implementation.
 
@@ -10,6 +10,34 @@ This file tracks product and engineering improvements that are not yet implement
 - `P1`: important product capability or security/ops hardening;
 - `P2`: useful improvement;
 - `P3`: polish or optional enhancement.
+
+## P1 - Sample-Verified Document Quality DB Migration
+
+Status: planned
+Source: 2026-07-27 Nigeria dataset validation review
+Owner: Developer + Project
+
+### Problem
+
+`DocumentQuality` now includes `sample_verified` in backend/API/frontend types, but existing production SQLite databases may still have the old `account_history.document_quality` CHECK constraint:
+
+```text
+verified, synthetic_pattern, missing_rules
+```
+
+The current Nigeria rules do not write `sample_verified` document quality, so production is not blocked today. The first country with a document rule marked `sample_verified` can fail on an older production DB unless the constraint is migrated first.
+
+### Required Behavior
+
+- Before deploying the first sample-verified document rule, migrate production `account_history.document_quality` to allow `sample_verified`.
+- Keep existing account history rows intact.
+- Verify generation, history listing, detail view, analytics, and dataset warnings after migration.
+
+### Recommended Technical Shape
+
+- Add a controlled SQLite table-rebuild migration for `account_history`, preserving all columns, indexes, and data.
+- Run it in staging/local DB first with representative history rows.
+- Deploy separately from a large dataset expansion so rollback is simple.
 
 ## P1 - Personal Account Access ACL
 

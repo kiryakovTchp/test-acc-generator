@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets } from './datasets.js';
+import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets, loadCountryDatasets } from './datasets.js';
 import { calculateAge, generatePersonaProfile } from './utils.js';
 
 test('country datasets have required blocks and sources', () => {
@@ -47,6 +47,65 @@ test('country dataset schema rejects misspelled required fields and invalid sour
     }),
     /checkedAt/,
   );
+});
+
+test('country dataset schema rejects unknown fields and ambiguous document generation', () => {
+  const dataset = listCountryDatasets()[0];
+
+  assert.throws(
+    () => countryDatasetSchema.parse({
+      ...dataset,
+      phones: {
+        ...dataset.phones,
+        nationalLenght: 11,
+      },
+    }),
+    /unrecognized_keys|nationalLenght/,
+  );
+
+  assert.throws(
+    () => countryDatasetSchema.parse({
+      ...dataset,
+      documents: {
+        ...dataset.documents,
+        ambiguous_passport: {
+          ...dataset.documents.passport,
+          generator: 'nigeria_nin',
+        },
+      },
+    }),
+    /exactly one/,
+  );
+});
+
+test('country dataset loader rejects unknown generators and duplicate identities', () => {
+  const dataset = listCountryDatasets()[0];
+
+  assert.throws(
+    () => loadCountryDatasets([{
+      ...dataset,
+      documents: {
+        ...dataset.documents,
+        nin: {
+          ...dataset.documents.nin,
+          generator: 'nigeria_nni',
+        },
+      },
+    }]),
+    /unknown generator nigeria_nni/,
+  );
+
+  assert.throws(
+    () => loadCountryDatasets([dataset, { ...dataset, label: 'Nigeria Copy' }]),
+    /Duplicate country dataset key: nigeria/,
+  );
+});
+
+test('country dataset keys and country codes are unique', () => {
+  const datasets = listCountryDatasets();
+
+  assert.equal(new Set(datasets.map((item) => item.key)).size, datasets.length);
+  assert.equal(new Set(datasets.map((item) => item.countryCode)).size, datasets.length);
 });
 
 test('nigeria dataset generates internally consistent profiles', () => {
