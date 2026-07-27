@@ -130,11 +130,15 @@ test('sierra leone and togo dataset follow provided document specimens', async (
   assert.match(togoDriverLicence?.documentValue ?? '', /^\d{8}$/);
 });
 
-test('gabon dataset follows provided PRADO passport specimen', async () => {
+test('gabon dataset follows public-source document placeholders', async () => {
   const passport = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(passport?.country, 'Gabon');
   assert.equal(passport?.documentQuality, 'synthetic_pattern');
-  assert.match(passport?.documentValue ?? '', /^\d{2}SP\d{5}$/);
+  assert.match(passport?.documentValue ?? '', /^[A-Z]\d{8}$/);
+
+  const nip = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'personal_identification_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(nip?.documentQuality, 'synthetic_pattern');
+  assert.match(nip?.documentValue ?? '', /^[A-Z0-9]{14}$/);
 });
 
 test("cote d'ivoire dataset follows provided document shapes", async () => {
@@ -162,9 +166,9 @@ test('kazakhstan iin starts with profile date of birth', async () => {
 });
 
 test('gabon generated names come from the Gabon profile pool', async () => {
-  const maleNames = new Set(['Alain', 'Jean', 'Patrick', 'Brice', 'Cedric', 'Marc', 'Christian', 'Landry']);
-  const femaleNames = new Set(['Marie', 'Chantal', 'Sandrine', 'Estelle', 'Prisca', 'Nadine', 'Ariane', 'Justine']);
-  const lastNames = new Set(['Mba', 'Ondo', 'Obame', 'Ndong', 'Nguema', 'Essono', 'Ebang', 'Moussavou', 'Oyono']);
+  const maleNames = new Set(['Alain', 'Jean', 'Patrick', 'Brice', 'Cedric', 'Marc', 'Christian', 'Landry', 'Daniel', 'Paul', 'Pierre', 'Eric', 'Arnaud', 'Franck', 'Guy', 'Joel']);
+  const femaleNames = new Set(['Marie', 'Chantal', 'Sandrine', 'Estelle', 'Prisca', 'Nadine', 'Ariane', 'Justine', 'Grace', 'Sylvie', 'Carine', 'Audrey', 'Stella', 'Judith', 'Patricia', 'Cynthia']);
+  const lastNames = new Set(['Mba', 'Ondo', 'Obame', 'Ndong', 'Nguema', 'Essono', 'Ebang', 'Moussavou', 'Oyono', 'Mboumba', 'Koumba', 'Mengue', 'Ntsame', 'Nze', 'Mbadinga', 'Kombila']);
 
   for (let i = 0; i < 10; i += 1) {
     const item = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
@@ -200,7 +204,7 @@ test('phone can be regenerated without changing the rest of the identity', async
 
   assert.ok(updated);
   assert.notEqual(updated?.phone, item?.phone);
-  assert.match(updated?.phone ?? '', /^\+24106\d{7}$/);
+  assert.match(updated?.phone ?? '', /^\+241(?:62|65|66|74|77)\d{6}$/);
   assert.equal(updated?.firstName, item?.firstName);
   assert.equal(updated?.lastName, item?.lastName);
   assert.equal(updated?.documentValue, item?.documentValue);

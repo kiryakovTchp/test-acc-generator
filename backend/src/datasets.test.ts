@@ -267,6 +267,39 @@ test('burundi dataset generates internally consistent profiles', () => {
   }
 });
 
+test('gabon dataset generates internally consistent profiles', () => {
+  const dataset = getDataset('gabon');
+
+  const maleNames = new Set(dataset.names.male);
+  const femaleNames = new Set(dataset.names.female);
+  const lastNames = new Set(dataset.names.last);
+  const regionMap = new Map(dataset.locations.regions.map((region) => [region.name, region]));
+  assert.ok(regionMap.get('Nyanga')?.cities.some((city) => city.name === 'Tchibanga'));
+
+  for (let i = 0; i < 1000; i += 1) {
+    const profile = generatePersonaProfile(dataset.key, 'standard_user');
+    assert.ok(maleNames.has(profile.firstName) || femaleNames.has(profile.firstName));
+    assert.ok(lastNames.has(profile.lastName));
+    assert.equal(profile.country, dataset.country);
+    assert.equal(profile.age, calculateAge(profile.dateOfBirth));
+    assert.ok(profile.age >= 25 && profile.age <= 40);
+
+    const selectedRegion = regionMap.get(profile.region);
+    assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
+    const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
+    assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
+    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
+    assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)));
+    assert.match(profile.postalCode, /^BP \d{3}$/);
+
+    assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
+    const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
+    assert.equal(nationalNumber.length, dataset.phones.nationalLength);
+    assert.ok(dataset.phones.prefixes.some((prefix) => nationalNumber.startsWith(prefix)));
+    assert.equal(nationalNumber.startsWith('0'), false);
+  }
+});
+
 test('nigeria dataset generates internally consistent profiles', () => {
   const dataset = getDataset('nigeria');
 
@@ -415,6 +448,20 @@ test('burundi document rules match configured public-source limits', () => {
   for (let i = 0; i < 1000; i += 1) {
     for (const rule of Object.values(dataset.documents)) {
       const value = generateDatasetDocument(rule, { dateOfBirth: '1991-07-27', gender: 'female', region: 'Bujumbura' });
+      assert.match(value, new RegExp(rule.pattern), `${rule.label}: ${value} did not match ${rule.pattern}`);
+    }
+  }
+});
+
+test('gabon document rules match configured public-source limits', () => {
+  const dataset = getDataset('gabon');
+
+  assert.equal(dataset.documents.personal_identification_number.quality, 'synthetic_pattern');
+  assert.equal(dataset.documents.passport.quality, 'synthetic_pattern');
+
+  for (let i = 0; i < 1000; i += 1) {
+    for (const rule of Object.values(dataset.documents)) {
+      const value = generateDatasetDocument(rule, { dateOfBirth: '1991-07-27', gender: 'male', region: 'Estuaire' });
       assert.match(value, new RegExp(rule.pattern), `${rule.label}: ${value} did not match ${rule.pattern}`);
     }
   }

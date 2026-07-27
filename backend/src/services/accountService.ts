@@ -2,7 +2,7 @@ import db, { assertWorkspaceAccess, getDefaultWorkspaceForUser } from '../db.js'
 import geoRules from '../geo-rules.json' with { type: 'json' };
 import type { GeoRule, DocumentQuality, PersonaKey, Role, AccountBalanceStatus } from '../types.js';
 import { fillTemplate, randomString, extractCodes, generatePersonaProfile, pickPrimaryVerificationLink, dedupeLinks, pickTemplate, randomPhone } from '../utils.js';
-import { generateDatasetDocument, getCountryDataset, listCountryDatasets } from '../datasets.js';
+import { generateDatasetDocument, generateDatasetPhone, getCountryDataset, listCountryDatasets } from '../datasets.js';
 import type { Availability } from '../datasets.js';
 import type { EmailProvider } from '../providers/emailProvider.js';
 import { ApiError, getWorkspaceSettings } from '../limits.js';
@@ -334,9 +334,11 @@ export function regeneratePhone(id: number, userId: number, includeDebug = false
   `).get(id, resolvedWorkspaceId, userId, userId, userId) as { geoKey: string; phone: string } | undefined;
   if (!row) return null;
 
-  let nextPhone = randomPhone(row.geoKey);
+  const dataset = getCountryDataset(row.geoKey);
+  const generateNextPhone = () => dataset ? generateDatasetPhone(dataset) : randomPhone(row.geoKey);
+  let nextPhone = generateNextPhone();
   for (let attempt = 0; attempt < 5 && nextPhone === row.phone; attempt += 1) {
-    nextPhone = randomPhone(row.geoKey);
+    nextPhone = generateNextPhone();
   }
 
   db.prepare(`

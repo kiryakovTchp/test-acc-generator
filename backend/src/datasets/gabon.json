@@ -6,39 +6,198 @@
   "locale": "fr-GA",
   "availability": "review",
   "names": {
-    "male": ["Alain", "Jean", "Patrick", "Brice", "Cedric", "Marc", "Christian", "Landry"],
-    "female": ["Marie", "Chantal", "Sandrine", "Estelle", "Prisca", "Nadine", "Ariane", "Justine"],
-    "last": ["Mba", "Ondo", "Obame", "Ndong", "Nguema", "Essono", "Ebang", "Moussavou", "Oyono"],
+    "male": [
+      "Alain",
+      "Jean",
+      "Patrick",
+      "Brice",
+      "Cedric",
+      "Marc",
+      "Christian",
+      "Landry",
+      "Daniel",
+      "Paul",
+      "Pierre",
+      "Eric",
+      "Arnaud",
+      "Franck",
+      "Guy",
+      "Joel"
+    ],
+    "female": [
+      "Marie",
+      "Chantal",
+      "Sandrine",
+      "Estelle",
+      "Prisca",
+      "Nadine",
+      "Ariane",
+      "Justine",
+      "Grace",
+      "Sylvie",
+      "Carine",
+      "Audrey",
+      "Stella",
+      "Judith",
+      "Patricia",
+      "Cynthia"
+    ],
+    "last": [
+      "Mba",
+      "Ondo",
+      "Obame",
+      "Ndong",
+      "Nguema",
+      "Essono",
+      "Ebang",
+      "Moussavou",
+      "Oyono",
+      "Mboumba",
+      "Koumba",
+      "Mengue",
+      "Ntsame",
+      "Nze",
+      "Mbadinga",
+      "Kombila"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Legacy in-app Gabon name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing in-app Gabon name pool; keep review until an external source is attached."
+    "source": {
+      "title": "Forebears Gabon forenames and surnames frequency tables",
+      "url": "https://forebears.io/gabon/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. Gender grouping follows public gender-majority data for high-frequency forenames and is not an official civil registry dataset; surnames were cross-filled from https://forebears.io/gabon/surnames."
   },
   "phones": {
     "countryCallingCode": "+241",
     "nationalLength": 8,
-    "prefixes": ["06"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Gabon phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +24106 generator prefix; verify against current numbering metadata."
+    "prefixes": [
+      "62",
+      "65",
+      "66",
+      "74",
+      "77"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Operational Bulletin: Gabon national numbering plan communication of 21.V.2019",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200004E0005PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "ITU/ARCEP confirms country code +241, eight-digit international significant numbers after dropping the domestic trunk 0, and mobile NDCs 62/65/66 for Gabon Telecom Libertis/Moov plus 74/77 for Airtel Gabon. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
-      { "name": "Estuaire", "cities": [{ "name": "Libreville", "postalPrefixes": ["100"], "streets": ["Boulevard Triomphal", "Avenue Leon Mba"] }] },
-      { "name": "Ogooue-Maritime", "cities": [{ "name": "Port-Gentil", "postalPrefixes": ["300"], "streets": ["Avenue Savorgnan de Brazza", "Route de Sogara"] }] },
-      { "name": "Haut-Ogooue", "cities": [{ "name": "Franceville", "postalPrefixes": ["600"], "streets": ["Avenue de la Renovation", "Route de Moanda"] }] }
+      {
+        "name": "Estuaire",
+        "cities": [
+          {
+            "name": "Libreville",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Boulevard Triomphal",
+              "Avenue Leon Mba",
+              "Boulevard de l'Independance",
+              "Route de Owendo"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Ogooue-Maritime",
+        "cities": [
+          {
+            "name": "Port-Gentil",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue Savorgnan de Brazza",
+              "Route de Sogara",
+              "Boulevard Leon Mba",
+              "Avenue du Gouverneur"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Haut-Ogooue",
+        "cities": [
+          {
+            "name": "Franceville",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Renovation",
+              "Route de Moanda",
+              "Avenue de l'Universite",
+              "Quartier Potos"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Nyanga",
+        "cities": [
+          {
+            "name": "Tchibanga",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Prefecture",
+              "Route de Mayumba",
+              "Quartier Centre",
+              "Route de Mouila"
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Gabon location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Gabon addressing guide",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/GABEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "UPU confirms Gabon addressing examples using BP/P.O. Box delivery and locality/delivery-office lines, including Libreville and Tchibanga examples. Province-city links use public administrative geography, while street lists and fixed three-digit BP suffixes are synthetic samples and not official postal allocations."
   },
   "documents": {
+    "personal_identification_number": {
+      "label": "Personal Identification Number (NIP)",
+      "templates": [
+        "{RANDL4}{RAND10}"
+      ],
+      "pattern": "^[A-Z0-9]{14}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Gabon Ministry of Interior NIP and CNIE campaign notice",
+        "url": "https://www.interieur.gouv.ga/9-actualites/562-delivrance-du-numero-d-identification-personnel-nip-/",
+        "type": "official",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "The official Ministry of Interior source confirms NIP issuance as the prerequisite for the electronic national identity card. Public secondary reports describe a fourteen-character alphanumeric NIP, but no official checksum, semantic digit rule or full public format specification was found; generated values are synthetic placeholders."
+    },
     "passport": {
       "label": "Passport",
-      "templates": ["{RAND2}SP{RAND5}"],
-      "pattern": "^\\d{2}SP\\d{5}$",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "User-provided PRADO Gabon passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
-      "notes": "PRADO specimen image showed a passport number like 13SP01349, with GAB only as the country code."
+      "source": {
+        "title": "PRADO Gabon ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gab/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "PRADO confirms Gabon ordinary passport document versions. The public PRADO category reviewed does not confirm a passport number grammar, so this template is only a synthetic placeholder and does not reuse a single specimen as a public rule."
     }
   }
 }
