@@ -1,0 +1,44 @@
+{
+  "key": "cameroon",
+  "label": "Cameroon",
+  "countryCode": "CM",
+  "country": "Cameroon",
+  "locale": "fr-CM",
+  "availability": "review",
+  "names": {
+    "male": ["Jean", "Paul", "Samuel", "Daniel", "Patrick", "Christian"],
+    "female": ["Marie", "Grace", "Esther", "Diane", "Aline", "Nadine"],
+    "last": ["Njoya", "Tchami", "Mballa", "Ngono", "Kamga", "Fouda"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Cameroon name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Cameroonian names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+237",
+    "nationalLength": 9,
+    "prefixes": ["671"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Cameroon phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +237671 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Centre", "cities": [{ "name": "Yaounde", "postalPrefixes": ["100"], "streets": ["Avenue Kennedy", "Boulevard du 20 Mai"] }] },
+      { "name": "Littoral", "cities": [{ "name": "Douala", "postalPrefixes": ["200"], "streets": ["Boulevard de la Liberte", "Rue Joffre"] }] },
+      { "name": "Northwest", "cities": [{ "name": "Bamenda", "postalPrefixes": ["300"], "streets": ["Commercial Avenue", "Hospital Road"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Cameroon location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "national_id_card_number": {
+      "label": "National ID Card Number",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Legacy Cameroon CNI candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+      "notes": "Probable CNI visual form; keep review until official source confirms it."
+    }
+  }
+}

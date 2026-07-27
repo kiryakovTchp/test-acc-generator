@@ -1,0 +1,63 @@
+{
+  "key": "uganda",
+  "label": "Uganda",
+  "countryCode": "UG",
+  "country": "Uganda",
+  "locale": "en-UG",
+  "availability": "review",
+  "names": {
+    "male": ["Moses", "Joseph", "Brian", "Samuel", "David", "Isaac"],
+    "female": ["Grace", "Esther", "Ruth", "Sarah", "Diana", "Lydia"],
+    "last": ["Okello", "Kato", "Mugisha", "Nsubuga", "Tumusiime", "Achieng"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Uganda name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Ugandan names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+256",
+    "nationalLength": 9,
+    "prefixes": ["71"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Uganda phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +25671 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Central Region",
+        "cities": [
+          { "name": "Kampala", "postalPrefixes": ["25"], "streets": ["Jinja Road", "Kira Road"] },
+          { "name": "Entebbe", "postalPrefixes": ["26"], "streets": ["Jinja Road", "Kira Road"] }
+        ]
+      },
+      {
+        "name": "Eastern Region",
+        "cities": [
+          { "name": "Jinja", "postalPrefixes": ["27"], "streets": ["Acacia Avenue", "Republic Street"] },
+          { "name": "Mbale", "postalPrefixes": ["28"], "streets": ["Acacia Avenue", "Republic Street"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Uganda location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["B{RAND7}"],
+      "pattern": "^B\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Uganda passport visual candidate", "url": "https://passports.go.ug/", "type": "official", "checkedAt": "2026-07-27" },
+      "notes": "Uganda official passport portal confirms passport issuance, but not the exact serial grammar; keep review."
+    },
+    "national_identification_number": {
+      "label": "National Identification Number",
+      "templates": ["CM{RAND12}"],
+      "pattern": "^CM\\d{12}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Uganda NIN visual candidate", "url": "https://www.nira.go.ug/", "type": "official", "checkedAt": "2026-07-27" },
+      "notes": "Plausible NIN visual form; keep review until official source confirms prefix and length."
+    }
+  }
+}

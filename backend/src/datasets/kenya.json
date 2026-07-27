@@ -1,0 +1,52 @@
+{
+  "key": "kenya",
+  "label": "Kenya",
+  "countryCode": "KE",
+  "country": "Kenya",
+  "locale": "en-KE",
+  "availability": "review",
+  "names": {
+    "male": ["John", "James", "Peter", "Samuel", "Brian", "David"],
+    "female": ["Grace", "Mary", "Esther", "Sarah", "Diana", "Lydia"],
+    "last": ["Kimani", "Mwangi", "Otieno", "Njoroge", "Wanjiru", "Ochieng"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy migration Kenya name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Representative synthetic Kenyan names; attach a stronger source before marking active."
+  },
+  "phones": {
+    "countryCallingCode": "+254",
+    "nationalLength": 9,
+    "prefixes": ["712"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Kenya phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +254712 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Nairobi County", "cities": [{ "name": "Nairobi", "postalPrefixes": ["001"], "streets": ["Kenyatta Avenue", "Mombasa Road"] }] },
+      { "name": "Mombasa County", "cities": [{ "name": "Mombasa", "postalPrefixes": ["801"], "streets": ["Moi Avenue", "Digo Road"] }] },
+      { "name": "Kisumu County", "cities": [{ "name": "Kisumu", "postalPrefixes": ["401"], "streets": ["Oginga Odinga Road", "Jomo Kenyatta Highway"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Kenya location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked county/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["A{RAND7}"],
+      "pattern": "^A\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Kenya passport booklet type reference", "url": "https://immigration.go.ke/type-and-fees/", "type": "official", "checkedAt": "2026-07-27" },
+      "notes": "Kenya Immigration confirms ordinary passport A/B/C series by booklet size; exact number grammar still needs a document sample or PRADO page."
+    },
+    "national_id_card_number": {
+      "label": "National ID Card Number",
+      "templates": ["{RAND8}"],
+      "pattern": "^\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "Legacy Kenya national ID candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+      "notes": "Probable national ID visual form; keep review until official/sample source confirms it."
+    }
+  }
+}

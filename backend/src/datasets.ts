@@ -1,18 +1,24 @@
 import angolaDataset from './datasets/angola.json' with { type: 'json' };
+import cameroonDataset from './datasets/cameroon.json' with { type: 'json' };
 import coteDivoireDataset from './datasets/cote_divoire.json' with { type: 'json' };
 import ethiopiaDataset from './datasets/ethiopia.json' with { type: 'json' };
 import gabonDataset from './datasets/gabon.json' with { type: 'json' };
 import gambiaDataset from './datasets/gambia.json' with { type: 'json' };
+import genericIntlDataset from './datasets/generic_intl.json' with { type: 'json' };
 import georgiaDataset from './datasets/georgia.json' with { type: 'json' };
 import ghanaDataset from './datasets/ghana.json' with { type: 'json' };
 import irelandDataset from './datasets/ireland.json' with { type: 'json' };
 import kazakhstanDataset from './datasets/kazakhstan.json' with { type: 'json' };
+import kenyaDataset from './datasets/kenya.json' with { type: 'json' };
 import malawiDataset from './datasets/malawi.json' with { type: 'json' };
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
 import senegalDataset from './datasets/senegal.json' with { type: 'json' };
 import sierraLeoneDataset from './datasets/sierra_leone.json' with { type: 'json' };
+import tanzaniaDataset from './datasets/tanzania.json' with { type: 'json' };
 import togoDataset from './datasets/togo.json' with { type: 'json' };
+import ugandaDataset from './datasets/uganda.json' with { type: 'json' };
 import uzbekistanDataset from './datasets/uzbekistan.json' with { type: 'json' };
+import zambiaDataset from './datasets/zambia.json' with { type: 'json' };
 import type { Gender } from './types.js';
 import crypto from 'node:crypto';
 import { z } from 'zod';
@@ -118,20 +124,26 @@ const documentGenerators: Record<string, DocumentGenerator> = {
 
 const countryDatasets = loadCountryDatasets([
   angolaDataset,
+  cameroonDataset,
   coteDivoireDataset,
   ethiopiaDataset,
   gabonDataset,
   gambiaDataset,
+  genericIntlDataset,
   georgiaDataset,
   ghanaDataset,
   irelandDataset,
   kazakhstanDataset,
+  kenyaDataset,
   malawiDataset,
   nigeriaDataset,
   senegalDataset,
   sierraLeoneDataset,
+  tanzaniaDataset,
   togoDataset,
+  ugandaDataset,
   uzbekistanDataset,
+  zambiaDataset,
 ]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 

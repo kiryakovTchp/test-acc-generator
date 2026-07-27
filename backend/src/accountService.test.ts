@@ -238,7 +238,7 @@ test('phone can be manually edited after generation', async () => {
 
 test('geo rules expose document options without registration URLs', async () => {
   const geoRule = listGeoRules().find((item) => item.key === 'zambia');
-  assert.deepEqual(Object.keys(geoRule ?? {}).sort(), ['documentTypes', 'key', 'label']);
+  assert.deepEqual(Object.keys(geoRule ?? {}).sort(), ['availability', 'documentTypes', 'key', 'label']);
   assert.deepEqual(geoRule?.documentTypes.sort(), ['national_registration_card_number', 'passport']);
 });
 
