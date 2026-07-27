@@ -1,0 +1,44 @@
+{
+  "key": "gabon",
+  "label": "Gabon",
+  "countryCode": "GA",
+  "country": "Gabon",
+  "locale": "fr-GA",
+  "availability": "review",
+  "names": {
+    "male": ["Alain", "Jean", "Patrick", "Brice", "Cedric", "Marc", "Christian", "Landry"],
+    "female": ["Marie", "Chantal", "Sandrine", "Estelle", "Prisca", "Nadine", "Ariane", "Justine"],
+    "last": ["Mba", "Ondo", "Obame", "Ndong", "Nguema", "Essono", "Ebang", "Moussavou", "Oyono"],
+    "quality": "sample_verified",
+    "source": { "title": "Legacy in-app Gabon name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing in-app Gabon name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+241",
+    "nationalLength": 8,
+    "prefixes": ["06"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Gabon phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +24106 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Estuaire", "cities": [{ "name": "Libreville", "postalPrefixes": ["100"], "streets": ["Boulevard Triomphal", "Avenue Leon Mba"] }] },
+      { "name": "Ogooue-Maritime", "cities": [{ "name": "Port-Gentil", "postalPrefixes": ["300"], "streets": ["Avenue Savorgnan de Brazza", "Route de Sogara"] }] },
+      { "name": "Haut-Ogooue", "cities": [{ "name": "Franceville", "postalPrefixes": ["600"], "streets": ["Avenue de la Renovation", "Route de Moanda"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Gabon location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RAND2}SP{RAND5}"],
+      "pattern": "^\\d{2}SP\\d{5}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Gabon passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO specimen image showed a passport number like 13SP01349, with GAB only as the country code."
+    }
+  }
+}

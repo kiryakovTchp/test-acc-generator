@@ -1,0 +1,83 @@
+{
+  "key": "gambia",
+  "label": "Gambia",
+  "countryCode": "GM",
+  "country": "Gambia",
+  "locale": "en-GM",
+  "availability": "review",
+  "names": {
+    "male": ["Lamin", "Ebrima", "Omar", "Momodou", "Musa", "Alieu"],
+    "female": ["Fatou", "Awa", "Mariama", "Binta", "Isatou", "Aminata"],
+    "last": ["Jallow", "Ceesay", "Sarr", "Njie", "Touray", "Darboe", "Camara"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Legacy in-app Gambia name samples",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from the existing in-app Gambia name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+220",
+    "nationalLength": 7,
+    "prefixes": ["30"],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Legacy in-app Gambia phone rule",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from the existing +22030 generator prefix, normalized to seven national digits; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Banjul", "cities": [{ "name": "Banjul", "postalPrefixes": ["220"], "streets": ["Independence Drive", "Marina Parade"] }] },
+      {
+        "name": "Kanifing",
+        "cities": [
+          { "name": "Serekunda", "postalPrefixes": ["221"], "streets": ["Kairaba Avenue", "Pipeline Road"] },
+          { "name": "Bakau", "postalPrefixes": ["221"], "streets": ["Kairaba Avenue", "Pipeline Road"] }
+        ]
+      },
+      { "name": "West Coast", "cities": [{ "name": "Brikama", "postalPrefixes": ["222"], "streets": ["Brikama Highway", "Kombo Coastal Road"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Legacy in-app Gambia location samples",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["PC{RAND7}"],
+      "pattern": "^PC\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Legacy Gambia passport candidate",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator",
+        "type": "assumption",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Draft candidate is PC plus seven digits; official exact visual grammar still needs sample-level confirmation."
+    },
+    "national_identification_number": {
+      "label": "National Identification Number",
+      "templates": ["{RAND11}"],
+      "pattern": "^\\d{11}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Legacy Gambia NIN candidate",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator",
+        "type": "assumption",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Source review indicated Gambian NIN is 11 digits; keep review until refreshed official source confirms current card grammar."
+    }
+  }
+}

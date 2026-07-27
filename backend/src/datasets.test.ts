@@ -108,6 +108,41 @@ test('country dataset keys and country codes are unique', () => {
   assert.equal(new Set(datasets.map((item) => item.countryCode)).size, datasets.length);
 });
 
+test('all country datasets generate linked profiles and matching documents', () => {
+  for (const dataset of listCountryDatasets()) {
+    const maleNames = new Set(dataset.names.male);
+    const femaleNames = new Set(dataset.names.female);
+    const lastNames = new Set(dataset.names.last);
+    const regionMap = new Map(dataset.locations.regions.map((region) => [region.name, region]));
+
+    for (let i = 0; i < 100; i += 1) {
+      const profile = generatePersonaProfile(dataset.key, i % 2 === 0 ? 'male_user' : 'female_user');
+      assert.ok(maleNames.has(profile.firstName) || femaleNames.has(profile.firstName), `${dataset.key}: generated first name is not in dataset`);
+      assert.ok(lastNames.has(profile.lastName), `${dataset.key}: generated last name is not in dataset`);
+      assert.equal(profile.country, dataset.country);
+      assert.equal(profile.age, calculateAge(profile.dateOfBirth));
+
+      const selectedRegion = regionMap.get(profile.region);
+      assert.ok(selectedRegion, `${dataset.key}: ${profile.region} is not in dataset`);
+      const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
+      assert.ok(selectedCity, `${dataset.key}: ${profile.city} is not in ${profile.region}`);
+      assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)), `${dataset.key}: generated street is not in selected city`);
+      assert.ok(selectedCity.postalPrefixes.some((prefix) => profile.postalCode.startsWith(prefix)), `${dataset.key}: generated postal prefix is not in selected city`);
+
+      const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
+      assert.equal(nationalNumber.length, dataset.phones.nationalLength, `${dataset.key}: phone national length mismatch`);
+      assert.ok(dataset.phones.prefixes.some((prefix) => nationalNumber.startsWith(prefix)), `${dataset.key}: phone prefix is not allowed`);
+    }
+
+    for (const rule of Object.values(dataset.documents)) {
+      for (let i = 0; i < 100; i += 1) {
+        const value = generateDatasetDocument(rule, { dateOfBirth: '1991-07-27', gender: 'female', region: dataset.locations.regions[0].name });
+        assert.match(value, new RegExp(rule.pattern), `${dataset.key}.${rule.label}: ${value} did not match ${rule.pattern}`);
+      }
+    }
+  }
+});
+
 test('nigeria dataset generates internally consistent profiles', () => {
   const dataset = getDataset('nigeria');
 

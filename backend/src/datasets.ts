@@ -1,6 +1,12 @@
+import angolaDataset from './datasets/angola.json' with { type: 'json' };
 import coteDivoireDataset from './datasets/cote_divoire.json' with { type: 'json' };
+import gabonDataset from './datasets/gabon.json' with { type: 'json' };
+import gambiaDataset from './datasets/gambia.json' with { type: 'json' };
 import kazakhstanDataset from './datasets/kazakhstan.json' with { type: 'json' };
+import malawiDataset from './datasets/malawi.json' with { type: 'json' };
 import nigeriaDataset from './datasets/nigeria.json' with { type: 'json' };
+import sierraLeoneDataset from './datasets/sierra_leone.json' with { type: 'json' };
+import togoDataset from './datasets/togo.json' with { type: 'json' };
 import type { Gender } from './types.js';
 import crypto from 'node:crypto';
 import { z } from 'zod';
@@ -104,7 +110,17 @@ const documentGenerators: Record<string, DocumentGenerator> = {
   nigeria_nin: () => randomDigits(11),
 };
 
-const countryDatasets = loadCountryDatasets([coteDivoireDataset, kazakhstanDataset, nigeriaDataset]);
+const countryDatasets = loadCountryDatasets([
+  angolaDataset,
+  coteDivoireDataset,
+  gabonDataset,
+  gambiaDataset,
+  kazakhstanDataset,
+  malawiDataset,
+  nigeriaDataset,
+  sierraLeoneDataset,
+  togoDataset,
+]);
 const countryDatasetByKey = new Map(countryDatasets.map((dataset) => [dataset.key, dataset]));
 
 export function loadCountryDatasets(rawDatasets: unknown[]) {

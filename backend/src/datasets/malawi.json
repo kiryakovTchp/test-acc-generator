@@ -1,0 +1,64 @@
+{
+  "key": "malawi",
+  "label": "Malawi",
+  "countryCode": "MW",
+  "country": "Malawi",
+  "locale": "en-MW",
+  "availability": "review",
+  "names": {
+    "male": ["Chikondi", "Blessings", "Patrick", "Joseph", "Thoko", "Tadala"],
+    "female": ["Thandiwe", "Chisomo", "Mphatso", "Tadala", "Memory", "Esnart"],
+    "last": ["Banda", "Phiri", "Mvula", "Chirwa", "Mbewe", "Kachale", "Tembo"],
+    "quality": "sample_verified",
+    "source": { "title": "Legacy in-app Malawi name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing in-app Malawi name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+265",
+    "nationalLength": 9,
+    "prefixes": ["88"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Malawi phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +26588 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Southern Region",
+        "cities": [
+          { "name": "Blantyre", "postalPrefixes": ["300"], "streets": ["Victoria Avenue", "Chileka Road"] },
+          { "name": "Zomba", "postalPrefixes": ["310"], "streets": ["Victoria Avenue", "Chileka Road"] }
+        ]
+      },
+      {
+        "name": "Central Region",
+        "cities": [
+          { "name": "Lilongwe", "postalPrefixes": ["200"], "streets": ["M1 Road", "Paul Kagame Road"] },
+          { "name": "Dedza", "postalPrefixes": ["220"], "streets": ["M1 Road", "Paul Kagame Road"] }
+        ]
+      },
+      { "name": "Northern Region", "cities": [{ "name": "Mzuzu", "postalPrefixes": ["400"], "streets": ["Orton Chirwa Avenue", "Katoto Road"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Malawi location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RAND6}"],
+      "pattern": "^\\d{6}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Malawi passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO specimen image showed a six-digit visible passport number, with MWI only as the country code."
+    },
+    "personal_number": {
+      "label": "Personal Number",
+      "templates": ["{RAND7}/{RAND1}"],
+      "pattern": "^\\d{7}/\\d$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Malawi personal number specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO specimen image showed Personal No as seven digits, slash, one digit; keep review until confirmed across current documents."
+    }
+  }
+}

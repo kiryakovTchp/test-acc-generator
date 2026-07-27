@@ -1,0 +1,76 @@
+{
+  "key": "angola",
+  "label": "Angola",
+  "countryCode": "AO",
+  "country": "Angola",
+  "locale": "pt-AO",
+  "availability": "review",
+  "names": {
+    "male": ["Joao", "Manuel", "Antonio", "Paulo", "Mateus", "Nelson"],
+    "female": ["Maria", "Ana", "Esperanca", "Isabel", "Teresa", "Lurdes"],
+    "last": ["Dos Santos", "Manuel", "Domingos", "Ferreira", "Afonso", "Cunha", "Pereira"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Legacy in-app Angola name samples",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from the existing in-app Angola name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+244",
+    "nationalLength": 9,
+    "prefixes": ["923"],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Legacy in-app Angola phone rule",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from the existing +244923 generator prefix; verify against current numbering metadata before marking active."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Luanda",
+        "cities": [{ "name": "Luanda", "postalPrefixes": ["100"], "streets": ["Avenida 4 de Fevereiro", "Rua Amilcar Cabral"] }]
+      },
+      {
+        "name": "Huila",
+        "cities": [{ "name": "Lubango", "postalPrefixes": ["130"], "streets": ["Avenida da Independencia", "Rua da Se"] }]
+      },
+      {
+        "name": "Benguela",
+        "cities": [
+          { "name": "Benguela", "postalPrefixes": ["120"], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] },
+          { "name": "Lobito", "postalPrefixes": ["120"], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Legacy in-app Angola location samples",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["N{RAND7}"],
+      "pattern": "^N\\d{7}$",
+      "quality": "verified",
+      "source": {
+        "title": "Angola ordinary passport visual pattern review",
+        "url": "https://www.ecoi.net/en/document/2095422.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-27"
+      },
+      "notes": "Confirmed ordinary passport visual pattern from the previous validation pass: N plus seven digits."
+    }
+  }
+}

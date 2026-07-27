@@ -1,0 +1,58 @@
+{
+  "key": "sierra_leone",
+  "label": "Sierra Leone",
+  "countryCode": "SL",
+  "country": "Sierra Leone",
+  "locale": "en-SL",
+  "availability": "review",
+  "names": {
+    "male": ["Mohamed", "Ibrahim", "Abdul", "Alhaji", "Sorie", "Lamin"],
+    "female": ["Aminata", "Mariama", "Fatmata", "Hawa", "Kadiatu", "Isatu"],
+    "last": ["Kamara", "Koroma", "Bangura", "Kargbo", "Sesay", "Conteh", "Turay"],
+    "quality": "sample_verified",
+    "source": { "title": "Legacy in-app Sierra Leone name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing in-app Sierra Leone name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+232",
+    "nationalLength": 8,
+    "prefixes": ["76"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Sierra Leone phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +23276 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Western Area", "cities": [{ "name": "Freetown", "postalPrefixes": ["100"], "streets": ["Siaka Stevens Street", "Wilkinson Road"] }] },
+      {
+        "name": "Eastern Province",
+        "cities": [
+          { "name": "Kenema", "postalPrefixes": ["300"], "streets": ["Hangha Road", "Kono Highway"] },
+          { "name": "Koidu", "postalPrefixes": ["330"], "streets": ["Hangha Road", "Kono Highway"] }
+        ]
+      },
+      { "name": "Northern Province", "cities": [{ "name": "Makeni", "postalPrefixes": ["400"], "streets": ["Magburaka Road", "Azzolini Highway"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Sierra Leone location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RAND7}"],
+      "pattern": "^\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Sierra Leone passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO specimen image showed Passport No as seven digits, with SLE only as the country code."
+    },
+    "personal_number": {
+      "label": "Personal Number",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Sierra Leone personal number specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO specimen image showed Personal No as nine digits; keep review until confirmed across current documents."
+    }
+  }
+}

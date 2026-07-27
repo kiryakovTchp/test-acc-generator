@@ -1,0 +1,72 @@
+{
+  "key": "togo",
+  "label": "Togo",
+  "countryCode": "TG",
+  "country": "Togo",
+  "locale": "fr-TG",
+  "availability": "review",
+  "names": {
+    "male": ["Kossi", "Komlan", "Kodjo", "Mensah", "Sena", "Koffi"],
+    "female": ["Afi", "Ama", "Akossiwa", "Abla", "Yawa", "Adjo"],
+    "last": ["Adjovi", "Agbeko", "Mensah", "Kokou", "Ayite", "Lawson", "Kpeglo"],
+    "quality": "sample_verified",
+    "source": { "title": "Legacy in-app Togo name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing in-app Togo name pool; keep review until an external source is attached."
+  },
+  "phones": {
+    "countryCallingCode": "+228",
+    "nationalLength": 8,
+    "prefixes": ["90"],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Togo phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from the existing +22890 generator prefix; verify against current numbering metadata."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Maritime",
+        "cities": [
+          { "name": "Lome", "postalPrefixes": ["100"], "streets": ["Boulevard du 13 Janvier", "Avenue de la Liberation"] },
+          { "name": "Aneho", "postalPrefixes": ["110"], "streets": ["Boulevard du 13 Janvier", "Avenue de la Liberation"] }
+        ]
+      },
+      {
+        "name": "Plateaux",
+        "cities": [
+          { "name": "Kpalime", "postalPrefixes": ["200"], "streets": ["Route de Kpalime", "Avenue de la Gare"] },
+          { "name": "Atakpame", "postalPrefixes": ["220"], "streets": ["Route de Kpalime", "Avenue de la Gare"] }
+        ]
+      },
+      { "name": "Kara", "cities": [{ "name": "Kara", "postalPrefixes": ["400"], "streets": ["Avenue des Nations", "Route de Niamtougou"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "Legacy in-app Togo location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["XB{RAND6}", "XS{RAND6}"],
+      "pattern": "^X[BS]\\d{6}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Togo ordinary passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO ordinary passport specimens showed X-series prefixes such as XB000072 and XS000288."
+    },
+    "diplomatic_passport": {
+      "label": "Diplomatic Passport",
+      "templates": ["D{RAND7}"],
+      "pattern": "^D\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided PRADO Togo diplomatic passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "PRADO diplomatic passport specimen showed D plus seven digits, e.g. D9000426."
+    },
+    "driver_license_number": {
+      "label": "Driver License Number",
+      "templates": ["{RAND8}"],
+      "pattern": "^\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "User-provided partial Togo driver licence specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
+      "notes": "Sample driving licence was partially redacted; visible pieces suggest a numeric licence number, but exact grammar is not verified."
+    }
+  }
+}
