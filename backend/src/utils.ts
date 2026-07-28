@@ -328,7 +328,54 @@ function normalizeUrl(url: string) {
 }
 
 export function extractCodes(text: string) {
-  return [...new Set([...text.matchAll(/\b\d{4,8}\b/g)].map((m) => m[0]))];
+  const candidates: string[] = [];
+  const verificationWords = [
+    'activation',
+    'authenticate',
+    'authentication',
+    'code',
+    'confirm',
+    'confirmation',
+    'login',
+    'one-time',
+    'otp',
+    'passcode',
+    'security',
+    'verify',
+    'verification',
+    'код',
+    'одноразовый',
+    'подтверждения',
+    'подтверд',
+  ].join('|');
+  const contextualPatterns = [
+    new RegExp(`(?:${verificationWords})[^\\n\\d]{0,40}(\\d[\\d\\s-]{2,14}\\d)`, 'giu'),
+    new RegExp(`(\\d[\\d\\s-]{2,14}\\d)[^\\n\\d]{0,40}(?:${verificationWords})`, 'giu'),
+  ];
+
+  for (const line of text.split('\n')) {
+    if (isLikelyEmailBoilerplate(line)) continue;
+
+    for (const pattern of contextualPatterns) {
+      pattern.lastIndex = 0;
+      for (const match of line.matchAll(pattern)) {
+        const code = normalizeVerificationCode(match[1]);
+        if (code) candidates.push(code);
+      }
+    }
+  }
+
+  return [...new Set(candidates)];
+}
+
+function normalizeVerificationCode(value: string) {
+  const code = value.replace(/[^\d]/g, '');
+  if (!/^\d{4,8}$/.test(code)) return '';
+  return code;
+}
+
+function isLikelyEmailBoilerplate(line: string) {
+  return /copyright|©|all rights reserved|unsubscribe|privacy policy|terms of use|view in browser|manage preferences/i.test(line);
 }
 
 export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {

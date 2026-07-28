@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanEmailText, dedupeLinks, pickPrimaryVerificationLink } from './utils.js';
+import { cleanEmailText, dedupeLinks, extractCodes, pickPrimaryVerificationLink } from './utils.js';
 
 test('pickPrimaryVerificationLink prefers real verification links over tracking redirects', () => {
   const winner = pickPrimaryVerificationLink([
@@ -42,4 +42,25 @@ test('dedupeLinks keeps only normalized https links', () => {
   ]);
 
   assert.deepEqual(links, [{ url: 'https://example.com/verify?token=abc' }]);
+});
+
+test('extractCodes ignores copyright year ranges in email boilerplate', () => {
+  const codes = extractCodes(`
+    Welcome to MelBet.
+
+    Copyright © 2015 — 2026 «MelBet»
+    Privacy Policy
+  `);
+
+  assert.deepEqual(codes, []);
+});
+
+test('extractCodes keeps contextual verification codes', () => {
+  const codes = extractCodes(`
+    Your verification code is 483 920.
+    Use 7741 to confirm login.
+    Copyright © 2015 — 2026 «MelBet»
+  `);
+
+  assert.deepEqual(codes, ['483920', '7741']);
 });

@@ -454,9 +454,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   const recentCount = history.filter((item) => Date.now() - new Date(item.createdAt).getTime() < 24 * 60 * 60 * 1000).length;
   const isGenerateDisabled = isGenerating || isBulkGenerating;
   const maxBulkCount = usageSummary?.settings.maxBulkCount ?? 25;
-  const verificationCodes = detail?.inbox.codes ?? [];
-  const verificationReceivedAt = detail?.inbox.receivedAt;
-  const hasVerificationCodes = verificationCodes.length > 0;
   const activationLink = detail?.inbox.primaryVerificationLink?.url
     ?? detail?.inbox.links.find((link) => link.isPrimary)?.url
     ?? detail?.inbox.links[0]?.url
@@ -1453,7 +1450,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
                     : item.key === 'accounts' ? history.length
                     : item.key === 'mailboxes' ? history.length
                       : item.key === 'form_data' ? recentCount
-                        : item.key === 'codes' ? (detail?.inbox.codes.length ?? 0)
+                        : item.key === 'codes' ? ((detail?.inbox.links.length ?? 0) + (detail?.inbox.codes.length ?? 0))
                           : ''}
                 </span>
               </Link>
@@ -1725,23 +1722,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             )}
           </section>
 
-          {hasVerificationCodes ? (
-            <section className="panel panel-codes">
-              <div className="panel-header">
-                <h2>{t('Codes')} <span>({verificationCodes.length})</span></h2>
-              </div>
-              <div className="codes-list">
-                {verificationCodes.map((code, index) => (
-                <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
-                  <span>{index === 0 ? t('Email code') : t('SMS code')}</span>
-                  <strong>{code}</strong>
-                  <small>{copiedField === `code:${code}` ? t('Copied') : 'CP'}</small>
-                  <time>{formatCompactDate(verificationReceivedAt)}</time>
-                </button>
-                ))}
-              </div>
-            </section>
-          ) : null}
           </>
           ) : activeNav === 'accounts' ? (
           <>
@@ -1946,23 +1926,6 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
             </div>
           ), document.body) : null}
 
-          {hasVerificationCodes ? (
-            <section className="panel panel-codes">
-              <div className="panel-header">
-                <h2>{t('Codes')} <span>({verificationCodes.length})</span></h2>
-              </div>
-              <div className="codes-list">
-                {verificationCodes.map((code, index) => (
-                <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => copyValue(`code:${code}`, code)}>
-                  <span>{index === 0 ? t('Email code') : t('SMS code')}</span>
-                  <strong>{code}</strong>
-                  <small>{copiedField === `code:${code}` ? t('Copied') : 'CP'}</small>
-                  <time>{formatCompactDate(verificationReceivedAt)}</time>
-                </button>
-                ))}
-              </div>
-            </section>
-          ) : null}
           </>
           ) : (
             <UtilityView
@@ -2662,12 +2625,12 @@ function UtilityView({
               <h3>{t('Codes')}</h3>
               {codes.length ? codes.map((code, index) => (
                 <button key={`${code}:${index}`} type="button" className="code-row" onClick={() => onCopy(`codes-page:${code}`, code)}>
-	                  <span>{index === 0 ? t('Email code') : t('Code')}</span>
+                  <span>{index === 0 ? t('Email code') : t('Code')}</span>
                   <strong>{code}</strong>
-	                  <small>{copiedField === `codes-page:${code}` ? t('Copied') : 'CP'}</small>
+                  <small>{copiedField === `codes-page:${code}` ? t('Copied') : 'CP'}</small>
                   <time>{formatCompactDate(detail.inbox.receivedAt)}</time>
                 </button>
-	              )) : <div className="empty-state compact">{t('No codes captured yet.')}</div>}
+              )) : <div className="empty-state compact">{t('No codes captured yet.')}</div>}
             </div>
             <div>
               <h3>{t('Links')}</h3>

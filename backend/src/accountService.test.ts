@@ -288,9 +288,11 @@ test('generic geo fallback uses not specified region', async () => {
 
 test('history detail hides raw html unless debug payload is explicitly requested', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'zambia', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.deepEqual(item?.inbox.codes, ['123456']);
   assert.equal(item?.inbox.rawHtml, null);
 
   const debugItem = getHistoryDetail(item!.id, 1, true);
+  assert.deepEqual(debugItem?.inbox.codes, ['123456']);
   assert.equal(debugItem?.inbox.rawHtml, '<b>Code 123456</b>');
 });
 

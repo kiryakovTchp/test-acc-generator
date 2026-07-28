@@ -2026,7 +2026,7 @@ body {
   grid-template-areas:
     'generation detail'
     'list detail'
-    'links codes';
+    'links detail';
   gap: 14px;
   align-items: start;
 }
@@ -2034,7 +2034,7 @@ body {
 .workspace-grid.main-view {
   grid-template-areas:
     'main-rail detail'
-    'links codes';
+    'links detail';
 }
 
 .main-rail {
@@ -2052,16 +2052,14 @@ body {
     'generation'
     'list'
     'detail'
-    'links'
-    'codes';
+    'links';
 }
 
 .workspace-grid.single-view {
   grid-template-areas: 'utility';
 }
 
-.workspace-grid.accounts-view .panel-links,
-.workspace-grid.accounts-view .panel-codes {
+.workspace-grid.accounts-view .panel-links {
   display: none;
 }
 
@@ -2143,10 +2141,6 @@ body {
 
 .panel-links {
   grid-area: links;
-}
-
-.panel-codes {
-  grid-area: codes;
 }
 
 .panel-header {
@@ -3698,8 +3692,7 @@ body {
   font-size: 11px;
 }
 
-.link-list,
-.codes-list {
+.link-list {
   display: grid;
   gap: 0;
   border-top: 1px solid #edf0f4;
@@ -3850,7 +3843,7 @@ kbd {
     grid-template-columns: 300px minmax(0, 1fr);
     grid-template-areas:
       'main-rail detail'
-      'links codes';
+      'links detail';
   }
 }
 
@@ -3929,8 +3922,7 @@ kbd {
     grid-template-areas:
       'main-rail'
       'detail'
-      'links'
-      'codes';
+      'links';
   }
 
   .workspace-shell {
@@ -3949,8 +3941,7 @@ kbd {
     grid-template-areas:
       'main-rail'
       'detail'
-      'links'
-      'codes';
+      'links';
   }
 
   .quick-actions-panel {
