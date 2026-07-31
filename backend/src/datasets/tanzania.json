@@ -36,9 +36,9 @@
       "label": "National Identification Number",
       "templates": ["{RAND8}-{RAND5}-{RAND5}-{RAND2}"],
       "pattern": "^\\d{8}-\\d{5}-\\d{5}-\\d{2}$",
-      "quality": "verified",
+      "quality": "sample_verified",
       "source": { "title": "Tanzania NIDA online NIN request example", "url": "https://services.nida.go.tz/requestctrnm", "type": "official", "checkedAt": "2026-07-31" },
-      "notes": "The official NIDA online service gives an example NIN in the grouped 8-5-5-2 digit display shape. Generated values follow only that public shape, use random digits, and are not registry-checked."
+      "notes": "The official NIDA online service gives one example NIN in the grouped 8-5-5-2 digit display shape. Generated values follow only that sample display shape, use random digits, and are not registry-checked."
     }
   }
 }

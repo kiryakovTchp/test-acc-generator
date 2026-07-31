@@ -21,7 +21,7 @@
   "phones": {
     "countryCallingCode": "+232",
     "nationalLength": 8,
-    "prefixes": ["21", "25", "30", "33", "34", "40", "44", "50", "55", "66", "72", "73", "74", "75", "76", "77", "78", "79", "88"],
+    "prefixes": ["25", "30", "31", "33", "34", "35", "66", "72", "73", "74", "75", "76", "77", "78", "79", "88"],
     "quality": "verified",
     "source": {
       "title": "ITU Sierra Leone national numbering plan communication of 24.II.2020",
@@ -29,7 +29,7 @@
       "type": "official",
       "checkedAt": "2026-07-31"
     },
-    "notes": "ITU confirms country code +232 and two-digit NDC plus six-digit subscriber structure for eight-digit national significant numbers. Generated values are synthetic and not checked for live assignment."
+    "notes": "ITU confirms country code +232 and two-digit NDC plus six-digit subscriber structure for eight-digit national significant numbers. Cancelled NDCs 21, 40, 44, 50 and 55 are intentionally excluded; 31 and 35 are included from later ITU additions. Generated values are synthetic and not checked for live assignment."
   },
   "locations": {
     "regions": [

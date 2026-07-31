@@ -65,12 +65,12 @@
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
-        "title": "PRADO Mauritius passport document entries",
-        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/com/index.html",
-        "type": "trusted_reference",
+        "title": "Mauritius Passport and Immigration Office new passport requirements",
+        "url": "https://passport.govmu.org/passport/?page_id=761",
+        "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "PRADO confirms Mauritius passport document families, but the public listing does not confirm passport-number grammar."
+      "notes": "The official Passport and Immigration Office confirms Mauritian passport issuance requirements, but it does not confirm passport-number grammar. The generated value remains a synthetic placeholder."
     }
   }
 }

@@ -7,7 +7,7 @@ import { ApiError, enforceDailyLimit, getUsageSummary, recordUsageEvent, USAGE_E
 import { listActivityEvents } from './activity.js';
 import { updateWorkspaceSettings } from './settings.js';
 import { isEncryptedSensitive } from './sensitiveData.js';
-import { validateKazakhstanIin } from './datasets.js';
+import { getCountryDataset, validateKazakhstanIin } from './datasets.js';
 
 const provider: EmailProvider = {
   async createAccount() {
@@ -92,9 +92,12 @@ test('geo rules include required starter geos', () => {
 
 test('verified dataset geos keep country region and city as separate dependent fields', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'ghana', documentType: 'ghana_card_pin', role: 'user', persona: 'standard_user', emailProvider: provider });
+  const ghanaDataset = getCountryDataset('ghana');
+  const validRegions = new Set(ghanaDataset?.locations.regions.map((region) => region.name));
+  const validCities = new Set(ghanaDataset?.locations.regions.flatMap((region) => region.cities.map((city) => city.name)));
   assert.equal(item?.country, 'Ghana');
-  assert.ok(['Greater Accra', 'Ashanti'].includes(item?.region ?? ''));
-  assert.ok(['Accra', 'Tema', 'Kumasi', 'Obuasi'].includes(item?.city ?? ''));
+  assert.ok(validRegions.has(item?.region ?? ''));
+  assert.ok(validCities.has(item?.city ?? ''));
   assert.equal(item?.placeOfBirth, item?.city);
 });
 
