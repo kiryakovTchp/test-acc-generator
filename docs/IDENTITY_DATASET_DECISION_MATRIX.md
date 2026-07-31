@@ -37,8 +37,8 @@ These are plausible but should not be promoted to verified yet.
 | GA | passport | `^\d{2}SP\d{5}$` | Better PRADO specimen shows `Passport No` as `13SP01349`; `GAB` is the country code, not part of the visible number. |
 | GM | passport | `^PC\d{7}$` | Draft candidate is country-specific but not confirmed by official/sample-level source. |
 | GM | national_identification_number | `^\d{11}$` | Source review indicates Gambian NIN is 11 digits, replacing the draft 10-digit candidate; keep review-required until current official grammar is confirmed. |
-| MW | passport | `^\d{6}$` | PRADO specimen shows `Passport No` as six digits, e.g. `030025`; `MWI` is the country code, not part of the visible passport number. |
-| MW | personal_number | `^\d{7}/\d$` | PRADO specimen shows `Personal No` in slash form, e.g. `1212433/2`; keep review-required until confirmed across current documents. |
+| MW | passport | `^MW[AZ]\d{6}$` | Official Malawi e-Passport factsheet states ordinary passport prefixes `MWAxxxxxx` for 36 pages and `MWZxxxxxx` for 48 pages; runtime quality is `verified`. |
+| MW | personal_number | `^\d{7}/\d$` | PRADO specimen context supports the slash form as a sample-level visual pattern; runtime quality is `sample_verified`, not full registry validation. |
 | NG | passport | `^[A-Z]\d{8}$` | Probable, but exact visual grammar still needs sample-level source. |
 | SL | passport | `^\d{7}$` | PRADO specimen shows a seven-digit passport number, e.g. `0114439`; `SLE` is the country code, not part of the visible number. |
 | SL | personal_number | `^\d{9}$` | PRADO specimen shows Personal No as nine digits, e.g. `000119146`; keep review-required until confirmed across current documents. |

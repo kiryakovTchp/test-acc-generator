@@ -107,14 +107,14 @@
     "label": "Malawi",
     "documents": {
       "passport": {
-        "templates": ["{RAND6}"],
-        "quality": "synthetic_pattern",
-        "notes": "PRADO specimen image shows a six-digit visible passport number, with MWI only as the country code."
+        "templates": ["MWA{RAND6}", "MWZ{RAND6}"],
+        "quality": "verified",
+        "notes": "Official Malawi e-Passport factsheet states ordinary passport numbering prefixes MWAxxxxxx for 36 pages and MWZxxxxxx for 48 pages."
       },
       "personal_number": {
         "templates": ["{RAND7}/{RAND1}"],
-        "quality": "synthetic_pattern",
-        "notes": "PRADO specimen image shows Personal No as seven digits, slash, one digit; keep review_required until confirmed across current documents."
+        "quality": "sample_verified",
+        "notes": "PRADO specimen context supports this as a sample-level visual pattern only; no official rule or cross-document internal logic was found."
       }
     }
   },
@@ -215,8 +215,8 @@
     "documents": {
       "national_identification_number": {
         "templates": ["{RAND8}-{RAND5}-{RAND5}-{RAND2}"],
-        "quality": "synthetic_pattern",
-        "notes": "NIDA examples confirm the 20-digit grouped display shape; generated value is random digits only."
+        "quality": "sample_verified",
+        "notes": "NIDA example confirms one 20-digit grouped display sample; generated value is random digits only and not registry-checked."
       }
     }
   },

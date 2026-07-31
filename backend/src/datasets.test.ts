@@ -157,6 +157,18 @@ test('sierra leone phone generator excludes cancelled ITU NDCs', () => {
   }
 });
 
+test('tanzania phone generator follows TCRA 2026 operational mobile ranges', () => {
+  const dataset = listCountryDatasets().find((item) => item.key === 'tanzania');
+  assert.ok(dataset);
+  assert.deepEqual(dataset.phones.prefixes, ['61', '62', '63', '65', '66', '67', '68', '69', '70', '71', '72', '73', '74', '75', '76', '77', '78', '79']);
+
+  for (let i = 0; i < 200; i += 1) {
+    const nationalNumber = generateDatasetPhone(dataset).slice(dataset.phones.countryCallingCode.length);
+    assert.doesNotMatch(nationalNumber, /^64/);
+    assert.match(nationalNumber, /^(?:6[1-3]|6[5-9]|7[0-9])\d{7}$/);
+  }
+});
+
 function expectedPostalCodePattern(geoKey: string, prefixes: string[]) {
   if (DATASET_GEOS_WITHOUT_PUBLIC_POSTCODES.has(geoKey)) return /^$/;
   const prefixPattern = prefixes.map(escapeRegExp).join('|');
