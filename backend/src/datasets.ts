@@ -50,7 +50,7 @@ import crypto from 'node:crypto';
 import { z } from 'zod';
 
 const datasetQualitySchema = z.enum(['verified', 'sample_verified', 'synthetic_pattern', 'missing']);
-const sourceTypeSchema = z.enum(['official', 'government_sample', 'trusted_reference', 'user_sample', 'assumption']);
+const sourceTypeSchema = z.enum(['official', 'government_sample', 'trusted_reference', 'map_reference', 'user_sample', 'assumption']);
 const availabilitySchema = z.enum(['draft', 'review', 'active']);
 const checkedAtSchema = z.iso.date().refine((value) => Date.parse(`${value}T00:00:00Z`) <= Date.now(), {
   message: 'checkedAt cannot be in the future',
@@ -63,12 +63,6 @@ const datasetSourceSchema = z.strictObject({
   checkedAt: checkedAtSchema,
 });
 
-const citySchema = z.strictObject({
-  name: z.string().min(1),
-  postalPrefixes: z.array(z.string().min(1)).min(1),
-  streets: z.array(z.string().min(1)).min(1),
-});
-
 const documentRuleSchema = z.strictObject({
   label: z.string().min(1),
   templates: z.array(z.string().min(1)).min(1).optional(),
@@ -79,6 +73,27 @@ const documentRuleSchema = z.strictObject({
   notes: z.string().min(1).optional(),
 }).refine((rule) => Boolean(rule.generator) !== Boolean(rule.templates?.length), {
   message: 'Document rule must define exactly one of generator or templates',
+});
+
+const addressSchema = z.strictObject({
+  addressLine: z.string().min(1),
+  postalCode: z.string(),
+  source: datasetSourceSchema.extend({
+    type: z.literal('map_reference'),
+  }),
+  latitude: z.number().optional(),
+  longitude: z.number().optional(),
+  poBox: z.string().min(1).optional(),
+  plusCode: z.string().min(1).optional(),
+}).refine((address) => !address.poBox || address.postalCode !== address.poBox, {
+  message: 'PO Box values must not be used as postalCode',
+}).refine((address) => !address.plusCode || address.postalCode !== address.plusCode, {
+  message: 'Plus Codes must not be used as postalCode',
+});
+
+const citySchema = z.strictObject({
+  name: z.string().min(1),
+  addresses: z.array(addressSchema).min(1),
 });
 
 export const countryDatasetSchema = z.strictObject({

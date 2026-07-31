@@ -6,9 +6,48 @@
   "locale": "uz-UZ",
   "availability": "review",
   "names": {
-    "male": ["Timur", "Rustam", "Alisher", "Aziz", "Sherzod", "Anvar", "Dilshod", "Sardor", "Akmal", "Bekzod", "Farrukh", "Jasur"],
-    "female": ["Madina", "Nargiza", "Nigina", "Nigora", "Firuza", "Shakhnoza", "Zarina", "Umida", "Sabina", "Gulnora", "Sevara", "Dildora"],
-    "last": ["Karimov", "Yusupov", "Abdullayev", "Ibragimov", "Rakhimov", "Umarov", "Usmanov", "Sultanov", "Sharipov", "Tursunov", "Saidov", "Ismailov"],
+    "male": [
+      "Timur",
+      "Rustam",
+      "Alisher",
+      "Aziz",
+      "Sherzod",
+      "Anvar",
+      "Dilshod",
+      "Sardor",
+      "Akmal",
+      "Bekzod",
+      "Farrukh",
+      "Jasur"
+    ],
+    "female": [
+      "Madina",
+      "Nargiza",
+      "Nigina",
+      "Nigora",
+      "Firuza",
+      "Shakhnoza",
+      "Zarina",
+      "Umida",
+      "Sabina",
+      "Gulnora",
+      "Sevara",
+      "Dildora"
+    ],
+    "last": [
+      "Karimov",
+      "Yusupov",
+      "Abdullayev",
+      "Ibragimov",
+      "Rakhimov",
+      "Umarov",
+      "Usmanov",
+      "Sultanov",
+      "Sharipov",
+      "Tursunov",
+      "Saidov",
+      "Ismailov"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Uzbekistan forenames and surnames frequency tables",
@@ -21,7 +60,20 @@
   "phones": {
     "countryCallingCode": "+998",
     "nationalLength": 9,
-    "prefixes": ["33", "50", "77", "88", "90", "91", "93", "94", "95", "97", "98", "99"],
+    "prefixes": [
+      "33",
+      "50",
+      "77",
+      "88",
+      "90",
+      "91",
+      "93",
+      "94",
+      "95",
+      "97",
+      "98",
+      "99"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Uzbekistan national numbering plan communication of 10.II.2023",
@@ -33,17 +85,70 @@
   },
   "locations": {
     "regions": [
-      { "name": "Tashkent City", "cities": [{ "name": "Tashkent", "postalPrefixes": ["100"], "streets": ["Amir Temur Avenue", "Mustaqillik Avenue"] }] },
+      {
+        "name": "Tashkent City",
+        "cities": [
+          {
+            "name": "Tashkent",
+            "addresses": [
+              {
+                "addressLine": "Банк, Mustaqillik shoh ko'chasi, Buyuk Ipak Yo'li (C-1) dahasi, Mirzo Ulug‘bek Tumani, Toshkent shahri, 100000",
+                "postalCode": "100000",
+                "source": {
+                  "title": "Банк",
+                  "url": "https://www.openstreetmap.org/way/105437570",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 41.3137691,
+                "longitude": 69.2846984
+              }
+            ]
+          }
+        ]
+      },
       {
         "name": "Samarkand Region",
         "cities": [
-          { "name": "Samarkand", "postalPrefixes": ["140"], "streets": ["Navoi Street", "Registan Street"] }
+          {
+            "name": "Samarkand",
+            "addresses": [
+              {
+                "addressLine": "Hotel Asia Samarkand, Qo'sh Hovuz ko'chasi, Samarqand shahri, Samarqand Viloyati, 140000, Oʻzbekiston",
+                "postalCode": "140000",
+                "source": {
+                  "title": "Hotel Asia Samarkand",
+                  "url": "https://www.openstreetmap.org/way/412938002",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 39.6585159,
+                "longitude": 66.9755309
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Bukhara Region",
         "cities": [
-          { "name": "Bukhara", "postalPrefixes": ["200"], "streets": ["Navoi Street", "Bahauddin Naqshband Street"] }
+          {
+            "name": "Bukhara",
+            "addresses": [
+              {
+                "addressLine": "Asia Alliance Bank, Bahovaddin Naqshband ko'chasi, Eski Shahar, Buxoro shahri, Buxoro Viloyati, 200118",
+                "postalCode": "200118",
+                "source": {
+                  "title": "Asia Alliance Bank",
+                  "url": "https://www.openstreetmap.org/node/6185636786",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 39.7727888,
+                "longitude": 64.4193256
+              }
+            ]
+          }
         ]
       }
     ],
@@ -54,12 +159,14 @@
       "type": "official",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms six-digit postcodes before the locality and gives Tashkent/Samarkand address examples. The public postal-index order maps Tashkent city to 100XXX, Samarkand to 14XXXX, and Bukhara to 20XXXX. Street names and generated trailing postcode digits remain review data."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "pinfl": {
       "label": "Personal Identification Number",
-      "templates": ["{RAND14}"],
+      "templates": [
+        "{RAND14}"
+      ],
       "pattern": "^\\d{14}$",
       "quality": "verified",
       "source": {
@@ -72,7 +179,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["AA{RAND7}"],
+      "templates": [
+        "AA{RAND7}"
+      ],
       "pattern": "^[A-Z]{2}\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {

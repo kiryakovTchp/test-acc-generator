@@ -6,9 +6,24 @@
   "locale": "fr-ML",
   "availability": "review",
   "names": {
-    "male": ["Moussa", "Ibrahim", "Modibo", "Oumar"],
-    "female": ["Aminata", "Fatoumata", "Mariam", "Awa"],
-    "last": ["Traore", "Keita", "Coulibaly", "Diarra"],
+    "male": [
+      "Moussa",
+      "Ibrahim",
+      "Modibo",
+      "Oumar"
+    ],
+    "female": [
+      "Aminata",
+      "Fatoumata",
+      "Mariam",
+      "Awa"
+    ],
+    "last": [
+      "Traore",
+      "Keita",
+      "Coulibaly",
+      "Diarra"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Mali forenames and surnames frequency tables",
@@ -21,7 +36,10 @@
   "phones": {
     "countryCallingCode": "+223",
     "nationalLength": 8,
-    "prefixes": ["6", "7"],
+    "prefixes": [
+      "6",
+      "7"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Mali national numbering plan communication of 6.III.2018",
@@ -33,8 +51,50 @@
   },
   "locations": {
     "regions": [
-      { "name": "Bamako", "cities": [{ "name": "Bamako", "postalPrefixes": ["BP "], "streets": ["Avenue de l'Independance", "Rue 311"] }] },
-      { "name": "Sikasso", "cities": [{ "name": "Sikasso", "postalPrefixes": ["BP "], "streets": ["Avenue Modibo Keita", "Rue du Marche"] }] }
+      {
+        "name": "Bamako",
+        "cities": [
+          {
+            "name": "Bamako",
+            "addresses": [
+              {
+                "addressLine": "La Poste - Bureau de Bamako Darsalam, Avenue de la Liberté, Dravéla, Dar Salam, Médina Coura, Bamako",
+                "postalCode": "",
+                "source": {
+                  "title": "La Poste - Bureau de Bamako Darsalam",
+                  "url": "https://www.openstreetmap.org/way/422727616",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 12.6513245,
+                "longitude": -8.0001251
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sikasso",
+        "cities": [
+          {
+            "name": "Sikasso",
+            "addresses": [
+              {
+                "addressLine": "Aéroport de Bougouni, Route Trans-Sahélienne, Bougouni, Cercle de Bougouni, Région de Sikasso, Mali",
+                "postalCode": "",
+                "source": {
+                  "title": "Aéroport de Bougouni",
+                  "url": "https://www.openstreetmap.org/node/1042040844",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 11.4397104,
+                "longitude": -7.5073314
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -43,12 +103,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "Public postal references indicate Mali addressing is not supported here by a confirmed postcode grammar, so the generator uses BP-style internal prefixes. City and street values remain synthetic review samples."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identification_number_nina": {
       "label": "National Identification Number (NINA)",
-      "templates": ["NINA{RAND10}"],
+      "templates": [
+        "NINA{RAND10}"
+      ],
       "pattern": "^NINA\\d{10}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -61,7 +123,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

@@ -127,8 +127,7 @@ test('all country datasets generate linked profiles and matching documents', () 
       assert.ok(selectedRegion, `${dataset.key}: ${profile.region} is not in dataset`);
       const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
       assert.ok(selectedCity, `${dataset.key}: ${profile.city} is not in ${profile.region}`);
-      assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)), `${dataset.key}: generated street is not in selected city`);
-      assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes), `${dataset.key}: generated postal code is not valid for selected city`);
+      assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
       const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
       assert.equal(nationalNumber.length, dataset.phones.nationalLength, `${dataset.key}: phone national length mismatch`);
@@ -169,61 +168,27 @@ test('tanzania phone generator follows TCRA 2026 operational mobile ranges', () 
   }
 });
 
-function expectedPostalCodePattern(geoKey: string, prefixes: string[]) {
-  if (DATASET_GEOS_WITHOUT_PUBLIC_POSTCODES.has(geoKey)) return /^$/;
-  const prefixPattern = prefixes.map(escapeRegExp).join('|');
-  if (DATASET_COMPLETE_POSTAL_PREFIX_GEOS.has(geoKey)) return new RegExp(`^(?:${prefixPattern})$`);
-  if (geoKey === 'ghana') return new RegExp(`^(?:${prefixPattern})\\d{4}$`);
-  if (geoKey === 'ireland') return new RegExp(`^(?:${prefixPattern})[A-Z0-9]{4}$`);
+function assertProfileUsesVerifiedAddress(
+  geoKey: string,
+  selectedCity: ReturnType<typeof getDataset>['locations']['regions'][number]['cities'][number],
+  addressLine: string,
+  postalCode: string,
+) {
+  assert.ok(selectedCity.addresses.length > 0, `${geoKey}.${selectedCity.name}: missing verified address records`);
+  for (const address of selectedCity.addresses) {
+    assert.ok(address.addressLine.trim(), `${geoKey}.${selectedCity.name}: addressLine is empty`);
+    assert.match(address.source.url, /^https?:\/\//, `${geoKey}.${selectedCity.name}: address source is not a map URL`);
+    assert.equal(address.source.type, 'map_reference');
+    assert.match(address.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
+    assert.notEqual(address.postalCode, address.poBox ?? '__no_po_box__');
+    assert.notEqual(address.postalCode, address.plusCode ?? '__no_plus_code__');
+  }
 
-  const suffixLength = DATASET_POSTAL_SUFFIX_LENGTHS[geoKey] ?? 3;
-  return new RegExp(`^(?:${prefixPattern})\\d{${suffixLength}}$`);
+  assert.ok(
+    selectedCity.addresses.some((address) => address.addressLine === addressLine && address.postalCode === postalCode),
+    `${geoKey}.${selectedCity.name}: generated address/postcode pair was not copied from dataset`,
+  );
 }
-
-function escapeRegExp(value: string) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
-
-const DATASET_GEOS_WITHOUT_PUBLIC_POSTCODES = new Set([
-  'angola',
-  'botswana',
-  'burundi',
-  'cameroon',
-  'central_african_republic',
-  'congo_brazzaville',
-  'cote_divoire',
-  'equatorial_guinea',
-  'gabon',
-  'guinea',
-  'guinea_conakry',
-  'mali',
-  'rwanda',
-  'sierra_leone',
-  'south_sudan',
-  'togo',
-]);
-
-const DATASET_COMPLETE_POSTAL_PREFIX_GEOS = new Set([
-  'eswatini',
-  'lesotho',
-  'liberia',
-  'senegal',
-]);
-
-const DATASET_POSTAL_SUFFIX_LENGTHS: Record<string, number> = {
-  guinea_bissau: 1,
-  kenya: 2,
-  mozambique: 1,
-  namibia: 2,
-  niger: 1,
-  south_africa: 1,
-  swaziland: 2,
-  tanzania: 2,
-  uganda: 2,
-  western_sahara: 2,
-  zambia: 2,
-  zimbabwe: 1,
-};
 
 test('benin dataset generates internally consistent profiles', () => {
   const dataset = getDataset('benin');
@@ -245,8 +210,7 @@ test('benin dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -275,8 +239,7 @@ test('botswana dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -305,8 +268,7 @@ test('burkina faso dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -336,8 +298,7 @@ test('burundi dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -367,8 +328,7 @@ test('gabon dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.ok(profile.phone.startsWith(dataset.phones.countryCallingCode));
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -399,8 +359,7 @@ test('nigeria dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     assert.match(profile.phone, phonePattern);
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
@@ -428,8 +387,7 @@ test('kazakhstan dataset generates internally consistent profiles', () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
     assert.equal(nationalNumber.length, dataset.phones.nationalLength);
@@ -455,8 +413,7 @@ test("cote d'ivoire dataset generates internally consistent profiles", () => {
     assert.ok(selectedRegion, `${profile.region}: generated region is not in dataset`);
     const selectedCity = selectedRegion.cities.find((city) => city.name === profile.city);
     assert.ok(selectedCity, `${profile.city}: generated city is not in ${profile.region}`);
-    assert.ok(selectedCity.streets.some((street) => profile.addressLine.endsWith(street)));
-    assert.match(profile.postalCode, expectedPostalCodePattern(dataset.key, selectedCity.postalPrefixes));
+    assertProfileUsesVerifiedAddress(dataset.key, selectedCity, profile.addressLine, profile.postalCode);
 
     const nationalNumber = profile.phone.slice(dataset.phones.countryCallingCode.length);
     assert.equal(nationalNumber.length, dataset.phones.nationalLength);

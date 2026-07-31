@@ -79,14 +79,19 @@
         "cities": [
           {
             "name": "Tbilisi",
-            "postalPrefixes": [
-              "0"
-            ],
-            "streets": [
-              "Rustaveli Avenue",
-              "Aghmashenebeli Avenue",
-              "Pekini Avenue",
-              "Chavchavadze Avenue"
+            "addresses": [
+              {
+                "addressLine": "თიბისი ბანკი, გიორგი ლეონიძის ქუჩა, მთაწმინდა, სოლოლაკი, მთაწმინდის რაიონი, თბილისი",
+                "postalCode": "0108",
+                "source": {
+                  "title": "თიბისი ბანკი",
+                  "url": "https://www.openstreetmap.org/node/9668019035",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 41.6928176,
+                "longitude": 44.8009326
+              }
             ]
           }
         ]
@@ -96,14 +101,19 @@
         "cities": [
           {
             "name": "Batumi",
-            "postalPrefixes": [
-              "6"
-            ],
-            "streets": [
-              "Chavchavadze Street",
-              "Gorgiladze Street",
-              "Rustaveli Avenue",
-              "Melikishvili Street"
+            "addresses": [
+              {
+                "addressLine": "ბათუმის ხელოვნების სასწავლი უნივერსიტეტი, 32, ვაჟა-ფშაველას ქუჩა, ძველი ბათუმი, ბათუმი, აჭარის ავტონომიური რესპუბლიკა",
+                "postalCode": "6000",
+                "source": {
+                  "title": "ბათუმის ხელოვნების სასწავლი უნივერსიტეტი",
+                  "url": "https://www.openstreetmap.org/way/932756389",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 41.6477493,
+                "longitude": 41.6333701
+              }
             ]
           }
         ]
@@ -113,13 +123,19 @@
         "cities": [
           {
             "name": "Kutaisi",
-            "postalPrefixes": [
-              "4"
-            ],
-            "streets": [
-              "Tsereteli Street",
-              "Queen Tamar Avenue",
-              "Rustaveli Street"
+            "addresses": [
+              {
+                "addressLine": "საქართველოს ბანკი, 37, ილია ჭავჭავაძის გამზირი, სულხან-საბა, ქუთაისი, იმერეთი",
+                "postalCode": "4600",
+                "source": {
+                  "title": "საქართველოს ბანკი",
+                  "url": "https://www.openstreetmap.org/node/10910659760",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 42.2566144,
+                "longitude": 42.6692516
+              }
             ]
           }
         ]
@@ -129,13 +145,19 @@
         "cities": [
           {
             "name": "Telavi",
-            "postalPrefixes": [
-              "2"
-            ],
-            "streets": [
-              "Erekle II Avenue",
-              "Chavchavadze Street",
-              "Alazani Avenue"
+            "addresses": [
+              {
+                "addressLine": "თელავის მუნიციპალიტეტის მერია, ერეკლე მეორის ქუჩა, თელავი, თელავის მუნიციპალიტეტი, კახეთი, 2200",
+                "postalCode": "2200",
+                "source": {
+                  "title": "თელავის მუნიციპალიტეტის მერია",
+                  "url": "https://www.openstreetmap.org/way/532031051",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 41.9199283,
+                "longitude": 45.4707737
+              }
             ]
           }
         ]
@@ -148,7 +170,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU confirms four-digit postcodes to the left of the locality and gives a Tbilisi example. Prefixes preserve the four-digit generated shape in the current profile builder; non-Tbilisi prefixes and streets remain review seeds."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "personal_number": {

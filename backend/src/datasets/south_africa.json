@@ -6,9 +6,42 @@
   "locale": "en-ZA",
   "availability": "review",
   "names": {
-    "male": ["Thabo", "Sipho", "Sibusiso", "Daniel", "Bongani", "Mandla", "Johannes", "Mpho", "Themba", "Michael"],
-    "female": ["Nomsa", "Lerato", "Thandiwe", "Ayesha", "Nokuthula", "Zanele", "Precious", "Nompumelelo", "Mary", "Elizabeth"],
-    "last": ["Mokoena", "Dlamini", "Naidoo", "Botha", "Nkosi", "Ndlovu", "Mkhize", "Van Wyk", "Khumalo", "Molefe"],
+    "male": [
+      "Thabo",
+      "Sipho",
+      "Sibusiso",
+      "Daniel",
+      "Bongani",
+      "Mandla",
+      "Johannes",
+      "Mpho",
+      "Themba",
+      "Michael"
+    ],
+    "female": [
+      "Nomsa",
+      "Lerato",
+      "Thandiwe",
+      "Ayesha",
+      "Nokuthula",
+      "Zanele",
+      "Precious",
+      "Nompumelelo",
+      "Mary",
+      "Elizabeth"
+    ],
+    "last": [
+      "Mokoena",
+      "Dlamini",
+      "Naidoo",
+      "Botha",
+      "Nkosi",
+      "Ndlovu",
+      "Mkhize",
+      "Van Wyk",
+      "Khumalo",
+      "Molefe"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears South Africa forenames and surnames frequency tables",
@@ -21,7 +54,30 @@
   "phones": {
     "countryCallingCode": "+27",
     "nationalLength": 9,
-    "prefixes": ["60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "71", "72", "73", "74", "76", "77", "78", "79", "81", "82", "83", "84"],
+    "prefixes": [
+      "60",
+      "61",
+      "62",
+      "63",
+      "64",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "71",
+      "72",
+      "73",
+      "74",
+      "76",
+      "77",
+      "78",
+      "79",
+      "81",
+      "82",
+      "83",
+      "84"
+    ],
     "quality": "verified",
     "source": {
       "title": "ICASA South Africa Numbering Plan Regulations",
@@ -36,14 +92,62 @@
       {
         "name": "Gauteng",
         "cities": [
-          { "name": "Johannesburg", "postalPrefixes": ["200"], "streets": ["Commissioner Street", "Rivonia Road", "Jan Smuts Avenue"] },
-          { "name": "Pretoria", "postalPrefixes": ["000"], "streets": ["Church Street", "Pretorius Street", "Schoeman Street"] }
+          {
+            "name": "Johannesburg",
+            "addresses": [
+              {
+                "addressLine": "Rissik St Post Office, Rissik Street, Newtown, Johannesburg Ward 60, Johannesburg, City of Johannesburg Metropolitan Municipality",
+                "postalCode": "2001",
+                "source": {
+                  "title": "Rissik St Post Office",
+                  "url": "https://www.openstreetmap.org/way/416130593",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -26.2041637,
+                "longitude": 28.0423528
+              }
+            ]
+          },
+          {
+            "name": "Pretoria",
+            "addresses": [
+              {
+                "addressLine": "PostNet Pretoria CBD, Francis Baard Street, Tshwane Ward 58, Pretoria, City of Tshwane Metropolitan Municipality, Gauteng",
+                "postalCode": "0002",
+                "source": {
+                  "title": "PostNet Pretoria CBD",
+                  "url": "https://www.openstreetmap.org/node/8061837564",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -25.7492568,
+                "longitude": 28.1920158
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Western Cape",
         "cities": [
-          { "name": "Cape Town", "postalPrefixes": ["800"], "streets": ["Long Street", "Adderley Street", "Buitengracht Street"] }
+          {
+            "name": "Cape Town",
+            "addresses": [
+              {
+                "addressLine": "SunSquare Cape Town Gardens, 10, Mill Street, Gardens, Cape Town, City of Cape Town",
+                "postalCode": "8001",
+                "source": {
+                  "title": "SunSquare Cape Town Gardens",
+                  "url": "https://www.openstreetmap.org/way/131399664",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -33.9346922,
+                "longitude": 18.4150986
+              }
+            ]
+          }
         ]
       }
     ],
@@ -54,12 +158,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms South Africa uses four-digit postcodes below locality or post office name. City/street pairings and selected prefixes are synthetic review data, not delivery-validated addresses."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "identity_number": {
       "label": "Identity Number",
-      "templates": ["{RAND13}"],
+      "templates": [
+        "{RAND13}"
+      ],
       "pattern": "^\\d{13}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -72,7 +178,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

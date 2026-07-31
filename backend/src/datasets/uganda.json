@@ -6,19 +6,143 @@
   "locale": "en-UG",
   "availability": "review",
   "names": {
-    "male": ["John", "Joseph", "Moses", "Robert", "Charles", "James", "Ronald", "Richard", "Godfrey", "Fred"],
-    "female": ["Rose", "Grace", "Mary", "Sarah", "Annet", "Florence", "Esther", "Ruth"],
-    "last": ["Akello", "Okello", "Mbabazi", "Apio", "Asiimwe", "Auma", "Nsubuga", "Namutebi", "Matovu", "Nalubega", "Tumusiime"],
+    "male": [
+      "John",
+      "Joseph",
+      "Moses",
+      "Robert",
+      "Charles",
+      "James",
+      "Ronald",
+      "Richard",
+      "Godfrey",
+      "Fred"
+    ],
+    "female": [
+      "Rose",
+      "Grace",
+      "Mary",
+      "Sarah",
+      "Annet",
+      "Florence",
+      "Esther",
+      "Ruth"
+    ],
+    "last": [
+      "Akello",
+      "Okello",
+      "Mbabazi",
+      "Apio",
+      "Asiimwe",
+      "Auma",
+      "Nsubuga",
+      "Namutebi",
+      "Matovu",
+      "Nalubega",
+      "Tumusiime"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Forebears Uganda forenames and surnames frequency tables", "url": "https://forebears.io/uganda/forenames", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "Forebears Uganda forenames and surnames frequency tables",
+      "url": "https://forebears.io/uganda/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "Public frequency tables were used to seed localized Ugandan given names and surnames. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+256",
     "nationalLength": 9,
-    "prefixes": ["700", "701", "702", "703", "704", "705", "706", "707", "708", "709", "710", "711", "712", "713", "714", "715", "716", "717", "718", "719", "724", "726", "727", "730", "731", "740", "741", "742", "743", "744", "745", "746", "747", "748", "749", "750", "751", "752", "753", "754", "755", "756", "757", "758", "759", "760", "761", "762", "763", "764", "765", "766", "767", "768", "769", "770", "771", "772", "773", "774", "775", "776", "777", "778", "779", "780", "781", "782", "783", "784", "785", "786", "787", "788", "789", "790", "791", "792", "793", "794", "795"],
+    "prefixes": [
+      "700",
+      "701",
+      "702",
+      "703",
+      "704",
+      "705",
+      "706",
+      "707",
+      "708",
+      "709",
+      "710",
+      "711",
+      "712",
+      "713",
+      "714",
+      "715",
+      "716",
+      "717",
+      "718",
+      "719",
+      "724",
+      "726",
+      "727",
+      "730",
+      "731",
+      "740",
+      "741",
+      "742",
+      "743",
+      "744",
+      "745",
+      "746",
+      "747",
+      "748",
+      "749",
+      "750",
+      "751",
+      "752",
+      "753",
+      "754",
+      "755",
+      "756",
+      "757",
+      "758",
+      "759",
+      "760",
+      "761",
+      "762",
+      "763",
+      "764",
+      "765",
+      "766",
+      "767",
+      "768",
+      "769",
+      "770",
+      "771",
+      "772",
+      "773",
+      "774",
+      "775",
+      "776",
+      "777",
+      "778",
+      "779",
+      "780",
+      "781",
+      "782",
+      "783",
+      "784",
+      "785",
+      "786",
+      "787",
+      "788",
+      "789",
+      "790",
+      "791",
+      "792",
+      "793",
+      "794",
+      "795"
+    ],
     "quality": "verified",
-    "source": { "title": "ITU Operational Bulletin 1344: Uganda national numbering plan communication of 13.VII.2026", "url": "https://www.itu.int/dms_pub/itu-t/opb/sp/T-SP-OB.1344-2026-OAS-PDF-E.pdf", "type": "official", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "ITU Operational Bulletin 1344: Uganda national numbering plan communication of 13.VII.2026",
+      "url": "https://www.itu.int/dms_pub/itu-t/opb/sp/T-SP-OB.1344-2026-OAS-PDF-E.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "ITU/UCC confirms country code +256, fixed nine-digit national significant numbers, and the listed mobile allocations. Narrower published ranges such as 721000000-721099999, 728000000-728099999, 734000000-734099999 and 737000000-737199999 are omitted because the current prefix generator cannot constrain the remaining subscriber digits. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
@@ -26,37 +150,120 @@
       {
         "name": "Central Region",
         "cities": [
-          { "name": "Kampala", "postalPrefixes": ["100", "123"], "streets": ["Siad Barre Avenue", "Katwe Road", "Jinja Road", "Kira Road"] },
-          { "name": "Entebbe", "postalPrefixes": ["000"], "streets": ["Kampala Road", "Airport Road"] }
+          {
+            "name": "Kampala",
+            "addresses": [
+              {
+                "addressLine": "Kampala Club Hotel Shangri-la, Sezibwa Road, Nakasero, Central, Kampala Capital City, Kampala",
+                "postalCode": "",
+                "source": {
+                  "title": "Kampala Club Hotel Shangri-la",
+                  "url": "https://www.openstreetmap.org/node/773119927",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 0.3181513,
+                "longitude": 32.5833064
+              }
+            ]
+          },
+          {
+            "name": "Entebbe",
+            "addresses": [
+              {
+                "addressLine": "Entebbe Hospital Private Patient Services, Kampala Road, Entebbe Central Police Quaters/ Residence, Namate, Post Office Subward, Lunyo Eastlunyo East",
+                "postalCode": "",
+                "source": {
+                  "title": "Entebbe Hospital Private Patient Services",
+                  "url": "https://www.openstreetmap.org/way/377707157",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 0.0601333,
+                "longitude": 32.4710255
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Eastern Region",
         "cities": [
-          { "name": "Jinja", "postalPrefixes": ["000"], "streets": ["Main Street", "Republic Street"] },
-          { "name": "Mbale", "postalPrefixes": ["000"], "streets": ["Naboa Road", "Republic Street"] }
+          {
+            "name": "Jinja",
+            "addresses": [
+              {
+                "addressLine": "Kakira Post Office, To Madhvani Factory, Bungalow, Jinja, Eastern Region, Uganda",
+                "postalCode": "",
+                "source": {
+                  "title": "Kakira Post Office",
+                  "url": "https://www.openstreetmap.org/way/283565254",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 0.5052691,
+                "longitude": 33.2837125
+              }
+            ]
+          },
+          {
+            "name": "Mbale",
+            "addresses": [
+              {
+                "addressLine": "Crown Suites Hotel, Bungokho Road, Nabijjo, Mbale City, Bugisa sub-region, Eastern Region",
+                "postalCode": "PO Box 462",
+                "source": {
+                  "title": "Crown Suites Hotel",
+                  "url": "https://www.openstreetmap.org/node/4475305145",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 1.0704836,
+                "longitude": 34.1975858
+              }
+            ]
+          }
         ]
       }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "UPU Uganda addressing examples", "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/UGAEn.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
-    "notes": "UPU confirms Uganda uses five-digit postcodes to the left of the locality and provides Kampala and Nabbingo examples. Kampala prefixes preserve public example stems; other city prefixes remain synthetic placeholders for generator consistency and are not full postal-code validation."
+    "source": {
+      "title": "UPU Uganda addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/UGAEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["B{RAND7}"],
+      "templates": [
+        "B{RAND7}"
+      ],
       "pattern": "^B\\d{7}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Uganda ordinary passport document entry", "url": "https://www.consilium.europa.eu/prado/en/UGA-AO-03001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "PRADO Uganda ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/UGA-AO-03001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "PRADO confirms the Uganda ordinary passport document family, while the official passport portal confirms current passport application services. No public passport-number grammar was confirmed, so the B plus seven digits template remains an unconfirmed synthetic placeholder."
     },
     "national_identification_number": {
       "label": "National Identification Number",
-      "templates": ["CM{RAND12}"],
+      "templates": [
+        "CM{RAND12}"
+      ],
       "pattern": "^CM\\d{12}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Uganda Registration of Persons Act 2015, sections 68-69", "url": "https://data.unicef.org/wp-content/uploads/2017/12/Registration-of-Person-Act-2015_Uganda.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "Uganda Registration of Persons Act 2015, sections 68-69",
+        "url": "https://data.unicef.org/wp-content/uploads/2017/12/Registration-of-Person-Act-2015_Uganda.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "Uganda law confirms allocation of a unique national identification number and issuance of a national identification card, but no official public number grammar, checksum or semantic digit rule was found. The CM plus twelve digits template remains an unconfirmed synthetic placeholder."
     }
   }

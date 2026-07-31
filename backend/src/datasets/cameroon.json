@@ -79,14 +79,19 @@
         "cities": [
           {
             "name": "Yaounde",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue Kennedy",
-              "Boulevard du 20 Mai",
-              "Rue Joseph Tchooungui Akoa",
-              "Avenue de l'Independance"
+            "addresses": [
+              {
+                "addressLine": "Hôtel, Rue 1.258, Éssos, Yaoundé V, Communauté urbaine de Yaoundé, Mfoundi",
+                "postalCode": "",
+                "source": {
+                  "title": "Hôtel",
+                  "url": "https://www.openstreetmap.org/way/192820027",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 3.8687911,
+                "longitude": 11.5278174
+              }
             ]
           }
         ]
@@ -96,14 +101,19 @@
         "cities": [
           {
             "name": "Douala",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Boulevard de la Liberte",
-              "Rue Joffre",
-              "Boulevard de la Republique",
-              "Avenue Ahmadou Ahidjo"
+            "addresses": [
+              {
+                "addressLine": "CBC Bank, Boulevard de l'Unité, Bassa, Douala I, Communauté urbaine de Douala, Wouri",
+                "postalCode": "",
+                "source": {
+                  "title": "CBC Bank",
+                  "url": "https://www.openstreetmap.org/way/299694727",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 4.0445681,
+                "longitude": 9.7117575
+              }
             ]
           }
         ]
@@ -113,14 +123,19 @@
         "cities": [
           {
             "name": "Bamenda",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Commercial Avenue",
-              "Hospital Road",
-              "Sonac Street",
-              "Foncha Street"
+            "addresses": [
+              {
+                "addressLine": "NFC Bank, Unification Street, Ntamulung, Bamenda 3, Communauté urbaine de Bamenda, Mezam",
+                "postalCode": "",
+                "source": {
+                  "title": "NFC Bank",
+                  "url": "https://www.openstreetmap.org/node/4451690743",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.9600462,
+                "longitude": 10.1513896
+              }
             ]
           }
         ]
@@ -130,13 +145,19 @@
         "cities": [
           {
             "name": "Bafoussam",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Gare",
-              "Rue du Marche",
-              "Route de Dschang"
+            "addresses": [
+              {
+                "addressLine": "Afriland First Bank, N 6, Famla, Banengo, Bafoussam, Bafoussam I",
+                "postalCode": "",
+                "source": {
+                  "title": "Afriland First Bank",
+                  "url": "https://www.openstreetmap.org/way/384821294",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.4786699,
+                "longitude": 10.4191031
+              }
             ]
           }
         ]
@@ -149,7 +170,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU lists Cameroon among countries that do not require postal codes. The dataset therefore uses BP-style generator prefixes; region/city links follow common public geography, while street names and box numbers remain synthetic review seeds."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_id_card_number": {

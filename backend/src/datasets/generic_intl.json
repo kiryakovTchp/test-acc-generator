@@ -6,19 +6,74 @@
   "locale": "en-GB",
   "availability": "active",
   "names": {
-    "male": ["John", "Michael", "David", "Daniel", "James", "Alex", "Samuel", "Peter", "Joseph", "Brian"],
-    "female": ["Grace", "Mary", "Esther", "Ruth", "Anna", "Joy", "Alice", "Sarah", "Diana", "Lydia"],
-    "last": ["Banda", "Phiri", "Zulu", "Mwansa", "Tembo", "Okoro", "Adebayo", "Diallo", "Camara", "Toure", "Kimani", "Ndlovu", "Moyo", "Ibrahim", "Khan", "Aliyev", "Sadykova", "Bekov", "Mendes", "Costa"],
+    "male": [
+      "John",
+      "Michael",
+      "David",
+      "Daniel",
+      "James",
+      "Alex",
+      "Samuel",
+      "Peter",
+      "Joseph",
+      "Brian"
+    ],
+    "female": [
+      "Grace",
+      "Mary",
+      "Esther",
+      "Ruth",
+      "Anna",
+      "Joy",
+      "Alice",
+      "Sarah",
+      "Diana",
+      "Lydia"
+    ],
+    "last": [
+      "Banda",
+      "Phiri",
+      "Zulu",
+      "Mwansa",
+      "Tembo",
+      "Okoro",
+      "Adebayo",
+      "Diallo",
+      "Camara",
+      "Toure",
+      "Kimani",
+      "Ndlovu",
+      "Moyo",
+      "Ibrahim",
+      "Khan",
+      "Aliyev",
+      "Sadykova",
+      "Bekov",
+      "Mendes",
+      "Costa"
+    ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy generic international fallback name pool", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "source": {
+      "title": "Legacy generic international fallback name pool",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
     "notes": "Generic fallback dataset intentionally remains synthetic and international rather than country-accurate."
   },
   "phones": {
     "countryCallingCode": "+44",
     "nationalLength": 10,
-    "prefixes": ["7"],
+    "prefixes": [
+      "7"
+    ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy generic international phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+    "source": {
+      "title": "Legacy generic international phone rule",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
     "notes": "Generic mobile-like UK format for fallback form filling."
   },
   "locations": {
@@ -26,23 +81,83 @@
       {
         "name": "Not specified",
         "cities": [
-          { "name": "London", "postalPrefixes": ["SW1"], "streets": ["King Street", "Victoria Road", "High Street"] },
-          { "name": "Manchester", "postalPrefixes": ["M1"], "streets": ["King Street", "Victoria Road", "High Street"] },
-          { "name": "Birmingham", "postalPrefixes": ["B1"], "streets": ["King Street", "Victoria Road", "High Street"] }
+          {
+            "name": "London",
+            "addresses": [
+              {
+                "addressLine": "The Ritz London, 150, Piccadilly, St. James's, Mayfair, City of Westminster",
+                "postalCode": "W1J 9BR",
+                "source": {
+                  "title": "The Ritz London",
+                  "url": "https://www.openstreetmap.org/way/26706806",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 51.5071911,
+                "longitude": -0.1414246
+              }
+            ]
+          },
+          {
+            "name": "Manchester",
+            "addresses": [
+              {
+                "addressLine": "Ladybarn Lane Post Office, 124, Ladybarn Lane, Ladybarn, Fallowfield, Manchester",
+                "postalCode": "M14 6YH",
+                "source": {
+                  "title": "Ladybarn Lane Post Office",
+                  "url": "https://www.openstreetmap.org/node/9254794260",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 53.4380925,
+                "longitude": -2.2138547
+              }
+            ]
+          },
+          {
+            "name": "Birmingham",
+            "addresses": [
+              {
+                "addressLine": "Coleshill Road Post Office, Fox and Goose Shopping Centre, Birmingham, West Midlands, England, B8 2EP",
+                "postalCode": "B8 2EP",
+                "source": {
+                  "title": "Coleshill Road Post Office",
+                  "url": "https://www.openstreetmap.org/way/175421197",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 52.494175,
+                "longitude": -1.8194264
+              }
+            ]
+          }
         ]
       }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy generic international fallback locations", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Generic fallback locations for form filling; not a verified country dataset."
+    "source": {
+      "title": "Legacy generic international fallback locations",
+      "url": "https://github.com/kiryakovTchp/test-acc-generator",
+      "type": "assumption",
+      "checkedAt": "2026-07-27"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["INTL-{RAND10}"],
+      "templates": [
+        "INTL-{RAND10}"
+      ],
       "pattern": "^INTL-\\d{10}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Legacy generic international passport fallback", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
+      "source": {
+        "title": "Legacy generic international passport fallback",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator",
+        "type": "assumption",
+        "checkedAt": "2026-07-27"
+      },
       "notes": "Generic fallback document number; use only when country-specific document rules are unavailable."
     }
   }

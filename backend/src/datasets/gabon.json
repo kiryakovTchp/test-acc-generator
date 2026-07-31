@@ -95,14 +95,19 @@
         "cities": [
           {
             "name": "Libreville",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Boulevard Triomphal",
-              "Avenue Leon Mba",
-              "Boulevard de l'Independance",
-              "Route de Owendo"
+            "addresses": [
+              {
+                "addressLine": "United Bank for Africa, Boulevard Triomphal Omar Bongo Ondimba, Louis, Vallée Sainte-Marie, 3ème Arrondissement, Libreville",
+                "postalCode": "12035",
+                "source": {
+                  "title": "United Bank for Africa",
+                  "url": "https://www.openstreetmap.org/way/373247369",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 0.4052313,
+                "longitude": 9.4376832
+              }
             ]
           }
         ]
@@ -112,14 +117,19 @@
         "cities": [
           {
             "name": "Port-Gentil",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue Savorgnan de Brazza",
-              "Route de Sogara",
-              "Boulevard Leon Mba",
-              "Avenue du Gouverneur"
+            "addresses": [
+              {
+                "addressLine": "Hôtel L'Hirondelle, Boulevard du Gouverneur Pelieu, Rombintchozo, Port-Gentil, Bendje, Ogooué-Maritime",
+                "postalCode": "",
+                "source": {
+                  "title": "Hôtel L'Hirondelle",
+                  "url": "https://www.openstreetmap.org/way/1147682534",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -0.715564,
+                "longitude": 8.7822017
+              }
             ]
           }
         ]
@@ -129,14 +139,19 @@
         "cities": [
           {
             "name": "Franceville",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Renovation",
-              "Route de Moanda",
-              "Avenue de l'Universite",
-              "Quartier Potos"
+            "addresses": [
+              {
+                "addressLine": "Hotel Masuku, Route Economique, Wendze, Franceville, Mpassa, Haut-Ogooué",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel Masuku",
+                  "url": "https://www.openstreetmap.org/node/4621927197",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -1.632444,
+                "longitude": 13.5853959
+              }
             ]
           }
         ]
@@ -146,14 +161,19 @@
         "cities": [
           {
             "name": "Tchibanga",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Prefecture",
-              "Route de Mayumba",
-              "Quartier Centre",
-              "Route de Mouila"
+            "addresses": [
+              {
+                "addressLine": "Le Relais Nyanga, RP501, Tchibanga, Mougoutsi, Nyanga, Gabon",
+                "postalCode": "",
+                "source": {
+                  "title": "Le Relais Nyanga",
+                  "url": "https://www.openstreetmap.org/way/1225749694",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -2.9315124,
+                "longitude": 10.9850676
+              }
             ]
           }
         ]
@@ -166,7 +186,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-27"
     },
-    "notes": "UPU confirms Gabon addressing examples using BP/P.O. Box delivery and locality/delivery-office lines, including Libreville and Tchibanga examples. Province-city links use public administrative geography, while street lists and fixed three-digit BP suffixes are synthetic samples and not official postal allocations."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "personal_identification_number": {

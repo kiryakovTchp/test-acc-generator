@@ -6,9 +6,42 @@
   "locale": "en-SZ",
   "availability": "review",
   "names": {
-    "male": ["Sibusiso", "Mandla", "Thabo", "Musa", "Mkhululi", "Bongani", "Sipho", "Themba", "Sifiso", "Nhlanhla"],
-    "female": ["Nomsa", "Thandiwe", "Sibongile", "Dudu", "Nokuthula", "Zanele", "Busisiwe", "Ntombi", "Gugu", "Lindiwe"],
-    "last": ["Dlamini", "Nkosi", "Mamba", "Shongwe", "Simelane", "Khumalo", "Maseko", "Tsabedze", "Ginindza", "Hlophe"],
+    "male": [
+      "Sibusiso",
+      "Mandla",
+      "Thabo",
+      "Musa",
+      "Mkhululi",
+      "Bongani",
+      "Sipho",
+      "Themba",
+      "Sifiso",
+      "Nhlanhla"
+    ],
+    "female": [
+      "Nomsa",
+      "Thandiwe",
+      "Sibongile",
+      "Dudu",
+      "Nokuthula",
+      "Zanele",
+      "Busisiwe",
+      "Ntombi",
+      "Gugu",
+      "Lindiwe"
+    ],
+    "last": [
+      "Dlamini",
+      "Nkosi",
+      "Mamba",
+      "Shongwe",
+      "Simelane",
+      "Khumalo",
+      "Maseko",
+      "Tsabedze",
+      "Ginindza",
+      "Hlophe"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Eswatini forenames and surnames frequency tables",
@@ -21,7 +54,12 @@
   "phones": {
     "countryCallingCode": "+268",
     "nationalLength": 8,
-    "prefixes": ["76", "77", "78", "79"],
+    "prefixes": [
+      "76",
+      "77",
+      "78",
+      "79"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU National Numbering Plans: Eswatini",
@@ -36,14 +74,62 @@
       {
         "name": "Hhohho",
         "cities": [
-          { "name": "Mbabane", "postalPrefixes": ["H1"], "streets": ["Gwamile Street", "Sozisa Road", "Somhlolo Road"] },
-          { "name": "Pigg's Peak", "postalPrefixes": ["H1"], "streets": ["King Mswati II Highway", "Peak Road", "Market Street"] }
+          {
+            "name": "Mbabane",
+            "addresses": [
+              {
+                "addressLine": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho, H100",
+                "postalCode": "H100",
+                "source": {
+                  "title": "Central Bank of Swaziland",
+                  "url": "https://www.openstreetmap.org/node/848603772",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -26.3264735,
+                "longitude": 31.1458295
+              }
+            ]
+          },
+          {
+            "name": "Pigg's Peak",
+            "addresses": [
+              {
+                "addressLine": "PIGG'S PEAK CENTRAL HIGH, King Mswati II Highway, Piggs Peak, Inkhundla Piggs Peak, Hhohho, Eswatini",
+                "postalCode": "",
+                "source": {
+                  "title": "PIGG'S PEAK CENTRAL HIGH",
+                  "url": "https://www.openstreetmap.org/node/13316867981",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -25.9649574,
+                "longitude": 31.2422606
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Manzini",
         "cities": [
-          { "name": "Manzini", "postalPrefixes": ["M2"], "streets": ["Ngwane Street", "Nkoseluhlaza Street", "Mancishane Street"] }
+          {
+            "name": "Manzini",
+            "addresses": [
+              {
+                "addressLine": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini, M100",
+                "postalCode": "M100",
+                "source": {
+                  "title": "First National Bank ATM",
+                  "url": "https://www.openstreetmap.org/node/2614887997",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -26.4980664,
+                "longitude": 31.3728454
+              }
+            ]
+          }
         ]
       }
     ],
@@ -54,12 +140,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms a four-character alphanumeric postcode example such as H100 below locality name. Specific city/street pairings and prefixes remain synthetic review data."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_card_number": {
       "label": "National Identity Card Number",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -72,7 +160,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

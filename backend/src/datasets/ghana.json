@@ -91,25 +91,36 @@
         "cities": [
           {
             "name": "Accra",
-            "postalPrefixes": [
-              "GA-183-"
-            ],
-            "streets": [
-              "Independence Avenue",
-              "Ring Road",
-              "Abdul Diouf Road",
-              "Asafoatse Nettey Road"
+            "addresses": [
+              {
+                "addressLine": "Accra Metropolitan Assembly, Independence Avenue, Ridge, Accra Central, Accra, Korle-Klottey Municipal District",
+                "postalCode": "GA143",
+                "source": {
+                  "title": "Accra Metropolitan Assembly",
+                  "url": "https://www.openstreetmap.org/way/613271739",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.5507962,
+                "longitude": -0.2035334
+              }
             ]
           },
           {
             "name": "Tema",
-            "postalPrefixes": [
-              "GT-001-"
-            ],
-            "streets": [
-              "Community One Road",
-              "Harbour Road",
-              "Hospital Road"
+            "addresses": [
+              {
+                "addressLine": "Tema Community 7 Post Office, Prono Street, Community 7, Tema, Tema Metropolitan District, Greater Accra Region",
+                "postalCode": "GT045",
+                "source": {
+                  "title": "Tema Community 7 Post Office",
+                  "url": "https://www.openstreetmap.org/node/7170575985",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.6629277,
+                "longitude": -0.0104045
+              }
             ]
           }
         ]
@@ -119,25 +130,36 @@
         "cities": [
           {
             "name": "Kumasi",
-            "postalPrefixes": [
-              "AK-039-"
-            ],
-            "streets": [
-              "Prempeh I Street",
-              "Harper Road",
-              "Lake Road",
-              "Adum Road"
+            "addresses": [
+              {
+                "addressLine": "Bank of Ghana, Asratoase Street, Adum, Kumasi, Kumasi Metropolitan District, Ashanti Region",
+                "postalCode": "AK-010-1295",
+                "source": {
+                  "title": "Bank of Ghana",
+                  "url": "https://www.openstreetmap.org/way/571757260",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.6925643,
+                "longitude": -1.62483
+              }
             ]
           },
           {
             "name": "Obuasi",
-            "postalPrefixes": [
-              "AO-001-"
-            ],
-            "streets": [
-              "Station Road",
-              "Len Clay Road",
-              "Central Market Road"
+            "addresses": [
+              {
+                "addressLine": "Obuasi Post Office, Ofori Agyeman II Street, A.G.A, Obuasi, Obuasi Municipal District, Ashanti Region",
+                "postalCode": "AO028",
+                "source": {
+                  "title": "Obuasi Post Office",
+                  "url": "https://www.openstreetmap.org/node/2159242273",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.2000748,
+                "longitude": -1.6648318
+              }
             ]
           }
         ]
@@ -147,13 +169,19 @@
         "cities": [
           {
             "name": "Tamale",
-            "postalPrefixes": [
-              "NT-001-"
-            ],
-            "streets": [
-              "Hospital Road",
-              "Dagomba Road",
-              "Gumani Road"
+            "addresses": [
+              {
+                "addressLine": "Access Bank, Bank Street, Tishigu Town, Tamale, Tamale Metropolitan District, Northern Region",
+                "postalCode": "NT-0148-3057",
+                "source": {
+                  "title": "Access Bank",
+                  "url": "https://www.openstreetmap.org/node/1791490402",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.4049258,
+                "longitude": -0.8416006
+              }
             ]
           }
         ]
@@ -166,7 +194,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU confirms Ghana address examples with post office/postcode such as Accra-Central GA-183, while GhanaPostGPS uses digital addresses. The generated trailing digits are synthetic and not checked against GhanaPostGPS or live delivery data."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "ghana_card_pin": {

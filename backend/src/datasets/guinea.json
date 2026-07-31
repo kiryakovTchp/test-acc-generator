@@ -6,47 +6,201 @@
   "locale": "fr-GN",
   "availability": "review",
   "names": {
-    "male": ["Mamadou", "Ibrahima", "Alpha", "Ousmane", "Sekou", "Abdoulaye", "Mohamed", "Amadou", "Alhassane", "Lansana", "Aboubacar", "Sory"],
-    "female": ["Aissatou", "Fatoumata", "Mariam", "Hawa", "Aminata", "Binta", "Kadiatou", "Hadja", "Nene", "Ramatoulaye", "Maimouna", "Mariama"],
-    "last": ["Diallo", "Barry", "Bah", "Camara", "Conte", "Keita", "Balde", "Sow", "Toure", "Sylla", "Traore", "Kourouma"],
+    "male": [
+      "Mamadou",
+      "Ibrahima",
+      "Alpha",
+      "Ousmane",
+      "Sekou",
+      "Abdoulaye",
+      "Mohamed",
+      "Amadou",
+      "Alhassane",
+      "Lansana",
+      "Aboubacar",
+      "Sory"
+    ],
+    "female": [
+      "Aissatou",
+      "Fatoumata",
+      "Mariam",
+      "Hawa",
+      "Aminata",
+      "Binta",
+      "Kadiatou",
+      "Hadja",
+      "Nene",
+      "Ramatoulaye",
+      "Maimouna",
+      "Mariama"
+    ],
+    "last": [
+      "Diallo",
+      "Barry",
+      "Bah",
+      "Camara",
+      "Conte",
+      "Keita",
+      "Balde",
+      "Sow",
+      "Toure",
+      "Sylla",
+      "Traore",
+      "Kourouma"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Forebears Guinea forenames and surnames frequency tables", "url": "https://forebears.io/guinea/forenames", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+    "source": {
+      "title": "Forebears Guinea forenames and surnames frequency tables",
+      "url": "https://forebears.io/guinea/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
     "notes": "Public frequency tables were used to seed localized given names and surnames. This is not an official civil registry export; this GEO remains separate from guinea_conakry by product decision."
   },
   "phones": {
     "countryCallingCode": "+224",
     "nationalLength": 9,
-    "prefixes": ["6"],
+    "prefixes": [
+      "6"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "ITU National Numbering Plans: Guinea (+224)", "url": "https://www.itu.int/ITU-T/inr/nnp/", "type": "official", "checkedAt": "2026-07-30" },
+    "source": {
+      "title": "ITU National Numbering Plans: Guinea (+224)",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
     "notes": "ITU lists Guinea under country code +224. Public dialling data and historical product assumptions use 6-leading mobile-like numbers; exact current mobile allocation blocks were not directly extracted here, so generation remains constrained synthetic data."
   },
   "locations": {
     "regions": [
-      { "name": "Conakry", "cities": [{ "name": "Conakry", "postalPrefixes": ["001 BP "], "streets": ["Route Le Prince", "Avenue de la Republique", "Corniche Nord", "Boulevard du Commerce"] }] },
-      { "name": "Kankan", "cities": [{ "name": "Kankan", "postalPrefixes": ["BP "], "streets": ["Avenue de l'Independance", "Rue du Marche", "Route de Siguiri"] }] },
-      { "name": "Nzerekore", "cities": [{ "name": "Nzerekore", "postalPrefixes": ["BP "], "streets": ["Avenue de la Prefecture", "Rue Centrale", "Route de Lola"] }] },
-      { "name": "Kindia", "cities": [{ "name": "Kindia", "postalPrefixes": ["BP "], "streets": ["Route Nationale", "Rue du Centre", "Route de Mamou"] }] }
+      {
+        "name": "Conakry",
+        "cities": [
+          {
+            "name": "Conakry",
+            "addresses": [
+              {
+                "addressLine": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry, 258",
+                "postalCode": "258",
+                "source": {
+                  "title": "Afriland First Bank",
+                  "url": "https://www.openstreetmap.org/way/441774562",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.511217,
+                "longitude": -13.706888
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Kankan",
+        "cities": [
+          {
+            "name": "Kankan",
+            "addresses": [
+              {
+                "addressLine": "Aéroport de Kankan, N6, ߝߎ߬ߛߋ߲߬, Kankan, Karfamoriah, Préfecture de Kankan",
+                "postalCode": "",
+                "source": {
+                  "title": "Aéroport de Kankan",
+                  "url": "https://www.openstreetmap.org/node/2598227769",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 10.4475596,
+                "longitude": -9.2359064
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Nzerekore",
+        "cities": [
+          {
+            "name": "Nzerekore",
+            "addresses": [
+              {
+                "addressLine": "Hotel de Africa, N'zérékoré-Macenta, Kélémadiou, Nzérékoré, Guinée",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel de Africa",
+                  "url": "https://www.openstreetmap.org/node/6002368587",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 8.0347709,
+                "longitude": -9.0192093
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Kindia",
+        "cities": [
+          {
+            "name": "Kindia",
+            "addresses": [
+              {
+                "addressLine": "Hotel Masabi, N1, Foulaya, Damakania, Préfecture de Kindia, Kindia",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel Masabi",
+                  "url": "https://www.openstreetmap.org/node/5210953723",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 10.0146211,
+                "longitude": -12.8994676
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "UPU General Addressing Issues: Guinea postcode notes", "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf", "type": "trusted_reference", "checkedAt": "2026-07-30" },
-    "notes": "UPU general addressing material and public postal examples indicate Guinea addresses are commonly locality/BP-oriented rather than reliably postcode-driven. Conakry uses the public 001 BP example shape; other BP prefixes and streets are synthetic review seeds."
+    "source": {
+      "title": "UPU General Addressing Issues: Guinea postcode notes",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_card_number": {
       "label": "National Identity Card",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "IRB Canada: Guinea national identity card characteristics", "url": "https://www.ecoi.net/en/document/1146298.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "source": {
+        "title": "IRB Canada: Guinea national identity card characteristics",
+        "url": "https://www.ecoi.net/en/document/1146298.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
       "notes": "Public source confirms national identity card characteristics and requirements, but no official public number grammar, checksum or semantic digit rule was found. Generated value is a synthetic placeholder."
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Guinea ordinary passport document entries", "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gin/a/docs-per-category.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "source": {
+        "title": "PRADO Guinea ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gin/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
       "notes": "PRADO confirms Guinea ordinary passport entries. Public listings do not confirm the visible passport-number grammar; generation remains template-only synthetic."
     }
   }

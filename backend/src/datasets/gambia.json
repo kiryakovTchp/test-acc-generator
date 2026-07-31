@@ -6,9 +6,31 @@
   "locale": "en-GM",
   "availability": "review",
   "names": {
-    "male": ["Lamin", "Ebrima", "Omar", "Momodou", "Musa", "Alieu"],
-    "female": ["Fatou", "Awa", "Mariama", "Binta", "Isatou", "Aminata"],
-    "last": ["Jallow", "Ceesay", "Sarr", "Njie", "Touray", "Darboe", "Camara"],
+    "male": [
+      "Lamin",
+      "Ebrima",
+      "Omar",
+      "Momodou",
+      "Musa",
+      "Alieu"
+    ],
+    "female": [
+      "Fatou",
+      "Awa",
+      "Mariama",
+      "Binta",
+      "Isatou",
+      "Aminata"
+    ],
+    "last": [
+      "Jallow",
+      "Ceesay",
+      "Sarr",
+      "Njie",
+      "Touray",
+      "Darboe",
+      "Camara"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Gambia forenames and surnames frequency tables",
@@ -21,7 +43,15 @@
   "phones": {
     "countryCallingCode": "+220",
     "nationalLength": 7,
-    "prefixes": ["2", "3", "4", "5", "6", "7", "9"],
+    "prefixes": [
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "9"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Gambia national numbering plan communication of 26.XI.2019",
@@ -33,15 +63,89 @@
   },
   "locations": {
     "regions": [
-      { "name": "Banjul", "cities": [{ "name": "Banjul", "postalPrefixes": ["220"], "streets": ["Independence Drive", "Marina Parade", "Liberation Avenue"] }] },
+      {
+        "name": "Banjul",
+        "cities": [
+          {
+            "name": "Banjul",
+            "addresses": [
+              {
+                "addressLine": "Edward Francis Small Teaching Hospital, Anne-Marie Javouhey Street, Banjul, Gambia",
+                "postalCode": "",
+                "source": {
+                  "title": "Edward Francis Small Teaching Hospital",
+                  "url": "https://www.openstreetmap.org/way/249740590",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 13.4574916,
+                "longitude": -16.5772468
+              }
+            ]
+          }
+        ]
+      },
       {
         "name": "Kanifing",
         "cities": [
-          { "name": "Serekunda", "postalPrefixes": ["221"], "streets": ["Kairaba Avenue", "Pipeline Road"] },
-          { "name": "Bakau", "postalPrefixes": ["221"], "streets": ["Kairaba Avenue", "Pipeline Road"] }
+          {
+            "name": "Serekunda",
+            "addresses": [
+              {
+                "addressLine": "Trust Bank, Sayerjobe Avenue, Bartez, Serrekunda, Kanifing, Gambia",
+                "postalCode": "",
+                "source": {
+                  "title": "Trust Bank",
+                  "url": "https://www.openstreetmap.org/way/435697479",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 13.4425604,
+                "longitude": -16.6770707
+              }
+            ]
+          },
+          {
+            "name": "Bakau",
+            "addresses": [
+              {
+                "addressLine": "Trust Bank, Sait Matty Road, Old Bakau, Bakau New Town and Fajara, Serrekunda, Kanifing",
+                "postalCode": "",
+                "source": {
+                  "title": "Trust Bank",
+                  "url": "https://www.openstreetmap.org/node/326327325",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 13.4798753,
+                "longitude": -16.6780568
+              }
+            ]
+          }
         ]
       },
-      { "name": "West Coast", "cities": [{ "name": "Brikama", "postalPrefixes": ["222"], "streets": ["Brikama Highway", "Kombo Coastal Road"] }] }
+      {
+        "name": "West Coast",
+        "cities": [
+          {
+            "name": "Brikama",
+            "addresses": [
+              {
+                "addressLine": "University Library, South Bank Road, Faraba Sutu, Kafuta, Kombo East, Brikama",
+                "postalCode": "",
+                "source": {
+                  "title": "University Library",
+                  "url": "https://www.openstreetmap.org/way/1299545034",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 13.2448851,
+                "longitude": -16.5389622
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -50,12 +154,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms Gambian address examples with street and locality lines but no public postcode grammar. postalPrefixes remain synthetic product placeholders for stable test data generation."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["PC{RAND7}"],
+      "templates": [
+        "PC{RAND7}"
+      ],
       "pattern": "^PC\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -68,7 +174,9 @@
     },
     "national_identification_number": {
       "label": "National Identification Number",
-      "templates": ["{RAND11}"],
+      "templates": [
+        "{RAND11}"
+      ],
       "pattern": "^\\d{11}$",
       "quality": "sample_verified",
       "source": {

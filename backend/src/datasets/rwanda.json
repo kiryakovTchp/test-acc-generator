@@ -6,9 +6,42 @@
   "locale": "en-RW",
   "availability": "review",
   "names": {
-    "male": ["Jean", "Emmanuel", "Eric", "Patrick", "Claude", "Innocent", "Olivier", "Joseph", "Theoneste", "Samuel"],
-    "female": ["Claudine", "Aline", "Diane", "Grace", "Vestine", "Josiane", "Marie", "Chantal", "Jeannette", "Francine"],
-    "last": ["Niyonsenga", "Uwimana", "Habimana", "Mugisha", "Nshimiyimana", "Bizimana", "Uwamahoro", "Nsengiyumva", "Hakizimana", "Mukamana"],
+    "male": [
+      "Jean",
+      "Emmanuel",
+      "Eric",
+      "Patrick",
+      "Claude",
+      "Innocent",
+      "Olivier",
+      "Joseph",
+      "Theoneste",
+      "Samuel"
+    ],
+    "female": [
+      "Claudine",
+      "Aline",
+      "Diane",
+      "Grace",
+      "Vestine",
+      "Josiane",
+      "Marie",
+      "Chantal",
+      "Jeannette",
+      "Francine"
+    ],
+    "last": [
+      "Niyonsenga",
+      "Uwimana",
+      "Habimana",
+      "Mugisha",
+      "Nshimiyimana",
+      "Bizimana",
+      "Uwamahoro",
+      "Nsengiyumva",
+      "Hakizimana",
+      "Mukamana"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Rwanda forenames and surnames frequency tables",
@@ -21,7 +54,12 @@
   "phones": {
     "countryCallingCode": "+250",
     "nationalLength": 9,
-    "prefixes": ["72", "73", "78", "79"],
+    "prefixes": [
+      "72",
+      "73",
+      "78",
+      "79"
+    ],
     "quality": "verified",
     "source": {
       "title": "Rwanda Utilities Regulatory Authority national numbering plan",
@@ -36,13 +74,45 @@
       {
         "name": "Kigali City",
         "cities": [
-          { "name": "Kigali", "postalPrefixes": ["BP"], "streets": ["KN 3 Road", "KG 7 Avenue", "KN 5 Road"] }
+          {
+            "name": "Kigali",
+            "addresses": [
+              {
+                "addressLine": "BANK 🏦, bank, KG 109 Street, Gasabo District, City of Kigali, Rwanda",
+                "postalCode": "",
+                "source": {
+                  "title": "BANK 🏦",
+                  "url": "https://www.openstreetmap.org/node/10840168352",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -1.9581349,
+                "longitude": 30.1195802
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Northern Province",
         "cities": [
-          { "name": "Musanze", "postalPrefixes": ["BP"], "streets": ["RN4 Road", "Karisimbi Road", "Market Street"] }
+          {
+            "name": "Musanze",
+            "addresses": [
+              {
+                "addressLine": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province, 00000",
+                "postalCode": "00000",
+                "source": {
+                  "title": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province, 00000",
+                  "url": "https://www.openstreetmap.org/node/13041461018",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -1.5097038,
+                "longitude": 29.6443425
+              }
+            ]
+          }
         ]
       }
     ],
@@ -53,12 +123,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU shows Rwanda address examples with B.P. and Kigali, but does not provide a postcode range. Postal prefixes are synthetic placeholders for generator compatibility."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_number": {
       "label": "National Identity Number",
-      "templates": ["{RAND16}"],
+      "templates": [
+        "{RAND16}"
+      ],
       "pattern": "^\\d{16}$",
       "quality": "verified",
       "source": {
@@ -71,7 +143,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

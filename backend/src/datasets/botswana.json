@@ -105,14 +105,19 @@
         "cities": [
           {
             "name": "Gaborone",
-            "postalPrefixes": [
-              "GAB"
-            ],
-            "streets": [
-              "Independence Avenue",
-              "Queens Road",
-              "Nelson Mandela Drive",
-              "Machel Drive"
+            "addresses": [
+              {
+                "addressLine": "Bank Gaborone (Head office), New Lobatse Road, Central Business District, Gaborone, 00267, Botswana",
+                "postalCode": "00267",
+                "source": {
+                  "title": "Bank Gaborone (Head office)",
+                  "url": "https://www.openstreetmap.org/way/605250709",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -24.6490225,
+                "longitude": 25.904349
+              }
             ]
           }
         ]
@@ -122,14 +127,19 @@
         "cities": [
           {
             "name": "Francistown",
-            "postalPrefixes": [
-              "FRN"
-            ],
-            "streets": [
-              "Blue Jacket Street",
-              "Haskins Street",
-              "St Patrick Street",
-              "Airport Road"
+            "addresses": [
+              {
+                "addressLine": "Tatitown Post Office, A3, Francistown, Botswana",
+                "postalCode": "",
+                "source": {
+                  "title": "Tatitown Post Office",
+                  "url": "https://www.openstreetmap.org/node/4828343726",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -21.1675234,
+                "longitude": 27.4974642
+              }
             ]
           }
         ]
@@ -139,13 +149,19 @@
         "cities": [
           {
             "name": "Maun",
-            "postalPrefixes": [
-              "MAU"
-            ],
-            "streets": [
-              "Sir Seretse Khama Road",
-              "Moeti Road",
-              "Airport Road"
+            "addresses": [
+              {
+                "addressLine": "Stanbic Bank, Tsaro Street, Maun, North-West District, Botswana",
+                "postalCode": "",
+                "source": {
+                  "title": "Stanbic Bank",
+                  "url": "https://www.openstreetmap.org/node/4752332057",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -19.9887233,
+                "longitude": 23.4242884
+              }
             ]
           }
         ]
@@ -155,13 +171,19 @@
         "cities": [
           {
             "name": "Serowe",
-            "postalPrefixes": [
-              "SER"
-            ],
-            "streets": [
-              "Main Mall Road",
-              "Khama Road",
-              "Hospital Road"
+            "addresses": [
+              {
+                "addressLine": "Tshwaragano Hotel, Basimane Crescent, Serowe, Central District, Botswana",
+                "postalCode": "",
+                "source": {
+                  "title": "Tshwaragano Hotel",
+                  "url": "https://www.openstreetmap.org/node/4320742595",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -22.3875578,
+                "longitude": 26.7075719
+              }
             ]
           }
         ]
@@ -174,7 +196,7 @@
       "type": "official",
       "checkedAt": "2026-07-27"
     },
-    "notes": "Official local authority contacts confirm city/district names used here. UPU address guidance shows Botswana uses P.O. Box and Private Bag style addressing; public sources reviewed do not provide national postcodes, so postalPrefixes are synthetic internal area markers for generator consistency rather than real postal codes."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "omang": {

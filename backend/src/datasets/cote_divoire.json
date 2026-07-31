@@ -6,9 +6,37 @@
   "locale": "fr-CI",
   "availability": "review",
   "names": {
-    "male": ["Kouadio", "Yao", "Koffi", "Mamadou", "Adama", "Jean", "Serge", "Ibrahim"],
-    "female": ["Awa", "Aminata", "Aya", "Fatoumata", "Aicha", "Mariam", "Nadine", "Affou"],
-    "last": ["Kone", "Coulibaly", "Kouassi", "Yao", "Traore", "Bamba", "Koffi", "Diabate", "Ouattara"],
+    "male": [
+      "Kouadio",
+      "Yao",
+      "Koffi",
+      "Mamadou",
+      "Adama",
+      "Jean",
+      "Serge",
+      "Ibrahim"
+    ],
+    "female": [
+      "Awa",
+      "Aminata",
+      "Aya",
+      "Fatoumata",
+      "Aicha",
+      "Mariam",
+      "Nadine",
+      "Affou"
+    ],
+    "last": [
+      "Kone",
+      "Coulibaly",
+      "Kouassi",
+      "Yao",
+      "Traore",
+      "Bamba",
+      "Koffi",
+      "Diabate",
+      "Ouattara"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Most common Ivorian surnames and public name samples",
@@ -21,7 +49,11 @@
   "phones": {
     "countryCallingCode": "+225",
     "nationalLength": 10,
-    "prefixes": ["01", "05", "07"],
+    "prefixes": [
+      "01",
+      "05",
+      "07"
+    ],
     "quality": "verified",
     "source": {
       "title": "Cote d'Ivoire national numbering plan update",
@@ -38,13 +70,37 @@
         "cities": [
           {
             "name": "Abidjan",
-            "postalPrefixes": ["01"],
-            "streets": ["Boulevard Latrille", "Avenue Chardy", "Boulevard de Marseille"]
+            "addresses": [
+              {
+                "addressLine": "Bureau de poste, Boulevard de la République, Le Plateau, Abidjan, Côte d’Ivoire",
+                "postalCode": "",
+                "source": {
+                  "title": "Bureau de poste",
+                  "url": "https://www.openstreetmap.org/node/1932547198",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.3173522,
+                "longitude": -4.0200996
+              }
+            ]
           },
           {
             "name": "Yopougon",
-            "postalPrefixes": ["02"],
-            "streets": ["Rue Princesse", "Boulevard Principal", "Avenue Banco"]
+            "addresses": [
+              {
+                "addressLine": "Hôtel, Rue P20, Score, Attié, Yopougon, Abidjan",
+                "postalCode": "",
+                "source": {
+                  "title": "Hôtel",
+                  "url": "https://www.openstreetmap.org/node/5928588893",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 5.3391231,
+                "longitude": -4.0739456
+              }
+            ]
           }
         ]
       },
@@ -53,8 +109,20 @@
         "cities": [
           {
             "name": "Yamoussoukro",
-            "postalPrefixes": ["10"],
-            "streets": ["Avenue Houphouet-Boigny", "Boulevard Mamie Adjoua", "Rue des Jardins"]
+            "addresses": [
+              {
+                "addressLine": "Centre Hospitalier Régional de Yamoussoukro, Avenue Félix Houphouët-Boigny, Energie, Yamoussoukro, Côte d’Ivoire",
+                "postalCode": "",
+                "source": {
+                  "title": "Centre Hospitalier Régional de Yamoussoukro",
+                  "url": "https://www.openstreetmap.org/way/94224466",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.8174648,
+                "longitude": -5.2772548
+              }
+            ]
           }
         ]
       },
@@ -63,8 +131,20 @@
         "cities": [
           {
             "name": "Korhogo",
-            "postalPrefixes": ["20"],
-            "streets": ["Route de Ferkessedougou", "Avenue de la Republique", "Boulevard du Poro"]
+            "addresses": [
+              {
+                "addressLine": "Afriland First Bank, Boulevard Alassane Ouattara, Koko, Korhogo, Poro, Savanes",
+                "postalCode": "",
+                "source": {
+                  "title": "Afriland First Bank",
+                  "url": "https://www.openstreetmap.org/node/11120967821",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.4587851,
+                "longitude": -5.6323671
+              }
+            ]
           }
         ]
       }
@@ -76,44 +156,50 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-27"
     },
-    "notes": "City and street samples are linked structurally. Postal prefixes remain synthetic placeholders until an official postal/addressing source is added."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["{RAND2}{RANDL2}{RAND5}"],
+      "templates": [
+        "{RAND2}{RANDL2}{RAND5}"
+      ],
       "pattern": "^\\d{2}[A-Z]{2}\\d{5}$",
       "quality": "sample_verified",
       "source": {
         "title": "Local Cote d'Ivoire passport format confirmation",
         "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
-        "type": "trusted_reference",
+        "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
       "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including 13AS85673: two digits, two letters, five digits. Registry validity and checksum semantics are not generated."
     },
     "national_id": {
       "label": "National ID",
-      "templates": ["CI{RAND9}"],
+      "templates": [
+        "CI{RAND9}"
+      ],
       "pattern": "^CI\\d{9}$",
       "quality": "sample_verified",
       "source": {
         "title": "Local Cote d'Ivoire national ID format confirmation",
         "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
-        "type": "trusted_reference",
+        "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
       "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including CI000910000: CI plus nine digits. Registry validity and checksum semantics are not generated."
     },
     "driver_license_number": {
       "label": "Driver License Number",
-      "templates": ["{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"],
+      "templates": [
+        "{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"
+      ],
       "pattern": "^[A-Z]{4}\\d{2}-\\d{2}-\\d{8}[A-Z]$",
       "quality": "sample_verified",
       "source": {
         "title": "Local Cote d'Ivoire driver licence format confirmation",
         "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
-        "type": "trusted_reference",
+        "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
       "notes": "Local Cote d'Ivoire operators confirmed real driver licence display format from field samples: LLLLNN-NN-NNNNNNNNL. Registry validity and checksum semantics are not generated."

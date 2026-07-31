@@ -393,12 +393,13 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
   const geo = dataset ? null : (GEO_PROFILE_DEFAULTS[geoKey] ?? GEO_PROFILE_DEFAULTS.generic_intl);
   const datasetRegion = dataset?.locations.regions[randomIndex(dataset.locations.regions.length)];
   const datasetCity = datasetRegion?.cities[randomIndex(datasetRegion.cities.length)];
+  const datasetAddress = datasetCity?.addresses[randomIndex(datasetCity.addresses.length)];
   const region = geo?.regions[randomIndex(geo.regions.length)] ?? GEO_PROFILE_DEFAULTS.generic_intl.regions[0];
   const city = datasetCity?.name ?? region.cities[randomIndex(region.cities.length)];
-  const postalBase = datasetCity?.postalPrefixes[randomIndex(datasetCity.postalPrefixes.length)] ?? region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
-  const postalCode = dataset ? generateDatasetPostalCode(dataset.key, postalBase) : `${postalBase}${randomDigits(3)}`;
-  const street = datasetCity?.streets[randomIndex(datasetCity.streets.length)] ?? region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
-  const addressLine = `${crypto.randomInt(1, 251)} ${street}`;
+  const postalBase = region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
+  const postalCode = datasetAddress?.postalCode ?? `${postalBase}${randomDigits(3)}`;
+  const street = region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
+  const addressLine = datasetAddress?.addressLine ?? `${crypto.randomInt(1, 251)} ${street}`;
   const placeOfBirth = city;
   const documentIssueDate = buildDocumentIssueDate(dateOfBirth);
 
@@ -453,57 +454,6 @@ export function randomPhone(geoKey: string) {
   const digitsNeeded = Math.max(6, totalDigits - prefix.replace(/\D/g, '').length);
   return `${prefix}${randomDigits(digitsNeeded)}`;
 }
-
-function generateDatasetPostalCode(geoKey: string, prefix: string) {
-  if (DATASET_GEOS_WITHOUT_PUBLIC_POSTCODES.has(geoKey)) return '';
-  if (DATASET_COMPLETE_POSTAL_PREFIX_GEOS.has(geoKey)) return prefix;
-  if (geoKey === 'ghana') return `${prefix}${randomDigits(4)}`;
-  if (geoKey === 'ireland') return `${prefix}${randomString(4, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789')}`;
-
-  const suffixLength = DATASET_POSTAL_SUFFIX_LENGTHS[geoKey] ?? 3;
-  return `${prefix}${randomDigits(suffixLength)}`;
-}
-
-const DATASET_GEOS_WITHOUT_PUBLIC_POSTCODES = new Set([
-  'angola',
-  'botswana',
-  'burundi',
-  'cameroon',
-  'central_african_republic',
-  'congo_brazzaville',
-  'cote_divoire',
-  'equatorial_guinea',
-  'gabon',
-  'guinea',
-  'guinea_conakry',
-  'mali',
-  'rwanda',
-  'sierra_leone',
-  'south_sudan',
-  'togo',
-]);
-
-const DATASET_COMPLETE_POSTAL_PREFIX_GEOS = new Set([
-  'eswatini',
-  'lesotho',
-  'liberia',
-  'senegal',
-]);
-
-const DATASET_POSTAL_SUFFIX_LENGTHS: Record<string, number> = {
-  guinea_bissau: 1,
-  kenya: 2,
-  mozambique: 1,
-  namibia: 2,
-  niger: 1,
-  south_africa: 1,
-  swaziland: 2,
-  tanzania: 2,
-  uganda: 2,
-  western_sahara: 2,
-  zambia: 2,
-  zimbabwe: 1,
-};
 
 function formatDateOfBirthYyMmDd(dateOfBirth?: string) {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateOfBirth ?? '');

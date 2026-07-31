@@ -81,14 +81,19 @@
         "cities": [
           {
             "name": "Malabo",
-            "postalPrefixes": [
-              "AP "
-            ],
-            "streets": [
-              "Avenida de la Independencia",
-              "Calle Rey Boncoro",
-              "Avenida Hassan II",
-              "Calle Acacio Mane"
+            "addresses": [
+              {
+                "addressLine": "Hotel Tropicana, Avenida Hasán II, Los Ángeles, Santa Isabel, Malabo, Distrito de Malabo",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel Tropicana",
+                  "url": "https://www.openstreetmap.org/node/2914015325",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 3.7467674,
+                "longitude": 8.7740454
+              }
             ]
           }
         ]
@@ -98,14 +103,19 @@
         "cities": [
           {
             "name": "Bata",
-            "postalPrefixes": [
-              "AP "
-            ],
-            "streets": [
-              "Avenida de la Libertad",
-              "Calle Centro",
-              "Paseo Maritimo",
-              "Carretera del Aeropuerto"
+            "addresses": [
+              {
+                "addressLine": "Aeropuerto Internacional de Bata, Carretera del Aeropuerto, Bata, Litoral, Región Continental, Guinea Ecuatorial",
+                "postalCode": "",
+                "source": {
+                  "title": "Aeropuerto Internacional de Bata",
+                  "url": "https://www.openstreetmap.org/relation/12373140",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 1.9093582,
+                "longitude": 9.807491
+              }
             ]
           }
         ]
@@ -115,13 +125,19 @@
         "cities": [
           {
             "name": "Evinayong",
-            "postalPrefixes": [
-              "AP "
-            ],
-            "streets": [
-              "Calle Principal",
-              "Avenida de la Provincia",
-              "Calle del Mercado"
+            "addresses": [
+              {
+                "addressLine": "Evinayong, Centro Sur, Región Continental, Guinea Ecuatorial",
+                "postalCode": "",
+                "source": {
+                  "title": "Evinayong",
+                  "url": "https://www.openstreetmap.org/relation/12718869",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 1.4388356,
+                "longitude": 10.5516564
+              }
             ]
           }
         ]
@@ -131,13 +147,19 @@
         "cities": [
           {
             "name": "Mongomo",
-            "postalPrefixes": [
-              "AP "
-            ],
-            "streets": [
-              "Avenida Mongomo",
-              "Calle de la Catedral",
-              "Carretera de Ebebiyin"
+            "addresses": [
+              {
+                "addressLine": "Aeropuerto de Mongomo, Carretera Ebebiyin - Mongomo, Mongomo, Wele-Nzas, Región Continental, Guinea Ecuatorial",
+                "postalCode": "",
+                "source": {
+                  "title": "Aeropuerto de Mongomo",
+                  "url": "https://www.openstreetmap.org/node/6543791066",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 1.6366914,
+                "longitude": 11.3021643
+              }
             ]
           }
         ]
@@ -150,7 +172,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU examples show province/sub-province/locality lines and Apartado Postal for PO box delivery rather than a postcode. The generator uses AP-style prefixes; region/city links follow public geography and generated box/street values are synthetic."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_document_number": {

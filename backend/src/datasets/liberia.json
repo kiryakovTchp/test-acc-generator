@@ -6,9 +6,24 @@
   "locale": "en-LR",
   "availability": "review",
   "names": {
-    "male": ["James", "Joseph", "Emmanuel", "Prince"],
-    "female": ["Mary", "Grace", "Martha", "Princess"],
-    "last": ["Johnson", "Kollie", "Kamara", "Toe"],
+    "male": [
+      "James",
+      "Joseph",
+      "Emmanuel",
+      "Prince"
+    ],
+    "female": [
+      "Mary",
+      "Grace",
+      "Martha",
+      "Princess"
+    ],
+    "last": [
+      "Johnson",
+      "Kollie",
+      "Kamara",
+      "Toe"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Liberia forenames and surnames frequency tables",
@@ -21,7 +36,11 @@
   "phones": {
     "countryCallingCode": "+231",
     "nationalLength": 9,
-    "prefixes": ["555", "773", "774"],
+    "prefixes": [
+      "555",
+      "773",
+      "774"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Liberia national numbering plan communication of 31.V.2024",
@@ -33,8 +52,50 @@
   },
   "locations": {
     "regions": [
-      { "name": "Montserrado", "cities": [{ "name": "Monrovia", "postalPrefixes": ["1000"], "streets": ["Broad Street", "Tubman Boulevard"] }] },
-      { "name": "Nimba", "cities": [{ "name": "Ganta", "postalPrefixes": ["5000"], "streets": ["Main Street", "Ganta Highway"] }] }
+      {
+        "name": "Montserrado",
+        "cities": [
+          {
+            "name": "Monrovia",
+            "addresses": [
+              {
+                "addressLine": "JF Kennedy Medical Center Hospital, 24th, 24th Street, Behind JFK, Sinkor, Monrovia",
+                "postalCode": "1000",
+                "source": {
+                  "title": "JF Kennedy Medical Center Hospital",
+                  "url": "https://www.openstreetmap.org/way/94957267",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.2871673,
+                "longitude": -10.773681
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Nimba",
+        "cities": [
+          {
+            "name": "Ganta",
+            "addresses": [
+              {
+                "addressLine": "F-2 Hotel, Palala - Ganta, Congo, Zone 4, Garr-Bain, Nimba County",
+                "postalCode": "",
+                "source": {
+                  "title": "F-2 Hotel",
+                  "url": "https://www.openstreetmap.org/node/4889611412",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 7.2336571,
+                "longitude": -8.9861941
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -43,12 +104,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms Liberia uses four-digit postcodes to the left of the locality and gives Monrovia 1000 as an example. City/street pairings remain synthetic review samples and are not delivery validated."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identification_number": {
       "label": "National Identification Number",
-      "templates": ["{RAND10}"],
+      "templates": [
+        "{RAND10}"
+      ],
       "pattern": "^\\d{10}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -61,7 +124,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

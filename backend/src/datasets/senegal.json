@@ -6,9 +6,42 @@
   "locale": "fr-SN",
   "availability": "review",
   "names": {
-    "male": ["Mamadou", "Cheikh", "Ibrahima", "Ousmane", "Moussa", "Abdou", "Amadou", "Modou", "Alioune", "Pape"],
-    "female": ["Fatou", "Awa", "Aminata", "Mariama", "Coumba", "Sokhna", "Astou", "Ndeye", "Mame", "Khady"],
-    "last": ["Diop", "Ndiaye", "Sow", "Fall", "Ba", "Gueye", "Diallo", "Sarr", "Seck", "Faye"],
+    "male": [
+      "Mamadou",
+      "Cheikh",
+      "Ibrahima",
+      "Ousmane",
+      "Moussa",
+      "Abdou",
+      "Amadou",
+      "Modou",
+      "Alioune",
+      "Pape"
+    ],
+    "female": [
+      "Fatou",
+      "Awa",
+      "Aminata",
+      "Mariama",
+      "Coumba",
+      "Sokhna",
+      "Astou",
+      "Ndeye",
+      "Mame",
+      "Khady"
+    ],
+    "last": [
+      "Diop",
+      "Ndiaye",
+      "Sow",
+      "Fall",
+      "Ba",
+      "Gueye",
+      "Diallo",
+      "Sarr",
+      "Seck",
+      "Faye"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Senegal forenames and surnames frequency tables",
@@ -21,7 +54,13 @@
   "phones": {
     "countryCallingCode": "+221",
     "nationalLength": 9,
-    "prefixes": ["70", "75", "76", "77", "78"],
+    "prefixes": [
+      "70",
+      "75",
+      "76",
+      "77",
+      "78"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Senegal national numbering plan communication of 3.X.2023",
@@ -36,20 +75,84 @@
       {
         "name": "Dakar",
         "cities": [
-          { "name": "Dakar", "postalPrefixes": ["12500"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot", "Avenue Blaise Diagne"] },
-          { "name": "Pikine", "postalPrefixes": ["12500"], "streets": ["Route des Niayes", "Rue 10", "Avenue de Pikine"] }
+          {
+            "name": "Dakar",
+            "addresses": [
+              {
+                "addressLine": "keur  aminata hotel dakar, Rue FA-47, Fass Delorme, Commune de Gueule Tapée-Fass-Colobane, Arrondissement de Dakar-Plateau, Dakar",
+                "postalCode": "13500",
+                "source": {
+                  "title": "keur  aminata hotel dakar",
+                  "url": "https://www.openstreetmap.org/node/11268758870",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 14.6911916,
+                "longitude": -17.4507071
+              }
+            ]
+          },
+          {
+            "name": "Pikine",
+            "addresses": [
+              {
+                "addressLine": "IPRES Pikine, Tally Bou Mack, Commune de Pikine Ouest, Commune de Pikine Nord, Arrondissement de Pikine-Dagoudane, Département de Pikine",
+                "postalCode": "14000",
+                "source": {
+                  "title": "IPRES Pikine",
+                  "url": "https://www.openstreetmap.org/node/6263750009",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 14.7567455,
+                "longitude": -17.3970533
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Thies",
         "cities": [
-          { "name": "Thies", "postalPrefixes": ["21000"], "streets": ["Avenue General de Gaulle", "Route de Mbour", "Rue de la Gare"] }
+          {
+            "name": "Thies",
+            "addresses": [
+              {
+                "addressLine": "Hôtel de ville de Thiès, N 3, Thiès, Commune de Thiès Est, Arrondissement de Thiès Sud, Département de Thiès",
+                "postalCode": "20001",
+                "source": {
+                  "title": "Hôtel de ville de Thiès",
+                  "url": "https://www.openstreetmap.org/way/167707923",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 14.7916108,
+                "longitude": -16.9246167
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Diourbel",
         "cities": [
-          { "name": "Touba", "postalPrefixes": ["31000"], "streets": ["Avenue Cheikh Ahmadou Bamba", "Route de Darou", "Avenue 28"] }
+          {
+            "name": "Touba",
+            "addresses": [
+              {
+                "addressLine": "SGBS Touba, N 3, Ndame, Touba, Communauté rurale de Touba Mosquée, Arrondissement de Ndame",
+                "postalCode": "22100",
+                "source": {
+                  "title": "SGBS Touba",
+                  "url": "https://www.openstreetmap.org/node/5242327184",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 14.8415107,
+                "longitude": -15.8863613
+              }
+            ]
+          }
         ]
       }
     ],
@@ -60,12 +163,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms Senegal uses five-digit postcodes placed to the left of the delivery office name. City/street pairings and selected prefixes are synthetic review data, not delivery-validated addresses."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "ecowas_id_card_number": {
       "label": "ECOWAS ID Card Number",
-      "templates": ["{RAND17}"],
+      "templates": [
+        "{RAND17}"
+      ],
       "pattern": "^\\d{17}$",
       "quality": "sample_verified",
       "source": {
@@ -78,7 +183,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

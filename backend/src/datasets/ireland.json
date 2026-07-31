@@ -6,9 +6,30 @@
   "locale": "en-IE",
   "availability": "review",
   "names": {
-    "male": ["Sean", "Conor", "Liam", "Cian", "Patrick", "Daniel"],
-    "female": ["Aoife", "Saoirse", "Niamh", "Ciara", "Emma", "Aisling"],
-    "last": ["Murphy", "Kelly", "O'Brien", "Walsh", "Ryan", "Doyle"],
+    "male": [
+      "Sean",
+      "Conor",
+      "Liam",
+      "Cian",
+      "Patrick",
+      "Daniel"
+    ],
+    "female": [
+      "Aoife",
+      "Saoirse",
+      "Niamh",
+      "Ciara",
+      "Emma",
+      "Aisling"
+    ],
+    "last": [
+      "Murphy",
+      "Kelly",
+      "O'Brien",
+      "Walsh",
+      "Ryan",
+      "Doyle"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Ireland forenames and surnames frequency tables",
@@ -21,7 +42,13 @@
   "phones": {
     "countryCallingCode": "+353",
     "nationalLength": 9,
-    "prefixes": ["83", "85", "86", "87", "89"],
+    "prefixes": [
+      "83",
+      "85",
+      "86",
+      "87",
+      "89"
+    ],
     "quality": "verified",
     "source": {
       "title": "ComReg review of Irish mobile numbering resources",
@@ -33,9 +60,72 @@
   },
   "locations": {
     "regions": [
-      { "name": "County Dublin", "cities": [{ "name": "Dublin", "postalPrefixes": ["D01"], "streets": ["OConnell Street", "Dame Street"] }] },
-      { "name": "County Cork", "cities": [{ "name": "Cork", "postalPrefixes": ["T12"], "streets": ["Patrick Street", "Oliver Plunkett Street"] }] },
-      { "name": "County Galway", "cities": [{ "name": "Galway", "postalPrefixes": ["H91"], "streets": ["Shop Street", "Eyre Square"] }] }
+      {
+        "name": "County Dublin",
+        "cities": [
+          {
+            "name": "Dublin",
+            "addresses": [
+              {
+                "addressLine": "Hotel RIU Plaza The Gresham Dublin, 23, O'Connell Street Upper, North City Ward 1986, Dublin, County Dublin",
+                "postalCode": "D01 C3W7",
+                "source": {
+                  "title": "Hotel RIU Plaza The Gresham Dublin",
+                  "url": "https://www.openstreetmap.org/way/316971224",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 53.3516104,
+                "longitude": -6.2602645
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "County Cork",
+        "cities": [
+          {
+            "name": "Cork",
+            "addresses": [
+              {
+                "addressLine": "Premier Inn Cork City Centre Hotel, 11, Morrison's Quay, Morrison's Island, Centre A ED, Cork",
+                "postalCode": "T12 PF78",
+                "source": {
+                  "title": "Premier Inn Cork City Centre Hotel",
+                  "url": "https://www.openstreetmap.org/way/1304929937",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 51.8962685,
+                "longitude": -8.4694698
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "County Galway",
+        "cities": [
+          {
+            "name": "Galway",
+            "addresses": [
+              {
+                "addressLine": "Galway City Hostel, Frenchville Lane, Eyre Square, Cathair na Gaillimhe, County Galway, Connacht",
+                "postalCode": "H91 W862",
+                "source": {
+                  "title": "Galway City Hostel",
+                  "url": "https://www.openstreetmap.org/node/450249853",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 53.2741326,
+                "longitude": -9.0474797
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -44,12 +134,15 @@
       "type": "official",
       "checkedAt": "2026-07-31"
     },
-    "notes": "Official Eircode guidance confirms the seven-character postcode structure and three-character routing key. The listed routing keys and generated trailing digits are retained as synthetic test-address placeholders, not address-level Eircode validation."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "pps_number": {
       "label": "PPS Number",
-      "templates": ["{RAND7}{RANDL1}", "{RAND7}{RANDL2}"],
+      "templates": [
+        "{RAND7}{RANDL1}",
+        "{RAND7}{RANDL2}"
+      ],
       "pattern": "^\\d{7}[A-Z]{1,2}$",
       "quality": "verified",
       "source": {
@@ -62,7 +155,9 @@
     },
     "passport_card_number": {
       "label": "Passport Card Number",
-      "templates": ["C{RAND8}"],
+      "templates": [
+        "C{RAND8}"
+      ],
       "pattern": "^C\\d{8}$",
       "quality": "verified",
       "source": {

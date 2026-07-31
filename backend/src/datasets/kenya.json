@@ -6,9 +6,30 @@
   "locale": "en-KE",
   "availability": "review",
   "names": {
-    "male": ["John", "James", "Peter", "Samuel", "Brian", "David"],
-    "female": ["Grace", "Mary", "Esther", "Sarah", "Diana", "Lydia"],
-    "last": ["Kimani", "Mwangi", "Otieno", "Njoroge", "Wanjiru", "Ochieng"],
+    "male": [
+      "John",
+      "James",
+      "Peter",
+      "Samuel",
+      "Brian",
+      "David"
+    ],
+    "female": [
+      "Grace",
+      "Mary",
+      "Esther",
+      "Sarah",
+      "Diana",
+      "Lydia"
+    ],
+    "last": [
+      "Kimani",
+      "Mwangi",
+      "Otieno",
+      "Njoroge",
+      "Wanjiru",
+      "Ochieng"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Kenya forenames and surnames frequency tables",
@@ -21,7 +42,14 @@
   "phones": {
     "countryCallingCode": "+254",
     "nationalLength": 9,
-    "prefixes": ["100", "101", "102", "740", "741", "742"],
+    "prefixes": [
+      "100",
+      "101",
+      "102",
+      "740",
+      "741",
+      "742"
+    ],
     "quality": "verified",
     "source": {
       "title": "Communications Authority of Kenya Telecommunication Numbering Plan, April 2024",
@@ -33,9 +61,72 @@
   },
   "locations": {
     "regions": [
-      { "name": "Nairobi County", "cities": [{ "name": "Nairobi", "postalPrefixes": ["001"], "streets": ["Kenyatta Avenue", "Mombasa Road"] }] },
-      { "name": "Mombasa County", "cities": [{ "name": "Mombasa", "postalPrefixes": ["801"], "streets": ["Moi Avenue", "Digo Road"] }] },
-      { "name": "Kisumu County", "cities": [{ "name": "Kisumu", "postalPrefixes": ["401"], "streets": ["Oginga Odinga Road", "Jomo Kenyatta Highway"] }] }
+      {
+        "name": "Nairobi County",
+        "cities": [
+          {
+            "name": "Nairobi",
+            "addresses": [
+              {
+                "addressLine": "Nairobi General Post Office, Kenyatta Avenue, City Square sublocation, Starehe location, CBD division, Starehe",
+                "postalCode": "00100",
+                "source": {
+                  "title": "Nairobi General Post Office",
+                  "url": "https://www.openstreetmap.org/node/1537504486",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -1.286295,
+                "longitude": 36.8196418
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Mombasa County",
+        "cities": [
+          {
+            "name": "Mombasa",
+            "addresses": [
+              {
+                "addressLine": "Jambo Paradise Hotel - Mombasa, Tana Street, Saba Saba, Tononoka, Mombasa, Tononoka ward",
+                "postalCode": "80112",
+                "source": {
+                  "title": "Jambo Paradise Hotel - Mombasa",
+                  "url": "https://www.openstreetmap.org/node/6054561497",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -4.0479315,
+                "longitude": 39.6661295
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Kisumu County",
+        "cities": [
+          {
+            "name": "Kisumu",
+            "addresses": [
+              {
+                "addressLine": "University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central",
+                "postalCode": "40141",
+                "source": {
+                  "title": "University of Nairobi Kisumu Campus",
+                  "url": "https://www.openstreetmap.org/way/1172998264",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -0.1042829,
+                "longitude": 34.7534167
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -44,12 +135,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms Kenya uses five-digit post office codes in postal addressing. Dataset prefixes are stable test placeholders for generated postal codes and are not validated against the full Posta Kenya post-office code table."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["A{RAND7}"],
+      "templates": [
+        "A{RAND7}"
+      ],
       "pattern": "^A\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -62,7 +155,9 @@
     },
     "national_id_card_number": {
       "label": "National ID Card Number",
-      "templates": ["{RAND8}"],
+      "templates": [
+        "{RAND8}"
+      ],
       "pattern": "^\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

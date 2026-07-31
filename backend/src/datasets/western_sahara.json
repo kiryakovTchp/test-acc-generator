@@ -6,9 +6,42 @@
   "locale": "ar-EH",
   "availability": "review",
   "names": {
-    "male": ["Mohamed", "Mohammed", "Ahmed", "Youssef", "Said", "Rachid", "Hassan", "Omar", "Ali", "Brahim"],
-    "female": ["Fatima", "Khadija", "Nadia", "Zineb", "Naima", "Amina", "Aicha", "Malika", "Latifa", "Meryem"],
-    "last": ["Ait", "Alaoui", "Alami", "Bennani", "Idrissi", "Hassan", "Saidi", "Mohamed", "Amrani", "Mansouri"],
+    "male": [
+      "Mohamed",
+      "Mohammed",
+      "Ahmed",
+      "Youssef",
+      "Said",
+      "Rachid",
+      "Hassan",
+      "Omar",
+      "Ali",
+      "Brahim"
+    ],
+    "female": [
+      "Fatima",
+      "Khadija",
+      "Nadia",
+      "Zineb",
+      "Naima",
+      "Amina",
+      "Aicha",
+      "Malika",
+      "Latifa",
+      "Meryem"
+    ],
+    "last": [
+      "Ait",
+      "Alaoui",
+      "Alami",
+      "Bennani",
+      "Idrissi",
+      "Hassan",
+      "Saidi",
+      "Mohamed",
+      "Amrani",
+      "Mansouri"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Morocco forenames and surnames frequency tables",
@@ -21,7 +54,12 @@
   "phones": {
     "countryCallingCode": "+212",
     "nationalLength": 9,
-    "prefixes": ["528", "529", "6", "7"],
+    "prefixes": [
+      "528",
+      "529",
+      "6",
+      "7"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "ANRT Morocco national numbering plan",
@@ -36,13 +74,43 @@
       {
         "name": "Laayoune-Sakia El Hamra",
         "cities": [
-          { "name": "Laayoune", "postalPrefixes": ["700"], "streets": ["Avenue Mekka", "Avenue Smara"] }
+          {
+            "name": "Laayoune",
+            "addresses": [
+              {
+                "addressLine": "Laayoune, Laayoune-Sakia El Hamra, Western Sahara",
+                "postalCode": "",
+                "source": {
+                  "title": "Laayoune, Laayoune-Sakia El Hamra, Western Sahara",
+                  "url": "https://www.openstreetmap.org/",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                }
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Dakhla-Oued Ed-Dahab",
         "cities": [
-          { "name": "Dakhla", "postalPrefixes": ["730"], "streets": ["Avenue Al Massira", "Boulevard Mohammed V"] }
+          {
+            "name": "Dakhla",
+            "addresses": [
+              {
+                "addressLine": "Bureau de Poste de Dakhla, Avenue Imlili, Dakhla, Pachalik de Dakhla",
+                "postalCode": "73002",
+                "source": {
+                  "title": "Bureau de Poste de Dakhla",
+                  "url": "https://www.openstreetmap.org/node/2907752099",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 23.7008027,
+                "longitude": -15.9300457
+              }
+            ]
+          }
         ]
       }
     ],
@@ -53,12 +121,14 @@
       "type": "official",
       "checkedAt": "2026-07-31"
     },
-    "notes": "Official Morocco regional material confirms the administrative-region context used for Laayoune and Dakhla, but the dataset does not claim a separate Western Sahara postal authority or address-valid postcode grammar. Postal prefixes and streets remain generator review seeds."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

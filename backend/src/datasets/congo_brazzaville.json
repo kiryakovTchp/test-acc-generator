@@ -82,14 +82,19 @@
         "cities": [
           {
             "name": "Brazzaville",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Paix",
-              "Boulevard Denis Sassou Nguesso",
-              "Avenue de l'Amitie",
-              "Avenue Felix Eboue"
+            "addresses": [
+              {
+                "addressLine": "Pharmacy of CHU (Hospital), Boulevard du Maréchal Lyautey, Poto-Poto, Poto-Poto (arrondissement 3), Brazzaville (commune), Brazzaville (département)",
+                "postalCode": "",
+                "source": {
+                  "title": "Pharmacy of CHU (Hospital)",
+                  "url": "https://www.openstreetmap.org/node/5504990534",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -4.2670108,
+                "longitude": 15.2688279
+              }
             ]
           }
         ]
@@ -99,14 +104,19 @@
         "cities": [
           {
             "name": "Pointe-Noire",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue Charles de Gaulle",
-              "Rue du Commerce",
-              "Avenue Marien Ngouabi",
-              "Boulevard Loango"
+            "addresses": [
+              {
+                "addressLine": "Clinique churgico du plateaux, 055712331, Avenue François Charles, Losange, Pointe-Noire, Lumumba (arrondissement 1)",
+                "postalCode": "4389",
+                "source": {
+                  "title": "Clinique churgico du plateaux",
+                  "url": "https://www.openstreetmap.org/node/6871271752",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -4.7966331,
+                "longitude": 11.8555477
+              }
             ]
           }
         ]
@@ -116,13 +126,19 @@
         "cities": [
           {
             "name": "Dolisie",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Gare",
-              "Rue du Marche",
-              "Route de Pointe-Noire"
+            "addresses": [
+              {
+                "addressLine": "BGFI Bank, Rue Antonnetti, Centre-ville, Dolisie, Niari, Congo",
+                "postalCode": "",
+                "source": {
+                  "title": "BGFI Bank",
+                  "url": "https://www.openstreetmap.org/node/4581988891",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -4.1945363,
+                "longitude": 12.6735395
+              }
             ]
           }
         ]
@@ -132,13 +148,19 @@
         "cities": [
           {
             "name": "Owando",
-            "postalPrefixes": [
-              "BP "
-            ],
-            "streets": [
-              "Avenue de la Prefecture",
-              "Rue Centrale",
-              "Route d'Oyo"
+            "addresses": [
+              {
+                "addressLine": "Hotel de l'Eglise, RN 2, Ombele, Owando, Cuvette, Congo",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel de l'Eglise",
+                  "url": "https://www.openstreetmap.org/node/3323401945",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -0.480954,
+                "longitude": 15.9024143
+              }
             ]
           }
         ]
@@ -151,7 +173,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU lists Congo (Rep.) among countries that do not require postal codes. The generator uses BP-style prefixes; department/city mapping follows public geography and generated box/street values remain synthetic review data."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_card_number": {

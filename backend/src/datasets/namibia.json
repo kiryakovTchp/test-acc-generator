@@ -6,9 +6,24 @@
   "locale": "en-NA",
   "availability": "review",
   "names": {
-    "male": ["Johannes", "Petrus", "Moses", "Tobias"],
-    "female": ["Anna", "Maria", "Selma", "Ndapewa"],
-    "last": ["Shilongo", "Nghipandulwa", "Amadhila", "Nambala"],
+    "male": [
+      "Johannes",
+      "Petrus",
+      "Moses",
+      "Tobias"
+    ],
+    "female": [
+      "Anna",
+      "Maria",
+      "Selma",
+      "Ndapewa"
+    ],
+    "last": [
+      "Shilongo",
+      "Nghipandulwa",
+      "Amadhila",
+      "Nambala"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Namibia forenames and surnames frequency tables",
@@ -21,7 +36,11 @@
   "phones": {
     "countryCallingCode": "+264",
     "nationalLength": 9,
-    "prefixes": ["83", "84", "85"],
+    "prefixes": [
+      "83",
+      "84",
+      "85"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Namibia national numbering plan communication of 12.VII.2018",
@@ -33,8 +52,50 @@
   },
   "locations": {
     "regions": [
-      { "name": "Khomas", "cities": [{ "name": "Windhoek", "postalPrefixes": ["100"], "streets": ["Independence Avenue", "Robert Mugabe Avenue"] }] },
-      { "name": "Erongo", "cities": [{ "name": "Walvis Bay", "postalPrefixes": ["130"], "streets": ["Sam Nujoma Avenue", "Hanna Mupetami Road"] }] }
+      {
+        "name": "Khomas",
+        "cities": [
+          {
+            "name": "Windhoek",
+            "addresses": [
+              {
+                "addressLine": "Hotel Steiner, 11, Wecke Street, Windhoek Central, Windhoek, Khomas Region",
+                "postalCode": "10005",
+                "source": {
+                  "title": "Hotel Steiner",
+                  "url": "https://www.openstreetmap.org/way/390949455",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -22.5702259,
+                "longitude": 17.0809881
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Erongo",
+        "cities": [
+          {
+            "name": "Walvis Bay",
+            "addresses": [
+              {
+                "addressLine": "Bank Windhoek, Rikumbi Kandanga Road, Walvis Bay, Erongo Region, 13013, Namibia",
+                "postalCode": "13013",
+                "source": {
+                  "title": "Bank Windhoek",
+                  "url": "https://www.openstreetmap.org/node/2517228191",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -22.9553152,
+                "longitude": 14.5063383
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "sample_verified",
     "source": {
@@ -43,12 +104,14 @@
       "type": "official",
       "checkedAt": "2026-07-31"
     },
-    "notes": "NamPost confirms current five-digit postal codes including Khomas/Windhoek and Erongo/Walvis Bay ranges. Streets remain representative review samples; postalPrefixes are generator prefixes, not complete postcodes."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_number": {
       "label": "National Identity Number",
-      "templates": ["{RAND11}"],
+      "templates": [
+        "{RAND11}"
+      ],
       "pattern": "^\\d{11}$",
       "quality": "verified",
       "source": {
@@ -61,7 +124,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND7}"],
+      "templates": [
+        "{RANDL1}{RAND7}"
+      ],
       "pattern": "^[A-Z]\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {

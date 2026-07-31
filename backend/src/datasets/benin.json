@@ -122,14 +122,19 @@
         "cities": [
           {
             "name": "Cotonou",
-            "postalPrefixes": [
-              "01"
-            ],
-            "streets": [
-              "Avenue Steinmetz",
-              "Boulevard Saint Michel",
-              "Avenue Jean-Paul II",
-              "Rue du Gouverneur Bayol"
+            "addresses": [
+              {
+                "addressLine": "Diamond Bank Agence Saint Michel, Rue des Missions, 7ème Arrondissement, Cotonou, Littoral, Bénin",
+                "postalCode": "",
+                "source": {
+                  "title": "Diamond Bank Agence Saint Michel",
+                  "url": "https://www.openstreetmap.org/node/3260372493",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.368423,
+                "longitude": 2.4285659
+              }
             ]
           }
         ]
@@ -139,13 +144,19 @@
         "cities": [
           {
             "name": "Abomey-Calavi",
-            "postalPrefixes": [
-              "02"
-            ],
-            "streets": [
-              "Route de Calavi",
-              "Rue des Palmiers",
-              "Route de Godomey"
+            "addresses": [
+              {
+                "addressLine": "Paradisia Hotel, RNIE 1, Gbaou, Fonsa, Cotonou, Abomey-Calavi",
+                "postalCode": "07 BP 284",
+                "source": {
+                  "title": "Paradisia Hotel",
+                  "url": "https://www.openstreetmap.org/node/5327529879",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.3844558,
+                "longitude": 2.3458546
+              }
             ]
           }
         ]
@@ -155,13 +166,19 @@
         "cities": [
           {
             "name": "Porto-Novo",
-            "postalPrefixes": [
-              "03"
-            ],
-            "streets": [
-              "Avenue Victor Ballot",
-              "Boulevard Tokpota",
-              "Rue Akonaboue"
+            "addresses": [
+              {
+                "addressLine": "Hôtel Porto La Belle Group, Boulevard Tokpota, Porto-Novo, Porto Novo, Ouémé, Bénin",
+                "postalCode": "",
+                "source": {
+                  "title": "Hôtel Porto La Belle Group",
+                  "url": "https://www.openstreetmap.org/node/9294072917",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.49604,
+                "longitude": 2.6050446
+              }
             ]
           }
         ]
@@ -171,13 +188,19 @@
         "cities": [
           {
             "name": "Parakou",
-            "postalPrefixes": [
-              "04"
-            ],
-            "streets": [
-              "Avenue de la Gare",
-              "Route de Malanville",
-              "Rue de l'Hotel de Ville"
+            "addresses": [
+              {
+                "addressLine": "UBA, Rue des Cheminots, Boundarou, Kpébié, Parakou, Borgou",
+                "postalCode": "",
+                "source": {
+                  "title": "UBA",
+                  "url": "https://www.openstreetmap.org/node/5618219455",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.3410539,
+                "longitude": 2.6261665
+              }
             ]
           }
         ]
@@ -190,7 +213,7 @@
       "type": "official",
       "checkedAt": "2026-07-27"
     },
-    "notes": "Official project source confirms key city names used in the dataset. Department-city mapping is conventional public geography; street names and postal prefixes remain sample/synthetic because Benin does not use national postcodes in the same way as many countries and public postal-office prefixes require separate authoritative coverage."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_personal_identification_number": {

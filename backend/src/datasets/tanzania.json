@@ -6,38 +6,179 @@
   "locale": "sw-TZ",
   "availability": "review",
   "names": {
-    "male": ["Emmanuel", "Joseph", "Juma", "John", "Frank", "Ally", "Peter", "Michael"],
-    "female": ["Neema", "Elizabeth", "Rehema", "Amina", "Mariam", "Maria", "Fatuma", "Asha", "Joyce", "Grace", "Anna", "Mary"],
-    "last": ["Juma", "John", "Joseph", "Charles", "Ally", "Mohamed", "Ramadhani", "Saidi", "Peter", "Hamisi", "Said", "Abdallah", "Mussa", "Bakari"],
+    "male": [
+      "Emmanuel",
+      "Joseph",
+      "Juma",
+      "John",
+      "Frank",
+      "Ally",
+      "Peter",
+      "Michael"
+    ],
+    "female": [
+      "Neema",
+      "Elizabeth",
+      "Rehema",
+      "Amina",
+      "Mariam",
+      "Maria",
+      "Fatuma",
+      "Asha",
+      "Joyce",
+      "Grace",
+      "Anna",
+      "Mary"
+    ],
+    "last": [
+      "Juma",
+      "John",
+      "Joseph",
+      "Charles",
+      "Ally",
+      "Mohamed",
+      "Ramadhani",
+      "Saidi",
+      "Peter",
+      "Hamisi",
+      "Said",
+      "Abdallah",
+      "Mussa",
+      "Bakari"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Forebears Tanzania forenames and surnames frequency tables", "url": "https://forebears.io/tanzania/forenames", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "Forebears Tanzania forenames and surnames frequency tables",
+      "url": "https://forebears.io/tanzania/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "Public frequency tables were used to seed localized Tanzanian given names and surnames. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+255",
     "nationalLength": 9,
-    "prefixes": ["61", "62", "63", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75", "76", "77", "78", "79"],
+    "prefixes": [
+      "61",
+      "62",
+      "63",
+      "65",
+      "66",
+      "67",
+      "68",
+      "69",
+      "70",
+      "71",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79"
+    ],
     "quality": "verified",
-    "source": { "title": "TCRA National Numbering and Signaling Point Codes Plan, version 1.16", "url": "https://www.tcra.go.tz/tcra-tovuti/2026/mamlaka-website/documents/communication-sector-guidbooks-and-plans/Reviewed_National_Numbering_and_Signaling_Point_Code_Plans_110964160895632383418247645780320214921782934304138_0327e62722.pdf", "type": "official", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "TCRA National Numbering and Signaling Point Codes Plan, version 1.16",
+      "url": "https://www.tcra.go.tz/tcra-tovuti/2026/mamlaka-website/documents/communication-sector-guidbooks-and-plans/Reviewed_National_Numbering_and_Signaling_Point_Code_Plans_110964160895632383418247645780320214921782934304138_0327e62722.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "TCRA version 1.16, dated 1 July 2026, confirms +255 mobile national numbers use 061/062/063/065/066/067/068/069/070/071/072/073/074/075/076/077/078/079 ranges with six subscriber digits after the operator digit. Prefix 64 is excluded because the listed 064 range is not operational. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
-      { "name": "Dar es Salaam", "cities": [{ "name": "Dar es Salaam", "postalPrefixes": ["111", "141"], "streets": ["Ali Hassan Mwinyi Road", "Samora Avenue", "Morogoro Road"] }] },
-      { "name": "Arusha", "cities": [{ "name": "Arusha", "postalPrefixes": ["231"], "streets": ["Boma Street", "Sokoine Road"] }] },
-      { "name": "Mwanza", "cities": [{ "name": "Mwanza", "postalPrefixes": ["331"], "streets": ["Nyerere Road", "Kenyatta Road"] }] }
+      {
+        "name": "Dar es Salaam",
+        "cities": [
+          {
+            "name": "Dar es Salaam",
+            "addresses": [
+              {
+                "addressLine": "City Hall [9], Morogoro Road, Mchafukoge, Ilala Municipal, Dar es Salaam, Coastal Zone",
+                "postalCode": "11107",
+                "source": {
+                  "title": "City Hall [9]",
+                  "url": "https://www.openstreetmap.org/node/4303477590",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -6.8206261,
+                "longitude": 39.2868556
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Arusha",
+        "cities": [
+          {
+            "name": "Arusha",
+            "addresses": [
+              {
+                "addressLine": "Arusha Central Post Office, Boma Avenue, Arusha, Arusha Municipal, Arusha, Northern Zone",
+                "postalCode": "23101",
+                "source": {
+                  "title": "Arusha Central Post Office",
+                  "url": "https://www.openstreetmap.org/way/317673669",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -3.3720536,
+                "longitude": 36.6944328
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Mwanza",
+        "cities": [
+          {
+            "name": "Mwanza",
+            "addresses": [
+              {
+                "addressLine": "open University of Tanzania, Kenyatta Road, Mwanza, Nyamagana, Mwanza, Lake Zone",
+                "postalCode": "33214",
+                "source": {
+                  "title": "open University of Tanzania",
+                  "url": "https://www.openstreetmap.org/node/4399780690",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -2.5198925,
+                "longitude": 32.8991459
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "UPU Tanzania addressing examples", "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/tzaEn.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
-    "notes": "UPU confirms Tanzania uses five-digit postcodes to the left of the locality and provides Dar es Salaam, Arusha and Mwanza examples. Prefixes preserve those public example stems but generated trailing digits are synthetic and not address-validated."
+    "source": {
+      "title": "UPU Tanzania addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/tzaEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identification_number": {
       "label": "National Identification Number",
-      "templates": ["{RAND8}-{RAND5}-{RAND5}-{RAND2}"],
+      "templates": [
+        "{RAND8}-{RAND5}-{RAND5}-{RAND2}"
+      ],
       "pattern": "^\\d{8}-\\d{5}-\\d{5}-\\d{2}$",
       "quality": "sample_verified",
-      "source": { "title": "Tanzania NIDA online NIN request example", "url": "https://services.nida.go.tz/requestctrnm", "type": "official", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "Tanzania NIDA online NIN request example",
+        "url": "https://services.nida.go.tz/requestctrnm",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "The official NIDA online service gives one example NIN in the grouped 8-5-5-2 digit display shape. Generated values follow only that sample display shape, use random digits, and are not registry-checked."
     }
   }

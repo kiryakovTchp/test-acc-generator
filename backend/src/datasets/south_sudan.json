@@ -6,9 +6,42 @@
   "locale": "en-SS",
   "availability": "review",
   "names": {
-    "male": ["Deng", "James", "Garang", "Peter", "John", "Joseph", "Bol", "Lual", "William", "Atem"],
-    "female": ["Nyandeng", "Mary", "Adut", "Grace", "Rebecca", "Achol", "Ajak", "Awut", "Martha", "Sarah"],
-    "last": ["Deng", "Ajak", "Lual", "Atem", "Garang", "Manyang", "Chol", "Bol", "Mading", "Nyok"],
+    "male": [
+      "Deng",
+      "James",
+      "Garang",
+      "Peter",
+      "John",
+      "Joseph",
+      "Bol",
+      "Lual",
+      "William",
+      "Atem"
+    ],
+    "female": [
+      "Nyandeng",
+      "Mary",
+      "Adut",
+      "Grace",
+      "Rebecca",
+      "Achol",
+      "Ajak",
+      "Awut",
+      "Martha",
+      "Sarah"
+    ],
+    "last": [
+      "Deng",
+      "Ajak",
+      "Lual",
+      "Atem",
+      "Garang",
+      "Manyang",
+      "Chol",
+      "Bol",
+      "Mading",
+      "Nyok"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears South Sudan forenames and surnames frequency tables",
@@ -21,7 +54,11 @@
   "phones": {
     "countryCallingCode": "+211",
     "nationalLength": 9,
-    "prefixes": ["91", "92", "98"],
+    "prefixes": [
+      "91",
+      "92",
+      "98"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU South Sudan national numbering plan communication of 17.VI.2021",
@@ -36,13 +73,45 @@
       {
         "name": "Central Equatoria",
         "cities": [
-          { "name": "Juba", "postalPrefixes": ["SS"], "streets": ["Airport Road", "Nimule Street", "Ministries Road"] }
+          {
+            "name": "Juba",
+            "addresses": [
+              {
+                "addressLine": "Police Hospital, University Road, Hai Soura, Juba, Hai Buluk, Juba",
+                "postalCode": "",
+                "source": {
+                  "title": "Police Hospital",
+                  "url": "https://www.openstreetmap.org/way/320444443",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 4.8490508,
+                "longitude": 31.591997
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Upper Nile",
         "cities": [
-          { "name": "Malakal", "postalPrefixes": ["SS"], "streets": ["Nile Road", "Market Street", "Hospital Road"] }
+          {
+            "name": "Malakal",
+            "addresses": [
+              {
+                "addressLine": "Upper Nile University, Nyikango Road, Malakal, Makal Shilluk Island, Malakal, Upper Nile أعالى النيل",
+                "postalCode": "",
+                "source": {
+                  "title": "Upper Nile University",
+                  "url": "https://www.openstreetmap.org/way/218575490",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.5348501,
+                "longitude": 31.6521694
+              }
+            ]
+          }
         ]
       }
     ],
@@ -53,12 +122,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "PCGN/USBGN confirms Central Equatoria/Juba and Upper Nile/Malakal administrative centres. South Sudan postcode data was not confirmed, so SS is a generator placeholder rather than a public postcode."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_id_number": {
       "label": "National ID Number",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -71,7 +142,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

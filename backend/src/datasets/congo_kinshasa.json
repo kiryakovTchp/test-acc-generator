@@ -80,14 +80,19 @@
         "cities": [
           {
             "name": "Kinshasa",
-            "postalPrefixes": [
-              "1004"
-            ],
-            "streets": [
-              "Boulevard du 30 Juin",
-              "Avenue Kasa-Vubu",
-              "Avenue de la Poste",
-              "Boulevard Lumumba"
+            "addresses": [
+              {
+                "addressLine": "Joliparc Hotel & spa, 5, Avenue haute tension, Binza Météo, Congo, Ngaliema",
+                "postalCode": "00243",
+                "source": {
+                  "title": "Joliparc Hotel & spa",
+                  "url": "https://www.openstreetmap.org/way/665085797",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -4.3602498,
+                "longitude": 15.2538347
+              }
             ]
           }
         ]
@@ -97,14 +102,19 @@
         "cities": [
           {
             "name": "Lubumbashi",
-            "postalPrefixes": [
-              "2000"
-            ],
-            "streets": [
-              "Avenue Lumumba",
-              "Avenue Kasavubu",
-              "Avenue Mobutu",
-              "Route de Kipushi"
+            "addresses": [
+              {
+                "addressLine": "Poste de Lubumbashi, Avenue Jason Sendwe, Luvua, Makutano, Lubumbashi, Ville de Lubumbashi",
+                "postalCode": "",
+                "source": {
+                  "title": "Poste de Lubumbashi",
+                  "url": "https://www.openstreetmap.org/node/4273069990",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -11.6663727,
+                "longitude": 27.4857994
+              }
             ]
           }
         ]
@@ -114,13 +124,19 @@
         "cities": [
           {
             "name": "Goma",
-            "postalPrefixes": [
-              "3000"
-            ],
-            "streets": [
-              "Avenue des Volcans",
-              "Avenue du Lac",
-              "Route de Sake"
+            "addresses": [
+              {
+                "addressLine": "HÔTEL aux 2 Paysages, 234, Avenue du lac, Himbi, Goma, Nord-Kivu",
+                "postalCode": "0600",
+                "source": {
+                  "title": "HÔTEL aux 2 Paysages",
+                  "url": "https://www.openstreetmap.org/way/997487634",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -1.6725795,
+                "longitude": 29.2005487
+              }
             ]
           }
         ]
@@ -130,13 +146,19 @@
         "cities": [
           {
             "name": "Bukavu",
-            "postalPrefixes": [
-              "1324"
-            ],
-            "streets": [
-              "Avenue Patrice Emery Lumumba",
-              "Avenue Kasa-Vubu",
-              "Route d'Uvira"
+            "addresses": [
+              {
+                "addressLine": "TMB BANK, Avenue Patrice Emery Lumumba, Ibanda, Bukavu, Sud-Kivu, 00243",
+                "postalCode": "00243",
+                "source": {
+                  "title": "TMB BANK",
+                  "url": "https://www.openstreetmap.org/node/13901980291",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -2.5020242,
+                "longitude": 28.8575478
+              }
             ]
           }
         ]
@@ -149,7 +171,7 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-30"
     },
-    "notes": "UPU confirms a seven-digit postcode positioned before locality/province and gives Kinshasa examples. Other city prefixes and street choices are synthetic review seeds and are not validated against a national address database."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "voter_card_number": {

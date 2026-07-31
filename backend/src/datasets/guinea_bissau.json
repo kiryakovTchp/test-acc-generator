@@ -6,55 +6,218 @@
   "locale": "pt-GW",
   "availability": "review",
   "names": {
-    "male": ["Carlos", "Joao", "Amilcar", "Baciro", "Jose", "Manuel", "Antonio", "Umaro", "Domingos", "Fernando", "Francisco", "Mamadu"],
-    "female": ["Maria", "Fatima", "Binta", "Adriana", "Aminata", "Mariam", "Aissatou", "Helena", "Teresa", "Ana", "Isabel", "Catarina"],
-    "last": ["Gomes", "Sane", "Mendes", "Correia", "Cande", "Djalo", "Camara", "Embalo", "Nhamadjo", "Vieira", "Balde", "Pereira"],
+    "male": [
+      "Carlos",
+      "Joao",
+      "Amilcar",
+      "Baciro",
+      "Jose",
+      "Manuel",
+      "Antonio",
+      "Umaro",
+      "Domingos",
+      "Fernando",
+      "Francisco",
+      "Mamadu"
+    ],
+    "female": [
+      "Maria",
+      "Fatima",
+      "Binta",
+      "Adriana",
+      "Aminata",
+      "Mariam",
+      "Aissatou",
+      "Helena",
+      "Teresa",
+      "Ana",
+      "Isabel",
+      "Catarina"
+    ],
+    "last": [
+      "Gomes",
+      "Sane",
+      "Mendes",
+      "Correia",
+      "Cande",
+      "Djalo",
+      "Camara",
+      "Embalo",
+      "Nhamadjo",
+      "Vieira",
+      "Balde",
+      "Pereira"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Forebears Guinea-Bissau forenames and surnames frequency tables", "url": "https://forebears.io/guinea-bissau/forenames", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+    "source": {
+      "title": "Forebears Guinea-Bissau forenames and surnames frequency tables",
+      "url": "https://forebears.io/guinea-bissau/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
     "notes": "Public frequency tables were used to seed localized Portuguese/West African given names and surnames. This is not an official civil registry export."
   },
   "phones": {
     "countryCallingCode": "+245",
     "nationalLength": 9,
-    "prefixes": ["95", "96", "977"],
+    "prefixes": [
+      "95",
+      "96",
+      "977"
+    ],
     "quality": "verified",
-    "source": { "title": "ITU Guinea-Bissau national numbering plan communication of 29.X.2022", "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200005C0004PDFE.pdf", "type": "official", "checkedAt": "2026-07-30" },
+    "source": {
+      "title": "ITU Guinea-Bissau national numbering plan communication of 29.X.2022",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200005C0004PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
     "notes": "ITU/ARN confirms country code +245 and a closed nine-digit plan; public numbering data lists 95x, 96x and 977 mobile GSM ranges. Generated numbers are synthetic and not checked for live subscriber assignment or portability."
   },
   "locations": {
     "regions": [
-      { "name": "Bissau", "cities": [{ "name": "Bissau", "postalPrefixes": ["100"], "streets": ["Avenida Amilcar Cabral", "Avenida dos Combatentes", "Rua Eduardo Mondlane", "Avenida Francisco Mendes"] }] },
-      { "name": "Gabu", "cities": [{ "name": "Gabu", "postalPrefixes": ["300"], "streets": ["Rua Principal", "Avenida Central", "Rua do Mercado"] }] },
-      { "name": "Bafata", "cities": [{ "name": "Bafata", "postalPrefixes": ["200"], "streets": ["Avenida Brasil", "Rua de Bafata", "Estrada de Gabu"] }] },
-      { "name": "Cacheu", "cities": [{ "name": "Cacheu", "postalPrefixes": ["400"], "streets": ["Rua do Porto", "Avenida da Independencia", "Rua Central"] }] }
+      {
+        "name": "Bissau",
+        "cities": [
+          {
+            "name": "Bissau",
+            "addresses": [
+              {
+                "addressLine": "Hotel Império, Avenida Amilcar Cabral, Tchada, Reino, Bissau, Sector autónomo de Bissau",
+                "postalCode": "1021",
+                "source": {
+                  "title": "Hotel Império",
+                  "url": "https://www.openstreetmap.org/way/130542951",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 11.8624742,
+                "longitude": -15.5840878
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Gabu",
+        "cities": [
+          {
+            "name": "Gabu",
+            "addresses": [
+              {
+                "addressLine": "HOTEL VISIOM, N1;N4, Gabu, Sector de Gabu, Região de Gabu, Província Leste",
+                "postalCode": "",
+                "source": {
+                  "title": "HOTEL VISIOM",
+                  "url": "https://www.openstreetmap.org/node/2818619884",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 12.2791319,
+                "longitude": -14.2164265
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Bafata",
+        "cities": [
+          {
+            "name": "Bafata",
+            "addresses": [
+              {
+                "addressLine": "Hospital de Bafatá, Avenida Principal, Bafatá, Sector de Bafatá, Região de Bafatá, Província Leste",
+                "postalCode": "",
+                "source": {
+                  "title": "Hospital de Bafatá",
+                  "url": "https://www.openstreetmap.org/way/601314145",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 12.168915,
+                "longitude": -14.6589602
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Cacheu",
+        "cities": [
+          {
+            "name": "Cacheu",
+            "addresses": [
+              {
+                "addressLine": "Delta Hotel, R1, Cacheu, Sector de Cacheu, Região de Cacheu, Província Norte",
+                "postalCode": "",
+                "source": {
+                  "title": "Delta Hotel",
+                  "url": "https://www.openstreetmap.org/node/11288671069",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 12.2773169,
+                "longitude": -16.1663541
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "UPU General Addressing Issues: Guinea-Bissau postcode notes", "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf", "type": "trusted_reference", "checkedAt": "2026-07-30" },
-    "notes": "UPU general material includes Guinea-Bissau in postcode discussions, while other public references conflict on formal postcode use. This dataset preserves simple four-digit-like generated values as synthetic review data and does not claim deliverability."
+    "source": {
+      "title": "UPU General Addressing Issues: Guinea-Bissau postcode notes",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_card_number": {
       "label": "National Identity Card",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "ID4Africa: Guinea-Bissau secure national ID case study", "url": "https://id4africa.com/2015/presentations/22_Wayne_Fletcher.pdf", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "source": {
+        "title": "ID4Africa: Guinea-Bissau secure national ID case study",
+        "url": "https://id4africa.com/2015/presentations/22_Wayne_Fletcher.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
       "notes": "Public ID4Africa material confirms secure national ID card production/enrolment in Guinea-Bissau. No public official number grammar, checksum or semantic digit rule was found; generated values are synthetic placeholders."
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RANDL1}{RAND8}"],
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
       "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Guinea-Bissau document country page", "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gnb/index.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "source": {
+        "title": "PRADO Guinea-Bissau document country page",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gnb/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
       "notes": "PRADO confirms Guinea-Bissau document coverage. No public passport-number grammar was confirmed; generation remains template-only synthetic."
     },
     "driving_license_number": {
       "label": "Driving Licence",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Guinea-Bissau driving licence document entry", "url": "https://www.consilium.europa.eu/prado/en/GNB-FO-01001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "source": {
+        "title": "PRADO Guinea-Bissau driving licence document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/GNB-FO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
       "notes": "PRADO states the driving licence establishes identity within Guinea-Bissau territory but is not evidence of nationality. No public licence-number grammar was confirmed; generated values are synthetic placeholders."
     }
   }

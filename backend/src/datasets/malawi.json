@@ -6,9 +6,31 @@
   "locale": "en-MW",
   "availability": "review",
   "names": {
-    "male": ["Chikondi", "Blessings", "Patrick", "Joseph", "Thoko", "Tadala"],
-    "female": ["Thandiwe", "Chisomo", "Mphatso", "Tadala", "Memory", "Esnart"],
-    "last": ["Banda", "Phiri", "Mvula", "Chirwa", "Mbewe", "Kachale", "Tembo"],
+    "male": [
+      "Chikondi",
+      "Blessings",
+      "Patrick",
+      "Joseph",
+      "Thoko",
+      "Tadala"
+    ],
+    "female": [
+      "Thandiwe",
+      "Chisomo",
+      "Mphatso",
+      "Tadala",
+      "Memory",
+      "Esnart"
+    ],
+    "last": [
+      "Banda",
+      "Phiri",
+      "Mvula",
+      "Chirwa",
+      "Mbewe",
+      "Kachale",
+      "Tembo"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Malawi forenames and surnames frequency tables",
@@ -21,7 +43,9 @@
   "phones": {
     "countryCallingCode": "+265",
     "nationalLength": 9,
-    "prefixes": ["88"],
+    "prefixes": [
+      "88"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Malawi national numbering plan communication of 11.XII.2017",
@@ -36,18 +60,103 @@
       {
         "name": "Southern Region",
         "cities": [
-          { "name": "Blantyre", "postalPrefixes": ["300"], "streets": ["Victoria Avenue", "Chileka Road"] },
-          { "name": "Zomba", "postalPrefixes": ["310"], "streets": ["Victoria Avenue", "Chileka Road"] }
+          {
+            "name": "Blantyre",
+            "addresses": [
+              {
+                "addressLine": "Reserve Bank, Hannover Avenue, Mbayani, Blantyre, Southern Region, Malawi",
+                "postalCode": "",
+                "source": {
+                  "title": "Reserve Bank",
+                  "url": "https://www.openstreetmap.org/way/279173224",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -15.7865919,
+                "longitude": 35.0037917
+              }
+            ]
+          },
+          {
+            "name": "Zomba",
+            "addresses": [
+              {
+                "addressLine": "University of Malawi - Chancellor College Campus, abu jabel, Zomba, Southern Region, 280, Malawi",
+                "postalCode": "280",
+                "source": {
+                  "title": "University of Malawi - Chancellor College Campus",
+                  "url": "https://www.openstreetmap.org/way/540539479",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -15.3885705,
+                "longitude": 35.3374568
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Central Region",
         "cities": [
-          { "name": "Lilongwe", "postalPrefixes": ["200"], "streets": ["M1 Road", "Paul Kagame Road"] },
-          { "name": "Dedza", "postalPrefixes": ["220"], "streets": ["M1 Road", "Paul Kagame Road"] }
+          {
+            "name": "Lilongwe",
+            "addresses": [
+              {
+                "addressLine": "Presidential Hotel, Presidential Way, Lilongwe, Central Region, +265, Malawi",
+                "postalCode": "+265",
+                "source": {
+                  "title": "Presidential Hotel",
+                  "url": "https://www.openstreetmap.org/way/910134203",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -13.9549653,
+                "longitude": 33.7915683
+              }
+            ]
+          },
+          {
+            "name": "Dedza",
+            "addresses": [
+              {
+                "addressLine": "Dedza Pottery Lodge, M1, Dedza, Central Region, Malawi",
+                "postalCode": "",
+                "source": {
+                  "title": "Dedza Pottery Lodge",
+                  "url": "https://www.openstreetmap.org/node/902447577",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -14.371204,
+                "longitude": 34.3025794
+              }
+            ]
+          }
         ]
       },
-      { "name": "Northern Region", "cities": [{ "name": "Mzuzu", "postalPrefixes": ["400"], "streets": ["Orton Chirwa Avenue", "Katoto Road"] }] }
+      {
+        "name": "Northern Region",
+        "cities": [
+          {
+            "name": "Mzuzu",
+            "addresses": [
+              {
+                "addressLine": "FMB Bank, Glyn Jones Road, Mzuzu, Mzimba, Northern Region, Malawi",
+                "postalCode": "",
+                "source": {
+                  "title": "FMB Bank",
+                  "url": "https://www.openstreetmap.org/way/237991246",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -11.4624252,
+                "longitude": 34.0234508
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
     "source": {
@@ -56,12 +165,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms the postal-addressing reference source and Malawi postcode structure. Region, city and street samples are public-geography review data; postalPrefixes are generator prefixes rather than complete postcodes."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identity_number": {
       "label": "National Identity Number",
-      "templates": ["NID{RAND8}"],
+      "templates": [
+        "NID{RAND8}"
+      ],
       "pattern": "^NID\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -74,7 +185,10 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["MWA{RAND6}", "MWZ{RAND6}"],
+      "templates": [
+        "MWA{RAND6}",
+        "MWZ{RAND6}"
+      ],
       "pattern": "^MW[AZ]\\d{6}$",
       "quality": "verified",
       "source": {
@@ -87,7 +201,9 @@
     },
     "personal_number": {
       "label": "Passport Personal Number",
-      "templates": ["{RAND7}/{RAND1}"],
+      "templates": [
+        "{RAND7}/{RAND1}"
+      ],
       "pattern": "^\\d{7}/\\d$",
       "quality": "sample_verified",
       "source": {

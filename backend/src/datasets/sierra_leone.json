@@ -6,9 +6,42 @@
   "locale": "en-SL",
   "availability": "review",
   "names": {
-    "male": ["Mohamed", "Ibrahim", "Abdul", "Alhaji", "Sorie", "Lamin", "Samuel", "Joseph", "John", "Francis"],
-    "female": ["Aminata", "Mariama", "Fatmata", "Hawa", "Kadiatu", "Isatu", "Zainab", "Mabinty", "Adama", "Memunatu"],
-    "last": ["Kamara", "Koroma", "Bangura", "Kargbo", "Sesay", "Conteh", "Turay", "Jalloh", "Mansaray", "Kanu"],
+    "male": [
+      "Mohamed",
+      "Ibrahim",
+      "Abdul",
+      "Alhaji",
+      "Sorie",
+      "Lamin",
+      "Samuel",
+      "Joseph",
+      "John",
+      "Francis"
+    ],
+    "female": [
+      "Aminata",
+      "Mariama",
+      "Fatmata",
+      "Hawa",
+      "Kadiatu",
+      "Isatu",
+      "Zainab",
+      "Mabinty",
+      "Adama",
+      "Memunatu"
+    ],
+    "last": [
+      "Kamara",
+      "Koroma",
+      "Bangura",
+      "Kargbo",
+      "Sesay",
+      "Conteh",
+      "Turay",
+      "Jalloh",
+      "Mansaray",
+      "Kanu"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Sierra Leone forenames and surnames frequency tables",
@@ -21,7 +54,24 @@
   "phones": {
     "countryCallingCode": "+232",
     "nationalLength": 8,
-    "prefixes": ["25", "30", "31", "33", "34", "35", "66", "72", "73", "74", "75", "76", "77", "78", "79", "88"],
+    "prefixes": [
+      "25",
+      "30",
+      "31",
+      "33",
+      "34",
+      "35",
+      "66",
+      "72",
+      "73",
+      "74",
+      "75",
+      "76",
+      "77",
+      "78",
+      "79",
+      "88"
+    ],
     "quality": "verified",
     "source": {
       "title": "ITU Sierra Leone national numbering plan communication of 24.II.2020",
@@ -36,20 +86,84 @@
       {
         "name": "Western Area",
         "cities": [
-          { "name": "Freetown", "postalPrefixes": ["SL"], "streets": ["Siaka Stevens Street", "Wilkinson Road", "Ross Road"] }
+          {
+            "name": "Freetown",
+            "addresses": [
+              {
+                "addressLine": "Kona Lodge Hotel, King Street, Wilberforce, Freetown, Western Area Urban, Western Area",
+                "postalCode": "",
+                "source": {
+                  "title": "Kona Lodge Hotel",
+                  "url": "https://www.openstreetmap.org/way/306327139",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 8.4790682,
+                "longitude": -13.2596013
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Eastern Province",
         "cities": [
-          { "name": "Kenema", "postalPrefixes": ["SL"], "streets": ["Hangha Road", "Kono Highway", "Dama Road"] },
-          { "name": "Koidu", "postalPrefixes": ["SL"], "streets": ["Konomanyi Road", "Main Kainkordu Road", "Tankoro Road"] }
+          {
+            "name": "Kenema",
+            "addresses": [
+              {
+                "addressLine": "GT Bank, Hangha Road, Ida, Kenema, Kenema District, Eastern Province",
+                "postalCode": "",
+                "source": {
+                  "title": "GT Bank",
+                  "url": "https://www.openstreetmap.org/node/6436227885",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 7.885484,
+                "longitude": -11.1889936
+              }
+            ]
+          },
+          {
+            "name": "Koidu",
+            "addresses": [
+              {
+                "addressLine": "D&S Hotel, Main Kaindordu Road, Kinse, Koidu, Kono District, Eastern Province",
+                "postalCode": "",
+                "source": {
+                  "title": "D&S Hotel",
+                  "url": "https://www.openstreetmap.org/node/988037708",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 8.6438545,
+                "longitude": -10.9737376
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Northern Province",
         "cities": [
-          { "name": "Makeni", "postalPrefixes": ["SL"], "streets": ["Magburaka Road", "Azzolini Highway", "Makama Road"] }
+          {
+            "name": "Makeni",
+            "addresses": [
+              {
+                "addressLine": "University of Sierra  Leone  Administrative Building, kamakwe highway, Mafonike, Makeni, Bombali District, Northern Province",
+                "postalCode": "00232",
+                "source": {
+                  "title": "University of Sierra  Leone  Administrative Building",
+                  "url": "https://www.openstreetmap.org/way/308904321",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 8.9354771,
+                "longitude": -12.0501219
+              }
+            ]
+          }
         ]
       }
     ],
@@ -60,12 +174,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU shows Sierra Leone address examples without a postcode. The SL postal prefix is a generator placeholder, not a public postcode format."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identification_number": {
       "label": "National Identification Number",
-      "templates": ["{RAND11}"],
+      "templates": [
+        "{RAND11}"
+      ],
       "pattern": "^\\d{11}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -78,7 +194,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["{RAND7}"],
+      "templates": [
+        "{RAND7}"
+      ],
       "pattern": "^\\d{7}$",
       "quality": "sample_verified",
       "source": {
@@ -91,7 +209,9 @@
     },
     "personal_number": {
       "label": "Personal Number",
-      "templates": ["{RAND9}"],
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "sample_verified",
       "source": {

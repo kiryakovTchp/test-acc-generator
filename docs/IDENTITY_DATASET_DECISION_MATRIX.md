@@ -40,8 +40,8 @@ These are plausible but should not be promoted to verified yet.
 | MW | passport | `^MW[AZ]\d{6}$` | Official Malawi e-Passport factsheet states ordinary passport prefixes `MWAxxxxxx` for 36 pages and `MWZxxxxxx` for 48 pages; runtime quality is `verified`. |
 | MW | personal_number | `^\d{7}/\d$` | PRADO specimen context supports the slash form as a sample-level visual pattern; runtime quality is `sample_verified`, not full registry validation. |
 | NG | passport | `^[A-Z]\d{8}$` | Probable, but exact visual grammar still needs sample-level source. |
-| SL | passport | `^\d{7}$` | PRADO specimen shows a seven-digit passport number, e.g. `0114439`; `SLE` is the country code, not part of the visible number. |
-| SL | personal_number | `^\d{9}$` | PRADO specimen shows Personal No as nine digits, e.g. `000119146`; keep review-required until confirmed across current documents. |
+| SL | passport | `^\d{7}$` | PRADO specimen context supports a seven-digit passport number as `sample_verified`; `SLE` is the country code, not part of the visible number, and no full national grammar/checksum is confirmed. |
+| SL | personal_number | `^\d{9}$` | PRADO specimen context supports Personal No as nine digits at `sample_verified` level; no full national grammar/checksum is confirmed. |
 | TG | passport | `^X[BS]\d{6}$` | PRADO ordinary passport specimens show X-series prefixes such as `XB000072` and `XS000288`. |
 | TG | diplomatic_passport | `^D\d{7}$` | PRADO diplomatic specimen shows `D9000426`; model separately from ordinary passport. |
 | TG | driver_license_number | `^\d{8}$` | Driving licence sample is partially redacted; only visible fragments support a synthetic placeholder, not verified grammar. |
@@ -65,7 +65,7 @@ the current draft". It does not mean phone/geography data is useless.
 | BI | Burundi | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GW | Guinea-Bissau | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GN | Guinea Conakry | Passport candidate is generic MRZ-like filler; current app pattern is also unsupported; city-region audit has many unresolved links. |
-| CI | Cote d'Ivoire | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
+| CI | Cote d'Ivoire | Runtime uses local operator-confirmed field samples as `sample_verified` for passport, national ID and driver licence display formats; no independent public national grammar/checksum source is attached. |
 | LR | Liberia | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | MG | Madagascar | Passport candidate is generic MRZ-like filler; 60/60 city-region links unresolved in audit; surname seed is incomplete. |
 | ML | Mali | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |

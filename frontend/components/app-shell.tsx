@@ -1308,12 +1308,12 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       `City: ${detail.city}`,
       `Region: ${detail.region}`,
       `Country: ${detail.country}`,
-      `Postal Code: ${detail.postalCode}`,
+      detail.postalCode ? `Postal Code: ${detail.postalCode}` : '',
       `Place of Birth: ${detail.placeOfBirth}`,
       `Document Type: ${detail.documentType}`,
       `Document Value: ${detail.documentValue}`,
       `Issue Date: ${detail.documentIssueDate}`,
-    ].join('\n');
+    ].filter(Boolean).join('\n');
     void copyValue(`identity-pack:${detail.id}`, identityPack);
   }
 
@@ -3759,7 +3759,7 @@ function PersonalInfoFields({
   onCopy: (key: string, value: string) => void;
   locale?: Locale;
 }) {
-  const address = `${detail.addressLine}, ${detail.postalCode}`;
+  const address = [detail.addressLine, detail.postalCode].filter(Boolean).join(', ');
   const fields = [
     { key: 'last-name', label: tr(locale, 'Last name'), value: detail.lastName },
     { key: 'first-name', label: tr(locale, 'First name'), value: detail.firstName },

@@ -6,19 +6,76 @@
   "locale": "fr-TG",
   "availability": "review",
   "names": {
-    "male": ["Kossi", "Komlan", "Kodjo", "Mensah", "Sena", "Koffi"],
-    "female": ["Afi", "Ama", "Akossiwa", "Abla", "Yawa", "Adjo"],
-    "last": ["Akakpo", "Lare", "Ali", "Amouzou", "Kombate", "Koffi", "Lamboni", "Mensah", "Togbui", "Kolani"],
+    "male": [
+      "Kossi",
+      "Komlan",
+      "Kodjo",
+      "Mensah",
+      "Sena",
+      "Koffi"
+    ],
+    "female": [
+      "Afi",
+      "Ama",
+      "Akossiwa",
+      "Abla",
+      "Yawa",
+      "Adjo"
+    ],
+    "last": [
+      "Akakpo",
+      "Lare",
+      "Ali",
+      "Amouzou",
+      "Kombate",
+      "Koffi",
+      "Lamboni",
+      "Mensah",
+      "Togbui",
+      "Kolani"
+    ],
     "quality": "sample_verified",
-    "source": { "title": "Forebears Togo forenames and surnames frequency tables", "url": "https://forebears.io/togo/forenames", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "Forebears Togo forenames and surnames frequency tables",
+      "url": "https://forebears.io/togo/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "Public frequency tables were used to seed localized names. Gender buckets are conservative review samples based on common Togolese forenames, not an official civil registry extract; surnames are from the public Togo surname frequency table."
   },
   "phones": {
     "countryCallingCode": "+228",
     "nationalLength": 8,
-    "prefixes": ["90", "91", "92", "93", "96", "97", "98", "99", "700", "701", "702", "703", "704", "705", "793", "794", "795", "796", "797", "798", "799"],
+    "prefixes": [
+      "90",
+      "91",
+      "92",
+      "93",
+      "96",
+      "97",
+      "98",
+      "99",
+      "700",
+      "701",
+      "702",
+      "703",
+      "704",
+      "705",
+      "793",
+      "794",
+      "795",
+      "796",
+      "797",
+      "798",
+      "799"
+    ],
     "quality": "verified",
-    "source": { "title": "ITU Togo national numbering plan communication of 11.I.2021", "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000D10003PDFE.pdf", "type": "official", "checkedAt": "2026-07-31" },
+    "source": {
+      "title": "ITU Togo national numbering plan communication of 11.I.2021",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000D10003PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
     "notes": "ITU/ARCEP confirms country code +228, fixed eight-digit national significant numbers, and the listed mobile allocations for Togo Cellulaire and Atlantique Telecom Togo. Generated numbers are synthetic and are not checked for current subscriber assignment or portability."
   },
   "locations": {
@@ -26,46 +83,158 @@
       {
         "name": "Maritime",
         "cities": [
-          { "name": "Lome", "postalPrefixes": ["BP "], "streets": ["Boulevard du 13 Janvier", "Avenue Nicolas Grunitzky", "Avenue de la Liberation"] },
-          { "name": "Aneho", "postalPrefixes": ["BP "], "streets": ["Boulevard du 13 Janvier", "Avenue de la Liberation"] }
+          {
+            "name": "Lome",
+            "addresses": [
+              {
+                "addressLine": "BCEAO LOME, Avenue Abdoulaye Fadiga, Quartier Administratif, 1er Arrondissement, Lomé, Région Maritime",
+                "postalCode": "",
+                "source": {
+                  "title": "BCEAO LOME",
+                  "url": "https://www.openstreetmap.org/way/653607682",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.1273316,
+                "longitude": 1.2125401
+              }
+            ]
+          },
+          {
+            "name": "Aneho",
+            "addresses": [
+              {
+                "addressLine": "Société des Postes Aneho, Lomé - Cotonou Transafrican Highway, Zone 2, Région Maritime, Togo",
+                "postalCode": "",
+                "source": {
+                  "title": "Société des Postes Aneho",
+                  "url": "https://www.openstreetmap.org/node/2454830074",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.2281194,
+                "longitude": 1.5973942
+              }
+            ]
+          }
         ]
       },
       {
         "name": "Plateaux",
         "cities": [
-          { "name": "Kpalime", "postalPrefixes": ["BP "], "streets": ["Route de Kpalime", "Avenue de la Gare"] },
-          { "name": "Atakpame", "postalPrefixes": ["BP "], "streets": ["Route de Kpalime", "Avenue de la Gare"] }
+          {
+            "name": "Kpalime",
+            "addresses": [
+              {
+                "addressLine": "hotel djim, Rue du Commerce, Kpalime, Gakpodzi, Fiakome, Kpalimé",
+                "postalCode": "",
+                "source": {
+                  "title": "hotel djim",
+                  "url": "https://www.openstreetmap.org/node/5988813298",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.9101752,
+                "longitude": 0.6348115
+              }
+            ]
+          },
+          {
+            "name": "Atakpame",
+            "addresses": [
+              {
+                "addressLine": "CHR Atakpame, Avenue de la Libération, Houdou, Atakpamé, Région des Plateaux, Togo",
+                "postalCode": "",
+                "source": {
+                  "title": "CHR Atakpame",
+                  "url": "https://www.openstreetmap.org/node/10830716947",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 7.5324474,
+                "longitude": 1.1263696
+              }
+            ]
+          }
         ]
       },
-      { "name": "Kara", "cities": [{ "name": "Kara", "postalPrefixes": ["BP "], "streets": ["Avenue des Nations", "Route de Niamtougou"] }] }
+      {
+        "name": "Kara",
+        "cities": [
+          {
+            "name": "Kara",
+            "addresses": [
+              {
+                "addressLine": "Hotel Kara, Avenue du 23 Septembre, Kara, Kozah, Région de la Kara, Togo",
+                "postalCode": "",
+                "source": {
+                  "title": "Hotel Kara",
+                  "url": "https://www.openstreetmap.org/node/11158622407",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.5483773,
+                "longitude": 1.1828769
+              }
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "UPU Togo addressing example", "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/tgoEn.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
-    "notes": "UPU's Togo example uses B.P. addressing and locality/country lines rather than a postcode. The generator uses BP-style prefixes; region/city mapping follows public geography and generated box/street values are synthetic review data."
+    "source": {
+      "title": "UPU Togo addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/tgoEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["XB{RAND6}", "XS{RAND6}"],
+      "templates": [
+        "XB{RAND6}",
+        "XS{RAND6}"
+      ],
       "pattern": "^X[BS]\\d{6}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Togo ordinary passport document entry TGO-AO-04001", "url": "https://www.consilium.europa.eu/prado/en/TGO-AO-04001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "PRADO Togo ordinary passport document entry TGO-AO-04001",
+        "url": "https://www.consilium.europa.eu/prado/en/TGO-AO-04001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "PRADO confirms the current ordinary passport document family and validity context, but the reviewed public metadata does not publish an official passport number grammar, checksum, semantic digit rule, or allocation range. The generated value remains a synthetic test pattern."
     },
     "diplomatic_passport": {
       "label": "Diplomatic Passport",
-      "templates": ["D{RAND7}"],
+      "templates": [
+        "D{RAND7}"
+      ],
       "pattern": "^D\\d{7}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Togo diplomatic passport document entry TGO-AD-04001", "url": "https://www.consilium.europa.eu/prado/en/TGO-AD-04001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "PRADO Togo diplomatic passport document entry TGO-AD-04001",
+        "url": "https://www.consilium.europa.eu/prado/en/TGO-AD-04001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "PRADO confirms the diplomatic passport document family and validity context, but the reviewed public metadata does not publish an official number grammar, checksum, semantic digit rule, or allocation range. The generated value remains a synthetic test pattern."
     },
     "driver_license_number": {
       "label": "Driver License Number",
-      "templates": ["{RAND8}"],
+      "templates": [
+        "{RAND8}"
+      ],
       "pattern": "^\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "PRADO Togo driving licence document entry TGO-FO-02001", "url": "https://www.consilium.europa.eu/prado/en/TGO-FO-02001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "source": {
+        "title": "PRADO Togo driving licence document entry TGO-FO-02001",
+        "url": "https://www.consilium.europa.eu/prado/en/TGO-FO-02001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
       "notes": "PRADO and Togo service-public material confirm Togolese driving licence documents and related services, but no public official number grammar, checksum, semantic digit rule, or allocation range was found. The generated value remains a synthetic test pattern."
     }
   }

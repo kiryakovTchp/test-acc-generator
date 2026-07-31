@@ -6,9 +6,36 @@
   "locale": "en-NG",
   "availability": "review",
   "names": {
-    "male": ["Chinedu", "Emeka", "Ibrahim", "Tunde", "Ade", "Musa", "Uche", "Olumide"],
-    "female": ["Ngozi", "Amina", "Funke", "Chioma", "Aisha", "Adaeze", "Yetunde", "Zainab"],
-    "last": ["Okafor", "Adebayo", "Musa", "Eze", "Balogun", "Ibrahim", "Okeke", "Adeyemi"],
+    "male": [
+      "Chinedu",
+      "Emeka",
+      "Ibrahim",
+      "Tunde",
+      "Ade",
+      "Musa",
+      "Uche",
+      "Olumide"
+    ],
+    "female": [
+      "Ngozi",
+      "Amina",
+      "Funke",
+      "Chioma",
+      "Aisha",
+      "Adaeze",
+      "Yetunde",
+      "Zainab"
+    ],
+    "last": [
+      "Okafor",
+      "Adebayo",
+      "Musa",
+      "Eze",
+      "Balogun",
+      "Ibrahim",
+      "Okeke",
+      "Adeyemi"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Common Nigeria name sample",
@@ -21,7 +48,48 @@
   "phones": {
     "countryCallingCode": "+234",
     "nationalLength": 10,
-    "prefixes": ["701", "702", "703", "704", "705", "706", "708", "801", "802", "803", "804", "805", "806", "807", "808", "809", "810", "811", "812", "813", "814", "815", "816", "817", "818", "901", "902", "903", "904", "905", "906", "907", "908", "909", "911", "912", "913", "914", "915", "916"],
+    "prefixes": [
+      "701",
+      "702",
+      "703",
+      "704",
+      "705",
+      "706",
+      "708",
+      "801",
+      "802",
+      "803",
+      "804",
+      "805",
+      "806",
+      "807",
+      "808",
+      "809",
+      "810",
+      "811",
+      "812",
+      "813",
+      "814",
+      "815",
+      "816",
+      "817",
+      "818",
+      "901",
+      "902",
+      "903",
+      "904",
+      "905",
+      "906",
+      "907",
+      "908",
+      "909",
+      "911",
+      "912",
+      "913",
+      "914",
+      "915",
+      "916"
+    ],
     "quality": "verified",
     "source": {
       "title": "Nigeria national numbering plan update",
@@ -38,13 +106,37 @@
         "cities": [
           {
             "name": "Lagos",
-            "postalPrefixes": ["101"],
-            "streets": ["Broad Street", "Marina Road", "Adeniji Adele Road"]
+            "addresses": [
+              {
+                "addressLine": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos, 100242",
+                "postalCode": "100242",
+                "source": {
+                  "title": "Lagos City Hall",
+                  "url": "https://www.openstreetmap.org/relation/7774249",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.4506523,
+                "longitude": 3.397143
+              }
+            ]
           },
           {
             "name": "Ikeja",
-            "postalPrefixes": ["100"],
-            "streets": ["Allen Avenue", "Awolowo Way", "Mobolaji Bank Anthony Way"]
+            "addresses": [
+              {
+                "addressLine": "Lagos State University Teaching Hospital, Simbiat Abiola Road, Ikeja, Lagos, 100282, Nigeria",
+                "postalCode": "100282",
+                "source": {
+                  "title": "Lagos State University Teaching Hospital",
+                  "url": "https://www.openstreetmap.org/way/704991085",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 6.5896612,
+                "longitude": 3.3421976
+              }
+            ]
           }
         ]
       },
@@ -53,8 +145,20 @@
         "cities": [
           {
             "name": "Abuja",
-            "postalPrefixes": ["900"],
-            "streets": ["Adetokunbo Ademola Crescent", "Ahmadu Bello Way", "Constitution Avenue"]
+            "addresses": [
+              {
+                "addressLine": "Sheraton Abuja Hotel, Ladi Kwali Street, Wuse, Abuja, Municipal Area Council, Federal Capital Territory",
+                "postalCode": "900001",
+                "source": {
+                  "title": "Sheraton Abuja Hotel",
+                  "url": "https://www.openstreetmap.org/relation/12194914",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 9.0632805,
+                "longitude": 7.484308
+              }
+            ]
           }
         ]
       },
@@ -63,8 +167,20 @@
         "cities": [
           {
             "name": "Port Harcourt",
-            "postalPrefixes": ["500"],
-            "streets": ["Aba Road", "Peter Odili Road", "Stadium Road"]
+            "addresses": [
+              {
+                "addressLine": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers, 520052",
+                "postalCode": "520052",
+                "source": {
+                  "title": "Braithwaite Memorial Hospital",
+                  "url": "https://www.openstreetmap.org/way/756560005",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": 4.7799488,
+                "longitude": 7.0138997
+              }
+            ]
           }
         ]
       }
@@ -76,7 +192,7 @@
       "type": "government_sample",
       "checkedAt": "2026-07-27"
     },
-    "notes": "Some streets are verified by public address samples; postal prefixes and remaining streets require separate confirmation. Region, city, postal prefix, and street lists are still linked structurally."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "nin": {
@@ -94,7 +210,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["A{RAND8}"],
+      "templates": [
+        "A{RAND8}"
+      ],
       "pattern": "^A\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {

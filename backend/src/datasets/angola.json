@@ -6,9 +6,31 @@
   "locale": "pt-AO",
   "availability": "review",
   "names": {
-    "male": ["Joao", "Manuel", "Antonio", "Paulo", "Mateus", "Nelson"],
-    "female": ["Maria", "Ana", "Esperanca", "Isabel", "Teresa", "Lurdes"],
-    "last": ["Dos Santos", "Manuel", "Domingos", "Ferreira", "Afonso", "Cunha", "Pereira"],
+    "male": [
+      "Joao",
+      "Manuel",
+      "Antonio",
+      "Paulo",
+      "Mateus",
+      "Nelson"
+    ],
+    "female": [
+      "Maria",
+      "Ana",
+      "Esperanca",
+      "Isabel",
+      "Teresa",
+      "Lurdes"
+    ],
+    "last": [
+      "Dos Santos",
+      "Manuel",
+      "Domingos",
+      "Ferreira",
+      "Afonso",
+      "Cunha",
+      "Pereira"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "Forebears Angola forenames and surnames frequency tables",
@@ -21,7 +43,11 @@
   "phones": {
     "countryCallingCode": "+244",
     "nationalLength": 9,
-    "prefixes": ["91", "923", "93"],
+    "prefixes": [
+      "91",
+      "923",
+      "93"
+    ],
     "quality": "sample_verified",
     "source": {
       "title": "ITU Angola national numbering plan listing",
@@ -35,17 +61,85 @@
     "regions": [
       {
         "name": "Luanda",
-        "cities": [{ "name": "Luanda", "postalPrefixes": ["BP "], "streets": ["Avenida 4 de Fevereiro", "Rua Amilcar Cabral", "Rua Frederik Engels"] }]
+        "cities": [
+          {
+            "name": "Luanda",
+            "addresses": [
+              {
+                "addressLine": "Banco de Fomento Angola, 263, Alameda Ho Chi Minh, Vila Clotilde, Vila Alice, Luanda",
+                "postalCode": "R/C",
+                "source": {
+                  "title": "Banco de Fomento Angola",
+                  "url": "https://www.openstreetmap.org/way/223419793",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -8.8194827,
+                "longitude": 13.2464149
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "Huila",
-        "cities": [{ "name": "Lubango", "postalPrefixes": ["BP "], "streets": ["Avenida da Independencia", "Rua da Se"] }]
+        "cities": [
+          {
+            "name": "Lubango",
+            "addresses": [
+              {
+                "addressLine": "DHL - Lubango, Rua Patrice Lumumba, Centro Cívico, Hélder Neto, Lubango, Huíla",
+                "postalCode": "",
+                "source": {
+                  "title": "DHL - Lubango",
+                  "url": "https://www.openstreetmap.org/node/8557581101",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -14.9170285,
+                "longitude": 13.4908457
+              }
+            ]
+          }
+        ]
       },
       {
         "name": "Benguela",
         "cities": [
-          { "name": "Benguela", "postalPrefixes": ["BP "], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] },
-          { "name": "Lobito", "postalPrefixes": ["BP "], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] }
+          {
+            "name": "Benguela",
+            "addresses": [
+              {
+                "addressLine": "Banco de Fomento Angola, Rua Comandante Kassangi, Bairro Benfica, Benguela, Angola",
+                "postalCode": "",
+                "source": {
+                  "title": "Banco de Fomento Angola",
+                  "url": "https://www.openstreetmap.org/node/2463026606",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -12.5792752,
+                "longitude": 13.401867
+              }
+            ]
+          },
+          {
+            "name": "Lobito",
+            "addresses": [
+              {
+                "addressLine": "Banco de Fomento Angola (BFA), Rua 15 de Agosto, Vinte-Oito, Lobito, Benguela, Angola",
+                "postalCode": "",
+                "source": {
+                  "title": "Banco de Fomento Angola (BFA)",
+                  "url": "https://www.openstreetmap.org/node/2881867975",
+                  "type": "map_reference",
+                  "checkedAt": "2026-07-31"
+                },
+                "latitude": -12.3517993,
+                "longitude": 13.5466635
+              }
+            ]
+          }
         ]
       }
     ],
@@ -56,12 +150,14 @@
       "type": "trusted_reference",
       "checkedAt": "2026-07-31"
     },
-    "notes": "UPU confirms Angola address examples using street/locality lines and BP contact addressing. postalPrefixes use 'BP ' as a generator marker with synthetic trailing digits; generated addresses are not postal-code validated."
+    "notes": "City address records are map-reference samples of public places checked on 2026-07-31. postalCode is copied only when the map source provides one; PO Box and Plus Code values are not used as postalCode. The location block source gives country-level address context; each address record carries its own map source."
   },
   "documents": {
     "national_identifier": {
       "label": "National Identifier",
-      "templates": ["{RAND7}-{RANDL1}{RAND2}-{RAND2}"],
+      "templates": [
+        "{RAND7}-{RANDL1}{RAND2}-{RAND2}"
+      ],
       "pattern": "^\\d{7}-[A-Z]\\d{2}-\\d{2}$",
       "quality": "synthetic_pattern",
       "source": {
@@ -74,7 +170,9 @@
     },
     "passport": {
       "label": "Passport",
-      "templates": ["N{RAND7}"],
+      "templates": [
+        "N{RAND7}"
+      ],
       "pattern": "^N\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {

@@ -124,13 +124,13 @@
     "documents": {
       "passport": {
         "templates": ["{RAND7}"],
-        "quality": "synthetic_pattern",
-        "notes": "PRADO specimen image shows a seven-digit visible passport number, with SLE only as the country code."
+        "quality": "sample_verified",
+        "notes": "PRADO specimen context supports the seven-digit visible passport number as a sample-level pattern, with SLE only as the country code; no full national grammar or checksum is confirmed."
       },
       "personal_number": {
         "templates": ["{RAND9}"],
-        "quality": "synthetic_pattern",
-        "notes": "PRADO specimen image shows Personal No as nine digits; keep review_required until confirmed across current documents."
+        "quality": "sample_verified",
+        "notes": "PRADO specimen context supports Personal No as nine digits at sample level; no full national grammar or checksum is confirmed."
       }
     }
   },
@@ -172,18 +172,18 @@
     "documents": {
       "passport": {
         "templates": ["{RAND2}{RANDL2}{RAND5}"],
-        "quality": "synthetic_pattern",
-        "notes": "User-provided visual pattern and example 13AS85673: two digits, two letters, five digits."
+        "quality": "sample_verified",
+        "notes": "Local Cote d'Ivoire operators confirmed real display format from field samples, including 13AS85673: two digits, two letters, five digits."
       },
       "national_id": {
         "templates": ["CI{RAND9}"],
-        "quality": "synthetic_pattern",
-        "notes": "User-provided visual pattern and example CI000910000: CI plus nine digits."
+        "quality": "sample_verified",
+        "notes": "Local Cote d'Ivoire operators confirmed real display format from field samples, including CI000910000: CI plus nine digits."
       },
       "driver_license_number": {
         "templates": ["{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"],
-        "quality": "synthetic_pattern",
-        "notes": "User-provided visual pattern LLLLNN-NN-NNNNNNNNL."
+        "quality": "sample_verified",
+        "notes": "Local Cote d'Ivoire operators confirmed real driver licence display format from field samples: LLLLNN-NN-NNNNNNNNL."
       }
     }
   },
