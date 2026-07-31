@@ -87,6 +87,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 11268758870,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=keur%20%20aminata%20hotel%20dakar%20Dakar%20Senegal",
+                "nominatimSnapshot": {
+                  "displayName": "keur  aminata hotel dakar, Rue FA-47, Fass Delorme, Commune de Gueule Tapée-Fass-Colobane, Arrondissement de Dakar-Plateau, Dakar",
+                  "postalCode": "13500",
+                  "latitude": 14.6911916,
+                  "longitude": -17.4507071,
+                  "osmUrl": "https://www.openstreetmap.org/node/11268758870"
+                },
                 "latitude": 14.6911916,
                 "longitude": -17.4507071
               }
@@ -103,6 +113,16 @@
                   "url": "https://www.openstreetmap.org/node/6263750009",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6263750009,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=IPRES%20Pikine%20Pikine%20Senegal",
+                "nominatimSnapshot": {
+                  "displayName": "IPRES Pikine, Tally Bou Mack, Commune de Pikine Ouest, Commune de Pikine Nord, Arrondissement de Pikine-Dagoudane, Département de Pikine",
+                  "postalCode": "14000",
+                  "latitude": 14.7567455,
+                  "longitude": -17.3970533,
+                  "osmUrl": "https://www.openstreetmap.org/node/6263750009"
                 },
                 "latitude": 14.7567455,
                 "longitude": -17.3970533
@@ -126,6 +146,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 167707923,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20de%20ville%20de%20Thi%C3%A8s%20Thies%20Senegal",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel de ville de Thiès, N 3, Thiès, Commune de Thiès Est, Arrondissement de Thiès Sud, Département de Thiès",
+                  "postalCode": "20001",
+                  "latitude": 14.7916108,
+                  "longitude": -16.9246167,
+                  "osmUrl": "https://www.openstreetmap.org/way/167707923"
+                },
                 "latitude": 14.7916108,
                 "longitude": -16.9246167
               }
@@ -147,6 +177,16 @@
                   "url": "https://www.openstreetmap.org/node/5242327184",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5242327184,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=SGBS%20Touba%20Touba%20Senegal",
+                "nominatimSnapshot": {
+                  "displayName": "SGBS Touba, N 3, Ndame, Touba, Communauté rurale de Touba Mosquée, Arrondissement de Ndame",
+                  "postalCode": "22100",
+                  "latitude": 14.8415107,
+                  "longitude": -15.8863613,
+                  "osmUrl": "https://www.openstreetmap.org/node/5242327184"
                 },
                 "latitude": 14.8415107,
                 "longitude": -15.8863613

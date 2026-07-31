@@ -71,12 +71,21 @@
             "addresses": [
               {
                 "addressLine": "Edward Francis Small Teaching Hospital, Anne-Marie Javouhey Street, Banjul, Gambia",
-                "postalCode": "",
                 "source": {
                   "title": "Edward Francis Small Teaching Hospital",
                   "url": "https://www.openstreetmap.org/way/249740590",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 249740590,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Edward%20Francis%20Small%20Teaching%20Hospital%20Banjul%20Gambia",
+                "nominatimSnapshot": {
+                  "displayName": "Edward Francis Small Teaching Hospital, Anne-Marie Javouhey Street, Banjul, Gambia",
+                  "postalCode": null,
+                  "latitude": 13.4574916,
+                  "longitude": -16.5772468,
+                  "osmUrl": "https://www.openstreetmap.org/way/249740590"
                 },
                 "latitude": 13.4574916,
                 "longitude": -16.5772468
@@ -93,12 +102,21 @@
             "addresses": [
               {
                 "addressLine": "Trust Bank, Sayerjobe Avenue, Bartez, Serrekunda, Kanifing, Gambia",
-                "postalCode": "",
                 "source": {
                   "title": "Trust Bank",
                   "url": "https://www.openstreetmap.org/way/435697479",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 435697479,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Trust%20Bank%20Serekunda%20Gambia",
+                "nominatimSnapshot": {
+                  "displayName": "Trust Bank, Sayerjobe Avenue, Bartez, Serrekunda, Kanifing, Gambia",
+                  "postalCode": null,
+                  "latitude": 13.4425604,
+                  "longitude": -16.6770707,
+                  "osmUrl": "https://www.openstreetmap.org/way/435697479"
                 },
                 "latitude": 13.4425604,
                 "longitude": -16.6770707
@@ -110,12 +128,21 @@
             "addresses": [
               {
                 "addressLine": "Trust Bank, Sait Matty Road, Old Bakau, Bakau New Town and Fajara, Serrekunda, Kanifing",
-                "postalCode": "",
                 "source": {
                   "title": "Trust Bank",
                   "url": "https://www.openstreetmap.org/node/326327325",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 326327325,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Trust%20Bank%20Bakau%20Gambia",
+                "nominatimSnapshot": {
+                  "displayName": "Trust Bank, Sait Matty Road, Old Bakau, Bakau New Town and Fajara, Serrekunda, Kanifing",
+                  "postalCode": null,
+                  "latitude": 13.4798753,
+                  "longitude": -16.6780568,
+                  "osmUrl": "https://www.openstreetmap.org/node/326327325"
                 },
                 "latitude": 13.4798753,
                 "longitude": -16.6780568
@@ -131,16 +158,25 @@
             "name": "Brikama",
             "addresses": [
               {
-                "addressLine": "University Library, South Bank Road, Faraba Sutu, Kafuta, Kombo East, Brikama",
-                "postalCode": "",
+                "addressLine": "Brikama Hospital, Market Road, Nema, Brikama, Kombo Central, Brikama, West Coast, Gambia",
                 "source": {
-                  "title": "University Library",
-                  "url": "https://www.openstreetmap.org/way/1299545034",
+                  "title": "Brikama Hospital",
+                  "url": "https://www.openstreetmap.org/way/255951399",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 13.2448851,
-                "longitude": -16.5389622
+                "osmType": "way",
+                "osmId": 255951399,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Brikama%20Hospital%20Brikama%20Gambia",
+                "nominatimSnapshot": {
+                  "displayName": "Brikama Hospital, Market Road, Nema, Brikama, Kombo Central, Brikama, West Coast, Gambia",
+                  "postalCode": null,
+                  "latitude": 13.2744998,
+                  "longitude": -16.6471418,
+                  "osmUrl": "https://www.openstreetmap.org/way/255951399"
+                },
+                "latitude": 13.2744998,
+                "longitude": -16.6471418
               }
             ]
           }

@@ -67,6 +67,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 94957267,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=JF%20Kennedy%20Medical%20Center%20Hospital%20Monrovia%20Liberia",
+                "nominatimSnapshot": {
+                  "displayName": "JF Kennedy Medical Center Hospital, 24th, 24th Street, Behind JFK, Sinkor, Monrovia",
+                  "postalCode": "1000",
+                  "latitude": 6.2871673,
+                  "longitude": -10.773681,
+                  "osmUrl": "https://www.openstreetmap.org/way/94957267"
+                },
                 "latitude": 6.2871673,
                 "longitude": -10.773681
               }
@@ -82,12 +92,21 @@
             "addresses": [
               {
                 "addressLine": "F-2 Hotel, Palala - Ganta, Congo, Zone 4, Garr-Bain, Nimba County",
-                "postalCode": "",
                 "source": {
                   "title": "F-2 Hotel",
                   "url": "https://www.openstreetmap.org/node/4889611412",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4889611412,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=F-2%20Hotel%20Ganta%20Liberia",
+                "nominatimSnapshot": {
+                  "displayName": "F-2 Hotel, Palala - Ganta, Congo, Zone 4, Garr-Bain, Nimba County",
+                  "postalCode": null,
+                  "latitude": 7.2336571,
+                  "longitude": -8.9861941,
+                  "osmUrl": "https://www.openstreetmap.org/node/4889611412"
                 },
                 "latitude": 7.2336571,
                 "longitude": -8.9861941

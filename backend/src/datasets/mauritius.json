@@ -66,6 +66,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 4875709575,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=BCPBM%20Port%20Louis%20Business%20Centre%20Port%20Louis%20Mauritius",
+                "nominatimSnapshot": {
+                  "displayName": "BCPBM Port Louis Business Centre, Duke of Edinburgh Street, Centre-Ville, Barracks, Town of Port-Louis, Ward 3",
+                  "postalCode": "11307",
+                  "latitude": -20.1614307,
+                  "longitude": 57.5021343,
+                  "osmUrl": "https://www.openstreetmap.org/node/4875709575"
+                },
                 "latitude": -20.1614307,
                 "longitude": 57.5021343
               }
@@ -87,6 +97,16 @@
                   "url": "https://www.openstreetmap.org/way/223523810",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 223523810,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Mauritius%20Commercial%20Bank%20Curepipe%20Mauritius",
+                "nominatimSnapshot": {
+                  "displayName": "Mauritius Commercial Bank, Rue Ferriere, La Vigie, Town of Curepipe, Ward 4, West",
+                  "postalCode": "74513",
+                  "latitude": -20.3179063,
+                  "longitude": 57.5243997,
+                  "osmUrl": "https://www.openstreetmap.org/way/223523810"
                 },
                 "latitude": -20.3179063,
                 "longitude": 57.5243997

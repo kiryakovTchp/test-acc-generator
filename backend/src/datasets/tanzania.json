@@ -104,6 +104,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 4303477590,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=City%20Hall%20%5B9%5D%20Dar%20es%20Salaam%20Tanzania",
+                "nominatimSnapshot": {
+                  "displayName": "City Hall [9], Morogoro Road, Mchafukoge, Ilala Municipal, Dar es Salaam, Coastal Zone",
+                  "postalCode": "11107",
+                  "latitude": -6.8206261,
+                  "longitude": 39.2868556,
+                  "osmUrl": "https://www.openstreetmap.org/node/4303477590"
+                },
                 "latitude": -6.8206261,
                 "longitude": 39.2868556
               }
@@ -126,6 +136,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 317673669,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Arusha%20Central%20Post%20Office%20Arusha%20Tanzania",
+                "nominatimSnapshot": {
+                  "displayName": "Arusha Central Post Office, Boma Avenue, Arusha, Arusha Municipal, Arusha, Northern Zone",
+                  "postalCode": "23101",
+                  "latitude": -3.3720536,
+                  "longitude": 36.6944328,
+                  "osmUrl": "https://www.openstreetmap.org/way/317673669"
+                },
                 "latitude": -3.3720536,
                 "longitude": 36.6944328
               }
@@ -147,6 +167,16 @@
                   "url": "https://www.openstreetmap.org/node/4399780690",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4399780690,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=open%20University%20of%20Tanzania%20Mwanza%20Tanzania",
+                "nominatimSnapshot": {
+                  "displayName": "open University of Tanzania, Kenyatta Road, Mwanza, Nyamagana, Mwanza, Lake Zone",
+                  "postalCode": "33214",
+                  "latitude": -2.5198925,
+                  "longitude": 32.8991459,
+                  "osmUrl": "https://www.openstreetmap.org/node/4399780690"
                 },
                 "latitude": -2.5198925,
                 "longitude": 32.8991459

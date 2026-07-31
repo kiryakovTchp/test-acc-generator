@@ -84,6 +84,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 609305228,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Central%20Post%20Office%20Lusaka%20Zambia",
+                "nominatimSnapshot": {
+                  "displayName": "Central Post Office, Cairo Road, Luneta, Lusaka, Lusaka District, Lusaka Province",
+                  "postalCode": "10101",
+                  "latitude": -15.4165417,
+                  "longitude": 28.2821442,
+                  "osmUrl": "https://www.openstreetmap.org/way/609305228"
+                },
                 "latitude": -15.4165417,
                 "longitude": 28.2821442
               }
@@ -93,16 +103,25 @@
             "name": "Kafue",
             "addresses": [
               {
-                "addressLine": "CJ Nyirenda Hospital, Kafue Road, Makeni, Lusaka, Lusaka District, Lusaka Province",
-                "postalCode": "10101",
+                "addressLine": "Stanbic Bank, Kafue Road, Kafue, Kafue District, Lusaka Province, Zambia",
                 "source": {
-                  "title": "CJ Nyirenda Hospital",
-                  "url": "https://www.openstreetmap.org/way/1245533281",
+                  "title": "Stanbic Bank",
+                  "url": "https://www.openstreetmap.org/node/4984239221",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": -15.4659213,
-                "longitude": 28.2601877
+                "osmType": "node",
+                "osmId": 4984239221,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Stanbic%20Bank%20Kafue%20Zambia",
+                "nominatimSnapshot": {
+                  "displayName": "Stanbic Bank, Kafue Road, Kafue, Kafue District, Lusaka Province, Zambia",
+                  "postalCode": null,
+                  "latitude": -15.7696298,
+                  "longitude": 28.1789291,
+                  "osmUrl": "https://www.openstreetmap.org/node/4984239221"
+                },
+                "latitude": -15.7696298,
+                "longitude": 28.1789291
               }
             ]
           }
@@ -123,6 +142,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 4195191381,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Northern%20Command%20Military%20Hospital%20Ndola%20Zambia",
+                "nominatimSnapshot": {
+                  "displayName": "Northern Command Military Hospital, Plot 8175, Hammarskjoeld Drive, Itawa, Ndola, Ndola District",
+                  "postalCode": "10101",
+                  "latitude": -12.9910772,
+                  "longitude": 28.6543767,
+                  "osmUrl": "https://www.openstreetmap.org/node/4195191381"
+                },
                 "latitude": -12.9910772,
                 "longitude": 28.6543767
               }
@@ -133,12 +162,21 @@
             "addresses": [
               {
                 "addressLine": "Absa Bank, Matuka Avenue, Cha Cha Cha, Kitwe, Kitwe District, Copperbelt Province",
-                "postalCode": "1001",
                 "source": {
                   "title": "Absa Bank",
                   "url": "https://www.openstreetmap.org/way/432709329",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 432709329,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Absa%20Bank%20Kitwe%20Zambia",
+                "nominatimSnapshot": {
+                  "displayName": "Absa Bank, Matuka Avenue, Cha Cha Cha, Kitwe, Kitwe District, Copperbelt Province",
+                  "postalCode": null,
+                  "latitude": -12.8210931,
+                  "longitude": 28.2111666,
+                  "osmUrl": "https://www.openstreetmap.org/way/432709329"
                 },
                 "latitude": -12.8210931,
                 "longitude": 28.2111666
@@ -155,12 +193,21 @@
             "addresses": [
               {
                 "addressLine": "Livingstone Backpackers, 559, Mokambo Road, Maramba, Livingstone, Livingstone District",
-                "postalCode": "",
                 "source": {
                   "title": "Livingstone Backpackers",
                   "url": "https://www.openstreetmap.org/way/370992417",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 370992417,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Livingstone%20Backpackers%20Livingstone%20Zambia",
+                "nominatimSnapshot": {
+                  "displayName": "Livingstone Backpackers, 559, Mokambo Road, Maramba, Livingstone, Livingstone District",
+                  "postalCode": null,
+                  "latitude": -17.8508264,
+                  "longitude": 25.8569146,
+                  "osmUrl": "https://www.openstreetmap.org/way/370992417"
                 },
                 "latitude": -17.8508264,
                 "longitude": 25.8569146

@@ -104,6 +104,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 416130593,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Rissik%20St%20Post%20Office%20Johannesburg%20South%20Africa",
+                "nominatimSnapshot": {
+                  "displayName": "Rissik St Post Office, Rissik Street, Newtown, Johannesburg Ward 60, Johannesburg, City of Johannesburg Metropolitan Municipality",
+                  "postalCode": "2001",
+                  "latitude": -26.2041637,
+                  "longitude": 28.0423528,
+                  "osmUrl": "https://www.openstreetmap.org/way/416130593"
+                },
                 "latitude": -26.2041637,
                 "longitude": 28.0423528
               }
@@ -120,6 +130,16 @@
                   "url": "https://www.openstreetmap.org/node/8061837564",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 8061837564,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=PostNet%20Pretoria%20CBD%20Pretoria%20South%20Africa",
+                "nominatimSnapshot": {
+                  "displayName": "PostNet Pretoria CBD, Francis Baard Street, Tshwane Ward 58, Pretoria, City of Tshwane Metropolitan Municipality, Gauteng",
+                  "postalCode": "0002",
+                  "latitude": -25.7492568,
+                  "longitude": 28.1920158,
+                  "osmUrl": "https://www.openstreetmap.org/node/8061837564"
                 },
                 "latitude": -25.7492568,
                 "longitude": 28.1920158
@@ -142,6 +162,16 @@
                   "url": "https://www.openstreetmap.org/way/131399664",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 131399664,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=SunSquare%20Cape%20Town%20Gardens%20Cape%20Town%20South%20Africa",
+                "nominatimSnapshot": {
+                  "displayName": "SunSquare Cape Town Gardens, 10, Mill Street, Gardens, Cape Town, City of Cape Town",
+                  "postalCode": "8001",
+                  "latitude": -33.9346922,
+                  "longitude": 18.4150986,
+                  "osmUrl": "https://www.openstreetmap.org/way/131399664"
                 },
                 "latitude": -33.9346922,
                 "longitude": 18.4150986

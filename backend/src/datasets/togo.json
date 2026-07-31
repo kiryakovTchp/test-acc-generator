@@ -88,12 +88,21 @@
             "addresses": [
               {
                 "addressLine": "BCEAO LOME, Avenue Abdoulaye Fadiga, Quartier Administratif, 1er Arrondissement, Lomé, Région Maritime",
-                "postalCode": "",
                 "source": {
                   "title": "BCEAO LOME",
                   "url": "https://www.openstreetmap.org/way/653607682",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 653607682,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=BCEAO%20LOME%20Lome%20Togo",
+                "nominatimSnapshot": {
+                  "displayName": "BCEAO LOME, Avenue Abdoulaye Fadiga, Quartier Administratif, 1er Arrondissement, Lomé, Région Maritime",
+                  "postalCode": null,
+                  "latitude": 6.1273316,
+                  "longitude": 1.2125401,
+                  "osmUrl": "https://www.openstreetmap.org/way/653607682"
                 },
                 "latitude": 6.1273316,
                 "longitude": 1.2125401
@@ -105,12 +114,21 @@
             "addresses": [
               {
                 "addressLine": "Société des Postes Aneho, Lomé - Cotonou Transafrican Highway, Zone 2, Région Maritime, Togo",
-                "postalCode": "",
                 "source": {
                   "title": "Société des Postes Aneho",
                   "url": "https://www.openstreetmap.org/node/2454830074",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2454830074,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Soci%C3%A9t%C3%A9%20des%20Postes%20Aneho%20Aneho%20Togo",
+                "nominatimSnapshot": {
+                  "displayName": "Société des Postes Aneho, Lomé - Cotonou Transafrican Highway, Zone 2, Région Maritime, Togo",
+                  "postalCode": null,
+                  "latitude": 6.2281194,
+                  "longitude": 1.5973942,
+                  "osmUrl": "https://www.openstreetmap.org/node/2454830074"
                 },
                 "latitude": 6.2281194,
                 "longitude": 1.5973942
@@ -127,12 +145,21 @@
             "addresses": [
               {
                 "addressLine": "hotel djim, Rue du Commerce, Kpalime, Gakpodzi, Fiakome, Kpalimé",
-                "postalCode": "",
                 "source": {
                   "title": "hotel djim",
                   "url": "https://www.openstreetmap.org/node/5988813298",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5988813298,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=hotel%20djim%20Kpalime%20Togo",
+                "nominatimSnapshot": {
+                  "displayName": "hotel djim, Rue du Commerce, Kpalime, Gakpodzi, Fiakome, Kpalimé",
+                  "postalCode": null,
+                  "latitude": 6.9101752,
+                  "longitude": 0.6348115,
+                  "osmUrl": "https://www.openstreetmap.org/node/5988813298"
                 },
                 "latitude": 6.9101752,
                 "longitude": 0.6348115
@@ -144,12 +171,21 @@
             "addresses": [
               {
                 "addressLine": "CHR Atakpame, Avenue de la Libération, Houdou, Atakpamé, Région des Plateaux, Togo",
-                "postalCode": "",
                 "source": {
                   "title": "CHR Atakpame",
                   "url": "https://www.openstreetmap.org/node/10830716947",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 10830716947,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=CHR%20Atakpame%20Atakpame%20Togo",
+                "nominatimSnapshot": {
+                  "displayName": "CHR Atakpame, Avenue de la Libération, Houdou, Atakpamé, Région des Plateaux, Togo",
+                  "postalCode": null,
+                  "latitude": 7.5324474,
+                  "longitude": 1.1263696,
+                  "osmUrl": "https://www.openstreetmap.org/node/10830716947"
                 },
                 "latitude": 7.5324474,
                 "longitude": 1.1263696
@@ -166,12 +202,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel Kara, Avenue du 23 Septembre, Kara, Kozah, Région de la Kara, Togo",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel Kara",
                   "url": "https://www.openstreetmap.org/node/11158622407",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 11158622407,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Kara%20Kara%20Togo",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Kara, Avenue du 23 Septembre, Kara, Kozah, Région de la Kara, Togo",
+                  "postalCode": null,
+                  "latitude": 9.5483773,
+                  "longitude": 1.1828769,
+                  "osmUrl": "https://www.openstreetmap.org/node/11158622407"
                 },
                 "latitude": 9.5483773,
                 "longitude": 1.1828769

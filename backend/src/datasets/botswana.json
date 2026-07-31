@@ -107,13 +107,22 @@
             "name": "Gaborone",
             "addresses": [
               {
-                "addressLine": "Bank Gaborone (Head office), New Lobatse Road, Central Business District, Gaborone, 00267, Botswana",
-                "postalCode": "00267",
+                "addressLine": "Bank Gaborone (Head office), New Lobatse Road, Central Business District, Gaborone, Botswana",
                 "source": {
                   "title": "Bank Gaborone (Head office)",
                   "url": "https://www.openstreetmap.org/way/605250709",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 605250709,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20Gaborone%20(Head%20office)%20Gaborone%20Botswana",
+                "nominatimSnapshot": {
+                  "displayName": "Bank Gaborone (Head office), New Lobatse Road, Central Business District, Gaborone, Botswana",
+                  "postalCode": null,
+                  "latitude": -24.6490225,
+                  "longitude": 25.904349,
+                  "osmUrl": "https://www.openstreetmap.org/way/605250709"
                 },
                 "latitude": -24.6490225,
                 "longitude": 25.904349
@@ -130,12 +139,21 @@
             "addresses": [
               {
                 "addressLine": "Tatitown Post Office, A3, Francistown, Botswana",
-                "postalCode": "",
                 "source": {
                   "title": "Tatitown Post Office",
                   "url": "https://www.openstreetmap.org/node/4828343726",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4828343726,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Tatitown%20Post%20Office%20Francistown%20Botswana",
+                "nominatimSnapshot": {
+                  "displayName": "Tatitown Post Office, A3, Francistown, Botswana",
+                  "postalCode": null,
+                  "latitude": -21.1675234,
+                  "longitude": 27.4974642,
+                  "osmUrl": "https://www.openstreetmap.org/node/4828343726"
                 },
                 "latitude": -21.1675234,
                 "longitude": 27.4974642
@@ -152,12 +170,21 @@
             "addresses": [
               {
                 "addressLine": "Stanbic Bank, Tsaro Street, Maun, North-West District, Botswana",
-                "postalCode": "",
                 "source": {
                   "title": "Stanbic Bank",
                   "url": "https://www.openstreetmap.org/node/4752332057",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4752332057,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Stanbic%20Bank%20Maun%20Botswana",
+                "nominatimSnapshot": {
+                  "displayName": "Stanbic Bank, Tsaro Street, Maun, North-West District, Botswana",
+                  "postalCode": null,
+                  "latitude": -19.9887233,
+                  "longitude": 23.4242884,
+                  "osmUrl": "https://www.openstreetmap.org/node/4752332057"
                 },
                 "latitude": -19.9887233,
                 "longitude": 23.4242884
@@ -174,12 +201,21 @@
             "addresses": [
               {
                 "addressLine": "Tshwaragano Hotel, Basimane Crescent, Serowe, Central District, Botswana",
-                "postalCode": "",
                 "source": {
                   "title": "Tshwaragano Hotel",
                   "url": "https://www.openstreetmap.org/node/4320742595",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4320742595,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Tshwaragano%20Hotel%20Serowe%20Botswana",
+                "nominatimSnapshot": {
+                  "displayName": "Tshwaragano Hotel, Basimane Crescent, Serowe, Central District, Botswana",
+                  "postalCode": null,
+                  "latitude": -22.3875578,
+                  "longitude": 26.7075719,
+                  "osmUrl": "https://www.openstreetmap.org/node/4320742595"
                 },
                 "latitude": -22.3875578,
                 "longitude": 26.7075719

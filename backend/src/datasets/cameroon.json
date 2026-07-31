@@ -82,12 +82,21 @@
             "addresses": [
               {
                 "addressLine": "Hôtel, Rue 1.258, Éssos, Yaoundé V, Communauté urbaine de Yaoundé, Mfoundi",
-                "postalCode": "",
                 "source": {
                   "title": "Hôtel",
                   "url": "https://www.openstreetmap.org/way/192820027",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 192820027,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20Yaounde%20Cameroon",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel, Rue 1.258, Éssos, Yaoundé V, Communauté urbaine de Yaoundé, Mfoundi",
+                  "postalCode": null,
+                  "latitude": 3.8687911,
+                  "longitude": 11.5278174,
+                  "osmUrl": "https://www.openstreetmap.org/way/192820027"
                 },
                 "latitude": 3.8687911,
                 "longitude": 11.5278174
@@ -104,12 +113,21 @@
             "addresses": [
               {
                 "addressLine": "CBC Bank, Boulevard de l'Unité, Bassa, Douala I, Communauté urbaine de Douala, Wouri",
-                "postalCode": "",
                 "source": {
                   "title": "CBC Bank",
                   "url": "https://www.openstreetmap.org/way/299694727",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 299694727,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=CBC%20Bank%20Douala%20Cameroon",
+                "nominatimSnapshot": {
+                  "displayName": "CBC Bank, Boulevard de l'Unité, Bassa, Douala I, Communauté urbaine de Douala, Wouri",
+                  "postalCode": null,
+                  "latitude": 4.0445681,
+                  "longitude": 9.7117575,
+                  "osmUrl": "https://www.openstreetmap.org/way/299694727"
                 },
                 "latitude": 4.0445681,
                 "longitude": 9.7117575
@@ -126,12 +144,21 @@
             "addresses": [
               {
                 "addressLine": "NFC Bank, Unification Street, Ntamulung, Bamenda 3, Communauté urbaine de Bamenda, Mezam",
-                "postalCode": "",
                 "source": {
                   "title": "NFC Bank",
                   "url": "https://www.openstreetmap.org/node/4451690743",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4451690743,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=NFC%20Bank%20Bamenda%20Cameroon",
+                "nominatimSnapshot": {
+                  "displayName": "NFC Bank, Unification Street, Ntamulung, Bamenda 3, Communauté urbaine de Bamenda, Mezam",
+                  "postalCode": null,
+                  "latitude": 5.9600462,
+                  "longitude": 10.1513896,
+                  "osmUrl": "https://www.openstreetmap.org/node/4451690743"
                 },
                 "latitude": 5.9600462,
                 "longitude": 10.1513896
@@ -148,12 +175,21 @@
             "addresses": [
               {
                 "addressLine": "Afriland First Bank, N 6, Famla, Banengo, Bafoussam, Bafoussam I",
-                "postalCode": "",
                 "source": {
                   "title": "Afriland First Bank",
                   "url": "https://www.openstreetmap.org/way/384821294",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 384821294,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Afriland%20First%20Bank%20Bafoussam%20Cameroon",
+                "nominatimSnapshot": {
+                  "displayName": "Afriland First Bank, N 6, Famla, Banengo, Bafoussam, Bafoussam I",
+                  "postalCode": null,
+                  "latitude": 5.4786699,
+                  "longitude": 10.4191031,
+                  "osmUrl": "https://www.openstreetmap.org/way/384821294"
                 },
                 "latitude": 5.4786699,
                 "longitude": 10.4191031

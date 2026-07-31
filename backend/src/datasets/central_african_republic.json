@@ -85,12 +85,21 @@
             "addresses": [
               {
                 "addressLine": "Hôtel de Ville, Avenue de Normandie, Point Kilométre 0, Bangui, Ködörösêse tî Bêafrîka / République centrafricaine",
-                "postalCode": "",
                 "source": {
                   "title": "Hôtel de Ville",
                   "url": "https://www.openstreetmap.org/way/102214209",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 102214209,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20de%20Ville%20Bangui%20Central%20African%20Republic",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel de Ville, Avenue de Normandie, Point Kilométre 0, Bangui, Ködörösêse tî Bêafrîka / République centrafricaine",
+                  "postalCode": null,
+                  "latitude": 4.3635973,
+                  "longitude": 18.5836486,
+                  "osmUrl": "https://www.openstreetmap.org/way/102214209"
                 },
                 "latitude": 4.3635973,
                 "longitude": 18.5836486
@@ -106,16 +115,25 @@
             "name": "Bimbo",
             "addresses": [
               {
-                "addressLine": "Aéroport International de Bangui M'Poko, Route de l'Aéroport, Bégoua, Ombella M'Poko, Ködörösêse tî Bêafrîka / République centrafricaine",
-                "postalCode": "",
+                "addressLine": "Bimbo, Ombella M'Poko, Ködörösêse tî Bêafrîka / République centrafricaine",
                 "source": {
-                  "title": "Aéroport International de Bangui M'Poko",
-                  "url": "https://www.openstreetmap.org/relation/10756531",
+                  "title": "Bimbo",
+                  "url": "https://www.openstreetmap.org/node/2278046170",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 4.3959217,
-                "longitude": 18.5233261
+                "osmType": "node",
+                "osmId": 2278046170,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bimbo%20Bimbo%20Central%20African%20Republic",
+                "nominatimSnapshot": {
+                  "displayName": "Bimbo, Ombella M'Poko, Ködörösêse tî Bêafrîka / République centrafricaine",
+                  "postalCode": null,
+                  "latitude": 4.3228138,
+                  "longitude": 18.5248788,
+                  "osmUrl": "https://www.openstreetmap.org/node/2278046170"
+                },
+                "latitude": 4.3228138,
+                "longitude": 18.5248788
               }
             ]
           }
@@ -129,12 +147,21 @@
             "addresses": [
               {
                 "addressLine": "Hôpital Universitaire Régional de Bambari, RN 2, PK 0, Akpe 2, Broto, Bambari",
-                "postalCode": "",
                 "source": {
                   "title": "Hôpital Universitaire Régional de Bambari",
                   "url": "https://www.openstreetmap.org/way/507080228",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 507080228,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4pital%20Universitaire%20R%C3%A9gional%20de%20Bambari%20Bambari%20Central%20African%20Republic",
+                "nominatimSnapshot": {
+                  "displayName": "Hôpital Universitaire Régional de Bambari, RN 2, PK 0, Akpe 2, Broto, Bambari",
+                  "postalCode": null,
+                  "latitude": 5.7572121,
+                  "longitude": 20.6705132,
+                  "osmUrl": "https://www.openstreetmap.org/way/507080228"
                 },
                 "latitude": 5.7572121,
                 "longitude": 20.6705132
@@ -151,12 +178,21 @@
             "addresses": [
               {
                 "addressLine": "Commercial Bank Centrafrique, RN 6, Belge, Berbérati, Bellevue, Mambéré-Kadéï",
-                "postalCode": "",
                 "source": {
                   "title": "Commercial Bank Centrafrique",
                   "url": "https://www.openstreetmap.org/node/4733960748",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4733960748,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Commercial%20Bank%20Centrafrique%20Berberati%20Central%20African%20Republic",
+                "nominatimSnapshot": {
+                  "displayName": "Commercial Bank Centrafrique, RN 6, Belge, Berbérati, Bellevue, Mambéré-Kadéï",
+                  "postalCode": null,
+                  "latitude": 4.2583322,
+                  "longitude": 15.7879729,
+                  "osmUrl": "https://www.openstreetmap.org/node/4733960748"
                 },
                 "latitude": 4.2583322,
                 "longitude": 15.7879729

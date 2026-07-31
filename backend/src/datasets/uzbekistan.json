@@ -92,13 +92,23 @@
             "name": "Tashkent",
             "addresses": [
               {
-                "addressLine": "Банк, Mustaqillik shoh ko'chasi, Buyuk Ipak Yo'li (C-1) dahasi, Mirzo Ulug‘bek Tumani, Toshkent shahri, 100000",
+                "addressLine": "Банк, Mustaqillik shoh ko'chasi, Buyuk Ipak Yo'li (C-1) dahasi, Mirzo Ulug‘bek Tumani, Toshkent shahri",
                 "postalCode": "100000",
                 "source": {
                   "title": "Банк",
                   "url": "https://www.openstreetmap.org/way/105437570",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 105437570,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%D0%91%D0%B0%D0%BD%D0%BA%20Tashkent%20Uzbekistan",
+                "nominatimSnapshot": {
+                  "displayName": "Банк, Mustaqillik shoh ko'chasi, Buyuk Ipak Yo'li (C-1) dahasi, Mirzo Ulug‘bek Tumani, Toshkent shahri",
+                  "postalCode": "100000",
+                  "latitude": 41.3137691,
+                  "longitude": 69.2846984,
+                  "osmUrl": "https://www.openstreetmap.org/way/105437570"
                 },
                 "latitude": 41.3137691,
                 "longitude": 69.2846984
@@ -114,13 +124,23 @@
             "name": "Samarkand",
             "addresses": [
               {
-                "addressLine": "Hotel Asia Samarkand, Qo'sh Hovuz ko'chasi, Samarqand shahri, Samarqand Viloyati, 140000, Oʻzbekiston",
+                "addressLine": "Hotel Asia Samarkand, Qo'sh Hovuz ko'chasi, Samarqand shahri, Samarqand Viloyati, Oʻzbekiston",
                 "postalCode": "140000",
                 "source": {
                   "title": "Hotel Asia Samarkand",
                   "url": "https://www.openstreetmap.org/way/412938002",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 412938002,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Asia%20Samarkand%20Samarkand%20Uzbekistan",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Asia Samarkand, Qo'sh Hovuz ko'chasi, Samarqand shahri, Samarqand Viloyati, Oʻzbekiston",
+                  "postalCode": "140000",
+                  "latitude": 39.6585159,
+                  "longitude": 66.9755309,
+                  "osmUrl": "https://www.openstreetmap.org/way/412938002"
                 },
                 "latitude": 39.6585159,
                 "longitude": 66.9755309
@@ -136,13 +156,23 @@
             "name": "Bukhara",
             "addresses": [
               {
-                "addressLine": "Asia Alliance Bank, Bahovaddin Naqshband ko'chasi, Eski Shahar, Buxoro shahri, Buxoro Viloyati, 200118",
+                "addressLine": "Asia Alliance Bank, Bahovaddin Naqshband ko'chasi, Eski Shahar, Buxoro shahri, Buxoro Viloyati",
                 "postalCode": "200118",
                 "source": {
                   "title": "Asia Alliance Bank",
                   "url": "https://www.openstreetmap.org/node/6185636786",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6185636786,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Asia%20Alliance%20Bank%20Bukhara%20Uzbekistan",
+                "nominatimSnapshot": {
+                  "displayName": "Asia Alliance Bank, Bahovaddin Naqshband ko'chasi, Eski Shahar, Buxoro shahri, Buxoro Viloyati",
+                  "postalCode": "200118",
+                  "latitude": 39.7727888,
+                  "longitude": 64.4193256,
+                  "osmUrl": "https://www.openstreetmap.org/node/6185636786"
                 },
                 "latitude": 39.7727888,
                 "longitude": 64.4193256

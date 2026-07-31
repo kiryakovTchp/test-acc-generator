@@ -91,6 +91,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 6829731985,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Boutique%20Hotel%20Praia%20Maria%20Praia%20Cabo%20Verde",
+                "nominatimSnapshot": {
+                  "displayName": "Boutique Hotel Praia Maria, Avenida 5 de Julho, Platô, Praia, Platô, Praia",
+                  "postalCode": "7600",
+                  "latitude": 14.9194185,
+                  "longitude": -23.5079657,
+                  "osmUrl": "https://www.openstreetmap.org/node/6829731985"
+                },
                 "latitude": 14.9194185,
                 "longitude": -23.5079657
               }
@@ -113,6 +123,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 481266021,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Porto%20Grande%20Hotel%20(O%C3%A1sis%20Atl%C3%A2ntico)%20Mindelo%20Cabo%20Verde",
+                "nominatimSnapshot": {
+                  "displayName": "Porto Grande Hotel (Oásis Atlântico), Rua Patrice Lumumba, Zona 2, Condóminio Copacabana-Laginha, Alto Mira, Mindelo",
+                  "postalCode": "2110",
+                  "latitude": 16.8893289,
+                  "longitude": -24.9875677,
+                  "osmUrl": "https://www.openstreetmap.org/way/481266021"
+                },
                 "latitude": 16.8893289,
                 "longitude": -24.9875677
               }
@@ -127,13 +147,23 @@
             "name": "Espargos",
             "addresses": [
               {
-                "addressLine": "Hotel Atlântico, Rua dos Espargos, Hortelã, Espargos, Sal, 4110",
+                "addressLine": "Hotel Atlântico, Rua dos Espargos, Hortelã, Espargos, Sal",
                 "postalCode": "4110",
                 "source": {
                   "title": "Hotel Atlântico",
                   "url": "https://www.openstreetmap.org/way/237851808",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 237851808,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Atl%C3%A2ntico%20Espargos%20Cabo%20Verde",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Atlântico, Rua dos Espargos, Hortelã, Espargos, Sal",
+                  "postalCode": "4110",
+                  "latitude": 16.75291,
+                  "longitude": -22.9447631,
+                  "osmUrl": "https://www.openstreetmap.org/way/237851808"
                 },
                 "latitude": 16.75291,
                 "longitude": -22.9447631
@@ -149,13 +179,23 @@
             "name": "Sao Filipe",
             "addresses": [
               {
-                "addressLine": "Aeródromo de São Filipe, EN2-FG-01, Alto de Santa Luzia, Nossa Senhora da Conceição, São Filipe, 8220",
+                "addressLine": "Aeródromo de São Filipe, EN2-FG-01, Alto de Santa Luzia, Nossa Senhora da Conceição, São Filipe",
                 "postalCode": "8220",
                 "source": {
                   "title": "Aeródromo de São Filipe",
                   "url": "https://www.openstreetmap.org/way/400057288",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 400057288,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Aer%C3%B3dromo%20de%20S%C3%A3o%20Filipe%20Sao%20Filipe%20Cabo%20Verde",
+                "nominatimSnapshot": {
+                  "displayName": "Aeródromo de São Filipe, EN2-FG-01, Alto de Santa Luzia, Nossa Senhora da Conceição, São Filipe",
+                  "postalCode": "8220",
+                  "latitude": 14.8857869,
+                  "longitude": -24.4808959,
+                  "osmUrl": "https://www.openstreetmap.org/way/400057288"
                 },
                 "latitude": 14.8857869,
                 "longitude": -24.4808959

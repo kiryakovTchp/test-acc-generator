@@ -1,13 +1,20 @@
 import Database from 'better-sqlite3';
 import path from 'node:path';
 import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import type { Role, DocumentQuality, Gender, PersonaKey, AccountBalanceStatus } from './types.js';
 import { hashPassword } from './auth.js';
 import { assertDataEncryptionReady, encryptSensitive, encryptSensitiveNullable, hasDataEncryptionKey, isEncryptedSensitive } from './sensitiveData.js';
 
-const dataDir = path.resolve(process.cwd(), 'backend', 'data');
-fs.mkdirSync(dataDir, { recursive: true });
-const db = new Database(path.join(dataDir, 'app.db'));
+const backendRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const dbPath = process.env.APP_DB_PATH
+  ? path.resolve(process.env.APP_DB_PATH)
+  : path.join(
+    process.env.APP_DATA_DIR ? path.resolve(process.env.APP_DATA_DIR) : path.join(backendRoot, 'data'),
+    'app.db',
+  );
+fs.mkdirSync(path.dirname(dbPath), { recursive: true });
+const db = new Database(dbPath);
 db.pragma('journal_mode = WAL');
 db.pragma('busy_timeout = 5000');
 assertDataEncryptionReady();

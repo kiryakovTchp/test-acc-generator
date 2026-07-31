@@ -65,7 +65,7 @@ the current draft". It does not mean phone/geography data is useless.
 | BI | Burundi | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GW | Guinea-Bissau | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | GN | Guinea Conakry | Passport candidate is generic MRZ-like filler; current app pattern is also unsupported; city-region audit has many unresolved links. |
-| CI | Cote d'Ivoire | Runtime uses local operator-confirmed field samples as `sample_verified` for passport, national ID and driver licence display formats; no independent public national grammar/checksum source is attached. |
+| CI | Cote d'Ivoire | Runtime uses user-provided field samples as `sample_verified` for passport, national ID and driver licence display shapes only; no independent public national grammar/checksum source is attached. |
 | LR | Liberia | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |
 | MG | Madagascar | Passport candidate is generic MRZ-like filler; 60/60 city-region links unresolved in audit; surname seed is incomplete. |
 | ML | Mali | Passport candidate is generic MRZ-like filler; national ID source not confirmed. |

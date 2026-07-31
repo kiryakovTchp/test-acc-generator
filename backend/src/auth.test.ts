@@ -216,7 +216,11 @@ test('startup migrates account history document quality check for sample verifie
 function runDbImport(cwd: string, env: Record<string, string>, script?: string) {
   return spawnSync(process.execPath, ['--import', tsxLoaderPath, '-e', script ?? `await import(${JSON.stringify(new URL('./db.ts', import.meta.url).href)});`], {
     cwd,
-    env: { ...process.env, ...env },
+    env: {
+      ...process.env,
+      APP_DATA_DIR: path.join(cwd, 'backend', 'data'),
+      ...env,
+    },
     encoding: 'utf8',
   });
 }

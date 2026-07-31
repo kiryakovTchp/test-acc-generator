@@ -73,12 +73,21 @@
             "addresses": [
               {
                 "addressLine": "Bureau de poste, Boulevard de la République, Le Plateau, Abidjan, Côte d’Ivoire",
-                "postalCode": "",
                 "source": {
                   "title": "Bureau de poste",
                   "url": "https://www.openstreetmap.org/node/1932547198",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 1932547198,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bureau%20de%20poste%20Abidjan%20Cote%20d'Ivoire",
+                "nominatimSnapshot": {
+                  "displayName": "Bureau de poste, Boulevard de la République, Le Plateau, Abidjan, Côte d’Ivoire",
+                  "postalCode": null,
+                  "latitude": 5.3173522,
+                  "longitude": -4.0200996,
+                  "osmUrl": "https://www.openstreetmap.org/node/1932547198"
                 },
                 "latitude": 5.3173522,
                 "longitude": -4.0200996
@@ -90,12 +99,21 @@
             "addresses": [
               {
                 "addressLine": "Hôtel, Rue P20, Score, Attié, Yopougon, Abidjan",
-                "postalCode": "",
                 "source": {
                   "title": "Hôtel",
                   "url": "https://www.openstreetmap.org/node/5928588893",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5928588893,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20Yopougon%20Cote%20d'Ivoire",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel, Rue P20, Score, Attié, Yopougon, Abidjan",
+                  "postalCode": null,
+                  "latitude": 5.3391231,
+                  "longitude": -4.0739456,
+                  "osmUrl": "https://www.openstreetmap.org/node/5928588893"
                 },
                 "latitude": 5.3391231,
                 "longitude": -4.0739456
@@ -112,12 +130,21 @@
             "addresses": [
               {
                 "addressLine": "Centre Hospitalier Régional de Yamoussoukro, Avenue Félix Houphouët-Boigny, Energie, Yamoussoukro, Côte d’Ivoire",
-                "postalCode": "",
                 "source": {
                   "title": "Centre Hospitalier Régional de Yamoussoukro",
                   "url": "https://www.openstreetmap.org/way/94224466",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 94224466,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Centre%20Hospitalier%20R%C3%A9gional%20de%20Yamoussoukro%20Yamoussoukro%20Cote%20d'Ivoire",
+                "nominatimSnapshot": {
+                  "displayName": "Centre Hospitalier Régional de Yamoussoukro, Avenue Félix Houphouët-Boigny, Energie, Yamoussoukro, Côte d’Ivoire",
+                  "postalCode": null,
+                  "latitude": 6.8174648,
+                  "longitude": -5.2772548,
+                  "osmUrl": "https://www.openstreetmap.org/way/94224466"
                 },
                 "latitude": 6.8174648,
                 "longitude": -5.2772548
@@ -134,12 +161,21 @@
             "addresses": [
               {
                 "addressLine": "Afriland First Bank, Boulevard Alassane Ouattara, Koko, Korhogo, Poro, Savanes",
-                "postalCode": "",
                 "source": {
                   "title": "Afriland First Bank",
                   "url": "https://www.openstreetmap.org/node/11120967821",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 11120967821,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Afriland%20First%20Bank%20Korhogo%20Cote%20d'Ivoire",
+                "nominatimSnapshot": {
+                  "displayName": "Afriland First Bank, Boulevard Alassane Ouattara, Koko, Korhogo, Poro, Savanes",
+                  "postalCode": null,
+                  "latitude": 9.4587851,
+                  "longitude": -5.6323671,
+                  "osmUrl": "https://www.openstreetmap.org/node/11120967821"
                 },
                 "latitude": 9.4587851,
                 "longitude": -5.6323671
@@ -167,12 +203,12 @@
       "pattern": "^\\d{2}[A-Z]{2}\\d{5}$",
       "quality": "sample_verified",
       "source": {
-        "title": "Local Cote d'Ivoire passport format confirmation",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "title": "Cote d'Ivoire user-provided passport field sample",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/v2-remove-verification-codes/docs/COTE_DIVOIRE_LOCAL_FIELD_SAMPLES.md",
         "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
-      "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including 13AS85673: two digits, two letters, five digits. Registry validity and checksum semantics are not generated."
+      "notes": "User-provided Cote d'Ivoire field sample supports display shape only, including 13AS85673: two digits, two letters, five digits. Registry validity and checksum semantics are not generated."
     },
     "national_id": {
       "label": "National ID",
@@ -182,12 +218,12 @@
       "pattern": "^CI\\d{9}$",
       "quality": "sample_verified",
       "source": {
-        "title": "Local Cote d'Ivoire national ID format confirmation",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "title": "Cote d'Ivoire user-provided national ID field sample",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/v2-remove-verification-codes/docs/COTE_DIVOIRE_LOCAL_FIELD_SAMPLES.md",
         "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
-      "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including CI000910000: CI plus nine digits. Registry validity and checksum semantics are not generated."
+      "notes": "User-provided Cote d'Ivoire field sample supports display shape only, including CI000910000: CI plus nine digits. Registry validity and checksum semantics are not generated."
     },
     "driver_license_number": {
       "label": "Driver License Number",
@@ -197,12 +233,12 @@
       "pattern": "^[A-Z]{4}\\d{2}-\\d{2}-\\d{8}[A-Z]$",
       "quality": "sample_verified",
       "source": {
-        "title": "Local Cote d'Ivoire driver licence format confirmation",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "title": "Cote d'Ivoire user-provided driver licence field sample",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/v2-remove-verification-codes/docs/COTE_DIVOIRE_LOCAL_FIELD_SAMPLES.md",
         "type": "user_sample",
         "checkedAt": "2026-07-27"
       },
-      "notes": "Local Cote d'Ivoire operators confirmed real driver licence display format from field samples: LLLLNN-NN-NNNNNNNNL. Registry validity and checksum semantics are not generated."
+      "notes": "User-provided Cote d'Ivoire field sample supports driver licence display shape only: LLLLNN-NN-NNNNNNNNL. Registry validity and checksum semantics are not generated."
     }
   }
 }

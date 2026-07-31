@@ -173,17 +173,17 @@
       "passport": {
         "templates": ["{RAND2}{RANDL2}{RAND5}"],
         "quality": "sample_verified",
-        "notes": "Local Cote d'Ivoire operators confirmed real display format from field samples, including 13AS85673: two digits, two letters, five digits."
+        "notes": "User-provided Cote d'Ivoire field sample supports display shape only, including 13AS85673: two digits, two letters, five digits."
       },
       "national_id": {
         "templates": ["CI{RAND9}"],
         "quality": "sample_verified",
-        "notes": "Local Cote d'Ivoire operators confirmed real display format from field samples, including CI000910000: CI plus nine digits."
+        "notes": "User-provided Cote d'Ivoire field sample supports display shape only, including CI000910000: CI plus nine digits."
       },
       "driver_license_number": {
         "templates": ["{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"],
         "quality": "sample_verified",
-        "notes": "Local Cote d'Ivoire operators confirmed real driver licence display format from field samples: LLLLNN-NN-NNNNNNNNL."
+        "notes": "User-provided Cote d'Ivoire field sample supports driver licence display shape only: LLLLNN-NN-NNNNNNNNL."
       }
     }
   },

@@ -73,13 +73,23 @@
             "name": "Mbabane",
             "addresses": [
               {
-                "addressLine": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho, H100",
+                "addressLine": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho",
                 "postalCode": "H100",
                 "source": {
                   "title": "Central Bank of Swaziland",
                   "url": "https://www.openstreetmap.org/node/848603772",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 848603772,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Central%20Bank%20of%20Swaziland%20Mbabane%20Eswatini",
+                "nominatimSnapshot": {
+                  "displayName": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho",
+                  "postalCode": "H100",
+                  "latitude": -26.3264735,
+                  "longitude": 31.1458295,
+                  "osmUrl": "https://www.openstreetmap.org/node/848603772"
                 },
                 "latitude": -26.3264735,
                 "longitude": 31.1458295
@@ -91,12 +101,21 @@
             "addresses": [
               {
                 "addressLine": "Happy Valley Hotel, Mpumalanga Drive, Lobamba, Inkhundla Lobamba, Hhohho, Eswatini",
-                "postalCode": "",
                 "source": {
                   "title": "Happy Valley Hotel",
                   "url": "https://www.openstreetmap.org/node/2615899374",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2615899374,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Happy%20Valley%20Hotel%20Lobamba%20Eswatini",
+                "nominatimSnapshot": {
+                  "displayName": "Happy Valley Hotel, Mpumalanga Drive, Lobamba, Inkhundla Lobamba, Hhohho, Eswatini",
+                  "postalCode": null,
+                  "latitude": -26.4407285,
+                  "longitude": 31.1896933,
+                  "osmUrl": "https://www.openstreetmap.org/node/2615899374"
                 },
                 "latitude": -26.4407285,
                 "longitude": 31.1896933
@@ -112,13 +131,23 @@
             "name": "Manzini",
             "addresses": [
               {
-                "addressLine": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini, M100",
+                "addressLine": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini",
                 "postalCode": "M100",
                 "source": {
                   "title": "First National Bank ATM",
                   "url": "https://www.openstreetmap.org/node/2614887997",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2614887997,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=First%20National%20Bank%20ATM%20Manzini%20Eswatini",
+                "nominatimSnapshot": {
+                  "displayName": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini",
+                  "postalCode": "M100",
+                  "latitude": -26.4980664,
+                  "longitude": 31.3728454,
+                  "osmUrl": "https://www.openstreetmap.org/node/2614887997"
                 },
                 "latitude": -26.4980664,
                 "longitude": 31.3728454
@@ -137,6 +166,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 1401273881,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=First%20National%20Bank%20Matsapha%20Eswatini",
+                "nominatimSnapshot": {
+                  "displayName": "First National Bank, Matalatala Avenue, Matsapha Industrial Site, Matsapha, Inkhundla Kwaluseni, Manzini",
+                  "postalCode": "M202",
+                  "latitude": -26.4938697,
+                  "longitude": 31.306907,
+                  "osmUrl": "https://www.openstreetmap.org/node/1401273881"
+                },
                 "latitude": -26.4938697,
                 "longitude": 31.306907
               }
@@ -151,13 +190,23 @@
             "name": "Siteki",
             "addresses": [
               {
-                "addressLine": "Siteki hotel, D12, Nilshasane, Inkhundla Lugongolweni, Lubombo, L300",
+                "addressLine": "Siteki hotel, D12, Nilshasane, Inkhundla Lugongolweni, Lubombo",
                 "postalCode": "L300",
                 "source": {
                   "title": "Siteki hotel",
                   "url": "https://www.openstreetmap.org/node/3394152167",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 3394152167,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Siteki%20hotel%20Siteki%20Eswatini",
+                "nominatimSnapshot": {
+                  "displayName": "Siteki hotel, D12, Nilshasane, Inkhundla Lugongolweni, Lubombo",
+                  "postalCode": "L300",
+                  "latitude": -26.45096,
+                  "longitude": 31.9460864,
+                  "osmUrl": "https://www.openstreetmap.org/node/3394152167"
                 },
                 "latitude": -26.45096,
                 "longitude": 31.9460864

@@ -85,12 +85,21 @@
             "addresses": [
               {
                 "addressLine": "Pharmacy of CHU (Hospital), Boulevard du Maréchal Lyautey, Poto-Poto, Poto-Poto (arrondissement 3), Brazzaville (commune), Brazzaville (département)",
-                "postalCode": "",
                 "source": {
                   "title": "Pharmacy of CHU (Hospital)",
                   "url": "https://www.openstreetmap.org/node/5504990534",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5504990534,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Pharmacy%20of%20CHU%20(Hospital)%20Brazzaville%20Congo%20(Brazzaville)",
+                "nominatimSnapshot": {
+                  "displayName": "Pharmacy of CHU (Hospital), Boulevard du Maréchal Lyautey, Poto-Poto, Poto-Poto (arrondissement 3), Brazzaville (commune), Brazzaville (département)",
+                  "postalCode": null,
+                  "latitude": -4.2670108,
+                  "longitude": 15.2688279,
+                  "osmUrl": "https://www.openstreetmap.org/node/5504990534"
                 },
                 "latitude": -4.2670108,
                 "longitude": 15.2688279
@@ -106,16 +115,25 @@
             "name": "Pointe-Noire",
             "addresses": [
               {
-                "addressLine": "Clinique churgico du plateaux, 055712331, Avenue François Charles, Losange, Pointe-Noire, Lumumba (arrondissement 1)",
-                "postalCode": "4389",
+                "addressLine": "LCB bank, Avenue Moé Prat, Lumumba, Pointe-Noire, Lumumba (arrondissement 1), Pointe-Noire (commune)",
                 "source": {
-                  "title": "Clinique churgico du plateaux",
-                  "url": "https://www.openstreetmap.org/node/6871271752",
+                  "title": "LCB bank",
+                  "url": "https://www.openstreetmap.org/node/6371092397",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": -4.7966331,
-                "longitude": 11.8555477
+                "osmType": "node",
+                "osmId": 6371092397,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=bank%20Pointe-Noire%20Congo",
+                "nominatimSnapshot": {
+                  "displayName": "LCB bank, Avenue Moé Prat, Lumumba, Pointe-Noire, Lumumba (arrondissement 1), Pointe-Noire (commune), Pointe-Noire (département), Congo",
+                  "postalCode": null,
+                  "latitude": -4.7851822,
+                  "longitude": 11.8782772,
+                  "osmUrl": "https://www.openstreetmap.org/node/6371092397"
+                },
+                "latitude": -4.7851822,
+                "longitude": 11.8782772
               }
             ]
           }
@@ -129,12 +147,21 @@
             "addresses": [
               {
                 "addressLine": "BGFI Bank, Rue Antonnetti, Centre-ville, Dolisie, Niari, Congo",
-                "postalCode": "",
                 "source": {
                   "title": "BGFI Bank",
                   "url": "https://www.openstreetmap.org/node/4581988891",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4581988891,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=BGFI%20Bank%20Dolisie%20Congo%20(Brazzaville)",
+                "nominatimSnapshot": {
+                  "displayName": "BGFI Bank, Rue Antonnetti, Centre-ville, Dolisie, Niari, Congo",
+                  "postalCode": null,
+                  "latitude": -4.1945363,
+                  "longitude": 12.6735395,
+                  "osmUrl": "https://www.openstreetmap.org/node/4581988891"
                 },
                 "latitude": -4.1945363,
                 "longitude": 12.6735395
@@ -151,12 +178,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel de l'Eglise, RN 2, Ombele, Owando, Cuvette, Congo",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel de l'Eglise",
                   "url": "https://www.openstreetmap.org/node/3323401945",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 3323401945,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20de%20l'Eglise%20Owando%20Congo%20(Brazzaville)",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel de l'Eglise, RN 2, Ombele, Owando, Cuvette, Congo",
+                  "postalCode": null,
+                  "latitude": -0.480954,
+                  "longitude": 15.9024143,
+                  "osmUrl": "https://www.openstreetmap.org/node/3323401945"
                 },
                 "latitude": -0.480954,
                 "longitude": 15.9024143

@@ -98,12 +98,21 @@
             "addresses": [
               {
                 "addressLine": "United Bank for Africa, Boulevard Triomphal Omar Bongo Ondimba, Louis, Vallée Sainte-Marie, 3ème Arrondissement, Libreville",
-                "postalCode": "12035",
                 "source": {
                   "title": "United Bank for Africa",
                   "url": "https://www.openstreetmap.org/way/373247369",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 373247369,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=United%20Bank%20for%20Africa%20Libreville%20Gabon",
+                "nominatimSnapshot": {
+                  "displayName": "United Bank for Africa, Boulevard Triomphal Omar Bongo Ondimba, Louis, Vallée Sainte-Marie, 3ème Arrondissement, Libreville",
+                  "postalCode": null,
+                  "latitude": 0.4052313,
+                  "longitude": 9.4376832,
+                  "osmUrl": "https://www.openstreetmap.org/way/373247369"
                 },
                 "latitude": 0.4052313,
                 "longitude": 9.4376832
@@ -120,12 +129,21 @@
             "addresses": [
               {
                 "addressLine": "Hôtel L'Hirondelle, Boulevard du Gouverneur Pelieu, Rombintchozo, Port-Gentil, Bendje, Ogooué-Maritime",
-                "postalCode": "",
                 "source": {
                   "title": "Hôtel L'Hirondelle",
                   "url": "https://www.openstreetmap.org/way/1147682534",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 1147682534,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20L'Hirondelle%20Port-Gentil%20Gabon",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel L'Hirondelle, Boulevard du Gouverneur Pelieu, Rombintchozo, Port-Gentil, Bendje, Ogooué-Maritime",
+                  "postalCode": null,
+                  "latitude": -0.715564,
+                  "longitude": 8.7822017,
+                  "osmUrl": "https://www.openstreetmap.org/way/1147682534"
                 },
                 "latitude": -0.715564,
                 "longitude": 8.7822017
@@ -142,12 +160,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel Masuku, Route Economique, Wendze, Franceville, Mpassa, Haut-Ogooué",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel Masuku",
                   "url": "https://www.openstreetmap.org/node/4621927197",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4621927197,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Masuku%20Franceville%20Gabon",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Masuku, Route Economique, Wendze, Franceville, Mpassa, Haut-Ogooué",
+                  "postalCode": null,
+                  "latitude": -1.632444,
+                  "longitude": 13.5853959,
+                  "osmUrl": "https://www.openstreetmap.org/node/4621927197"
                 },
                 "latitude": -1.632444,
                 "longitude": 13.5853959
@@ -164,12 +191,21 @@
             "addresses": [
               {
                 "addressLine": "Le Relais Nyanga, RP501, Tchibanga, Mougoutsi, Nyanga, Gabon",
-                "postalCode": "",
                 "source": {
                   "title": "Le Relais Nyanga",
                   "url": "https://www.openstreetmap.org/way/1225749694",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 1225749694,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Le%20Relais%20Nyanga%20Tchibanga%20Gabon",
+                "nominatimSnapshot": {
+                  "displayName": "Le Relais Nyanga, RP501, Tchibanga, Mougoutsi, Nyanga, Gabon",
+                  "postalCode": null,
+                  "latitude": -2.9315124,
+                  "longitude": 10.9850676,
+                  "osmUrl": "https://www.openstreetmap.org/way/1225749694"
                 },
                 "latitude": -2.9315124,
                 "longitude": 10.9850676

@@ -87,13 +87,23 @@
             "name": "Almaty",
             "addresses": [
               {
-                "addressLine": "Алматы Энергетика және Байланыс Университетi, Байтұрсынұлы көшесі, Көктем, Бостандық ауданы, Алматы, 050013",
+                "addressLine": "Алматы Энергетика және Байланыс Университетi, Байтұрсынұлы көшесі, Көктем, Бостандық ауданы, Алматы",
                 "postalCode": "050013",
                 "source": {
                   "title": "Алматы Энергетика және Байланыс Университетi",
                   "url": "https://www.openstreetmap.org/way/286610625",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 286610625,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%D0%90%D0%BB%D0%BC%D0%B0%D1%82%D1%8B%20%D0%AD%D0%BD%D0%B5%D1%80%D0%B3%D0%B5%D1%82%D0%B8%D0%BA%D0%B0%20%D0%B6%D3%99%D0%BD%D0%B5%20%D0%91%D0%B0%D0%B9%D0%BB%D0%B0%D0%BD%D1%8B%D1%81%20%D0%A3%D0%BD%D0%B8%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%82%D0%B5%D1%82i%20Almaty%20Kazakhstan",
+                "nominatimSnapshot": {
+                  "displayName": "Алматы Энергетика және Байланыс Университетi, Байтұрсынұлы көшесі, Көктем, Бостандық ауданы, Алматы",
+                  "postalCode": "050013",
+                  "latitude": 43.2350932,
+                  "longitude": 76.9313413,
+                  "osmUrl": "https://www.openstreetmap.org/way/286610625"
                 },
                 "latitude": 43.2350932,
                 "longitude": 76.9313413
@@ -109,13 +119,23 @@
             "name": "Astana",
             "addresses": [
               {
-                "addressLine": "Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана, Z05P1P8",
+                "addressLine": "Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана",
                 "postalCode": "Z05P1P8",
                 "source": {
                   "title": "Astana IT University",
                   "url": "https://www.openstreetmap.org/node/10575843769",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 10575843769,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Astana%20IT%20University%20Astana%20Kazakhstan",
+                "nominatimSnapshot": {
+                  "displayName": "Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана",
+                  "postalCode": "Z05P1P8",
+                  "latitude": 51.0908607,
+                  "longitude": 71.4184149,
+                  "osmUrl": "https://www.openstreetmap.org/node/10575843769"
                 },
                 "latitude": 51.0908607,
                 "longitude": 71.4184149
@@ -131,13 +151,23 @@
             "name": "Shymkent",
             "addresses": [
               {
-                "addressLine": "City Hotel, 4, Республика даңғылы, Абай ауданы, Шымкент, 160018",
+                "addressLine": "City Hotel, 4, Республика даңғылы, Абай ауданы, Шымкент",
                 "postalCode": "160018",
                 "source": {
                   "title": "City Hotel",
                   "url": "https://www.openstreetmap.org/node/6604845802",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6604845802,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=City%20Hotel%20Shymkent%20Kazakhstan",
+                "nominatimSnapshot": {
+                  "displayName": "City Hotel, 4, Республика даңғылы, Абай ауданы, Шымкент",
+                  "postalCode": "160018",
+                  "latitude": 42.3203916,
+                  "longitude": 69.5856476,
+                  "osmUrl": "https://www.openstreetmap.org/node/6604845802"
                 },
                 "latitude": 42.3203916,
                 "longitude": 69.5856476

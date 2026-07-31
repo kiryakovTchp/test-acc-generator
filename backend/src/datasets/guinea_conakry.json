@@ -81,13 +81,22 @@
             "name": "Conakry",
             "addresses": [
               {
-                "addressLine": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry, 258",
-                "postalCode": "258",
+                "addressLine": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry",
                 "source": {
                   "title": "Afriland First Bank",
                   "url": "https://www.openstreetmap.org/way/441774562",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 441774562,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Afriland%20First%20Bank%20Conakry%20Guinea%20Conakry",
+                "nominatimSnapshot": {
+                  "displayName": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry",
+                  "postalCode": null,
+                  "latitude": 9.511217,
+                  "longitude": -13.706888,
+                  "osmUrl": "https://www.openstreetmap.org/way/441774562"
                 },
                 "latitude": 9.511217,
                 "longitude": -13.706888
@@ -104,12 +113,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel Masabi, N1, Foulaya, Damakania, Préfecture de Kindia, Kindia",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel Masabi",
                   "url": "https://www.openstreetmap.org/node/5210953723",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5210953723,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Masabi%20Kindia%20Guinea%20Conakry",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Masabi, N1, Foulaya, Damakania, Préfecture de Kindia, Kindia",
+                  "postalCode": null,
+                  "latitude": 10.0146211,
+                  "longitude": -12.8994676,
+                  "osmUrl": "https://www.openstreetmap.org/node/5210953723"
                 },
                 "latitude": 10.0146211,
                 "longitude": -12.8994676
@@ -125,16 +143,25 @@
             "name": "Boke",
             "addresses": [
               {
-                "addressLine": "Sangarédi Airport, Sangarédi, Préfecture de Boké, Boké, Guinée",
-                "postalCode": "",
+                "addressLine": "MC2 Boké, N3, Tomboya, Boké, Boké-Centre, Préfecture de Boké, Boké, Guinée",
                 "source": {
-                  "title": "Sangarédi Airport",
-                  "url": "https://www.openstreetmap.org/node/462742418",
+                  "title": "MC2 Boké",
+                  "url": "https://www.openstreetmap.org/node/6301807380",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 11.1134949,
-                "longitude": -13.8153237
+                "osmType": "node",
+                "osmId": 6301807380,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=MC2%20Bok%C3%A9%20Boke%20Guinea%20Conakry",
+                "nominatimSnapshot": {
+                  "displayName": "MC2 Boké, N3, Tomboya, Boké, Boké-Centre, Préfecture de Boké, Boké, Guinée",
+                  "postalCode": null,
+                  "latitude": 10.9315637,
+                  "longitude": -14.2902556,
+                  "osmUrl": "https://www.openstreetmap.org/node/6301807380"
+                },
+                "latitude": 10.9315637,
+                "longitude": -14.2902556
               }
             ]
           }
@@ -147,16 +174,25 @@
             "name": "Mamou",
             "addresses": [
               {
-                "addressLine": "Post Office of Dalaba, N5, Dalaba, Préfecture de Dalaba, Mamou, Guinée",
-                "postalCode": "",
+                "addressLine": "La poste de Mamou, Route nationale Conakry-Mali, Horéguilivel, Mamou, Préfecture de Mamou, Mamou, Guinée",
                 "source": {
-                  "title": "Post Office of Dalaba",
-                  "url": "https://www.openstreetmap.org/node/9482088444",
+                  "title": "La poste de Mamou",
+                  "url": "https://www.openstreetmap.org/node/6646289104",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 10.6896195,
-                "longitude": -12.2511269
+                "osmType": "node",
+                "osmId": 6646289104,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=La%20poste%20de%20Mamou%20Mamou%20Guinea%20Conakry",
+                "nominatimSnapshot": {
+                  "displayName": "La poste de Mamou, Route nationale Conakry-Mali, Horéguilivel, Mamou, Préfecture de Mamou, Mamou, Guinée",
+                  "postalCode": null,
+                  "latitude": 10.3744322,
+                  "longitude": -12.0855086,
+                  "osmUrl": "https://www.openstreetmap.org/node/6646289104"
+                },
+                "latitude": 10.3744322,
+                "longitude": -12.0855086
               }
             ]
           }

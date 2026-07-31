@@ -108,13 +108,23 @@
             "name": "Lagos",
             "addresses": [
               {
-                "addressLine": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos, 100242",
+                "addressLine": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos",
                 "postalCode": "100242",
                 "source": {
                   "title": "Lagos City Hall",
                   "url": "https://www.openstreetmap.org/relation/7774249",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "relation",
+                "osmId": 7774249,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Lagos%20City%20Hall%20Lagos%20Nigeria",
+                "nominatimSnapshot": {
+                  "displayName": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos",
+                  "postalCode": "100242",
+                  "latitude": 6.4506523,
+                  "longitude": 3.397143,
+                  "osmUrl": "https://www.openstreetmap.org/relation/7774249"
                 },
                 "latitude": 6.4506523,
                 "longitude": 3.397143
@@ -125,13 +135,22 @@
             "name": "Ikeja",
             "addresses": [
               {
-                "addressLine": "Lagos State University Teaching Hospital, Simbiat Abiola Road, Ikeja, Lagos, 100282, Nigeria",
-                "postalCode": "100282",
+                "addressLine": "Lagos State University Teaching Hospital, Simbiat Abiola Road, Ikeja, Lagos, Nigeria",
                 "source": {
                   "title": "Lagos State University Teaching Hospital",
                   "url": "https://www.openstreetmap.org/way/704991085",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 704991085,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Lagos%20State%20University%20Teaching%20Hospital%20Ikeja%20Nigeria",
+                "nominatimSnapshot": {
+                  "displayName": "Lagos State University Teaching Hospital, Simbiat Abiola Road, Ikeja, Lagos, Nigeria",
+                  "postalCode": null,
+                  "latitude": 6.5896612,
+                  "longitude": 3.3421976,
+                  "osmUrl": "https://www.openstreetmap.org/way/704991085"
                 },
                 "latitude": 6.5896612,
                 "longitude": 3.3421976
@@ -148,12 +167,21 @@
             "addresses": [
               {
                 "addressLine": "Sheraton Abuja Hotel, Ladi Kwali Street, Wuse, Abuja, Municipal Area Council, Federal Capital Territory",
-                "postalCode": "900001",
                 "source": {
                   "title": "Sheraton Abuja Hotel",
                   "url": "https://www.openstreetmap.org/relation/12194914",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "relation",
+                "osmId": 12194914,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Sheraton%20Abuja%20Hotel%20Abuja%20Nigeria",
+                "nominatimSnapshot": {
+                  "displayName": "Sheraton Abuja Hotel, Ladi Kwali Street, Wuse, Abuja, Municipal Area Council, Federal Capital Territory",
+                  "postalCode": null,
+                  "latitude": 9.0632805,
+                  "longitude": 7.484308,
+                  "osmUrl": "https://www.openstreetmap.org/relation/12194914"
                 },
                 "latitude": 9.0632805,
                 "longitude": 7.484308
@@ -169,13 +197,23 @@
             "name": "Port Harcourt",
             "addresses": [
               {
-                "addressLine": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers, 520052",
+                "addressLine": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers",
                 "postalCode": "520052",
                 "source": {
                   "title": "Braithwaite Memorial Hospital",
                   "url": "https://www.openstreetmap.org/way/756560005",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 756560005,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Braithwaite%20Memorial%20Hospital%20Port%20Harcourt%20Nigeria",
+                "nominatimSnapshot": {
+                  "displayName": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers",
+                  "postalCode": "520052",
+                  "latitude": 4.7799488,
+                  "longitude": 7.0138997,
+                  "osmUrl": "https://www.openstreetmap.org/way/756560005"
                 },
                 "latitude": 4.7799488,
                 "longitude": 7.0138997

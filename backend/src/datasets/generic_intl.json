@@ -93,6 +93,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 26706806,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=The%20Ritz%20London%20London%20United%20Kingdom",
+                "nominatimSnapshot": {
+                  "displayName": "The Ritz London, 150, Piccadilly, St. James's, Mayfair, City of Westminster",
+                  "postalCode": "W1J 9BR",
+                  "latitude": 51.5071911,
+                  "longitude": -0.1414246,
+                  "osmUrl": "https://www.openstreetmap.org/way/26706806"
+                },
                 "latitude": 51.5071911,
                 "longitude": -0.1414246
               }
@@ -110,6 +120,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 9254794260,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Ladybarn%20Lane%20Post%20Office%20Manchester%20United%20Kingdom",
+                "nominatimSnapshot": {
+                  "displayName": "Ladybarn Lane Post Office, 124, Ladybarn Lane, Ladybarn, Fallowfield, Manchester",
+                  "postalCode": "M14 6YH",
+                  "latitude": 53.4380925,
+                  "longitude": -2.2138547,
+                  "osmUrl": "https://www.openstreetmap.org/node/9254794260"
+                },
                 "latitude": 53.4380925,
                 "longitude": -2.2138547
               }
@@ -119,13 +139,23 @@
             "name": "Birmingham",
             "addresses": [
               {
-                "addressLine": "Coleshill Road Post Office, Fox and Goose Shopping Centre, Birmingham, West Midlands, England, B8 2EP",
+                "addressLine": "Coleshill Road Post Office, Fox and Goose Shopping Centre, Birmingham, West Midlands, England",
                 "postalCode": "B8 2EP",
                 "source": {
                   "title": "Coleshill Road Post Office",
                   "url": "https://www.openstreetmap.org/way/175421197",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 175421197,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Coleshill%20Road%20Post%20Office%20Birmingham%20United%20Kingdom",
+                "nominatimSnapshot": {
+                  "displayName": "Coleshill Road Post Office, Fox and Goose Shopping Centre, Birmingham, West Midlands, England",
+                  "postalCode": "B8 2EP",
+                  "latitude": 52.494175,
+                  "longitude": -1.8194264,
+                  "osmUrl": "https://www.openstreetmap.org/way/175421197"
                 },
                 "latitude": 52.494175,
                 "longitude": -1.8194264

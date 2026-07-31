@@ -79,12 +79,21 @@
             "addresses": [
               {
                 "addressLine": "BANK 🏦, bank, KG 109 Street, Gasabo District, City of Kigali, Rwanda",
-                "postalCode": "",
                 "source": {
                   "title": "BANK 🏦",
                   "url": "https://www.openstreetmap.org/node/10840168352",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 10840168352,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=BANK%20%F0%9F%8F%A6%20Kigali%20Rwanda",
+                "nominatimSnapshot": {
+                  "displayName": "BANK 🏦, bank, KG 109 Street, Gasabo District, City of Kigali, Rwanda",
+                  "postalCode": null,
+                  "latitude": -1.9581349,
+                  "longitude": 30.1195802,
+                  "osmUrl": "https://www.openstreetmap.org/node/10840168352"
                 },
                 "latitude": -1.9581349,
                 "longitude": 30.1195802
@@ -100,13 +109,22 @@
             "name": "Musanze",
             "addresses": [
               {
-                "addressLine": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province, 00000",
-                "postalCode": "00000",
+                "addressLine": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province",
                 "source": {
                   "title": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province, 00000",
                   "url": "https://www.openstreetmap.org/node/13041461018",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 13041461018,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=SHASTE%20CITY%20HOTEL%2C%20NR2%2C%20Muhoza%2C%20Musanze%20District%2C%20Northern%20Province%2C%2000000%20Musanze%20Rwanda",
+                "nominatimSnapshot": {
+                  "displayName": "SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province",
+                  "postalCode": null,
+                  "latitude": -1.5097038,
+                  "longitude": 29.6443425,
+                  "osmUrl": "https://www.openstreetmap.org/node/13041461018"
                 },
                 "latitude": -1.5097038,
                 "longitude": 29.6443425

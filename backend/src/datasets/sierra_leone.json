@@ -91,12 +91,21 @@
             "addresses": [
               {
                 "addressLine": "Kona Lodge Hotel, King Street, Wilberforce, Freetown, Western Area Urban, Western Area",
-                "postalCode": "",
                 "source": {
                   "title": "Kona Lodge Hotel",
                   "url": "https://www.openstreetmap.org/way/306327139",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 306327139,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Kona%20Lodge%20Hotel%20Freetown%20Sierra%20Leone",
+                "nominatimSnapshot": {
+                  "displayName": "Kona Lodge Hotel, King Street, Wilberforce, Freetown, Western Area Urban, Western Area",
+                  "postalCode": null,
+                  "latitude": 8.4790682,
+                  "longitude": -13.2596013,
+                  "osmUrl": "https://www.openstreetmap.org/way/306327139"
                 },
                 "latitude": 8.4790682,
                 "longitude": -13.2596013
@@ -113,12 +122,21 @@
             "addresses": [
               {
                 "addressLine": "GT Bank, Hangha Road, Ida, Kenema, Kenema District, Eastern Province",
-                "postalCode": "",
                 "source": {
                   "title": "GT Bank",
                   "url": "https://www.openstreetmap.org/node/6436227885",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6436227885,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=GT%20Bank%20Kenema%20Sierra%20Leone",
+                "nominatimSnapshot": {
+                  "displayName": "GT Bank, Hangha Road, Ida, Kenema, Kenema District, Eastern Province",
+                  "postalCode": null,
+                  "latitude": 7.885484,
+                  "longitude": -11.1889936,
+                  "osmUrl": "https://www.openstreetmap.org/node/6436227885"
                 },
                 "latitude": 7.885484,
                 "longitude": -11.1889936
@@ -130,12 +148,21 @@
             "addresses": [
               {
                 "addressLine": "D&S Hotel, Main Kaindordu Road, Kinse, Koidu, Kono District, Eastern Province",
-                "postalCode": "",
                 "source": {
                   "title": "D&S Hotel",
                   "url": "https://www.openstreetmap.org/node/988037708",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 988037708,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=D%26S%20Hotel%20Koidu%20Sierra%20Leone",
+                "nominatimSnapshot": {
+                  "displayName": "D&S Hotel, Main Kaindordu Road, Kinse, Koidu, Kono District, Eastern Province",
+                  "postalCode": null,
+                  "latitude": 8.6438545,
+                  "longitude": -10.9737376,
+                  "osmUrl": "https://www.openstreetmap.org/node/988037708"
                 },
                 "latitude": 8.6438545,
                 "longitude": -10.9737376
@@ -152,12 +179,21 @@
             "addresses": [
               {
                 "addressLine": "University of Sierra  Leone  Administrative Building, kamakwe highway, Mafonike, Makeni, Bombali District, Northern Province",
-                "postalCode": "00232",
                 "source": {
                   "title": "University of Sierra  Leone  Administrative Building",
                   "url": "https://www.openstreetmap.org/way/308904321",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 308904321,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=University%20of%20Sierra%20%20Leone%20%20Administrative%20Building%20Makeni%20Sierra%20Leone",
+                "nominatimSnapshot": {
+                  "displayName": "University of Sierra  Leone  Administrative Building, kamakwe highway, Mafonike, Makeni, Bombali District, Northern Province",
+                  "postalCode": null,
+                  "latitude": 8.9354771,
+                  "longitude": -12.0501219,
+                  "osmUrl": "https://www.openstreetmap.org/way/308904321"
                 },
                 "latitude": 8.9354771,
                 "longitude": -12.0501219

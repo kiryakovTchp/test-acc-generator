@@ -127,12 +127,21 @@
             "addresses": [
               {
                 "addressLine": "University of United Popular Nations U.U.P.N., Rue Balm Naba Tenga, Bilbalogho, Ouagadougou, Kadiogo, Centre",
-                "postalCode": "",
                 "source": {
                   "title": "University of United Popular Nations U.U.P.N.",
                   "url": "https://www.openstreetmap.org/relation/3503410",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "relation",
+                "osmId": 3503410,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=University%20of%20United%20Popular%20Nations%20U.U.P.N.%20Ouagadougou%20Burkina%20Faso",
+                "nominatimSnapshot": {
+                  "displayName": "University of United Popular Nations U.U.P.N., Rue Balm Naba Tenga, Bilbalogho, Ouagadougou, Kadiogo, Centre",
+                  "postalCode": null,
+                  "latitude": 12.3646825,
+                  "longitude": -1.5337797,
+                  "osmUrl": "https://www.openstreetmap.org/relation/3503410"
                 },
                 "latitude": 12.3646825,
                 "longitude": -1.5337797
@@ -149,12 +158,21 @@
             "addresses": [
               {
                 "addressLine": "Hôtel de Ville, Place de la Révolution, Bobo-Dioulasso, Houet, Hauts-Bassins, Burkina Faso",
-                "postalCode": "",
                 "source": {
                   "title": "Hôtel de Ville",
                   "url": "https://www.openstreetmap.org/node/647225512",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 647225512,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%B4tel%20de%20Ville%20Bobo-Dioulasso%20Burkina%20Faso",
+                "nominatimSnapshot": {
+                  "displayName": "Hôtel de Ville, Place de la Révolution, Bobo-Dioulasso, Houet, Hauts-Bassins, Burkina Faso",
+                  "postalCode": null,
+                  "latitude": 11.1761522,
+                  "longitude": -4.2962634,
+                  "osmUrl": "https://www.openstreetmap.org/node/647225512"
                 },
                 "latitude": 11.1761522,
                 "longitude": -4.2962634
@@ -171,12 +189,21 @@
             "addresses": [
               {
                 "addressLine": "OGAZA HOTEL, Route de Ouagadougou, camp fonctionnaire de koudougou, Koudougou, Boulkiemdé, Centre-Ouest",
-                "postalCode": "",
                 "source": {
                   "title": "OGAZA HOTEL",
                   "url": "https://www.openstreetmap.org/node/6209700471",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6209700471,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=OGAZA%20HOTEL%20Koudougou%20Burkina%20Faso",
+                "nominatimSnapshot": {
+                  "displayName": "OGAZA HOTEL, Route de Ouagadougou, camp fonctionnaire de koudougou, Koudougou, Boulkiemdé, Centre-Ouest",
+                  "postalCode": null,
+                  "latitude": 12.247335,
+                  "longitude": -2.3678633,
+                  "osmUrl": "https://www.openstreetmap.org/node/6209700471"
                 },
                 "latitude": 12.247335,
                 "longitude": -2.3678633
@@ -193,12 +220,21 @@
             "addresses": [
               {
                 "addressLine": "Bank of Africa, Avenue de Mopti, Ouahigouya, Yatenga, Nord, Burkina Faso",
-                "postalCode": "",
                 "source": {
                   "title": "Bank of Africa",
                   "url": "https://www.openstreetmap.org/node/9959296216",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 9959296216,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20of%20Africa%20Ouahigouya%20Burkina%20Faso",
+                "nominatimSnapshot": {
+                  "displayName": "Bank of Africa, Avenue de Mopti, Ouahigouya, Yatenga, Nord, Burkina Faso",
+                  "postalCode": null,
+                  "latitude": 13.5789915,
+                  "longitude": -2.4209449,
+                  "osmUrl": "https://www.openstreetmap.org/node/9959296216"
                 },
                 "latitude": 13.5789915,
                 "longitude": -2.4209449

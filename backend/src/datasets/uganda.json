@@ -155,12 +155,21 @@
             "addresses": [
               {
                 "addressLine": "Kampala Club Hotel Shangri-la, Sezibwa Road, Nakasero, Central, Kampala Capital City, Kampala",
-                "postalCode": "",
                 "source": {
                   "title": "Kampala Club Hotel Shangri-la",
                   "url": "https://www.openstreetmap.org/node/773119927",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 773119927,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Kampala%20Club%20Hotel%20Shangri-la%20Kampala%20Uganda",
+                "nominatimSnapshot": {
+                  "displayName": "Kampala Club Hotel Shangri-la, Sezibwa Road, Nakasero, Central, Kampala Capital City, Kampala",
+                  "postalCode": null,
+                  "latitude": 0.3181513,
+                  "longitude": 32.5833064,
+                  "osmUrl": "https://www.openstreetmap.org/node/773119927"
                 },
                 "latitude": 0.3181513,
                 "longitude": 32.5833064
@@ -172,12 +181,21 @@
             "addresses": [
               {
                 "addressLine": "Entebbe Hospital Private Patient Services, Kampala Road, Entebbe Central Police Quaters/ Residence, Namate, Post Office Subward, Lunyo Eastlunyo East",
-                "postalCode": "",
                 "source": {
                   "title": "Entebbe Hospital Private Patient Services",
                   "url": "https://www.openstreetmap.org/way/377707157",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 377707157,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Entebbe%20Hospital%20Private%20Patient%20Services%20Entebbe%20Uganda",
+                "nominatimSnapshot": {
+                  "displayName": "Entebbe Hospital Private Patient Services, Kampala Road, Entebbe Central Police Quaters/ Residence, Namate, Post Office Subward, Lunyo Eastlunyo East",
+                  "postalCode": null,
+                  "latitude": 0.0601333,
+                  "longitude": 32.4710255,
+                  "osmUrl": "https://www.openstreetmap.org/way/377707157"
                 },
                 "latitude": 0.0601333,
                 "longitude": 32.4710255
@@ -193,16 +211,25 @@
             "name": "Jinja",
             "addresses": [
               {
-                "addressLine": "Kakira Post Office, To Madhvani Factory, Bungalow, Jinja, Eastern Region, Uganda",
-                "postalCode": "",
+                "addressLine": "Jinja Hospital, Naranbhai Road, Iganga Road, Nalufenya A, Madhivani, Jinja City, Eastern Region, Uganda",
                 "source": {
-                  "title": "Kakira Post Office",
-                  "url": "https://www.openstreetmap.org/way/283565254",
+                  "title": "Jinja Hospital",
+                  "url": "https://www.openstreetmap.org/way/798646087",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 0.5052691,
-                "longitude": 33.2837125
+                "osmType": "way",
+                "osmId": 798646087,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Jinja%20Hospital%20Jinja%20Uganda",
+                "nominatimSnapshot": {
+                  "displayName": "Jinja Hospital, Naranbhai Road, Iganga Road, Nalufenya A, Madhivani, Jinja City, Eastern Region, Uganda",
+                  "postalCode": null,
+                  "latitude": 0.4309281,
+                  "longitude": 33.204831,
+                  "osmUrl": "https://www.openstreetmap.org/way/798646087"
+                },
+                "latitude": 0.4309281,
+                "longitude": 33.204831
               }
             ]
           },
@@ -211,12 +238,21 @@
             "addresses": [
               {
                 "addressLine": "Crown Suites Hotel, Bungokho Road, Nabijjo, Mbale City, Bugisa sub-region, Eastern Region",
-                "postalCode": "PO Box 462",
                 "source": {
                   "title": "Crown Suites Hotel",
                   "url": "https://www.openstreetmap.org/node/4475305145",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4475305145,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Crown%20Suites%20Hotel%20Mbale%20Uganda",
+                "nominatimSnapshot": {
+                  "displayName": "Crown Suites Hotel, Bungokho Road, Nabijjo, Mbale City, Bugisa sub-region, Eastern Region",
+                  "postalCode": null,
+                  "latitude": 1.0704836,
+                  "longitude": 34.1975858,
+                  "osmUrl": "https://www.openstreetmap.org/node/4475305145"
                 },
                 "latitude": 1.0704836,
                 "longitude": 34.1975858

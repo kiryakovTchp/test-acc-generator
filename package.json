@@ -10,7 +10,8 @@
     "dev": "concurrently \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "build": "npm run build -w backend && npm run build -w frontend",
     "test": "npm run test -w backend && npm run test -w frontend",
-    "validate:datasets": "node --test --test-concurrency=1 --import tsx 'backend/src/datasets.test.ts'"
+    "validate:datasets": "node --test --test-concurrency=1 --import tsx 'backend/src/datasets.test.ts'",
+    "report:addresses": "node scripts/generate-address-report.mjs"
   },
   "overrides": {
     "postcss": "^8.5.22"

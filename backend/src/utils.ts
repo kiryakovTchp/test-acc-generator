@@ -397,7 +397,7 @@ export function generatePersonaProfile(geoKey: string, persona: PersonaKey) {
   const region = geo?.regions[randomIndex(geo.regions.length)] ?? GEO_PROFILE_DEFAULTS.generic_intl.regions[0];
   const city = datasetCity?.name ?? region.cities[randomIndex(region.cities.length)];
   const postalBase = region.postalPrefixes[randomIndex(region.postalPrefixes.length)];
-  const postalCode = datasetAddress?.postalCode ?? `${postalBase}${randomDigits(3)}`;
+  const postalCode = dataset ? (datasetAddress?.postalCode ?? '') : `${postalBase}${randomDigits(3)}`;
   const street = region.streetPrefixes[randomIndex(region.streetPrefixes.length)];
   const addressLine = datasetAddress?.addressLine ?? `${crypto.randomInt(1, 251)} ${street}`;
   const placeOfBirth = city;

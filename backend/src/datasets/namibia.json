@@ -67,6 +67,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 390949455,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Steiner%20Windhoek%20Namibia",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Steiner, 11, Wecke Street, Windhoek Central, Windhoek, Khomas Region",
+                  "postalCode": "10005",
+                  "latitude": -22.5702259,
+                  "longitude": 17.0809881,
+                  "osmUrl": "https://www.openstreetmap.org/way/390949455"
+                },
                 "latitude": -22.5702259,
                 "longitude": 17.0809881
               }
@@ -81,13 +91,23 @@
             "name": "Walvis Bay",
             "addresses": [
               {
-                "addressLine": "Bank Windhoek, Rikumbi Kandanga Road, Walvis Bay, Erongo Region, 13013, Namibia",
+                "addressLine": "Bank Windhoek, Rikumbi Kandanga Road, Walvis Bay, Erongo Region, Namibia",
                 "postalCode": "13013",
                 "source": {
                   "title": "Bank Windhoek",
                   "url": "https://www.openstreetmap.org/node/2517228191",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2517228191,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20Windhoek%20Walvis%20Bay%20Namibia",
+                "nominatimSnapshot": {
+                  "displayName": "Bank Windhoek, Rikumbi Kandanga Road, Walvis Bay, Erongo Region, Namibia",
+                  "postalCode": "13013",
+                  "latitude": -22.9553152,
+                  "longitude": 14.5063383,
+                  "osmUrl": "https://www.openstreetmap.org/node/2517228191"
                 },
                 "latitude": -22.9553152,
                 "longitude": 14.5063383

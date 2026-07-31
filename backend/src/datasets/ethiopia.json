@@ -89,6 +89,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 50833502,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Zewditu%20Memorial%20Hospital%20%E1%8B%98%E1%8B%8D%E1%8B%B2%E1%89%B1%20%E1%88%98%E1%89%B3%E1%88%B0%E1%89%A2%E1%8B%AB%20%E1%88%86%E1%88%B5%E1%8D%92%E1%89%B3%E1%88%8D%20Addis%20Ababa%20Ethiopia",
+                "nominatimSnapshot": {
+                  "displayName": "Zewditu Memorial Hospital ዘውዲቱ መታሰቢያ ሆስፒታል, Wendimeneh Street, ብሔራዊ, Kirkos, አዲስ አበባ Addis Ababa أديس أبابا, አዲስ አበባ أديس أبابا",
+                  "postalCode": "1138",
+                  "latitude": 9.0185621,
+                  "longitude": 38.7562463,
+                  "osmUrl": "https://www.openstreetmap.org/way/50833502"
+                },
                 "latitude": 9.0185621,
                 "longitude": 38.7562463
               }
@@ -104,12 +114,21 @@
             "addresses": [
               {
                 "addressLine": "ፈረንሳይ ሆስፒታል, Before Station Road, የ'ሰላም አዳራሽ መንጊስት, Dirree Dhawaa / Dir Dhabe / ድሬዳዋ, ኢትዮጵያ",
-                "postalCode": "",
                 "source": {
                   "title": "ፈረንሳይ ሆስፒታል",
                   "url": "https://www.openstreetmap.org/way/787549806",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 787549806,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%E1%8D%88%E1%88%A8%E1%8A%95%E1%88%B3%E1%8B%AD%20%E1%88%86%E1%88%B5%E1%8D%92%E1%89%B3%E1%88%8D%20Dire%20Dawa%20Ethiopia",
+                "nominatimSnapshot": {
+                  "displayName": "ፈረንሳይ ሆስፒታል, Before Station Road, የ'ሰላም አዳራሽ መንጊስት, Dirree Dhawaa / Dir Dhabe / ድሬዳዋ, ኢትዮጵያ",
+                  "postalCode": null,
+                  "latitude": 9.5900136,
+                  "longitude": 41.8559824,
+                  "osmUrl": "https://www.openstreetmap.org/way/787549806"
                 },
                 "latitude": 9.5900136,
                 "longitude": 41.8559824
@@ -133,6 +152,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 4720178594,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20of%20Abyssinia%20Bahirdar%20Branch%20Bahir%20Dar%20Ethiopia",
+                "nominatimSnapshot": {
+                  "displayName": "Bank of Abyssinia Bahirdar Branch, A3, ሻምቡ አካባቢ, ሳር መንደር, Bahir Dar, አማራ ክልል",
+                  "postalCode": "6600",
+                  "latitude": 11.594689,
+                  "longitude": 37.3877191,
+                  "osmUrl": "https://www.openstreetmap.org/node/4720178594"
+                },
                 "latitude": 11.594689,
                 "longitude": 37.3877191
               }
@@ -147,13 +176,23 @@
             "name": "Mekelle",
             "addresses": [
               {
-                "addressLine": "Dashen bank, Selam Street, Maqale, Mekelle, ትግራይ تجراى, 1547",
+                "addressLine": "Dashen bank, Selam Street, Maqale, Mekelle, ትግራይ تجراى",
                 "postalCode": "1547",
                 "source": {
                   "title": "Dashen bank",
                   "url": "https://www.openstreetmap.org/node/4972403029",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4972403029,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Dashen%20bank%20Mekelle%20Ethiopia",
+                "nominatimSnapshot": {
+                  "displayName": "Dashen bank, Selam Street, Maqale, Mekelle, ትግራይ تجراى",
+                  "postalCode": "1547",
+                  "latitude": 13.4964503,
+                  "longitude": 39.4768161,
+                  "osmUrl": "https://www.openstreetmap.org/node/4972403029"
                 },
                 "latitude": 13.4964503,
                 "longitude": 39.4768161

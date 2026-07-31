@@ -464,7 +464,7 @@ export function getHistoryDetail(id: number, userId: number, includeDebug = fals
       `Region: ${row.region}`,
       `City: ${row.city}`,
       `Place of Birth: ${row.place_of_birth}`,
-      `Address: ${[row.address_line, row.postal_code].filter(Boolean).join(', ')}`,
+      `Address: ${row.address_line}`,
       row.postal_code ? `Postal Code: ${row.postal_code}` : '',
       `Document Type: ${row.document_type}`,
       `Document Number: ${row.document_value}`,

@@ -65,6 +65,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 6759191628,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bravia%20Hotel%20Niamey%20Niger",
+                "nominatimSnapshot": {
+                  "displayName": "Bravia Hotel, Rue PL - 23, Château 1, Plateau, Arrondissement Communal Niamey 1, Niamey",
+                  "postalCode": "8001",
+                  "latitude": 13.5215251,
+                  "longitude": 2.0997705,
+                  "osmUrl": "https://www.openstreetmap.org/node/6759191628"
+                },
                 "latitude": 13.5215251,
                 "longitude": 2.0997705
               }
@@ -79,16 +89,25 @@
             "name": "Maradi",
             "addresses": [
               {
-                "addressLine": "DAN BOUZOU Hospital, Dan Bouzou, Aguié, Maradi, 4000, Niger",
-                "postalCode": "4000",
+                "addressLine": "Bank of Africa, Avenue Diori Hamani, Maradi, Madarounfa, Maradi, Niger",
                 "source": {
-                  "title": "DAN BOUZOU Hospital",
-                  "url": "https://www.openstreetmap.org/way/524039035",
+                  "title": "Bank of Africa",
+                  "url": "https://www.openstreetmap.org/node/3900153015",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 13.6566273,
-                "longitude": 7.5507319
+                "osmType": "node",
+                "osmId": 3900153015,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20of%20Africa%20Maradi%20Niger",
+                "nominatimSnapshot": {
+                  "displayName": "Bank of Africa, Avenue Diori Hamani, Maradi, Madarounfa, Maradi, Niger",
+                  "postalCode": null,
+                  "latitude": 13.4945236,
+                  "longitude": 7.1100237,
+                  "osmUrl": "https://www.openstreetmap.org/node/3900153015"
+                },
+                "latitude": 13.4945236,
+                "longitude": 7.1100237
               }
             ]
           }

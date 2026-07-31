@@ -76,6 +76,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 1537504486,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Nairobi%20General%20Post%20Office%20Nairobi%20Kenya",
+                "nominatimSnapshot": {
+                  "displayName": "Nairobi General Post Office, Kenyatta Avenue, City Square sublocation, Starehe location, CBD division, Starehe",
+                  "postalCode": "00100",
+                  "latitude": -1.286295,
+                  "longitude": 36.8196418,
+                  "osmUrl": "https://www.openstreetmap.org/node/1537504486"
+                },
                 "latitude": -1.286295,
                 "longitude": 36.8196418
               }
@@ -98,6 +108,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 6054561497,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Jambo%20Paradise%20Hotel%20-%20Mombasa%20Mombasa%20Kenya",
+                "nominatimSnapshot": {
+                  "displayName": "Jambo Paradise Hotel - Mombasa, Tana Street, Saba Saba, Tononoka, Mombasa, Tononoka ward",
+                  "postalCode": "80112",
+                  "latitude": -4.0479315,
+                  "longitude": 39.6661295,
+                  "osmUrl": "https://www.openstreetmap.org/node/6054561497"
+                },
                 "latitude": -4.0479315,
                 "longitude": 39.6661295
               }
@@ -119,6 +139,16 @@
                   "url": "https://www.openstreetmap.org/way/1172998264",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 1172998264,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=University%20of%20Nairobi%20Kisumu%20Campus%20Kisumu%20Kenya",
+                "nominatimSnapshot": {
+                  "displayName": "University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central",
+                  "postalCode": "40141",
+                  "latitude": -0.1042829,
+                  "longitude": 34.7534167,
+                  "osmUrl": "https://www.openstreetmap.org/way/1172998264"
                 },
                 "latitude": -0.1042829,
                 "longitude": 34.7534167

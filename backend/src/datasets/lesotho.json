@@ -62,12 +62,21 @@
             "addresses": [
               {
                 "addressLine": "Victoria Hotel, Kingsway, Qhobosheane Government Complex, Maseru Central, Maseru, Maseru District",
-                "postalCode": "100",
                 "source": {
                   "title": "Victoria Hotel",
                   "url": "https://www.openstreetmap.org/node/4482888294",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4482888294,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Victoria%20Hotel%20Maseru%20Lesotho",
+                "nominatimSnapshot": {
+                  "displayName": "Victoria Hotel, Kingsway, Qhobosheane Government Complex, Maseru Central, Maseru, Maseru District",
+                  "postalCode": null,
+                  "latitude": -29.3124323,
+                  "longitude": 27.4785605,
+                  "osmUrl": "https://www.openstreetmap.org/node/4482888294"
                 },
                 "latitude": -29.3124323,
                 "longitude": 27.4785605
@@ -84,12 +93,21 @@
             "addresses": [
               {
                 "addressLine": "Standard Lesotho Bank, Hlotse Main Street, Ha Letlatsa (Tsifa-Limali), Lisemeng (Hlotse), Hlotse, Leribe District",
-                "postalCode": "300",
                 "source": {
                   "title": "Standard Lesotho Bank",
                   "url": "https://www.openstreetmap.org/node/5856832585",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5856832585,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Standard%20Lesotho%20Bank%20Hlotse%20Lesotho",
+                "nominatimSnapshot": {
+                  "displayName": "Standard Lesotho Bank, Hlotse Main Street, Ha Letlatsa (Tsifa-Limali), Lisemeng (Hlotse), Hlotse, Leribe District",
+                  "postalCode": null,
+                  "latitude": -28.8729644,
+                  "longitude": 28.0416199,
+                  "osmUrl": "https://www.openstreetmap.org/node/5856832585"
                 },
                 "latitude": -28.8729644,
                 "longitude": 28.0416199

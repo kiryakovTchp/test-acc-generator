@@ -84,12 +84,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel Tropicana, Avenida Hasán II, Los Ángeles, Santa Isabel, Malabo, Distrito de Malabo",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel Tropicana",
                   "url": "https://www.openstreetmap.org/node/2914015325",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2914015325,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Tropicana%20Malabo%20Equatorial%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Tropicana, Avenida Hasán II, Los Ángeles, Santa Isabel, Malabo, Distrito de Malabo",
+                  "postalCode": null,
+                  "latitude": 3.7467674,
+                  "longitude": 8.7740454,
+                  "osmUrl": "https://www.openstreetmap.org/node/2914015325"
                 },
                 "latitude": 3.7467674,
                 "longitude": 8.7740454
@@ -106,12 +115,21 @@
             "addresses": [
               {
                 "addressLine": "Aeropuerto Internacional de Bata, Carretera del Aeropuerto, Bata, Litoral, Región Continental, Guinea Ecuatorial",
-                "postalCode": "",
                 "source": {
                   "title": "Aeropuerto Internacional de Bata",
                   "url": "https://www.openstreetmap.org/relation/12373140",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "relation",
+                "osmId": 12373140,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Aeropuerto%20Internacional%20de%20Bata%20Bata%20Equatorial%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Aeropuerto Internacional de Bata, Carretera del Aeropuerto, Bata, Litoral, Región Continental, Guinea Ecuatorial",
+                  "postalCode": null,
+                  "latitude": 1.9093582,
+                  "longitude": 9.807491,
+                  "osmUrl": "https://www.openstreetmap.org/relation/12373140"
                 },
                 "latitude": 1.9093582,
                 "longitude": 9.807491
@@ -128,12 +146,21 @@
             "addresses": [
               {
                 "addressLine": "Evinayong, Centro Sur, Región Continental, Guinea Ecuatorial",
-                "postalCode": "",
                 "source": {
                   "title": "Evinayong",
                   "url": "https://www.openstreetmap.org/relation/12718869",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "relation",
+                "osmId": 12718869,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Evinayong%20Evinayong%20Equatorial%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Evinayong, Centro Sur, Región Continental, Guinea Ecuatorial",
+                  "postalCode": null,
+                  "latitude": 1.4388356,
+                  "longitude": 10.5516564,
+                  "osmUrl": "https://www.openstreetmap.org/relation/12718869"
                 },
                 "latitude": 1.4388356,
                 "longitude": 10.5516564
@@ -150,12 +177,21 @@
             "addresses": [
               {
                 "addressLine": "Aeropuerto de Mongomo, Carretera Ebebiyin - Mongomo, Mongomo, Wele-Nzas, Región Continental, Guinea Ecuatorial",
-                "postalCode": "",
                 "source": {
                   "title": "Aeropuerto de Mongomo",
                   "url": "https://www.openstreetmap.org/node/6543791066",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 6543791066,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Aeropuerto%20de%20Mongomo%20Mongomo%20Equatorial%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Aeropuerto de Mongomo, Carretera Ebebiyin - Mongomo, Mongomo, Wele-Nzas, Región Continental, Guinea Ecuatorial",
+                  "postalCode": null,
+                  "latitude": 1.6366914,
+                  "longitude": 11.3021643,
+                  "osmUrl": "https://www.openstreetmap.org/node/6543791066"
                 },
                 "latitude": 1.6366914,
                 "longitude": 11.3021643

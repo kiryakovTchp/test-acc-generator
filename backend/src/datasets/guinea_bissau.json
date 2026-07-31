@@ -91,6 +91,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 130542951,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Imp%C3%A9rio%20Bissau%20Guinea-Bissau",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Império, Avenida Amilcar Cabral, Tchada, Reino, Bissau, Sector autónomo de Bissau",
+                  "postalCode": "1021",
+                  "latitude": 11.8624742,
+                  "longitude": -15.5840878,
+                  "osmUrl": "https://www.openstreetmap.org/way/130542951"
+                },
                 "latitude": 11.8624742,
                 "longitude": -15.5840878
               }
@@ -106,12 +116,21 @@
             "addresses": [
               {
                 "addressLine": "HOTEL VISIOM, N1;N4, Gabu, Sector de Gabu, Região de Gabu, Província Leste",
-                "postalCode": "",
                 "source": {
                   "title": "HOTEL VISIOM",
                   "url": "https://www.openstreetmap.org/node/2818619884",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2818619884,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=HOTEL%20VISIOM%20Gabu%20Guinea-Bissau",
+                "nominatimSnapshot": {
+                  "displayName": "HOTEL VISIOM, N1;N4, Gabu, Sector de Gabu, Região de Gabu, Província Leste",
+                  "postalCode": null,
+                  "latitude": 12.2791319,
+                  "longitude": -14.2164265,
+                  "osmUrl": "https://www.openstreetmap.org/node/2818619884"
                 },
                 "latitude": 12.2791319,
                 "longitude": -14.2164265
@@ -128,12 +147,21 @@
             "addresses": [
               {
                 "addressLine": "Hospital de Bafatá, Avenida Principal, Bafatá, Sector de Bafatá, Região de Bafatá, Província Leste",
-                "postalCode": "",
                 "source": {
                   "title": "Hospital de Bafatá",
                   "url": "https://www.openstreetmap.org/way/601314145",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 601314145,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hospital%20de%20Bafat%C3%A1%20Bafata%20Guinea-Bissau",
+                "nominatimSnapshot": {
+                  "displayName": "Hospital de Bafatá, Avenida Principal, Bafatá, Sector de Bafatá, Região de Bafatá, Província Leste",
+                  "postalCode": null,
+                  "latitude": 12.168915,
+                  "longitude": -14.6589602,
+                  "osmUrl": "https://www.openstreetmap.org/way/601314145"
                 },
                 "latitude": 12.168915,
                 "longitude": -14.6589602
@@ -150,12 +178,21 @@
             "addresses": [
               {
                 "addressLine": "Delta Hotel, R1, Cacheu, Sector de Cacheu, Região de Cacheu, Província Norte",
-                "postalCode": "",
                 "source": {
                   "title": "Delta Hotel",
                   "url": "https://www.openstreetmap.org/node/11288671069",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 11288671069,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Delta%20Hotel%20Cacheu%20Guinea-Bissau",
+                "nominatimSnapshot": {
+                  "displayName": "Delta Hotel, R1, Cacheu, Sector de Cacheu, Região de Cacheu, Província Norte",
+                  "postalCode": null,
+                  "latitude": 12.2773169,
+                  "longitude": -16.1663541,
+                  "osmUrl": "https://www.openstreetmap.org/node/11288671069"
                 },
                 "latitude": 12.2773169,
                 "longitude": -16.1663541

@@ -99,13 +99,22 @@
             "name": "Harare",
             "addresses": [
               {
-                "addressLine": "Zimbabwe Open University Harare Campus, Julius Nyerere Way, Braeside, Harare, Harare Province, 00000",
-                "postalCode": "00000",
+                "addressLine": "Zimbabwe Open University Harare Campus, Julius Nyerere Way, Braeside, Harare, Harare Province",
                 "source": {
                   "title": "Zimbabwe Open University Harare Campus",
                   "url": "https://www.openstreetmap.org/node/8841763817",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 8841763817,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Zimbabwe%20Open%20University%20Harare%20Campus%20Harare%20Zimbabwe",
+                "nominatimSnapshot": {
+                  "displayName": "Zimbabwe Open University Harare Campus, Julius Nyerere Way, Braeside, Harare, Harare Province",
+                  "postalCode": null,
+                  "latitude": -17.8298274,
+                  "longitude": 31.0471078,
+                  "osmUrl": "https://www.openstreetmap.org/node/8841763817"
                 },
                 "latitude": -17.8298274,
                 "longitude": 31.0471078
@@ -122,12 +131,21 @@
             "addresses": [
               {
                 "addressLine": "Mpilo central Hospital, Ngazimbi Road, Barbour Fields, Nguboyenja, Mzilikazi, Bulawayo",
-                "postalCode": "",
                 "source": {
                   "title": "Mpilo central Hospital",
                   "url": "https://www.openstreetmap.org/way/461688230",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 461688230,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Mpilo%20central%20Hospital%20Bulawayo%20Zimbabwe",
+                "nominatimSnapshot": {
+                  "displayName": "Mpilo central Hospital, Ngazimbi Road, Barbour Fields, Nguboyenja, Mzilikazi, Bulawayo",
+                  "postalCode": null,
+                  "latitude": -20.1269837,
+                  "longitude": 28.571278,
+                  "osmUrl": "https://www.openstreetmap.org/way/461688230"
                 },
                 "latitude": -20.1269837,
                 "longitude": 28.571278
@@ -144,12 +162,21 @@
             "addresses": [
               {
                 "addressLine": "Catholic University of Zimbabwe, Lobengula Avenue, Southdown, Gweru, Midlands, Zimbabwe",
-                "postalCode": "",
                 "source": {
                   "title": "Catholic University of Zimbabwe",
                   "url": "https://www.openstreetmap.org/node/10959029754",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 10959029754,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Catholic%20University%20of%20Zimbabwe%20Gweru%20Zimbabwe",
+                "nominatimSnapshot": {
+                  "displayName": "Catholic University of Zimbabwe, Lobengula Avenue, Southdown, Gweru, Midlands, Zimbabwe",
+                  "postalCode": null,
+                  "latitude": -19.4574441,
+                  "longitude": 29.8166013,
+                  "osmUrl": "https://www.openstreetmap.org/node/10959029754"
                 },
                 "latitude": -19.4574441,
                 "longitude": 29.8166013

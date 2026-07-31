@@ -94,12 +94,21 @@
             "addresses": [
               {
                 "addressLine": "Accra Metropolitan Assembly, Independence Avenue, Ridge, Accra Central, Accra, Korle-Klottey Municipal District",
-                "postalCode": "GA143",
                 "source": {
                   "title": "Accra Metropolitan Assembly",
                   "url": "https://www.openstreetmap.org/way/613271739",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 613271739,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Accra%20Metropolitan%20Assembly%20Accra%20Ghana",
+                "nominatimSnapshot": {
+                  "displayName": "Accra Metropolitan Assembly, Independence Avenue, Ridge, Accra Central, Accra, Korle-Klottey Municipal District",
+                  "postalCode": null,
+                  "latitude": 5.5507962,
+                  "longitude": -0.2035334,
+                  "osmUrl": "https://www.openstreetmap.org/way/613271739"
                 },
                 "latitude": 5.5507962,
                 "longitude": -0.2035334
@@ -111,12 +120,21 @@
             "addresses": [
               {
                 "addressLine": "Tema Community 7 Post Office, Prono Street, Community 7, Tema, Tema Metropolitan District, Greater Accra Region",
-                "postalCode": "GT045",
                 "source": {
                   "title": "Tema Community 7 Post Office",
                   "url": "https://www.openstreetmap.org/node/7170575985",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 7170575985,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Tema%20Community%207%20Post%20Office%20Tema%20Ghana",
+                "nominatimSnapshot": {
+                  "displayName": "Tema Community 7 Post Office, Prono Street, Community 7, Tema, Tema Metropolitan District, Greater Accra Region",
+                  "postalCode": null,
+                  "latitude": 5.6629277,
+                  "longitude": -0.0104045,
+                  "osmUrl": "https://www.openstreetmap.org/node/7170575985"
                 },
                 "latitude": 5.6629277,
                 "longitude": -0.0104045
@@ -140,6 +158,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 571757260,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Bank%20of%20Ghana%20Kumasi%20Ghana",
+                "nominatimSnapshot": {
+                  "displayName": "Bank of Ghana, Asratoase Street, Adum, Kumasi, Kumasi Metropolitan District, Ashanti Region",
+                  "postalCode": "AK-010-1295",
+                  "latitude": 6.6925643,
+                  "longitude": -1.62483,
+                  "osmUrl": "https://www.openstreetmap.org/way/571757260"
+                },
                 "latitude": 6.6925643,
                 "longitude": -1.62483
               }
@@ -150,12 +178,21 @@
             "addresses": [
               {
                 "addressLine": "Obuasi Post Office, Ofori Agyeman II Street, A.G.A, Obuasi, Obuasi Municipal District, Ashanti Region",
-                "postalCode": "AO028",
                 "source": {
                   "title": "Obuasi Post Office",
                   "url": "https://www.openstreetmap.org/node/2159242273",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2159242273,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Obuasi%20Post%20Office%20Obuasi%20Ghana",
+                "nominatimSnapshot": {
+                  "displayName": "Obuasi Post Office, Ofori Agyeman II Street, A.G.A, Obuasi, Obuasi Municipal District, Ashanti Region",
+                  "postalCode": null,
+                  "latitude": 6.2000748,
+                  "longitude": -1.6648318,
+                  "osmUrl": "https://www.openstreetmap.org/node/2159242273"
                 },
                 "latitude": 6.2000748,
                 "longitude": -1.6648318
@@ -172,12 +209,21 @@
             "addresses": [
               {
                 "addressLine": "Access Bank, Bank Street, Tishigu Town, Tamale, Tamale Metropolitan District, Northern Region",
-                "postalCode": "NT-0148-3057",
                 "source": {
                   "title": "Access Bank",
                   "url": "https://www.openstreetmap.org/node/1791490402",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 1791490402,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Access%20Bank%20Tamale%20Ghana",
+                "nominatimSnapshot": {
+                  "displayName": "Access Bank, Bank Street, Tishigu Town, Tamale, Tamale Metropolitan District, Northern Region",
+                  "postalCode": null,
+                  "latitude": 9.4049258,
+                  "longitude": -0.8416006,
+                  "osmUrl": "https://www.openstreetmap.org/node/1791490402"
                 },
                 "latitude": 9.4049258,
                 "longitude": -0.8416006

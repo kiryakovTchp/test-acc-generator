@@ -83,12 +83,21 @@
             "addresses": [
               {
                 "addressLine": "Joliparc Hotel & spa, 5, Avenue haute tension, Binza Météo, Congo, Ngaliema",
-                "postalCode": "00243",
                 "source": {
                   "title": "Joliparc Hotel & spa",
                   "url": "https://www.openstreetmap.org/way/665085797",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 665085797,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Joliparc%20Hotel%20%26%20spa%20Kinshasa%20Congo%20(Kinshasa)",
+                "nominatimSnapshot": {
+                  "displayName": "Joliparc Hotel & spa, 5, Avenue haute tension, Binza Météo, Congo, Ngaliema",
+                  "postalCode": null,
+                  "latitude": -4.3602498,
+                  "longitude": 15.2538347,
+                  "osmUrl": "https://www.openstreetmap.org/way/665085797"
                 },
                 "latitude": -4.3602498,
                 "longitude": 15.2538347
@@ -105,12 +114,21 @@
             "addresses": [
               {
                 "addressLine": "Poste de Lubumbashi, Avenue Jason Sendwe, Luvua, Makutano, Lubumbashi, Ville de Lubumbashi",
-                "postalCode": "",
                 "source": {
                   "title": "Poste de Lubumbashi",
                   "url": "https://www.openstreetmap.org/node/4273069990",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 4273069990,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Poste%20de%20Lubumbashi%20Lubumbashi%20Congo%20(Kinshasa)",
+                "nominatimSnapshot": {
+                  "displayName": "Poste de Lubumbashi, Avenue Jason Sendwe, Luvua, Makutano, Lubumbashi, Ville de Lubumbashi",
+                  "postalCode": null,
+                  "latitude": -11.6663727,
+                  "longitude": 27.4857994,
+                  "osmUrl": "https://www.openstreetmap.org/node/4273069990"
                 },
                 "latitude": -11.6663727,
                 "longitude": 27.4857994
@@ -127,12 +145,21 @@
             "addresses": [
               {
                 "addressLine": "HÔTEL aux 2 Paysages, 234, Avenue du lac, Himbi, Goma, Nord-Kivu",
-                "postalCode": "0600",
                 "source": {
                   "title": "HÔTEL aux 2 Paysages",
                   "url": "https://www.openstreetmap.org/way/997487634",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 997487634,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=H%C3%94TEL%20aux%202%20Paysages%20Goma%20Congo%20(Kinshasa)",
+                "nominatimSnapshot": {
+                  "displayName": "HÔTEL aux 2 Paysages, 234, Avenue du lac, Himbi, Goma, Nord-Kivu",
+                  "postalCode": null,
+                  "latitude": -1.6725795,
+                  "longitude": 29.2005487,
+                  "osmUrl": "https://www.openstreetmap.org/way/997487634"
                 },
                 "latitude": -1.6725795,
                 "longitude": 29.2005487
@@ -148,13 +175,22 @@
             "name": "Bukavu",
             "addresses": [
               {
-                "addressLine": "TMB BANK, Avenue Patrice Emery Lumumba, Ibanda, Bukavu, Sud-Kivu, 00243",
-                "postalCode": "00243",
+                "addressLine": "TMB BANK, Avenue Patrice Emery Lumumba, Ibanda, Bukavu, Sud-Kivu",
                 "source": {
                   "title": "TMB BANK",
                   "url": "https://www.openstreetmap.org/node/13901980291",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 13901980291,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=TMB%20BANK%20Bukavu%20Congo%20(Kinshasa)",
+                "nominatimSnapshot": {
+                  "displayName": "TMB BANK, Avenue Patrice Emery Lumumba, Ibanda, Bukavu, Sud-Kivu",
+                  "postalCode": null,
+                  "latitude": -2.5020242,
+                  "longitude": 28.8575478,
+                  "osmUrl": "https://www.openstreetmap.org/node/13901980291"
                 },
                 "latitude": -2.5020242,
                 "longitude": 28.8575478

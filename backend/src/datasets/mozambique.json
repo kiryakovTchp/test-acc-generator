@@ -60,12 +60,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel, Av. Karl Marx, Central \"C\", Distrito Municipal de KaMpfumu, Cidade de Maputo, Zona Sul",
-                "postalCode": "0101-03",
                 "source": {
                   "title": "Hotel",
                   "url": "https://www.openstreetmap.org/node/931240306",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 931240306,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Maputo%20Mozambique",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel, Av. Karl Marx, Central \"C\", Distrito Municipal de KaMpfumu, Cidade de Maputo, Zona Sul",
+                  "postalCode": null,
+                  "latitude": -25.9721362,
+                  "longitude": 32.5694077,
+                  "osmUrl": "https://www.openstreetmap.org/node/931240306"
                 },
                 "latitude": -25.9721362,
                 "longitude": 32.5694077
@@ -82,12 +91,21 @@
             "addresses": [
               {
                 "addressLine": "Hospital Geral de Nampula, N13, Nampula, Cidade de Nampula, Nampula, Zona Norte",
-                "postalCode": "",
                 "source": {
                   "title": "Hospital Geral de Nampula",
                   "url": "https://www.openstreetmap.org/way/834066701",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 834066701,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hospital%20Geral%20de%20Nampula%20Nampula%20Mozambique",
+                "nominatimSnapshot": {
+                  "displayName": "Hospital Geral de Nampula, N13, Nampula, Cidade de Nampula, Nampula, Zona Norte",
+                  "postalCode": null,
+                  "latitude": -15.0717912,
+                  "longitude": 39.2158934,
+                  "osmUrl": "https://www.openstreetmap.org/way/834066701"
                 },
                 "latitude": -15.0717912,
                 "longitude": 39.2158934

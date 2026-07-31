@@ -67,12 +67,21 @@
             "addresses": [
               {
                 "addressLine": "Banco de Fomento Angola, 263, Alameda Ho Chi Minh, Vila Clotilde, Vila Alice, Luanda",
-                "postalCode": "R/C",
                 "source": {
                   "title": "Banco de Fomento Angola",
                   "url": "https://www.openstreetmap.org/way/223419793",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 223419793,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Banco%20de%20Fomento%20Angola%20Luanda%20Angola",
+                "nominatimSnapshot": {
+                  "displayName": "Banco de Fomento Angola, 263, Alameda Ho Chi Minh, Vila Clotilde, Vila Alice, Luanda",
+                  "postalCode": null,
+                  "latitude": -8.8194827,
+                  "longitude": 13.2464149,
+                  "osmUrl": "https://www.openstreetmap.org/way/223419793"
                 },
                 "latitude": -8.8194827,
                 "longitude": 13.2464149
@@ -89,12 +98,21 @@
             "addresses": [
               {
                 "addressLine": "DHL - Lubango, Rua Patrice Lumumba, Centro Cívico, Hélder Neto, Lubango, Huíla",
-                "postalCode": "",
                 "source": {
                   "title": "DHL - Lubango",
                   "url": "https://www.openstreetmap.org/node/8557581101",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 8557581101,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=DHL%20-%20Lubango%20Lubango%20Angola",
+                "nominatimSnapshot": {
+                  "displayName": "DHL - Lubango, Rua Patrice Lumumba, Centro Cívico, Hélder Neto, Lubango, Huíla",
+                  "postalCode": null,
+                  "latitude": -14.9170285,
+                  "longitude": 13.4908457,
+                  "osmUrl": "https://www.openstreetmap.org/node/8557581101"
                 },
                 "latitude": -14.9170285,
                 "longitude": 13.4908457
@@ -111,12 +129,21 @@
             "addresses": [
               {
                 "addressLine": "Banco de Fomento Angola, Rua Comandante Kassangi, Bairro Benfica, Benguela, Angola",
-                "postalCode": "",
                 "source": {
                   "title": "Banco de Fomento Angola",
                   "url": "https://www.openstreetmap.org/node/2463026606",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2463026606,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Banco%20de%20Fomento%20Angola%20Benguela%20Angola",
+                "nominatimSnapshot": {
+                  "displayName": "Banco de Fomento Angola, Rua Comandante Kassangi, Bairro Benfica, Benguela, Angola",
+                  "postalCode": null,
+                  "latitude": -12.5792752,
+                  "longitude": 13.401867,
+                  "osmUrl": "https://www.openstreetmap.org/node/2463026606"
                 },
                 "latitude": -12.5792752,
                 "longitude": 13.401867
@@ -128,12 +155,21 @@
             "addresses": [
               {
                 "addressLine": "Banco de Fomento Angola (BFA), Rua 15 de Agosto, Vinte-Oito, Lobito, Benguela, Angola",
-                "postalCode": "",
                 "source": {
                   "title": "Banco de Fomento Angola (BFA)",
                   "url": "https://www.openstreetmap.org/node/2881867975",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2881867975,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Banco%20de%20Fomento%20Angola%20(BFA)%20Lobito%20Angola",
+                "nominatimSnapshot": {
+                  "displayName": "Banco de Fomento Angola (BFA), Rua 15 de Agosto, Vinte-Oito, Lobito, Benguela, Angola",
+                  "postalCode": null,
+                  "latitude": -12.3517993,
+                  "longitude": 13.5466635,
+                  "osmUrl": "https://www.openstreetmap.org/node/2881867975"
                 },
                 "latitude": -12.3517993,
                 "longitude": 13.5466635

@@ -78,13 +78,23 @@
             "name": "Mbabane",
             "addresses": [
               {
-                "addressLine": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho, H100",
+                "addressLine": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho",
                 "postalCode": "H100",
                 "source": {
                   "title": "Central Bank of Swaziland",
                   "url": "https://www.openstreetmap.org/node/848603772",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 848603772,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Central%20Bank%20of%20Swaziland%20Mbabane%20Swaziland",
+                "nominatimSnapshot": {
+                  "displayName": "Central Bank of Swaziland, Mahlokohla Street, Mbabane, Inkhundla Mbabane, Hhohho",
+                  "postalCode": "H100",
+                  "latitude": -26.3264735,
+                  "longitude": 31.1458295,
+                  "osmUrl": "https://www.openstreetmap.org/node/848603772"
                 },
                 "latitude": -26.3264735,
                 "longitude": 31.1458295
@@ -96,12 +106,21 @@
             "addresses": [
               {
                 "addressLine": "PIGG'S PEAK CENTRAL HIGH, King Mswati II Highway, Piggs Peak, Inkhundla Piggs Peak, Hhohho, Eswatini",
-                "postalCode": "",
                 "source": {
                   "title": "PIGG'S PEAK CENTRAL HIGH",
                   "url": "https://www.openstreetmap.org/node/13316867981",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 13316867981,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=PIGG'S%20PEAK%20CENTRAL%20HIGH%20Pigg's%20Peak%20Swaziland",
+                "nominatimSnapshot": {
+                  "displayName": "PIGG'S PEAK CENTRAL HIGH, King Mswati II Highway, Piggs Peak, Inkhundla Piggs Peak, Hhohho, Eswatini",
+                  "postalCode": null,
+                  "latitude": -25.9649574,
+                  "longitude": 31.2422606,
+                  "osmUrl": "https://www.openstreetmap.org/node/13316867981"
                 },
                 "latitude": -25.9649574,
                 "longitude": 31.2422606
@@ -117,13 +136,23 @@
             "name": "Manzini",
             "addresses": [
               {
-                "addressLine": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini, M100",
+                "addressLine": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini",
                 "postalCode": "M100",
                 "source": {
                   "title": "First National Bank ATM",
                   "url": "https://www.openstreetmap.org/node/2614887997",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2614887997,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=First%20National%20Bank%20ATM%20Manzini%20Swaziland",
+                "nominatimSnapshot": {
+                  "displayName": "First National Bank ATM, Ngwane Street, Manzini, Inkhundla Manzini, Manzini",
+                  "postalCode": "M100",
+                  "latitude": -26.4980664,
+                  "longitude": 31.3728454,
+                  "osmUrl": "https://www.openstreetmap.org/node/2614887997"
                 },
                 "latitude": -26.4980664,
                 "longitude": 31.3728454

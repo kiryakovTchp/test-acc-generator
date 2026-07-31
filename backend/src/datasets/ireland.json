@@ -75,6 +75,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 316971224,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20RIU%20Plaza%20The%20Gresham%20Dublin%20Dublin%20Ireland",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel RIU Plaza The Gresham Dublin, 23, O'Connell Street Upper, North City Ward 1986, Dublin, County Dublin",
+                  "postalCode": "D01 C3W7",
+                  "latitude": 53.3516104,
+                  "longitude": -6.2602645,
+                  "osmUrl": "https://www.openstreetmap.org/way/316971224"
+                },
                 "latitude": 53.3516104,
                 "longitude": -6.2602645
               }
@@ -97,6 +107,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "way",
+                "osmId": 1304929937,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Premier%20Inn%20Cork%20City%20Centre%20Hotel%20Cork%20Ireland",
+                "nominatimSnapshot": {
+                  "displayName": "Premier Inn Cork City Centre Hotel, 11, Morrison's Quay, Morrison's Island, Centre A ED, Cork",
+                  "postalCode": "T12 PF78",
+                  "latitude": 51.8962685,
+                  "longitude": -8.4694698,
+                  "osmUrl": "https://www.openstreetmap.org/way/1304929937"
+                },
                 "latitude": 51.8962685,
                 "longitude": -8.4694698
               }
@@ -118,6 +138,16 @@
                   "url": "https://www.openstreetmap.org/node/450249853",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 450249853,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Galway%20City%20Hostel%20Galway%20Ireland",
+                "nominatimSnapshot": {
+                  "displayName": "Galway City Hostel, Frenchville Lane, Eyre Square, Cathair na Gaillimhe, County Galway, Connacht",
+                  "postalCode": "H91 W862",
+                  "latitude": 53.2741326,
+                  "longitude": -9.0474797,
+                  "osmUrl": "https://www.openstreetmap.org/node/450249853"
                 },
                 "latitude": 53.2741326,
                 "longitude": -9.0474797

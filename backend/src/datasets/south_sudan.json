@@ -78,12 +78,21 @@
             "addresses": [
               {
                 "addressLine": "Police Hospital, University Road, Hai Soura, Juba, Hai Buluk, Juba",
-                "postalCode": "",
                 "source": {
                   "title": "Police Hospital",
                   "url": "https://www.openstreetmap.org/way/320444443",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 320444443,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Police%20Hospital%20Juba%20South%20Sudan",
+                "nominatimSnapshot": {
+                  "displayName": "Police Hospital, University Road, Hai Soura, Juba, Hai Buluk, Juba",
+                  "postalCode": null,
+                  "latitude": 4.8490508,
+                  "longitude": 31.591997,
+                  "osmUrl": "https://www.openstreetmap.org/way/320444443"
                 },
                 "latitude": 4.8490508,
                 "longitude": 31.591997
@@ -100,12 +109,21 @@
             "addresses": [
               {
                 "addressLine": "Upper Nile University, Nyikango Road, Malakal, Makal Shilluk Island, Malakal, Upper Nile أعالى النيل",
-                "postalCode": "",
                 "source": {
                   "title": "Upper Nile University",
                   "url": "https://www.openstreetmap.org/way/218575490",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 218575490,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Upper%20Nile%20University%20Malakal%20South%20Sudan",
+                "nominatimSnapshot": {
+                  "displayName": "Upper Nile University, Nyikango Road, Malakal, Makal Shilluk Island, Malakal, Upper Nile أعالى النيل",
+                  "postalCode": null,
+                  "latitude": 9.5348501,
+                  "longitude": 31.6521694,
+                  "osmUrl": "https://www.openstreetmap.org/way/218575490"
                 },
                 "latitude": 9.5348501,
                 "longitude": 31.6521694

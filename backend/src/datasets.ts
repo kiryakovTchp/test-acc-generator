@@ -77,10 +77,14 @@ const documentRuleSchema = z.strictObject({
 
 const addressSchema = z.strictObject({
   addressLine: z.string().min(1),
-  postalCode: z.string(),
+  postalCode: z.string().min(1).optional(),
   source: datasetSourceSchema.extend({
     type: z.literal('map_reference'),
   }),
+  osmType: z.enum(['node', 'way', 'relation']).optional(),
+  osmId: z.number().int().positive().optional(),
+  nominatimLookupUrl: z.string().url().optional(),
+  nominatimSnapshot: z.unknown().optional(),
   latitude: z.number().optional(),
   longitude: z.number().optional(),
   poBox: z.string().min(1).optional(),

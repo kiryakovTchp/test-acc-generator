@@ -59,12 +59,21 @@
             "addresses": [
               {
                 "addressLine": "La Poste - Bureau de Bamako Darsalam, Avenue de la Liberté, Dravéla, Dar Salam, Médina Coura, Bamako",
-                "postalCode": "",
                 "source": {
                   "title": "La Poste - Bureau de Bamako Darsalam",
                   "url": "https://www.openstreetmap.org/way/422727616",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 422727616,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=La%20Poste%20-%20Bureau%20de%20Bamako%20Darsalam%20Bamako%20Mali",
+                "nominatimSnapshot": {
+                  "displayName": "La Poste - Bureau de Bamako Darsalam, Avenue de la Liberté, Dravéla, Dar Salam, Médina Coura, Bamako",
+                  "postalCode": null,
+                  "latitude": 12.6513245,
+                  "longitude": -8.0001251,
+                  "osmUrl": "https://www.openstreetmap.org/way/422727616"
                 },
                 "latitude": 12.6513245,
                 "longitude": -8.0001251
@@ -80,16 +89,25 @@
             "name": "Sikasso",
             "addresses": [
               {
-                "addressLine": "Aéroport de Bougouni, Route Trans-Sahélienne, Bougouni, Cercle de Bougouni, Région de Sikasso, Mali",
-                "postalCode": "",
+                "addressLine": "Coris bank, Rue du Marché, Natié, Sikasso, Cercle de Sikasso, Région de Sikasso, Mali",
                 "source": {
-                  "title": "Aéroport de Bougouni",
-                  "url": "https://www.openstreetmap.org/node/1042040844",
+                  "title": "Coris bank",
+                  "url": "https://www.openstreetmap.org/node/10830885953",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 11.4397104,
-                "longitude": -7.5073314
+                "osmType": "node",
+                "osmId": 10830885953,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Coris%20bank%20Sikasso%20Mali",
+                "nominatimSnapshot": {
+                  "displayName": "Coris bank, Rue du Marché, Natié, Sikasso, Cercle de Sikasso, Région de Sikasso, Mali",
+                  "postalCode": null,
+                  "latitude": 11.3143839,
+                  "longitude": -5.6699692,
+                  "osmUrl": "https://www.openstreetmap.org/node/10830885953"
+                },
+                "latitude": 11.3143839,
+                "longitude": -5.6699692
               }
             ]
           }

@@ -89,6 +89,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 9668019035,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%E1%83%97%E1%83%98%E1%83%91%E1%83%98%E1%83%A1%E1%83%98%20%E1%83%91%E1%83%90%E1%83%9C%E1%83%99%E1%83%98%20Tbilisi%20Georgia",
+                "nominatimSnapshot": {
+                  "displayName": "თიბისი ბანკი, გიორგი ლეონიძის ქუჩა, მთაწმინდა, სოლოლაკი, მთაწმინდის რაიონი, თბილისი",
+                  "postalCode": "0108",
+                  "latitude": 41.6928176,
+                  "longitude": 44.8009326,
+                  "osmUrl": "https://www.openstreetmap.org/node/9668019035"
+                },
                 "latitude": 41.6928176,
                 "longitude": 44.8009326
               }
@@ -110,6 +120,16 @@
                   "url": "https://www.openstreetmap.org/way/932756389",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 932756389,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%E1%83%91%E1%83%90%E1%83%97%E1%83%A3%E1%83%9B%E1%83%98%E1%83%A1%20%E1%83%AE%E1%83%94%E1%83%9A%E1%83%9D%E1%83%95%E1%83%9C%E1%83%94%E1%83%91%E1%83%98%E1%83%A1%20%E1%83%A1%E1%83%90%E1%83%A1%E1%83%AC%E1%83%90%E1%83%95%E1%83%9A%E1%83%98%20%E1%83%A3%E1%83%9C%E1%83%98%E1%83%95%E1%83%94%E1%83%A0%E1%83%A1%E1%83%98%E1%83%A2%E1%83%94%E1%83%A2%E1%83%98%20Batumi%20Georgia",
+                "nominatimSnapshot": {
+                  "displayName": "ბათუმის ხელოვნების სასწავლი უნივერსიტეტი, 32, ვაჟა-ფშაველას ქუჩა, ძველი ბათუმი, ბათუმი, აჭარის ავტონომიური რესპუბლიკა",
+                  "postalCode": "6000",
+                  "latitude": 41.6477493,
+                  "longitude": 41.6333701,
+                  "osmUrl": "https://www.openstreetmap.org/way/932756389"
                 },
                 "latitude": 41.6477493,
                 "longitude": 41.6333701
@@ -133,6 +153,16 @@
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
+                "osmType": "node",
+                "osmId": 10910659760,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%E1%83%A1%E1%83%90%E1%83%A5%E1%83%90%E1%83%A0%E1%83%97%E1%83%95%E1%83%94%E1%83%9A%E1%83%9D%E1%83%A1%20%E1%83%91%E1%83%90%E1%83%9C%E1%83%99%E1%83%98%20Kutaisi%20Georgia",
+                "nominatimSnapshot": {
+                  "displayName": "საქართველოს ბანკი, 37, ილია ჭავჭავაძის გამზირი, სულხან-საბა, ქუთაისი, იმერეთი",
+                  "postalCode": "4600",
+                  "latitude": 42.2566144,
+                  "longitude": 42.6692516,
+                  "osmUrl": "https://www.openstreetmap.org/node/10910659760"
+                },
                 "latitude": 42.2566144,
                 "longitude": 42.6692516
               }
@@ -147,13 +177,23 @@
             "name": "Telavi",
             "addresses": [
               {
-                "addressLine": "თელავის მუნიციპალიტეტის მერია, ერეკლე მეორის ქუჩა, თელავი, თელავის მუნიციპალიტეტი, კახეთი, 2200",
+                "addressLine": "თელავის მუნიციპალიტეტის მერია, ერეკლე მეორის ქუჩა, თელავი, თელავის მუნიციპალიტეტი, კახეთი",
                 "postalCode": "2200",
                 "source": {
                   "title": "თელავის მუნიციპალიტეტის მერია",
                   "url": "https://www.openstreetmap.org/way/532031051",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 532031051,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=%E1%83%97%E1%83%94%E1%83%9A%E1%83%90%E1%83%95%E1%83%98%E1%83%A1%20%E1%83%9B%E1%83%A3%E1%83%9C%E1%83%98%E1%83%AA%E1%83%98%E1%83%9E%E1%83%90%E1%83%9A%E1%83%98%E1%83%A2%E1%83%94%E1%83%A2%E1%83%98%E1%83%A1%20%E1%83%9B%E1%83%94%E1%83%A0%E1%83%98%E1%83%90%20Telavi%20Georgia",
+                "nominatimSnapshot": {
+                  "displayName": "თელავის მუნიციპალიტეტის მერია, ერეკლე მეორის ქუჩა, თელავი, თელავის მუნიციპალიტეტი, კახეთი",
+                  "postalCode": "2200",
+                  "latitude": 41.9199283,
+                  "longitude": 45.4707737,
+                  "osmUrl": "https://www.openstreetmap.org/way/532031051"
                 },
                 "latitude": 41.9199283,
                 "longitude": 45.4707737

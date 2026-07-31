@@ -115,12 +115,21 @@
             "addresses": [
               {
                 "addressLine": "International University of Equator - IUE, 05, Boulevard Mwambutsa, Ngagara, Bujumbura, Bujumbura Mairie",
-                "postalCode": "6760",
                 "source": {
                   "title": "International University of Equator - IUE",
                   "url": "https://www.openstreetmap.org/way/802521036",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 802521036,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=International%20University%20of%20Equator%20-%20IUE%20Bujumbura%20Burundi",
+                "nominatimSnapshot": {
+                  "displayName": "International University of Equator - IUE, 05, Boulevard Mwambutsa, Ngagara, Bujumbura, Bujumbura Mairie",
+                  "postalCode": null,
+                  "latitude": -3.3596052,
+                  "longitude": 29.3692995,
+                  "osmUrl": "https://www.openstreetmap.org/way/802521036"
                 },
                 "latitude": -3.3596052,
                 "longitude": 29.3692995
@@ -137,12 +146,21 @@
             "addresses": [
               {
                 "addressLine": "Finbank, Agence de Gitega, RN 2, Marama, Shatanya, Gitega",
-                "postalCode": "",
                 "source": {
                   "title": "Finbank, Agence de Gitega",
                   "url": "https://www.openstreetmap.org/node/2428418316",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2428418316,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Finbank%2C%20Agence%20de%20Gitega%20Gitega%20Burundi",
+                "nominatimSnapshot": {
+                  "displayName": "Finbank, Agence de Gitega, RN 2, Marama, Shatanya, Gitega",
+                  "postalCode": null,
+                  "latitude": -3.4287415,
+                  "longitude": 29.9251925,
+                  "osmUrl": "https://www.openstreetmap.org/node/2428418316"
                 },
                 "latitude": -3.4287415,
                 "longitude": 29.9251925
@@ -159,12 +177,21 @@
             "addresses": [
               {
                 "addressLine": "GREEN HILLS HOTEL, RN 6, Rutoke, Kinazi, Muyinga, Burundi",
-                "postalCode": "",
                 "source": {
                   "title": "GREEN HILLS HOTEL",
                   "url": "https://www.openstreetmap.org/node/5280008448",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5280008448,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=GREEN%20HILLS%20HOTEL%20Muyinga%20Burundi",
+                "nominatimSnapshot": {
+                  "displayName": "GREEN HILLS HOTEL, RN 6, Rutoke, Kinazi, Muyinga, Burundi",
+                  "postalCode": null,
+                  "latitude": -2.83896,
+                  "longitude": 30.34844,
+                  "osmUrl": "https://www.openstreetmap.org/node/5280008448"
                 },
                 "latitude": -2.83896,
                 "longitude": 30.34844
@@ -181,12 +208,21 @@
             "addresses": [
               {
                 "addressLine": "Universitè de Ngozi, RN 6, Muremera, Ngozi, Burundi",
-                "postalCode": "",
                 "source": {
                   "title": "Universitè de Ngozi",
                   "url": "https://www.openstreetmap.org/way/546388481",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 546388481,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Universit%C3%A8%20de%20Ngozi%20Ngozi%20Burundi",
+                "nominatimSnapshot": {
+                  "displayName": "Universitè de Ngozi, RN 6, Muremera, Ngozi, Burundi",
+                  "postalCode": null,
+                  "latitude": -2.9045679,
+                  "longitude": 29.8312796,
+                  "osmUrl": "https://www.openstreetmap.org/way/546388481"
                 },
                 "latitude": -2.9045679,
                 "longitude": 29.8312796
@@ -203,12 +239,21 @@
             "addresses": [
               {
                 "addressLine": "BGF Makamba, RN11, Makamba, Burundi",
-                "postalCode": "",
                 "source": {
                   "title": "BGF Makamba",
                   "url": "https://www.openstreetmap.org/way/736739901",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 736739901,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=BGF%20Makamba%20Makamba%20Burundi",
+                "nominatimSnapshot": {
+                  "displayName": "BGF Makamba, RN11, Makamba, Burundi",
+                  "postalCode": null,
+                  "latitude": -4.1367327,
+                  "longitude": 29.8030076,
+                  "osmUrl": "https://www.openstreetmap.org/way/736739901"
                 },
                 "latitude": -4.1367327,
                 "longitude": 29.8030076

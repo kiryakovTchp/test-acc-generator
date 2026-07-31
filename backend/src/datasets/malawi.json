@@ -65,12 +65,21 @@
             "addresses": [
               {
                 "addressLine": "Reserve Bank, Hannover Avenue, Mbayani, Blantyre, Southern Region, Malawi",
-                "postalCode": "",
                 "source": {
                   "title": "Reserve Bank",
                   "url": "https://www.openstreetmap.org/way/279173224",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 279173224,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Reserve%20Bank%20Blantyre%20Malawi",
+                "nominatimSnapshot": {
+                  "displayName": "Reserve Bank, Hannover Avenue, Mbayani, Blantyre, Southern Region, Malawi",
+                  "postalCode": null,
+                  "latitude": -15.7865919,
+                  "longitude": 35.0037917,
+                  "osmUrl": "https://www.openstreetmap.org/way/279173224"
                 },
                 "latitude": -15.7865919,
                 "longitude": 35.0037917
@@ -81,13 +90,22 @@
             "name": "Zomba",
             "addresses": [
               {
-                "addressLine": "University of Malawi - Chancellor College Campus, abu jabel, Zomba, Southern Region, 280, Malawi",
-                "postalCode": "280",
+                "addressLine": "University of Malawi - Chancellor College Campus, abu jabel, Zomba, Southern Region, Malawi",
                 "source": {
                   "title": "University of Malawi - Chancellor College Campus",
                   "url": "https://www.openstreetmap.org/way/540539479",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 540539479,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=University%20of%20Malawi%20-%20Chancellor%20College%20Campus%20Zomba%20Malawi",
+                "nominatimSnapshot": {
+                  "displayName": "University of Malawi - Chancellor College Campus, abu jabel, Zomba, Southern Region, Malawi",
+                  "postalCode": null,
+                  "latitude": -15.3885705,
+                  "longitude": 35.3374568,
+                  "osmUrl": "https://www.openstreetmap.org/way/540539479"
                 },
                 "latitude": -15.3885705,
                 "longitude": 35.3374568
@@ -103,13 +121,22 @@
             "name": "Lilongwe",
             "addresses": [
               {
-                "addressLine": "Presidential Hotel, Presidential Way, Lilongwe, Central Region, +265, Malawi",
-                "postalCode": "+265",
+                "addressLine": "Presidential Hotel, Presidential Way, Lilongwe, Central Region, Malawi",
                 "source": {
                   "title": "Presidential Hotel",
                   "url": "https://www.openstreetmap.org/way/910134203",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 910134203,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Presidential%20Hotel%20Lilongwe%20Malawi",
+                "nominatimSnapshot": {
+                  "displayName": "Presidential Hotel, Presidential Way, Lilongwe, Central Region, Malawi",
+                  "postalCode": null,
+                  "latitude": -13.9549653,
+                  "longitude": 33.7915683,
+                  "osmUrl": "https://www.openstreetmap.org/way/910134203"
                 },
                 "latitude": -13.9549653,
                 "longitude": 33.7915683
@@ -121,12 +148,21 @@
             "addresses": [
               {
                 "addressLine": "Dedza Pottery Lodge, M1, Dedza, Central Region, Malawi",
-                "postalCode": "",
                 "source": {
                   "title": "Dedza Pottery Lodge",
                   "url": "https://www.openstreetmap.org/node/902447577",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 902447577,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Dedza%20Pottery%20Lodge%20Dedza%20Malawi",
+                "nominatimSnapshot": {
+                  "displayName": "Dedza Pottery Lodge, M1, Dedza, Central Region, Malawi",
+                  "postalCode": null,
+                  "latitude": -14.371204,
+                  "longitude": 34.3025794,
+                  "osmUrl": "https://www.openstreetmap.org/node/902447577"
                 },
                 "latitude": -14.371204,
                 "longitude": 34.3025794
@@ -143,12 +179,21 @@
             "addresses": [
               {
                 "addressLine": "FMB Bank, Glyn Jones Road, Mzuzu, Mzimba, Northern Region, Malawi",
-                "postalCode": "",
                 "source": {
                   "title": "FMB Bank",
                   "url": "https://www.openstreetmap.org/way/237991246",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 237991246,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=FMB%20Bank%20Mzuzu%20Malawi",
+                "nominatimSnapshot": {
+                  "displayName": "FMB Bank, Glyn Jones Road, Mzuzu, Mzimba, Northern Region, Malawi",
+                  "postalCode": null,
+                  "latitude": -11.4624252,
+                  "longitude": 34.0234508,
+                  "osmUrl": "https://www.openstreetmap.org/way/237991246"
                 },
                 "latitude": -11.4624252,
                 "longitude": 34.0234508

@@ -81,13 +81,22 @@
             "name": "Conakry",
             "addresses": [
               {
-                "addressLine": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry, 258",
-                "postalCode": "258",
+                "addressLine": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry",
                 "source": {
                   "title": "Afriland First Bank",
                   "url": "https://www.openstreetmap.org/way/441774562",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "way",
+                "osmId": 441774562,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Afriland%20First%20Bank%20Conakry%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Afriland First Bank, Boulevard de la Nation, Coronthie 1, Kaloum, Conakry",
+                  "postalCode": null,
+                  "latitude": 9.511217,
+                  "longitude": -13.706888,
+                  "osmUrl": "https://www.openstreetmap.org/way/441774562"
                 },
                 "latitude": 9.511217,
                 "longitude": -13.706888
@@ -104,12 +113,21 @@
             "addresses": [
               {
                 "addressLine": "Aéroport de Kankan, N6, ߝߎ߬ߛߋ߲߬, Kankan, Karfamoriah, Préfecture de Kankan",
-                "postalCode": "",
                 "source": {
                   "title": "Aéroport de Kankan",
                   "url": "https://www.openstreetmap.org/node/2598227769",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 2598227769,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=A%C3%A9roport%20de%20Kankan%20Kankan%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Aéroport de Kankan, N6, ߝߎ߬ߛߋ߲߬, Kankan, Karfamoriah, Préfecture de Kankan",
+                  "postalCode": null,
+                  "latitude": 10.4475596,
+                  "longitude": -9.2359064,
+                  "osmUrl": "https://www.openstreetmap.org/node/2598227769"
                 },
                 "latitude": 10.4475596,
                 "longitude": -9.2359064
@@ -125,16 +143,25 @@
             "name": "Nzerekore",
             "addresses": [
               {
-                "addressLine": "Hotel de Africa, N'zérékoré-Macenta, Kélémadiou, Nzérékoré, Guinée",
-                "postalCode": "",
+                "addressLine": "Vista bank, N'zérékoré - Lola, Dorota, Commercial, N'Zérékoré, N'Zérékoré-Centre, Nzérékoré, Guinée",
                 "source": {
-                  "title": "Hotel de Africa",
-                  "url": "https://www.openstreetmap.org/node/6002368587",
+                  "title": "Vista bank",
+                  "url": "https://www.openstreetmap.org/node/10648805458",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
                 },
-                "latitude": 8.0347709,
-                "longitude": -9.0192093
+                "osmType": "node",
+                "osmId": 10648805458,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Vista%20bank%20Nzerekore%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Vista bank, N'zérékoré - Lola, Dorota, Commercial, N'Zérékoré, N'Zérékoré-Centre, Nzérékoré, Guinée",
+                  "postalCode": null,
+                  "latitude": 7.7499417,
+                  "longitude": -8.8185864,
+                  "osmUrl": "https://www.openstreetmap.org/node/10648805458"
+                },
+                "latitude": 7.7499417,
+                "longitude": -8.8185864
               }
             ]
           }
@@ -148,12 +175,21 @@
             "addresses": [
               {
                 "addressLine": "Hotel Masabi, N1, Foulaya, Damakania, Préfecture de Kindia, Kindia",
-                "postalCode": "",
                 "source": {
                   "title": "Hotel Masabi",
                   "url": "https://www.openstreetmap.org/node/5210953723",
                   "type": "map_reference",
                   "checkedAt": "2026-07-31"
+                },
+                "osmType": "node",
+                "osmId": 5210953723,
+                "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Hotel%20Masabi%20Kindia%20Guinea",
+                "nominatimSnapshot": {
+                  "displayName": "Hotel Masabi, N1, Foulaya, Damakania, Préfecture de Kindia, Kindia",
+                  "postalCode": null,
+                  "latitude": 10.0146211,
+                  "longitude": -12.8994676,
+                  "osmUrl": "https://www.openstreetmap.org/node/5210953723"
                 },
                 "latitude": 10.0146211,
                 "longitude": -12.8994676
