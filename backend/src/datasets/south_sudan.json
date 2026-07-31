@@ -5,8 +5,82 @@
   "country": "South Sudan",
   "locale": "en-SS",
   "availability": "review",
-  "names": { "male": ["Deng", "James", "Garang", "Peter"], "female": ["Nyandeng", "Mary", "Adut", "Grace"], "last": ["Deng", "Ajak", "Lual", "Atem"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+211", "nationalLength": 9, "prefixes": ["9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Central Equatoria", "cities": [{ "name": "Juba", "postalPrefixes": ["100"], "streets": ["Airport Road", "Nimule Street"] }] }, { "name": "Upper Nile", "cities": [{ "name": "Malakal", "postalPrefixes": ["300"], "streets": ["Nile Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Sudan location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; South Sudan document data was flagged to avoid Sudan/South Sudan conflation." } }
+  "names": {
+    "male": ["Deng", "James", "Garang", "Peter", "John", "Joseph", "Bol", "Lual", "William", "Atem"],
+    "female": ["Nyandeng", "Mary", "Adut", "Grace", "Rebecca", "Achol", "Ajak", "Awut", "Martha", "Sarah"],
+    "last": ["Deng", "Ajak", "Lual", "Atem", "Garang", "Manyang", "Chol", "Bol", "Mading", "Nyok"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears South Sudan forenames and surnames frequency tables",
+      "url": "https://forebears.io/south-sudan/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy seed with localized name pools."
+  },
+  "phones": {
+    "countryCallingCode": "+211",
+    "nationalLength": 9,
+    "prefixes": ["91", "92", "98"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU South Sudan national numbering plan communication of 17.VI.2021",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000F90002PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU confirms +211 and a 12-digit international format including country code, with 9 as mobile service type and seven subscriber digits. Generated mobile-style numbers are synthetic and not checked for live assignment."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Central Equatoria",
+        "cities": [
+          { "name": "Juba", "postalPrefixes": ["SS"], "streets": ["Airport Road", "Nimule Street", "Ministries Road"] }
+        ]
+      },
+      {
+        "name": "Upper Nile",
+        "cities": [
+          { "name": "Malakal", "postalPrefixes": ["SS"], "streets": ["Nile Road", "Market Street", "Hospital Road"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UK PCGN South Sudan administrative divisions and their centres",
+      "url": "https://assets.publishing.service.gov.uk/media/5a7dc9b7ed915d2ac884d8df/South_Sudan-ADM1s_and_centres_2011.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "PCGN/USBGN confirms Central Equatoria/Juba and Upper Nile/Malakal administrative centres. South Sudan postcode data was not confirmed, so SS is a generator placeholder rather than a public postcode."
+  },
+  "documents": {
+    "national_id_number": {
+      "label": "National ID Number",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "South Sudan government eServices portal",
+        "url": "https://immigration.eservices.gov.ss/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The government eServices portal references an ID number for sign-up, but no public number grammar was found. The nine-digit template is an unconfirmed synthetic placeholder."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO South Sudan ordinary passport SSD-AO-01001",
+        "url": "https://www.consilium.europa.eu/prado/en/SSD-AO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms the South Sudan ordinary passport document. No public passport-number grammar was confirmed; the generated format remains an unconfirmed synthetic placeholder."
+    }
+  }
 }

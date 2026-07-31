@@ -5,8 +5,85 @@
   "country": "Mozambique",
   "locale": "pt-MZ",
   "availability": "review",
-  "names": { "male": ["Carlos", "Manuel", "Joao", "Armando"], "female": ["Maria", "Ana", "Fatima", "Luisa"], "last": ["Mabunda", "Chissano", "Machel", "Nhantumbo"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mozambique name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+258", "nationalLength": 9, "prefixes": ["8"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mozambique phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Maputo", "cities": [{ "name": "Maputo", "postalPrefixes": ["110"], "streets": ["Avenida Julius Nyerere", "Avenida 24 de Julho"] }] }, { "name": "Nampula", "cities": [{ "name": "Nampula", "postalPrefixes": ["310"], "streets": ["Avenida Eduardo Mondlane", "Rua dos Continuadores"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mozambique location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mozambique passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Carlos", "Manuel", "Joao", "Armando"],
+    "female": ["Maria", "Ana", "Fatima", "Luisa"],
+    "last": ["Mabunda", "Chissano", "Machel", "Nhantumbo"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Mozambique forenames and surnames frequency tables",
+      "url": "https://forebears.io/mozambique/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables support representative Mozambican names. This is not an official civil registry export; gender grouping remains a review seed."
+  },
+  "phones": {
+    "countryCallingCode": "+258",
+    "nationalLength": 9,
+    "prefixes": ["83", "87", "88"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Mozambique national numbering plan communication of 23.IV.2026",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000910004PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/INCM confirms country code +258 and public mobile allocations including 83, 87 and the new 88 NDC. Broad 8-leading generation was replaced with directly sourced NDCs only."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Maputo", "cities": [{ "name": "Maputo", "postalPrefixes": ["110"], "streets": ["Avenida Julius Nyerere", "Avenida 24 de Julho"] }] },
+      { "name": "Nampula", "cities": [{ "name": "Nampula", "postalPrefixes": ["310"], "streets": ["Avenida Eduardo Mondlane", "Rua dos Continuadores"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Mozambique postal addressing example",
+      "url": "https://youbianku.com/files/upu/MOZ.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU example confirms Mozambique's four-digit postcode structure and address ordering. City/street samples remain representative review data; postalPrefixes are generator prefixes, not complete postcodes."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "Bilhete de Identidade Number",
+      "templates": ["BI{RAND10}"],
+      "pattern": "^BI\\d{10}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Mozambique passport and identity document country listing",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/moz/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Public sources confirm Mozambique identity/travel document context but no official public BI number grammar, checksum or semantic digit rule was confirmed. BI is a generator marker, not a claimed literal prefix."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Mozambique ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/moz/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Mozambique ordinary passport entries. The public listing does not confirm passport-number grammar."
+    },
+    "tax_identification_number_nuit": {
+      "label": "Taxpayer Single Identification Number (NUIT)",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "verified",
+      "source": {
+        "title": "Mozambique Revenue Authority NUIT FAQ",
+        "url": "https://www.at.gov.mz/eng/Perguntas-Frequentes2/NUIT",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official AT FAQ confirms NUIT is a nine-digit taxpayer identification number. No checksum implementation is generated because the public source does not document an algorithm."
+    }
+  }
 }

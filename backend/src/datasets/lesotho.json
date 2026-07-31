@@ -5,8 +5,72 @@
   "country": "Lesotho",
   "locale": "en-LS",
   "availability": "review",
-  "names": { "male": ["Thabo", "Mpho", "Lerato", "Khotso"], "female": ["Palesa", "Masego", "Nthabiseng", "Boitumelo"], "last": ["Mokoena", "Molefe", "Mofokeng", "Ntaote"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+266", "nationalLength": 8, "prefixes": ["5", "6"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Maseru", "cities": [{ "name": "Maseru", "postalPrefixes": ["100"], "streets": ["Kingsway Road", "Moshoeshoe Road"] }] }, { "name": "Leribe", "cities": [{ "name": "Hlotse", "postalPrefixes": ["300"], "streets": ["Main North Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Lesotho passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Thabo", "Mpho", "Lerato", "Khotso"],
+    "female": ["Palesa", "Masego", "Nthabiseng", "Boitumelo"],
+    "last": ["Mokoena", "Molefe", "Mofokeng", "Ntaote"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Lesotho forenames and surnames frequency tables",
+      "url": "https://forebears.io/lesotho/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Localized name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
+  },
+  "phones": {
+    "countryCallingCode": "+266",
+    "nationalLength": 8,
+    "prefixes": ["56", "57", "58", "59", "63"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Lesotho national numbering plan communication",
+      "url": "https://www.itu.int/oth/T0202000078",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/LTA source confirms a closed eight-digit national numbering scheme and cellular/mobile allocations represented by the listed leading digits. Generated values are synthetic and are not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Maseru", "cities": [{ "name": "Maseru", "postalPrefixes": ["100"], "streets": ["Kingsway Road", "Moshoeshoe Road"] }] },
+      { "name": "Leribe", "cities": [{ "name": "Hlotse", "postalPrefixes": ["300"], "streets": ["Main North Road", "Market Street"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Lesotho addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/LSOEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms three-digit postcodes placed to the right of the locality, including Maseru 100. Dataset street/city combinations remain synthetic review samples and are not delivery validated."
+  },
+  "documents": {
+    "national_identity_number": {
+      "label": "National Identity Number",
+      "templates": ["{RAND12}"],
+      "pattern": "^\\d{12}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "World Bank Lesotho national identification system case study",
+        "url": "https://thedocs.worldbank.org/en/doc/65175e7d6401c2f8f8b3e582dea933fe-0350062022/original/GovTech-Case-Studies-Lesotho-The-National-Identification-System.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "World Bank confirms Lesotho's National ID system and linkage with civil registry/passport services, but no official public number grammar, checksum or semantic digit rule was found. The twelve-digit template is a synthetic placeholder only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Lesotho passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/lso/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Lesotho passport document families, but the public entry reviewed does not confirm the visible passport number grammar. The template remains a synthetic placeholder."
+    }
+  }
 }

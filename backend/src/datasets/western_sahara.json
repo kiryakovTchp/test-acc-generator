@@ -5,8 +5,69 @@
   "country": "Western Sahara",
   "locale": "ar-EH",
   "availability": "review",
-  "names": { "male": ["Mohamed", "Ahmed", "Hassan", "Ali"], "female": ["Fatima", "Aicha", "Mariam", "Zahra"], "last": ["Salek", "Mohamed", "Ahmed", "Ali"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed for disputed territory GEO." },
-  "phones": { "countryCallingCode": "+212", "nationalLength": 9, "prefixes": ["528", "529", "6", "7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Uses Morocco-linked numbering assumptions until separately validated." },
-  "locations": { "regions": [{ "name": "Laayoune-Sakia El Hamra", "cities": [{ "name": "Laayoune", "postalPrefixes": ["700"], "streets": ["Avenue Mekka", "Avenue Smara"] }] }, { "name": "Dakhla-Oued Ed-Dahab", "cities": [{ "name": "Dakhla", "postalPrefixes": ["730"], "streets": ["Avenue Al Massira", "Boulevard Mohammed V"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Western Sahara passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Mohamed", "Mohammed", "Ahmed", "Youssef", "Said", "Rachid", "Hassan", "Omar", "Ali", "Brahim"],
+    "female": ["Fatima", "Khadija", "Nadia", "Zineb", "Naima", "Amina", "Aicha", "Malika", "Latifa", "Meryem"],
+    "last": ["Ait", "Alaoui", "Alami", "Bennani", "Idrissi", "Hassan", "Saidi", "Mohamed", "Amrani", "Mansouri"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Morocco forenames and surnames frequency tables",
+      "url": "https://forebears.io/morocco/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public Morocco frequency tables were used as a Morocco-administered-region sample seed for this disputed-territory GEO. This is not a Sahrawi civil registry source, so names remain review-quality."
+  },
+  "phones": {
+    "countryCallingCode": "+212",
+    "nationalLength": 9,
+    "prefixes": ["528", "529", "6", "7"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "ANRT Morocco national numbering plan",
+      "url": "https://www.anrt.ma/en/infos-pratiques/ce-que-vous-devez-savoir/numerotation",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ANRT confirms Morocco country code 212 and nine-digit national significant numbers, with fixed geographic numbers under 5 and mobile numbers under 6/7 after removing the domestic 0. The 528/529 fixed prefixes are retained as Morocco-linked southern-territory review prefixes; generated numbers are not assignment-checked."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Laayoune-Sakia El Hamra",
+        "cities": [
+          { "name": "Laayoune", "postalPrefixes": ["700"], "streets": ["Avenue Mekka", "Avenue Smara"] }
+        ]
+      },
+      {
+        "name": "Dakhla-Oued Ed-Dahab",
+        "cities": [
+          { "name": "Dakhla", "postalPrefixes": ["730"], "streets": ["Avenue Al Massira", "Boulevard Mohammed V"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Morocco DGCT Laayoune-Sakia El Hamra and MUAT Dakhla-Oued Ed-Dahab regional monographs",
+      "url": "https://collectivites-territoriales.gov.ma/fr/node/735",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Official Morocco regional material confirms the administrative-region context used for Laayoune and Dakhla, but the dataset does not claim a separate Western Sahara postal authority or address-valid postcode grammar. Postal prefixes and streets remain generator review seeds."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Morocco ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/mar/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Moroccan passport document families relevant to Morocco-administered issuance, but no Western Sahara-specific public passport-number grammar was confirmed. The one letter plus eight digits template remains an unconfirmed synthetic placeholder."
+    }
+  }
 }

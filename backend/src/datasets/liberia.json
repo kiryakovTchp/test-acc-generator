@@ -5,8 +5,72 @@
   "country": "Liberia",
   "locale": "en-LR",
   "availability": "review",
-  "names": { "male": ["James", "Joseph", "Emmanuel", "Prince"], "female": ["Mary", "Grace", "Martha", "Princess"], "last": ["Johnson", "Kollie", "Kamara", "Toe"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+231", "nationalLength": 8, "prefixes": ["7", "8"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Montserrado", "cities": [{ "name": "Monrovia", "postalPrefixes": ["100"], "streets": ["Broad Street", "Tubman Boulevard"] }] }, { "name": "Nimba", "cities": [{ "name": "Ganta", "postalPrefixes": ["500"], "streets": ["Main Street", "Ganta Highway"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Liberia location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Liberia was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": ["James", "Joseph", "Emmanuel", "Prince"],
+    "female": ["Mary", "Grace", "Martha", "Princess"],
+    "last": ["Johnson", "Kollie", "Kamara", "Toe"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Liberia forenames and surnames frequency tables",
+      "url": "https://forebears.io/liberia/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Localized name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
+  },
+  "phones": {
+    "countryCallingCode": "+231",
+    "nationalLength": 9,
+    "prefixes": ["555", "773", "774"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Liberia national numbering plan communication of 31.V.2024",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000790012PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/LTA confirms Liberia country code +231, a closed numbering scheme, nine-digit mobile national significant numbers, and the listed NDCs. Generated values are synthetic and are not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Montserrado", "cities": [{ "name": "Monrovia", "postalPrefixes": ["1000"], "streets": ["Broad Street", "Tubman Boulevard"] }] },
+      { "name": "Nimba", "cities": [{ "name": "Ganta", "postalPrefixes": ["5000"], "streets": ["Main Street", "Ganta Highway"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Liberia addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/LBREn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms Liberia uses four-digit postcodes to the left of the locality and gives Monrovia 1000 as an example. City/street pairings remain synthetic review samples and are not delivery validated."
+  },
+  "documents": {
+    "national_identification_number": {
+      "label": "National Identification Number",
+      "templates": ["{RAND10}"],
+      "pattern": "^\\d{10}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Liberia National Identification Registry e-Verification platform",
+        "url": "https://nir.gov.lr/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official NIR source confirms NIN verification and use as Liberia's identity source, but no public number grammar, checksum or allocation rule was found. The ten-digit template is a synthetic placeholder only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Liberia passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/lbr/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Liberia ordinary passport document family, but the public entry reviewed does not confirm the visible passport number grammar. The template remains a synthetic placeholder."
+    }
+  }
 }

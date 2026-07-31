@@ -5,8 +5,183 @@
   "country": "Equatorial Guinea",
   "locale": "es-GQ",
   "availability": "review",
-  "names": { "male": ["Jose", "Juan", "Miguel", "Francisco"], "female": ["Maria", "Ana", "Isabel", "Dolores"], "last": ["Nguema", "Ondo", "Obiang", "Nsue"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+240", "nationalLength": 9, "prefixes": ["222", "55"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Bioko Norte", "cities": [{ "name": "Malabo", "postalPrefixes": ["100"], "streets": ["Avenida de la Independencia", "Calle Rey Boncoro"] }] }, { "name": "Litoral", "cities": [{ "name": "Bata", "postalPrefixes": ["200"], "streets": ["Avenida de la Libertad", "Calle Centro"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Equatorial Guinea location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Equatorial Guinea was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": [
+      "Jose",
+      "Juan",
+      "Miguel",
+      "Francisco",
+      "Manuel",
+      "Antonio",
+      "Pedro",
+      "Carlos",
+      "Santiago",
+      "Rafael",
+      "Gabriel",
+      "Tomas"
+    ],
+    "female": [
+      "Maria",
+      "Ana",
+      "Isabel",
+      "Dolores",
+      "Carmen",
+      "Rosa",
+      "Teresa",
+      "Juana",
+      "Elena",
+      "Francisca",
+      "Marta",
+      "Lucia"
+    ],
+    "last": [
+      "Nguema",
+      "Ondo",
+      "Obiang",
+      "Nsue",
+      "Esono",
+      "Nguema Mbasogo",
+      "Mba",
+      "Nchama",
+      "Obama",
+      "Engonga",
+      "Miko",
+      "Biyogo"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Equatorial Guinea forenames and surnames frequency tables",
+      "url": "https://forebears.io/equatorial-guinea/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed Spanish/Equatoguinean given names and surnames. This is not an official civil registry export; compound surname handling is simplified for test-account generation."
+  },
+  "phones": {
+    "countryCallingCode": "+240",
+    "nationalLength": 9,
+    "prefixes": [
+      "222",
+      "551",
+      "55"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Equatorial Guinea national numbering plan communication of 4.V.2010",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000410001PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU/ORTEL confirms country code +240, migration to nine-digit national numbers, and mobile numbering beginning with 2 or 5, including GETESA 222 and HiTs 551 formats in the public plan. Generated numbers are synthetic and are not checked for live subscriber assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Bioko Norte",
+        "cities": [
+          {
+            "name": "Malabo",
+            "postalPrefixes": [
+              "AP "
+            ],
+            "streets": [
+              "Avenida de la Independencia",
+              "Calle Rey Boncoro",
+              "Avenida Hassan II",
+              "Calle Acacio Mane"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Litoral",
+        "cities": [
+          {
+            "name": "Bata",
+            "postalPrefixes": [
+              "AP "
+            ],
+            "streets": [
+              "Avenida de la Libertad",
+              "Calle Centro",
+              "Paseo Maritimo",
+              "Carretera del Aeropuerto"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Centro Sur",
+        "cities": [
+          {
+            "name": "Evinayong",
+            "postalPrefixes": [
+              "AP "
+            ],
+            "streets": [
+              "Calle Principal",
+              "Avenida de la Provincia",
+              "Calle del Mercado"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Wele-Nzas",
+        "cities": [
+          {
+            "name": "Mongomo",
+            "postalPrefixes": [
+              "AP "
+            ],
+            "streets": [
+              "Avenida Mongomo",
+              "Calle de la Catedral",
+              "Carretera de Ebebiyin"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Equatorial Guinea addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/GNQEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU examples show province/sub-province/locality lines and Apartado Postal for PO box delivery rather than a postcode. The generator uses AP-style prefixes; region/city links follow public geography and generated box/street values are synthetic."
+  },
+  "documents": {
+    "national_identity_document_number": {
+      "label": "National Identity Document",
+      "templates": [
+        "{RAND9}"
+      ],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Equatorial Guinea identity document update via Citizenship Rights Africa",
+        "url": "https://citizenshiprightsafrica.org/en/equatorial-guinea-update-of-identity-documents/",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Public reporting confirms national identity documents and CNEDO biometric document production, but no official public number grammar, checksum or semantic digit rule was found. The generated number is a synthetic placeholder only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Equatorial Guinea ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/GNQ-AO-02001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms a valid Equatorial Guinea ordinary passport document entry. The public entry does not confirm passport-number grammar; generation remains template-only synthetic."
+    }
+  }
 }

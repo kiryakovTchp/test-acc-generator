@@ -5,8 +5,83 @@
   "country": "South Africa",
   "locale": "en-ZA",
   "availability": "review",
-  "names": { "male": ["Thabo", "Sipho", "Sibusiso", "Daniel"], "female": ["Nomsa", "Lerato", "Thandiwe", "Ayesha"], "last": ["Mokoena", "Dlamini", "Naidoo", "Botha"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+27", "nationalLength": 9, "prefixes": ["6", "7", "8"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "National number is generated without domestic trunk 0." },
-  "locations": { "regions": [{ "name": "Gauteng", "cities": [{ "name": "Johannesburg", "postalPrefixes": ["200"], "streets": ["Commissioner Street", "Rivonia Road"] }] }, { "name": "Western Cape", "cities": [{ "name": "Cape Town", "postalPrefixes": ["800"], "streets": ["Long Street", "Adderley Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration South Africa passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Thabo", "Sipho", "Sibusiso", "Daniel", "Bongani", "Mandla", "Johannes", "Mpho", "Themba", "Michael"],
+    "female": ["Nomsa", "Lerato", "Thandiwe", "Ayesha", "Nokuthula", "Zanele", "Precious", "Nompumelelo", "Mary", "Elizabeth"],
+    "last": ["Mokoena", "Dlamini", "Naidoo", "Botha", "Nkosi", "Ndlovu", "Mkhize", "Van Wyk", "Khumalo", "Molefe"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears South Africa forenames and surnames frequency tables",
+      "url": "https://forebears.io/south-africa/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy seed with broader localized samples."
+  },
+  "phones": {
+    "countryCallingCode": "+27",
+    "nationalLength": 9,
+    "prefixes": ["60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "71", "72", "73", "74", "76", "77", "78", "79", "81", "82", "83", "84"],
+    "quality": "verified",
+    "source": {
+      "title": "ICASA South Africa Numbering Plan Regulations",
+      "url": "https://www.icasa.org.za/legislation-and-regulations/numbering-plan-regulations",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ICASA governs South Africa numbering resources; national numbers are generated without the domestic trunk 0. Prefixes are mobile-style public allocations and generated numbers are not checked for assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Gauteng",
+        "cities": [
+          { "name": "Johannesburg", "postalPrefixes": ["200"], "streets": ["Commissioner Street", "Rivonia Road", "Jan Smuts Avenue"] },
+          { "name": "Pretoria", "postalPrefixes": ["000"], "streets": ["Church Street", "Pretorius Street", "Schoeman Street"] }
+        ]
+      },
+      {
+        "name": "Western Cape",
+        "cities": [
+          { "name": "Cape Town", "postalPrefixes": ["800"], "streets": ["Long Street", "Adderley Street", "Buitengracht Street"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU South Africa addressing example",
+      "url": "https://youbianku.com/files/upu/ZAF.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms South Africa uses four-digit postcodes below locality or post office name. City/street pairings and selected prefixes are synthetic review data, not delivery-validated addresses."
+  },
+  "documents": {
+    "identity_number": {
+      "label": "Identity Number",
+      "templates": ["{RAND13}"],
+      "pattern": "^\\d{13}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "OECD South Africa TIN information: ID number format",
+        "url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/south-africa-tin.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "OECD confirms the South African ID number is 13 digits and defines YYMMDDSSSSCAZ. This generator intentionally does not implement DOB, gender, citizenship, A digit, or checksum logic, so the rule remains synthetic_pattern."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO South Africa ordinary passport ZAF-AO-02001",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/zaf/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms South Africa ordinary passport documents. No public passport-number grammar was confirmed, so the generated format remains an unconfirmed synthetic placeholder."
+    }
+  }
 }

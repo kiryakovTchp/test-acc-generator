@@ -5,8 +5,183 @@
   "country": "Cabo Verde",
   "locale": "pt-CV",
   "availability": "review",
-  "names": { "male": ["Carlos", "Joao", "Manuel", "Antonio"], "female": ["Maria", "Ana", "Claudia", "Helena"], "last": ["Silva", "Fernandes", "Tavares", "Pereira"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+238", "nationalLength": 7, "prefixes": ["9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Santiago", "cities": [{ "name": "Praia", "postalPrefixes": ["760"], "streets": ["Avenida Cidade de Lisboa", "Rua 5 de Julho"] }] }, { "name": "Sao Vicente", "cities": [{ "name": "Mindelo", "postalPrefixes": ["211"], "streets": ["Avenida Marginal", "Rua de Lisboa"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Cabo Verde passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": [
+      "Carlos",
+      "Joao",
+      "Manuel",
+      "Jose",
+      "Antonio",
+      "Pedro",
+      "Luis",
+      "Jorge",
+      "Paulo",
+      "Fernando",
+      "Francisco",
+      "Adilson"
+    ],
+    "female": [
+      "Maria",
+      "Ana",
+      "Claudia",
+      "Helena",
+      "Joana",
+      "Marlene",
+      "Carla",
+      "Sandra",
+      "Fatima",
+      "Cristina",
+      "Elisabete",
+      "Fernanda"
+    ],
+    "last": [
+      "Silva",
+      "Fernandes",
+      "Tavares",
+      "Pereira",
+      "Gomes",
+      "Lopes",
+      "Correia",
+      "Andrade",
+      "Monteiro",
+      "Soares",
+      "Ramos",
+      "Barbosa"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Cabo Verde forenames and surnames frequency tables",
+      "url": "https://forebears.io/cape-verde/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized Portuguese/Cabo Verdean given names and surnames. Gender buckets are based on public name usage patterns and are not an official civil registry export."
+  },
+  "phones": {
+    "countryCallingCode": "+238",
+    "nationalLength": 7,
+    "prefixes": [
+      "9",
+      "59",
+      "330"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "ITU National Numbering Plans: Cabo Verde (+238)",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU lists Cabo Verde under country code +238. Public numbering summaries based on ITU data describe a seven-digit closed plan with mobile/non-geographic ranges beginning 9, 59, and 330. Kept sample_verified rather than verified because the exact current country-specific ITU allocation table was not directly extracted into this dataset."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Santiago",
+        "cities": [
+          {
+            "name": "Praia",
+            "postalPrefixes": [
+              "7600-"
+            ],
+            "streets": [
+              "Avenida Cidade de Lisboa",
+              "Rua 5 de Julho",
+              "Avenida Amilcar Cabral",
+              "Rua Serpa Pinto"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sao Vicente",
+        "cities": [
+          {
+            "name": "Mindelo",
+            "postalPrefixes": [
+              "2110-"
+            ],
+            "streets": [
+              "Avenida Marginal",
+              "Rua de Lisboa",
+              "Avenida Baltasar Lopes da Silva",
+              "Rua Senador Vera Cruz"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sal",
+        "cities": [
+          {
+            "name": "Espargos",
+            "postalPrefixes": [
+              "4110-"
+            ],
+            "streets": [
+              "Rua 1 de Junho",
+              "Avenida dos Hoteis",
+              "Rua Amilcar Cabral"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Fogo",
+        "cities": [
+          {
+            "name": "Sao Filipe",
+            "postalPrefixes": [
+              "8220-"
+            ],
+            "streets": [
+              "Rua Cobom",
+              "Avenida Alexandre Alberto da Rocha Serpa Pinto",
+              "Rua do Mercado"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Codigo Postal de Cabo Verde: composicao do codigo postal nacional",
+      "url": "https://www.codigopostal.cv/",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Official Cabo Verde postal-code portal describes a numeric national postcode with two groups separated by a hyphen. The selected island/city mappings and street names are public geography/address seeds; generated trailing digits are synthetic and are not checked against a live address database."
+  },
+  "documents": {
+    "national_identification_card_number": {
+      "label": "National Identification Card (CNI)",
+      "templates": [
+        "{RAND13}"
+      ],
+      "pattern": "^\\d{13}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Portal Consular Cabo Verde: National Identification Card",
+        "url": "https://portalconsular.mnec.gov.cv/en/cartao-nacional-de-identificacao",
+        "type": "official",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Official consular portal confirms the CNI as a state-created identity document. A public secondary description gives a 13-digit civil identification number shape, but no official public checksum or semantic digit rule was confirmed here, so generation remains template-only synthetic."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Portal Unico Cabo Verde: nationality and citizenship services",
+        "url": "https://www.gov.cv/en/web/guest/identificacao",
+        "type": "official",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Official service portal confirms Cabo Verde passport services. No public official passport-number grammar, checksum or semantic digit rule was found; the value is a conservative synthetic placeholder only."
+    }
+  }
 }

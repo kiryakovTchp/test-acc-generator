@@ -6,39 +6,165 @@
   "locale": "am-ET",
   "availability": "review",
   "names": {
-    "male": ["Abebe", "Dawit", "Tesfaye", "Kebede", "Mekonnen", "Yonas"],
-    "female": ["Aster", "Mekdes", "Hirut", "Selam", "Tigist", "Rahel"],
-    "last": ["Bekele", "Gebre", "Tesfaye", "Alemu", "Haile", "Tadesse"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Ethiopia name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Ethiopian names; attach a stronger source before marking active."
+    "male": [
+      "Abebe",
+      "Dawit",
+      "Tesfaye",
+      "Kebede",
+      "Mekonnen",
+      "Yonas",
+      "Haile",
+      "Getachew",
+      "Solomon",
+      "Samuel",
+      "Tadesse",
+      "Alemayehu"
+    ],
+    "female": [
+      "Aster",
+      "Mekdes",
+      "Hirut",
+      "Selam",
+      "Tigist",
+      "Rahel",
+      "Marta",
+      "Almaz",
+      "Genet",
+      "Hana",
+      "Sara",
+      "Meron"
+    ],
+    "last": [
+      "Bekele",
+      "Gebre",
+      "Tesfaye",
+      "Alemu",
+      "Haile",
+      "Tadesse",
+      "Kebede",
+      "Mekonnen",
+      "Demissie",
+      "Wolde",
+      "Abebe",
+      "Negash"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Ethiopia forenames and surnames frequency tables",
+      "url": "https://forebears.io/ethiopia/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. Ethiopia uses patronymic naming in many contexts; this dataset still emits a first/last split for the product profile shape."
   },
   "phones": {
     "countryCallingCode": "+251",
     "nationalLength": 9,
-    "prefixes": ["91"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ethiopia phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +25191 generator prefix; verify against current numbering metadata."
+    "prefixes": [
+      "9"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "ITU National Numbering Plans: Ethiopia (+251)",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU lists Ethiopia under country code +251. Existing public dialling references and in-app history use 9-leading mobile numbers; exact current mobile allocation blocks were not directly confirmed here, so generation remains constrained synthetic data."
   },
   "locations": {
     "regions": [
-      { "name": "Addis Ababa", "cities": [{ "name": "Addis Ababa", "postalPrefixes": ["100"], "streets": ["Bole Road", "Africa Avenue"] }] },
-      { "name": "Dire Dawa", "cities": [{ "name": "Dire Dawa", "postalPrefixes": ["300"], "streets": ["Keira Road", "Dechatu Street"] }] },
-      { "name": "Amhara", "cities": [{ "name": "Bahir Dar", "postalPrefixes": ["600"], "streets": ["Lake Avenue", "Tana Road"] }] }
+      {
+        "name": "Addis Ababa",
+        "cities": [
+          {
+            "name": "Addis Ababa",
+            "postalPrefixes": [
+              "1"
+            ],
+            "streets": [
+              "Bole Road",
+              "Africa Avenue",
+              "Churchill Avenue",
+              "Ras Desta Damtew Street"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Dire Dawa",
+        "cities": [
+          {
+            "name": "Dire Dawa",
+            "postalPrefixes": [
+              "3"
+            ],
+            "streets": [
+              "Keira Road",
+              "Dechatu Street",
+              "Sabian Road",
+              "Taiwan Road"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Amhara",
+        "cities": [
+          {
+            "name": "Bahir Dar",
+            "postalPrefixes": [
+              "6"
+            ],
+            "streets": [
+              "Lake Avenue",
+              "Tana Road",
+              "Belay Zeleke Street"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Tigray",
+        "cities": [
+          {
+            "name": "Mekelle",
+            "postalPrefixes": [
+              "2"
+            ],
+            "streets": [
+              "Hawelti Street",
+              "Romanat Road",
+              "Adi Haki Road"
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ethiopia location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Ethiopia addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/ethEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU confirms four-digit postcodes to the left of the locality and gives Addis Ababa examples. Prefixes are chosen to preserve four-digit generation in the current profile builder; non-Addis city prefixes and street choices are synthetic review data."
   },
   "documents": {
     "fayda_identification_number": {
       "label": "Fayda Identification Number",
-      "templates": ["{RAND12}"],
+      "templates": [
+        "{RAND12}"
+      ],
       "pattern": "^\\d{12}$",
       "quality": "verified",
-      "source": { "title": "Ethiopia National ID Fayda", "url": "https://id.gov.et/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Ethiopia National ID confirms Fayda is a 12-digit unique identification number. Generated values are synthetic and not registry-checked."
+      "source": {
+        "title": "Ethiopia National ID: About Your Fayda",
+        "url": "https://id.gov.et/",
+        "type": "official",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Ethiopia National ID confirms Fayda is a 12-digit unique identification number issued by NIDP. No public checksum or semantic digit rule was found, so generated values are random synthetic 12-digit identifiers, not registry-checked."
     }
   }
 }

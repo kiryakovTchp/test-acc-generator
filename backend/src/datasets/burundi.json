@@ -65,7 +65,7 @@
       "title": "Forebears Burundi forenames and surnames frequency tables",
       "url": "https://forebears.io/burundi/forenames",
       "type": "trusted_reference",
-      "checkedAt": "2026-07-27"
+      "checkedAt": "2026-07-30"
     },
     "notes": "Public frequency tables were used to seed localized given names and surnames. Gender buckets follow Forebears gender-majority data for high-frequency forenames and are not an official civil registry sample; surnames were cross-filled from the public Burundi surname table."
   },
@@ -101,7 +101,7 @@
       "title": "ITU Burundi national numbering plan communication of 17.IV.2026",
       "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000220024PDFE.pdf",
       "type": "official",
-      "checkedAt": "2026-07-27"
+      "checkedAt": "2026-07-30"
     },
     "notes": "ITU/ARCT confirms country code +257, fixed eight-digit national significant numbers, and active mobile allocations listed here. The 64 block is represented with three-digit prefixes 640-647 to avoid generating unlisted 648/649; generated numbers are synthetic and are not checked for current subscriber assignment or portability."
   },
@@ -195,7 +195,7 @@
       "title": "UPU Burundi addressing examples",
       "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/bdiEn.pdf",
       "type": "trusted_reference",
-      "checkedAt": "2026-07-27"
+      "checkedAt": "2026-07-30"
     },
     "notes": "UPU/RNP examples show Burundi addresses using P.O. box/BP, commune and province lines rather than a postcode. Region-city mapping follows the current five-province public geography. postalPrefixes use 'BP ' as a generator marker for P.O. box-style addresses and append a fixed three synthetic digits, while real BP numbers can have variable length."
   },
@@ -211,7 +211,7 @@
         "title": "IRB Canada Burundi national identity card requirements",
         "url": "https://www.ecoi.net/en/document/2027841.html",
         "type": "trusted_reference",
-        "checkedAt": "2026-07-27"
+        "checkedAt": "2026-07-30"
       },
       "notes": "Public sources confirm the Carte Nationale d'Identite exists and is used as an identity document, but no official public number grammar, checksum or semantic digit rule was found. The numeric template is a synthetic placeholder only."
     },
@@ -226,7 +226,7 @@
         "title": "PRADO Burundi ordinary passport document entries",
         "url": "https://www.consilium.europa.eu/prado/en/prado-documents/bdi/a/docs-per-category.html",
         "type": "trusted_reference",
-        "checkedAt": "2026-07-27"
+        "checkedAt": "2026-07-30"
       },
       "notes": "PRADO confirms Burundi ordinary and diplomatic passport document families, but the public entry reviewed does not confirm the visible passport number grammar. The template remains a synthetic placeholder until an official rule or multiple public samples are available."
     }

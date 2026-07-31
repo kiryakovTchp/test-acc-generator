@@ -5,8 +5,72 @@
   "country": "Mali",
   "locale": "fr-ML",
   "availability": "review",
-  "names": { "male": ["Moussa", "Ibrahim", "Modibo", "Oumar"], "female": ["Aminata", "Fatoumata", "Mariam", "Awa"], "last": ["Traore", "Keita", "Coulibaly", "Diarra"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+223", "nationalLength": 8, "prefixes": ["6", "7", "9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Bamako", "cities": [{ "name": "Bamako", "postalPrefixes": ["100"], "streets": ["Avenue de l'Independance", "Rue 311"] }] }, { "name": "Sikasso", "cities": [{ "name": "Sikasso", "postalPrefixes": ["300"], "streets": ["Avenue Modibo Keita", "Rue du Marche"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mali location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Mali was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": ["Moussa", "Ibrahim", "Modibo", "Oumar"],
+    "female": ["Aminata", "Fatoumata", "Mariam", "Awa"],
+    "last": ["Traore", "Keita", "Coulibaly", "Diarra"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Mali forenames and surnames frequency tables",
+      "url": "https://forebears.io/mali/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables support representative Malian names. This is not an official civil registry export; gender grouping remains a review seed."
+  },
+  "phones": {
+    "countryCallingCode": "+223",
+    "nationalLength": 8,
+    "prefixes": ["6", "7"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Mali national numbering plan communication of 6.III.2018",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000830004PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/AMRTP confirms country code +223 and eight-digit national significant numbers. Earlier ITU plan-change communications identify mobile subscriber numbers under 6 for Sotelma/Malitel and 7 for Orange Mali; broad 9 generation was removed until confirmed as an active mobile range."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Bamako", "cities": [{ "name": "Bamako", "postalPrefixes": ["BP "], "streets": ["Avenue de l'Independance", "Rue 311"] }] },
+      { "name": "Sikasso", "cities": [{ "name": "Sikasso", "postalPrefixes": ["BP "], "streets": ["Avenue Modibo Keita", "Rue du Marche"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Postal Addressing Systems: member-country address structures",
+      "url": "https://www.address.post/PAS",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public postal references indicate Mali addressing is not supported here by a confirmed postcode grammar, so the generator uses BP-style internal prefixes. City and street values remain synthetic review samples."
+  },
+  "documents": {
+    "national_identification_number_nina": {
+      "label": "National Identification Number (NINA)",
+      "templates": ["NINA{RAND10}"],
+      "pattern": "^NINA\\d{10}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "IRB Canada Mali national identification number legal reference",
+        "url": "https://www.irb-cisr.gc.ca/en/country-information/rir/Pages/index.aspx?doc=457155",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Public sources confirm the NINA exists and appears on Malian identity/voter documents, but no official public number length, checksum or semantic digit rule was confirmed. NINA is a generator marker, not a claimed literal prefix."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Mali ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/mli/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Malian ordinary passport document families, including recent 2025 and 2016 entries. The public listing does not confirm passport-number grammar."
+    }
+  }
 }

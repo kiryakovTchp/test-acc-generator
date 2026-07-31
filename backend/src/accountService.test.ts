@@ -101,21 +101,22 @@ test('verified dataset geos keep country region and city as separate dependent f
 test('malawi dataset follows PRADO specimen passport shapes', async () => {
   const passport = await generateAccount({ userId: 1, geoKey: 'malawi', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(passport?.country, 'Malawi');
-  assert.equal(passport?.documentQuality, 'synthetic_pattern');
-  assert.match(passport?.documentValue ?? '', /^\d{6}$/);
+  assert.equal(passport?.documentQuality, 'verified');
+  assert.match(passport?.documentValue ?? '', /^MW[AZ]\d{6}$/);
 
   const personalNumber = await generateAccount({ userId: 1, geoKey: 'malawi', documentType: 'personal_number', role: 'user', persona: 'standard_user', emailProvider: provider });
-  assert.equal(personalNumber?.documentQuality, 'synthetic_pattern');
+  assert.equal(personalNumber?.documentQuality, 'sample_verified');
   assert.match(personalNumber?.documentValue ?? '', /^\d{7}\/\d$/);
 });
 
 test('sierra leone and togo dataset follow provided document specimens', async () => {
   const sierraLeonePassport = await generateAccount({ userId: 1, geoKey: 'sierra_leone', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(sierraLeonePassport?.country, 'Sierra Leone');
-  assert.equal(sierraLeonePassport?.documentQuality, 'synthetic_pattern');
+  assert.equal(sierraLeonePassport?.documentQuality, 'sample_verified');
   assert.match(sierraLeonePassport?.documentValue ?? '', /^\d{7}$/);
 
   const sierraLeonePersonal = await generateAccount({ userId: 1, geoKey: 'sierra_leone', documentType: 'personal_number', role: 'user', persona: 'standard_user', emailProvider: provider });
+  assert.equal(sierraLeonePersonal?.documentQuality, 'sample_verified');
   assert.match(sierraLeonePersonal?.documentValue ?? '', /^\d{9}$/);
 
   const togoPassport = await generateAccount({ userId: 1, geoKey: 'togo', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
@@ -144,7 +145,7 @@ test('gabon dataset follows public-source document placeholders', async () => {
 test("cote d'ivoire dataset follows provided document shapes", async () => {
   const passport = await generateAccount({ userId: 1, geoKey: 'cote_divoire', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(passport?.country, "Cote d'Ivoire");
-  assert.equal(passport?.documentQuality, 'synthetic_pattern');
+  assert.equal(passport?.documentQuality, 'sample_verified');
   assert.match(passport?.documentValue ?? '', /^\d{2}[A-Z]{2}\d{5}$/);
 
   const nationalId = await generateAccount({ userId: 1, geoKey: 'cote_divoire', documentType: 'national_id', role: 'user', persona: 'standard_user', emailProvider: provider });

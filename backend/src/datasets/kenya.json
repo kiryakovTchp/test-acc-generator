@@ -9,17 +9,27 @@
     "male": ["John", "James", "Peter", "Samuel", "Brian", "David"],
     "female": ["Grace", "Mary", "Esther", "Sarah", "Diana", "Lydia"],
     "last": ["Kimani", "Mwangi", "Otieno", "Njoroge", "Wanjiru", "Ochieng"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Kenya name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Kenyan names; attach a stronger source before marking active."
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Kenya forenames and surnames frequency tables",
+      "url": "https://forebears.io/kenya/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Kenyan name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+254",
     "nationalLength": 9,
-    "prefixes": ["712"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Kenya phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +254712 generator prefix; verify against current numbering metadata."
+    "prefixes": ["100", "101", "102", "740", "741", "742"],
+    "quality": "verified",
+    "source": {
+      "title": "Communications Authority of Kenya Telecommunication Numbering Plan, April 2024",
+      "url": "https://www.ca.go.ke/sites/default/files/CA/Numbering%20Plan/Telecommunication%20Numbering%20Plan%20for%20Kenya%20April%202024.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "The official numbering plan confirms country code +254, nine-digit mobile/non-geographic national significant numbers, and the listed NDCs. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
@@ -28,8 +38,13 @@
       { "name": "Kisumu County", "cities": [{ "name": "Kisumu", "postalPrefixes": ["401"], "streets": ["Oginga Odinga Road", "Jomo Kenyatta Highway"] }] }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Kenya location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked county/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Kenya addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/kenEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms Kenya uses five-digit post office codes in postal addressing. Dataset prefixes are stable test placeholders for generated postal codes and are not validated against the full Posta Kenya post-office code table."
   },
   "documents": {
     "passport": {
@@ -37,16 +52,26 @@
       "templates": ["A{RAND7}"],
       "pattern": "^A\\d{7}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Kenya passport booklet type reference", "url": "https://immigration.go.ke/type-and-fees/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Kenya Immigration confirms ordinary passport A/B/C series by booklet size; exact number grammar still needs a document sample or PRADO page."
+      "source": {
+        "title": "Kenya Directorate of Immigration passport application requirements",
+        "url": "https://immigration.go.ke/application-requirements/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Kenya Immigration confirms ordinary passport issuance requirements and use of national ID in adult applications, but not a public passport-number grammar. The A plus seven digits template remains a synthetic placeholder."
     },
     "national_id_card_number": {
       "label": "National ID Card Number",
       "templates": ["{RAND8}"],
       "pattern": "^\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Legacy Kenya national ID candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-      "notes": "Probable national ID visual form; keep review until official/sample source confirms it."
+      "source": {
+        "title": "Kenya National Registration Bureau eCitizen service",
+        "url": "https://nrb.ecitizen.go.ke/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official NRB source confirms mandatory identification, registration and identity-card issuance for adult citizens, but no public number grammar, checksum or allocation rule was found. The eight-digit template is a legacy-compatible synthetic placeholder only."
     }
   }
 }

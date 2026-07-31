@@ -5,8 +5,82 @@
   "country": "Rwanda",
   "locale": "en-RW",
   "availability": "review",
-  "names": { "male": ["Jean", "Emmanuel", "Eric", "Patrick"], "female": ["Claudine", "Aline", "Diane", "Grace"], "last": ["Niyonsenga", "Uwimana", "Habimana", "Mugisha"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+250", "nationalLength": 9, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Kigali", "cities": [{ "name": "Kigali", "postalPrefixes": ["000"], "streets": ["KN 3 Road", "KG 7 Avenue"] }] }, { "name": "Northern Province", "cities": [{ "name": "Musanze", "postalPrefixes": ["400"], "streets": ["RN4 Road", "Market Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Rwanda passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Jean", "Emmanuel", "Eric", "Patrick", "Claude", "Innocent", "Olivier", "Joseph", "Theoneste", "Samuel"],
+    "female": ["Claudine", "Aline", "Diane", "Grace", "Vestine", "Josiane", "Marie", "Chantal", "Jeannette", "Francine"],
+    "last": ["Niyonsenga", "Uwimana", "Habimana", "Mugisha", "Nshimiyimana", "Bizimana", "Uwamahoro", "Nsengiyumva", "Hakizimana", "Mukamana"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Rwanda forenames and surnames frequency tables",
+      "url": "https://forebears.io/rwanda/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy seed with localized name pools. Generated names are samples, not civil-registry identities."
+  },
+  "phones": {
+    "countryCallingCode": "+250",
+    "nationalLength": 9,
+    "prefixes": ["72", "73", "78", "79"],
+    "quality": "verified",
+    "source": {
+      "title": "Rwanda Utilities Regulatory Authority national numbering plan",
+      "url": "https://www.rura.rw/fileadmin/user_upload/RURA/Documents/Sectors/ICT/Key_ICT_Documents/Rwanda_National_Numbering_Plan___1_.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "RURA publishes Rwanda country code +250 and national numbering allocations. Generated numbers use public mobile-style leading digits and are not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Kigali City",
+        "cities": [
+          { "name": "Kigali", "postalPrefixes": ["BP"], "streets": ["KN 3 Road", "KG 7 Avenue", "KN 5 Road"] }
+        ]
+      },
+      {
+        "name": "Northern Province",
+        "cities": [
+          { "name": "Musanze", "postalPrefixes": ["BP"], "streets": ["RN4 Road", "Karisimbi Road", "Market Street"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Rwanda addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/RWAEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU shows Rwanda address examples with B.P. and Kigali, but does not provide a postcode range. Postal prefixes are synthetic placeholders for generator compatibility."
+  },
+  "documents": {
+    "national_identity_number": {
+      "label": "National Identity Number",
+      "templates": ["{RAND16}"],
+      "pattern": "^\\d{16}$",
+      "quality": "verified",
+      "source": {
+        "title": "World Bank Rwanda ID4D Diagnostic: 16-digit National Identity Number",
+        "url": "https://documents1.worldbank.org/curated/en/257581546882856591/pdf/128624-REVISED-PUBLIC-Rwanda-ID4D-Diagnostic-01042019.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "World Bank confirms a 16-digit NIN printed on the card. Generated values are random 16-digit test values only; no semantic groups, checksum, uniqueness, or registry validation is implemented."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Rwanda ordinary passport RWA-AO-02001",
+        "url": "https://www.consilium.europa.eu/prado/en/RWA-AO-02001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms a valid Rwanda ordinary passport document version, but no public passport-number grammar was found. The letter-plus-eight-digits template remains an unconfirmed synthetic placeholder."
+    }
+  }
 }

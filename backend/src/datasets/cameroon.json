@@ -6,39 +6,181 @@
   "locale": "fr-CM",
   "availability": "review",
   "names": {
-    "male": ["Jean", "Paul", "Samuel", "Daniel", "Patrick", "Christian"],
-    "female": ["Marie", "Grace", "Esther", "Diane", "Aline", "Nadine"],
-    "last": ["Njoya", "Tchami", "Mballa", "Ngono", "Kamga", "Fouda"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Cameroon name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Cameroonian names; attach a stronger source before marking active."
+    "male": [
+      "Jean",
+      "Paul",
+      "Samuel",
+      "Daniel",
+      "Patrick",
+      "Christian",
+      "Joseph",
+      "Emmanuel",
+      "Pierre",
+      "Alain",
+      "Michel",
+      "Andre"
+    ],
+    "female": [
+      "Marie",
+      "Grace",
+      "Esther",
+      "Diane",
+      "Aline",
+      "Nadine",
+      "Chantal",
+      "Francine",
+      "Therese",
+      "Jeanne",
+      "Brigitte",
+      "Carine"
+    ],
+    "last": [
+      "Njoya",
+      "Tchami",
+      "Mballa",
+      "Ngono",
+      "Kamga",
+      "Fouda",
+      "Mbarga",
+      "Abanda",
+      "Nana",
+      "Essomba",
+      "Meka",
+      "Biya"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Cameroon forenames and surnames frequency tables",
+      "url": "https://forebears.io/cameroon/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used for localized given-name and surname seeds. Gender buckets are derived from common public usage and are not an official civil registry dataset."
   },
   "phones": {
     "countryCallingCode": "+237",
     "nationalLength": 9,
-    "prefixes": ["671"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Cameroon phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +237671 generator prefix; verify against current numbering metadata."
+    "prefixes": [
+      "6"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Cameroon national numbering plan communication of 6.X.2014",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000240001PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU/ART confirms country code +237 and migration to a closed nine-digit plan; mobile numbers were migrated by prefixing 6. Generated numbers are synthetic and are not checked for live subscriber assignment or portability."
   },
   "locations": {
     "regions": [
-      { "name": "Centre", "cities": [{ "name": "Yaounde", "postalPrefixes": ["100"], "streets": ["Avenue Kennedy", "Boulevard du 20 Mai"] }] },
-      { "name": "Littoral", "cities": [{ "name": "Douala", "postalPrefixes": ["200"], "streets": ["Boulevard de la Liberte", "Rue Joffre"] }] },
-      { "name": "Northwest", "cities": [{ "name": "Bamenda", "postalPrefixes": ["300"], "streets": ["Commercial Avenue", "Hospital Road"] }] }
+      {
+        "name": "Centre",
+        "cities": [
+          {
+            "name": "Yaounde",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue Kennedy",
+              "Boulevard du 20 Mai",
+              "Rue Joseph Tchooungui Akoa",
+              "Avenue de l'Independance"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Littoral",
+        "cities": [
+          {
+            "name": "Douala",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Boulevard de la Liberte",
+              "Rue Joffre",
+              "Boulevard de la Republique",
+              "Avenue Ahmadou Ahidjo"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Northwest",
+        "cities": [
+          {
+            "name": "Bamenda",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Commercial Avenue",
+              "Hospital Road",
+              "Sonac Street",
+              "Foncha Street"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "West",
+        "cities": [
+          {
+            "name": "Bafoussam",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Gare",
+              "Rue du Marche",
+              "Route de Dschang"
+            ]
+          }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Cameroon location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU General Addressing Issues: countries without postcode requirement",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU lists Cameroon among countries that do not require postal codes. The dataset therefore uses BP-style generator prefixes; region/city links follow common public geography, while street names and box numbers remain synthetic review seeds."
   },
   "documents": {
     "national_id_card_number": {
-      "label": "National ID Card Number",
-      "templates": ["{RAND9}"],
+      "label": "National Identity Card",
+      "templates": [
+        "{RAND9}"
+      ],
       "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Legacy Cameroon CNI candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-      "notes": "Probable CNI visual form; keep review until official source confirms it."
+      "source": {
+        "title": "PRADO Cameroon document categories",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/cmr/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms Cameroon national identity card document families. No public official number grammar, checksum or semantic digit rule was confirmed, so the numeric value is template-only synthetic."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Cameroon ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/cmr/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms Cameroon ordinary passport document entries. It does not confirm a visible passport-number grammar in the public listing; the generated value remains synthetic."
     }
   }
 }

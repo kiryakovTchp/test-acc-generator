@@ -6,58 +6,87 @@
   "locale": "en-ZM",
   "availability": "review",
   "names": {
-    "male": ["Chanda", "Moses", "Brian", "Joseph", "Patrick", "Mutale"],
-    "female": ["Thandiwe", "Grace", "Memory", "Natasha", "Martha", "Luyando"],
-    "last": ["Banda", "Phiri", "Tembo", "Mwansa", "Zulu", "Chileshe"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Zambia name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Zambian names; attach a stronger source before marking active."
+    "male": ["John", "Joseph", "Peter", "Charles", "Moses", "James", "Emmanuel", "Brian"],
+    "female": ["Mary", "Agness", "Grace", "Elizabeth", "Joyce", "Catherine", "Mercy", "Esther"],
+    "last": ["Phiri", "Banda", "Mulenga", "Zulu", "Musonda", "Tembo", "Mwale", "Lungu"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Zambia forenames and surnames frequency tables",
+      "url": "https://forebears.io/zambia/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy seed with broader localized samples. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+260",
     "nationalLength": 9,
-    "prefixes": ["95"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Zambia phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +26095 generator prefix; verify against current numbering metadata."
+    "prefixes": ["57", "75", "76", "77", "95", "96", "97", "98"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Zambia national numbering plan communication of 24.XII.2024",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000E80007PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/ZICTA confirms country code +260, nine-digit national significant numbers, and these assigned mobile NDCs. Free, reserved and non-mobile ranges are intentionally omitted."
   },
   "locations": {
     "regions": [
       {
         "name": "Lusaka Province",
         "cities": [
-          { "name": "Lusaka", "postalPrefixes": ["101"], "streets": ["Kafue Road", "Church Road"] },
-          { "name": "Kafue", "postalPrefixes": ["102"], "streets": ["Kafue Road", "Church Road"] }
+          { "name": "Lusaka", "postalPrefixes": ["101"], "streets": ["Cairo Road", "Independence Avenue", "Great East Road"] },
+          { "name": "Kafue", "postalPrefixes": ["102"], "streets": ["Kafue Road", "Great North Road"] }
         ]
       },
       {
         "name": "Copperbelt Province",
         "cities": [
-          { "name": "Ndola", "postalPrefixes": ["103"], "streets": ["Freedom Way", "President Avenue"] },
-          { "name": "Kitwe", "postalPrefixes": ["104"], "streets": ["Freedom Way", "President Avenue"] }
+          { "name": "Ndola", "postalPrefixes": ["501"], "streets": ["Broadway", "President Avenue", "Independence Avenue"] },
+          { "name": "Kitwe", "postalPrefixes": ["501"], "streets": ["Freedom Avenue", "President Avenue"] }
         ]
+      },
+      {
+        "name": "Southern Province",
+        "cities": [{ "name": "Livingstone", "postalPrefixes": ["201"], "streets": ["Mosi-oa-Tunya Road", "Sichango Road"] }]
       }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Zambia location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked province/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU General Addressing Issues postcode-length table",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms a five-digit postcode length for Zambia. Region, city and street samples are public-geography review data; postalPrefixes are generator prefixes and not full address validation."
   },
   "documents": {
     "passport": {
       "label": "Passport",
-      "templates": ["ZN{RAND6}"],
-      "pattern": "^ZN\\d{6}$",
+      "templates": ["ZMP{RAND6}"],
+      "pattern": "^ZMP\\d{6}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Legacy Zambia passport candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-      "notes": "Probable visual pattern; keep review until official/sample source confirms it."
+      "source": {
+        "title": "PRADO Zambia ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/ZMB-AO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms the Zambia ordinary passport document family, but the public entry reviewed does not confirm a passport-number grammar. ZMP is a generator marker, not a claimed passport prefix."
     },
     "national_registration_card_number": {
       "label": "National Registration Card Number",
-      "templates": ["{RAND6}/{RAND2}/{RAND1}"],
-      "pattern": "^\\d{6}/\\d{2}/\\d$",
+      "templates": ["NRC{RAND8}"],
+      "pattern": "^NRC\\d{8}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Legacy Zambia NRC candidate", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-      "notes": "Probable NRC visual form; keep review until official/sample source confirms it."
+      "source": {
+        "title": "Zambia Ministry of Home Affairs national registration service",
+        "url": "https://www.mohais.gov.zm/?page_id=1610",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official public material confirms National Registration Card issuance, but no official public NRC number grammar, checksum or semantic digit rule was confirmed. NRC is a generator marker, not a claimed card prefix."
     }
   }
 }

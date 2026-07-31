@@ -5,8 +5,83 @@
   "country": "Swaziland",
   "locale": "en-SZ",
   "availability": "review",
-  "names": { "male": ["Sibusiso", "Mandla", "Thabo", "Musa"], "female": ["Nomsa", "Thandiwe", "Sibongile", "Dudu"], "last": ["Dlamini", "Nkosi", "Mamba", "Shongwe"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Swaziland name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "User requested Swaziland as a separate product GEO from Eswatini." },
-  "phones": { "countryCallingCode": "+268", "nationalLength": 8, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Swaziland phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Shares Eswatini numbering assumptions until validated separately." },
-  "locations": { "regions": [{ "name": "Hhohho", "cities": [{ "name": "Mbabane", "postalPrefixes": ["H1"], "streets": ["Gwamile Street", "Sozisa Road"] }] }, { "name": "Manzini", "cities": [{ "name": "Manzini", "postalPrefixes": ["M2"], "streets": ["Ngwane Street", "Nkoseluhlaza Street"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Swaziland location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Swaziland passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Sibusiso", "Mandla", "Thabo", "Musa", "Mkhululi", "Bongani", "Sipho", "Themba", "Sifiso", "Nhlanhla"],
+    "female": ["Nomsa", "Thandiwe", "Sibongile", "Dudu", "Nokuthula", "Zanele", "Busisiwe", "Ntombi", "Gugu", "Lindiwe"],
+    "last": ["Dlamini", "Nkosi", "Mamba", "Shongwe", "Simelane", "Khumalo", "Maseko", "Tsabedze", "Ginindza", "Hlophe"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Eswatini forenames and surnames frequency tables",
+      "url": "https://forebears.io/eswatini/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "User requested Swaziland as a separate product GEO from Eswatini; public Eswatini name frequency data was used for the localized sample pool."
+  },
+  "phones": {
+    "countryCallingCode": "+268",
+    "nationalLength": 8,
+    "prefixes": ["76", "77", "78", "79"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU National Numbering Plans: Eswatini",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU national numbering metadata confirms Eswatini country code +268 and eight-digit mobile-style allocations. Generated numbers are synthetic and not checked for assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Hhohho",
+        "cities": [
+          { "name": "Mbabane", "postalPrefixes": ["H1"], "streets": ["Gwamile Street", "Sozisa Road", "Somhlolo Road"] },
+          { "name": "Pigg's Peak", "postalPrefixes": ["H1"], "streets": ["King Mswati II Highway", "Peak Road", "Market Street"] }
+        ]
+      },
+      {
+        "name": "Manzini",
+        "cities": [
+          { "name": "Manzini", "postalPrefixes": ["M2"], "streets": ["Ngwane Street", "Nkoseluhlaza Street", "Mancishane Street"] }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Eswatini addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/SWZEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms a four-character alphanumeric postcode example such as H100 below locality name. Specific city/street pairings and prefixes remain synthetic review data."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Identity Card Number",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Eswatini Government identity cards service",
+        "url": "https://www.gov.sz/index.php/services-sp-22242747/identity-cards",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The government service page confirms identity-card services but no public card-number grammar was found. The nine-digit template is an unconfirmed synthetic placeholder."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Eswatini Government travel documents and passports service",
+        "url": "https://www.gov.sz/index.php/services-sp-22242747/travel-documents-and-passports",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The government page confirms regular Swazi passports, but no public passport-number grammar was found. The generated format remains an unconfirmed synthetic placeholder."
+    }
+  }
 }

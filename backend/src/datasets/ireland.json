@@ -9,17 +9,27 @@
     "male": ["Sean", "Conor", "Liam", "Cian", "Patrick", "Daniel"],
     "female": ["Aoife", "Saoirse", "Niamh", "Ciara", "Emma", "Aisling"],
     "last": ["Murphy", "Kelly", "O'Brien", "Walsh", "Ryan", "Doyle"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Ireland name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Irish names; attach a stronger source before marking active."
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Ireland forenames and surnames frequency tables",
+      "url": "https://forebears.io/ireland/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Irish name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+353",
     "nationalLength": 9,
-    "prefixes": ["85"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ireland phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +35385 generator prefix; verify against current numbering metadata."
+    "prefixes": ["83", "85", "86", "87", "89"],
+    "quality": "verified",
+    "source": {
+      "title": "ComReg review of Irish mobile numbering resources",
+      "url": "https://www.comreg.ie/media/dlm_uploads/2018/01/ComReg-1803a.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ComReg identifies the Irish mobile ranges 083, 085, 086, 087 and 089. Generated values omit the domestic trunk 0 after +353 and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
@@ -28,17 +38,40 @@
       { "name": "County Galway", "cities": [{ "name": "Galway", "postalPrefixes": ["H91"], "streets": ["Shop Street", "Eyre Square"] }] }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ireland location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked county/city/street samples; postal prefixes are synthetic Eircode-like prefixes."
+    "source": {
+      "title": "Government of Ireland Eircode overview",
+      "url": "https://www.gov.ie/en/department-of-culture-communications-and-sport/policy-information/eircode/",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Official Eircode guidance confirms the seven-character postcode structure and three-character routing key. The listed routing keys and generated trailing digits are retained as synthetic test-address placeholders, not address-level Eircode validation."
   },
   "documents": {
     "pps_number": {
       "label": "PPS Number",
-      "templates": ["{RAND7}A"],
-      "pattern": "^\\d{7}[A-Z]$",
+      "templates": ["{RAND7}{RANDL1}", "{RAND7}{RANDL2}"],
+      "pattern": "^\\d{7}[A-Z]{1,2}$",
       "quality": "verified",
-      "source": { "title": "Ireland PPS number service", "url": "https://www.gov.ie/en/department-of-social-protection/services/get-a-personal-public-service-pps-number/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "PPS number format candidate used for form testing; this is not a national ID card number and values are synthetic."
+      "source": {
+        "title": "Government of Ireland PPS number service",
+        "url": "https://www.gov.ie/en/department-of-social-protection/services/get-a-personal-public-service-pps-number/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Government guidance confirms a PPS number is seven numbers followed by either one or two letters. No checksum or semantic-letter generation is implemented."
+    },
+    "passport_card_number": {
+      "label": "Passport Card Number",
+      "templates": ["C{RAND8}"],
+      "pattern": "^C\\d{8}$",
+      "quality": "verified",
+      "source": {
+        "title": "Oireachtas written answer on Irish passport card number format",
+        "url": "https://www.oireachtas.ie/en/debates/question/2022-09-08/767/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official parliamentary answer confirms Irish passport card numbers start with C followed by eight digits. Generated values are format-only and are not checked against the passport service."
     }
   }
 }

@@ -5,8 +5,72 @@
   "country": "Namibia",
   "locale": "en-NA",
   "availability": "review",
-  "names": { "male": ["Johannes", "Petrus", "Moses", "Tobias"], "female": ["Anna", "Maria", "Selma", "Ndapewa"], "last": ["Shilongo", "Nghipandulwa", "Amadhila", "Nambala"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Namibia name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+264", "nationalLength": 9, "prefixes": ["81", "85"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Namibia phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Khomas", "cities": [{ "name": "Windhoek", "postalPrefixes": ["100"], "streets": ["Independence Avenue", "Robert Mugabe Avenue"] }] }, { "name": "Erongo", "cities": [{ "name": "Walvis Bay", "postalPrefixes": ["130"], "streets": ["Sam Nujoma Avenue", "Hanna Mupetami Road"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Namibia location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Namibia passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Johannes", "Petrus", "Moses", "Tobias"],
+    "female": ["Anna", "Maria", "Selma", "Ndapewa"],
+    "last": ["Shilongo", "Nghipandulwa", "Amadhila", "Nambala"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Namibia forenames and surnames frequency tables",
+      "url": "https://forebears.io/namibia/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables support representative Namibian names. This is not an official civil registry export; gender grouping remains a review seed."
+  },
+  "phones": {
+    "countryCallingCode": "+264",
+    "nationalLength": 9,
+    "prefixes": ["83", "84", "85"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Namibia national numbering plan communication of 12.VII.2018",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000930002PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/CRAN confirms country code +264, nine-digit 83, 84 and 85 electronic-communications allocations. Prefix 81 was removed because it was not in the reviewed ITU allocation table."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Khomas", "cities": [{ "name": "Windhoek", "postalPrefixes": ["100"], "streets": ["Independence Avenue", "Robert Mugabe Avenue"] }] },
+      { "name": "Erongo", "cities": [{ "name": "Walvis Bay", "postalPrefixes": ["130"], "streets": ["Sam Nujoma Avenue", "Hanna Mupetami Road"] }] }
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "NamPost postal codes",
+      "url": "https://www.nampost.com.na/postal/postal-codes",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "NamPost confirms current five-digit postal codes including Khomas/Windhoek and Erongo/Walvis Bay ranges. Streets remain representative review samples; postalPrefixes are generator prefixes, not complete postcodes."
+  },
+  "documents": {
+    "national_identity_number": {
+      "label": "National Identity Number",
+      "templates": ["{RAND11}"],
+      "pattern": "^\\d{11}$",
+      "quality": "verified",
+      "source": {
+        "title": "Namibia Identification Act 21 of 1996",
+        "url": "https://mhaiss.gov.na/documents/292728/553941/Identification%2BAct%2B21%2Bof%2B1996.pdf/f74661d2-8cbe-b31f-5249-ebc90d4988eb?download=true&t=1665685065951&version=1.0",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The Act states an identity number consists of eleven figures. No public checksum or semantic digit rule was confirmed, so generation is random digits only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND7}"],
+      "pattern": "^[A-Z]\\d{7}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Namibia passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/nam/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Namibian passport document families. The public listing does not confirm passport-number grammar; template remains synthetic."
+    }
+  }
 }

@@ -6,53 +6,101 @@
   "locale": "en-SL",
   "availability": "review",
   "names": {
-    "male": ["Mohamed", "Ibrahim", "Abdul", "Alhaji", "Sorie", "Lamin"],
-    "female": ["Aminata", "Mariama", "Fatmata", "Hawa", "Kadiatu", "Isatu"],
-    "last": ["Kamara", "Koroma", "Bangura", "Kargbo", "Sesay", "Conteh", "Turay"],
+    "male": ["Mohamed", "Ibrahim", "Abdul", "Alhaji", "Sorie", "Lamin", "Samuel", "Joseph", "John", "Francis"],
+    "female": ["Aminata", "Mariama", "Fatmata", "Hawa", "Kadiatu", "Isatu", "Zainab", "Mabinty", "Adama", "Memunatu"],
+    "last": ["Kamara", "Koroma", "Bangura", "Kargbo", "Sesay", "Conteh", "Turay", "Jalloh", "Mansaray", "Kanu"],
     "quality": "sample_verified",
-    "source": { "title": "Legacy in-app Sierra Leone name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing in-app Sierra Leone name pool; keep review until an external source is attached."
+    "source": {
+      "title": "Forebears Sierra Leone forenames and surnames frequency tables",
+      "url": "https://forebears.io/sierra-leone/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace legacy in-app samples with localized name pools."
   },
   "phones": {
     "countryCallingCode": "+232",
     "nationalLength": 8,
-    "prefixes": ["76"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Sierra Leone phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +23276 generator prefix; verify against current numbering metadata."
+    "prefixes": ["21", "25", "30", "33", "34", "40", "44", "50", "55", "66", "72", "73", "74", "75", "76", "77", "78", "79", "88"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Sierra Leone national numbering plan communication of 24.II.2020",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000BB0006PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU confirms country code +232 and two-digit NDC plus six-digit subscriber structure for eight-digit national significant numbers. Generated values are synthetic and not checked for live assignment."
   },
   "locations": {
     "regions": [
-      { "name": "Western Area", "cities": [{ "name": "Freetown", "postalPrefixes": ["100"], "streets": ["Siaka Stevens Street", "Wilkinson Road"] }] },
+      {
+        "name": "Western Area",
+        "cities": [
+          { "name": "Freetown", "postalPrefixes": ["SL"], "streets": ["Siaka Stevens Street", "Wilkinson Road", "Ross Road"] }
+        ]
+      },
       {
         "name": "Eastern Province",
         "cities": [
-          { "name": "Kenema", "postalPrefixes": ["300"], "streets": ["Hangha Road", "Kono Highway"] },
-          { "name": "Koidu", "postalPrefixes": ["330"], "streets": ["Hangha Road", "Kono Highway"] }
+          { "name": "Kenema", "postalPrefixes": ["SL"], "streets": ["Hangha Road", "Kono Highway", "Dama Road"] },
+          { "name": "Koidu", "postalPrefixes": ["SL"], "streets": ["Konomanyi Road", "Main Kainkordu Road", "Tankoro Road"] }
         ]
       },
-      { "name": "Northern Province", "cities": [{ "name": "Makeni", "postalPrefixes": ["400"], "streets": ["Magburaka Road", "Azzolini Highway"] }] }
+      {
+        "name": "Northern Province",
+        "cities": [
+          { "name": "Makeni", "postalPrefixes": ["SL"], "streets": ["Magburaka Road", "Azzolini Highway", "Makama Road"] }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Sierra Leone location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Sierra Leone addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/SLEEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU shows Sierra Leone address examples without a postcode. The SL postal prefix is a generator placeholder, not a public postcode format."
   },
   "documents": {
+    "national_identification_number": {
+      "label": "National Identification Number",
+      "templates": ["{RAND11}"],
+      "pattern": "^\\d{11}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Sierra Leone NCRA biometric registration process",
+        "url": "https://ncra.gov.sl/biometric-civil-registration-process-to-get-your-national-identification-number-nin/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "NCRA confirms a National Identification Number is generated and assigned after civil registration, but the public official page does not confirm a number grammar. The 11-digit template is an unconfirmed synthetic placeholder."
+    },
     "passport": {
       "label": "Passport",
       "templates": ["{RAND7}"],
       "pattern": "^\\d{7}$",
-      "quality": "synthetic_pattern",
-      "source": { "title": "User-provided PRADO Sierra Leone passport specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
-      "notes": "PRADO specimen image showed Passport No as seven digits, with SLE only as the country code."
+      "quality": "sample_verified",
+      "source": {
+        "title": "PRADO Sierra Leone ordinary passport SLE-AO-01001",
+        "url": "https://www.consilium.europa.eu/prado/en/SLE-AO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms the ordinary passport document; visible specimen data shows a seven-digit passport number. This is sample-verified only, not a confirmed national numbering rule."
     },
     "personal_number": {
       "label": "Personal Number",
       "templates": ["{RAND9}"],
       "pattern": "^\\d{9}$",
-      "quality": "synthetic_pattern",
-      "source": { "title": "User-provided PRADO Sierra Leone personal number specimen", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "user_sample", "checkedAt": "2026-07-27" },
-      "notes": "PRADO specimen image showed Personal No as nine digits; keep review until confirmed across current documents."
+      "quality": "sample_verified",
+      "source": {
+        "title": "PRADO Sierra Leone ordinary passport SLE-AO-01001",
+        "url": "https://www.consilium.europa.eu/prado/en/SLE-AO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Visible PRADO specimen data shows Personal No as nine digits. Kept sample_verified because a single specimen is not enough to establish a general rule."
     }
   }
 }

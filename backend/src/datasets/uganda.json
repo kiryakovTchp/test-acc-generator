@@ -6,41 +6,41 @@
   "locale": "en-UG",
   "availability": "review",
   "names": {
-    "male": ["Moses", "Joseph", "Brian", "Samuel", "David", "Isaac"],
-    "female": ["Grace", "Esther", "Ruth", "Sarah", "Diana", "Lydia"],
-    "last": ["Okello", "Kato", "Mugisha", "Nsubuga", "Tumusiime", "Achieng"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Uganda name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Ugandan names; attach a stronger source before marking active."
+    "male": ["John", "Joseph", "Moses", "Robert", "Charles", "James", "Ronald", "Richard", "Godfrey", "Fred"],
+    "female": ["Rose", "Grace", "Mary", "Sarah", "Annet", "Florence", "Esther", "Ruth"],
+    "last": ["Akello", "Okello", "Mbabazi", "Apio", "Asiimwe", "Auma", "Nsubuga", "Namutebi", "Matovu", "Nalubega", "Tumusiime"],
+    "quality": "sample_verified",
+    "source": { "title": "Forebears Uganda forenames and surnames frequency tables", "url": "https://forebears.io/uganda/forenames", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+    "notes": "Public frequency tables were used to seed localized Ugandan given names and surnames. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+256",
     "nationalLength": 9,
-    "prefixes": ["71"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Uganda phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +25671 generator prefix; verify against current numbering metadata."
+    "prefixes": ["700", "701", "702", "703", "704", "705", "706", "707", "708", "709", "710", "711", "712", "713", "714", "715", "716", "717", "718", "719", "724", "726", "727", "730", "731", "740", "741", "742", "743", "744", "745", "746", "747", "748", "749", "750", "751", "752", "753", "754", "755", "756", "757", "758", "759", "760", "761", "762", "763", "764", "765", "766", "767", "768", "769", "770", "771", "772", "773", "774", "775", "776", "777", "778", "779", "780", "781", "782", "783", "784", "785", "786", "787", "788", "789", "790", "791", "792", "793", "794", "795"],
+    "quality": "verified",
+    "source": { "title": "ITU Operational Bulletin 1344: Uganda national numbering plan communication of 13.VII.2026", "url": "https://www.itu.int/dms_pub/itu-t/opb/sp/T-SP-OB.1344-2026-OAS-PDF-E.pdf", "type": "official", "checkedAt": "2026-07-31" },
+    "notes": "ITU/UCC confirms country code +256, fixed nine-digit national significant numbers, and the listed mobile allocations. Narrower published ranges such as 721000000-721099999, 728000000-728099999, 734000000-734099999 and 737000000-737199999 are omitted because the current prefix generator cannot constrain the remaining subscriber digits. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
       {
         "name": "Central Region",
         "cities": [
-          { "name": "Kampala", "postalPrefixes": ["25"], "streets": ["Jinja Road", "Kira Road"] },
-          { "name": "Entebbe", "postalPrefixes": ["26"], "streets": ["Jinja Road", "Kira Road"] }
+          { "name": "Kampala", "postalPrefixes": ["100", "123"], "streets": ["Siad Barre Avenue", "Katwe Road", "Jinja Road", "Kira Road"] },
+          { "name": "Entebbe", "postalPrefixes": ["000"], "streets": ["Kampala Road", "Airport Road"] }
         ]
       },
       {
         "name": "Eastern Region",
         "cities": [
-          { "name": "Jinja", "postalPrefixes": ["27"], "streets": ["Acacia Avenue", "Republic Street"] },
-          { "name": "Mbale", "postalPrefixes": ["28"], "streets": ["Acacia Avenue", "Republic Street"] }
+          { "name": "Jinja", "postalPrefixes": ["000"], "streets": ["Main Street", "Republic Street"] },
+          { "name": "Mbale", "postalPrefixes": ["000"], "streets": ["Naboa Road", "Republic Street"] }
         ]
       }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Uganda location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": { "title": "UPU Uganda addressing examples", "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/UGAEn.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+    "notes": "UPU confirms Uganda uses five-digit postcodes to the left of the locality and provides Kampala and Nabbingo examples. Kampala prefixes preserve public example stems; other city prefixes remain synthetic placeholders for generator consistency and are not full postal-code validation."
   },
   "documents": {
     "passport": {
@@ -48,16 +48,16 @@
       "templates": ["B{RAND7}"],
       "pattern": "^B\\d{7}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Uganda passport visual candidate", "url": "https://passports.go.ug/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Uganda official passport portal confirms passport issuance, but not the exact serial grammar; keep review."
+      "source": { "title": "PRADO Uganda ordinary passport document entry", "url": "https://www.consilium.europa.eu/prado/en/UGA-AO-03001/index.html", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "notes": "PRADO confirms the Uganda ordinary passport document family, while the official passport portal confirms current passport application services. No public passport-number grammar was confirmed, so the B plus seven digits template remains an unconfirmed synthetic placeholder."
     },
     "national_identification_number": {
       "label": "National Identification Number",
       "templates": ["CM{RAND12}"],
       "pattern": "^CM\\d{12}$",
       "quality": "synthetic_pattern",
-      "source": { "title": "Uganda NIN visual candidate", "url": "https://www.nira.go.ug/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Plausible NIN visual form; keep review until official source confirms prefix and length."
+      "source": { "title": "Uganda Registration of Persons Act 2015, sections 68-69", "url": "https://data.unicef.org/wp-content/uploads/2017/12/Registration-of-Person-Act-2015_Uganda.pdf", "type": "trusted_reference", "checkedAt": "2026-07-31" },
+      "notes": "Uganda law confirms allocation of a unique national identification number and issuance of a national identification card, but no official public number grammar, checksum or semantic digit rule was found. The CM plus twelve digits template remains an unconfirmed synthetic placeholder."
     }
   }
 }

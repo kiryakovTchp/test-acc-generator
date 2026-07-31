@@ -6,50 +6,183 @@
   "locale": "en-GH",
   "availability": "review",
   "names": {
-    "male": ["Kwame", "Kofi", "Yaw", "Kojo", "Mensah", "Nana"],
-    "female": ["Ama", "Akosua", "Abena", "Esi", "Afia", "Nana"],
-    "last": ["Mensah", "Owusu", "Osei", "Boateng", "Asante", "Appiah"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Ghana name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Ghanaian names; attach a stronger source before marking active."
+    "male": [
+      "Kwame",
+      "Kofi",
+      "Yaw",
+      "Kojo",
+      "Mensah",
+      "Nana",
+      "Kwesi",
+      "Kwabena",
+      "Fiifi",
+      "John",
+      "Emmanuel",
+      "Joseph"
+    ],
+    "female": [
+      "Ama",
+      "Akosua",
+      "Abena",
+      "Esi",
+      "Afia",
+      "Nana",
+      "Adwoa",
+      "Yaa",
+      "Akua",
+      "Mary",
+      "Grace",
+      "Elizabeth"
+    ],
+    "last": [
+      "Mensah",
+      "Owusu",
+      "Osei",
+      "Boateng",
+      "Asante",
+      "Appiah",
+      "Asare",
+      "Yeboah",
+      "Tetteh",
+      "Adjei",
+      "Opoku",
+      "Addo"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Ghana forenames and surnames frequency tables",
+      "url": "https://forebears.io/ghana/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized Ghanaian given names and surnames. Day names are common but no date-of-birth semantic linkage is implemented; this remains name-pool sampling, not civil registry generation."
   },
   "phones": {
     "countryCallingCode": "+233",
     "nationalLength": 9,
-    "prefixes": ["23"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ghana phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +23323 generator prefix; verify against current numbering metadata."
+    "prefixes": [
+      "20",
+      "23",
+      "24",
+      "25",
+      "26",
+      "27",
+      "28",
+      "50",
+      "54",
+      "55",
+      "56",
+      "57",
+      "59"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Ghana national numbering plan communication of 20.XII.2022",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000520009PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU/NCA confirms country code +233 and fixed nine-digit national significant numbers; listed mobile-like prefixes are common Ghana mobile ranges. Generated numbers are synthetic and are not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
       {
         "name": "Greater Accra",
         "cities": [
-          { "name": "Accra", "postalPrefixes": ["00233"], "streets": ["Independence Avenue", "Ring Road"] },
-          { "name": "Tema", "postalPrefixes": ["00234"], "streets": ["Independence Avenue", "Ring Road"] }
+          {
+            "name": "Accra",
+            "postalPrefixes": [
+              "GA-183-"
+            ],
+            "streets": [
+              "Independence Avenue",
+              "Ring Road",
+              "Abdul Diouf Road",
+              "Asafoatse Nettey Road"
+            ]
+          },
+          {
+            "name": "Tema",
+            "postalPrefixes": [
+              "GT-001-"
+            ],
+            "streets": [
+              "Community One Road",
+              "Harbour Road",
+              "Hospital Road"
+            ]
+          }
         ]
       },
       {
         "name": "Ashanti",
         "cities": [
-          { "name": "Kumasi", "postalPrefixes": ["00235"], "streets": ["Prempeh I Street", "Harper Road"] },
-          { "name": "Obuasi", "postalPrefixes": ["00236"], "streets": ["Prempeh I Street", "Harper Road"] }
+          {
+            "name": "Kumasi",
+            "postalPrefixes": [
+              "AK-039-"
+            ],
+            "streets": [
+              "Prempeh I Street",
+              "Harper Road",
+              "Lake Road",
+              "Adum Road"
+            ]
+          },
+          {
+            "name": "Obuasi",
+            "postalPrefixes": [
+              "AO-001-"
+            ],
+            "streets": [
+              "Station Road",
+              "Len Clay Road",
+              "Central Market Road"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Northern",
+        "cities": [
+          {
+            "name": "Tamale",
+            "postalPrefixes": [
+              "NT-001-"
+            ],
+            "streets": [
+              "Hospital Road",
+              "Dagomba Road",
+              "Gumani Road"
+            ]
+          }
         ]
       }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Ghana location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Ghana addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/ghaEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU confirms Ghana address examples with post office/postcode such as Accra-Central GA-183, while GhanaPostGPS uses digital addresses. The generated trailing digits are synthetic and not checked against GhanaPostGPS or live delivery data."
   },
   "documents": {
     "ghana_card_pin": {
       "label": "Ghana Card PIN",
-      "templates": ["GHA-{RAND9}-{RAND1}"],
+      "templates": [
+        "GHA-{RAND9}-{RAND1}"
+      ],
       "pattern": "^GHA-\\d{9}-\\d$",
       "quality": "verified",
-      "source": { "title": "Ghana NIA FAQ Ghana Card PIN format", "url": "https://register.nia.gov.gh/faqs", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Ghana NIA FAQ gives Ghana Card PIN format GHA-000000000-0. Generated values are synthetic and not registry-checked."
+      "source": {
+        "title": "Ghana National Identification Authority FAQ: Ghana Card PIN format",
+        "url": "https://register.nia.gov.gh/faqs",
+        "type": "official",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "NIA states that Ghanaian Ghana Card PINs start with GHA followed by ten digits in the display shape GHA-000000000-0. Generated values follow that public display shape but are not registry-checked."
     }
   }
 }

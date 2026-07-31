@@ -5,8 +5,184 @@
   "country": "Congo (Brazzaville)",
   "locale": "fr-CG",
   "availability": "review",
-  "names": { "male": ["Jean", "Patrick", "Alain", "Didier"], "female": ["Marie", "Chantal", "Grace", "Francine"], "last": ["Makoumbou", "Mbemba", "Ngoma", "Mouanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+242", "nationalLength": 9, "prefixes": ["04", "05", "06"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Brazzaville", "cities": [{ "name": "Brazzaville", "postalPrefixes": ["100"], "streets": ["Avenue de la Paix", "Boulevard Denis Sassou Nguesso"] }] }, { "name": "Pointe-Noire", "cities": [{ "name": "Pointe-Noire", "postalPrefixes": ["200"], "streets": ["Avenue Charles de Gaulle", "Rue du Commerce"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Brazzaville location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Republic of the Congo was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": [
+      "Jean",
+      "Patrick",
+      "Alain",
+      "Didier",
+      "Joseph",
+      "Christian",
+      "Emmanuel",
+      "Pierre",
+      "Guy",
+      "Daniel",
+      "Michel",
+      "Armel"
+    ],
+    "female": [
+      "Marie",
+      "Chantal",
+      "Grace",
+      "Francine",
+      "Nadine",
+      "Sylvie",
+      "Diane",
+      "Carine",
+      "Aline",
+      "Jeanne",
+      "Claudine",
+      "Esperance"
+    ],
+    "last": [
+      "Makoumbou",
+      "Mbemba",
+      "Ngoma",
+      "Mouanda",
+      "Massamba",
+      "Mabiala",
+      "Nkounkou",
+      "Mokoko",
+      "Mpassi",
+      "Mavoungou",
+      "Nkouka",
+      "Kimbembe"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Republic of the Congo forenames and surnames frequency tables",
+      "url": "https://forebears.io/republic-of-the-congo/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. Gender grouping is a review seed and is not an official civil registry export."
+  },
+  "phones": {
+    "countryCallingCode": "+242",
+    "nationalLength": 9,
+    "prefixes": [
+      "01",
+      "04",
+      "05",
+      "06"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Congo national numbering plan communication of 1.XI.2024",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200002E0009PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU/ARPCE confirms country code +242, nine-digit national significant numbers and recent mobile Voice/SMS/Data assignments in the 06 range. Public numbering references list 01, 04, 05 and 06 as mobile prefixes; generated numbers are synthetic and not checked for current subscriber assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Brazzaville",
+        "cities": [
+          {
+            "name": "Brazzaville",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Paix",
+              "Boulevard Denis Sassou Nguesso",
+              "Avenue de l'Amitie",
+              "Avenue Felix Eboue"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Pointe-Noire",
+        "cities": [
+          {
+            "name": "Pointe-Noire",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue Charles de Gaulle",
+              "Rue du Commerce",
+              "Avenue Marien Ngouabi",
+              "Boulevard Loango"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Niari",
+        "cities": [
+          {
+            "name": "Dolisie",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Gare",
+              "Rue du Marche",
+              "Route de Pointe-Noire"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Cuvette",
+        "cities": [
+          {
+            "name": "Owando",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Prefecture",
+              "Rue Centrale",
+              "Route d'Oyo"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU General Addressing Issues: countries without postcode requirement",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU lists Congo (Rep.) among countries that do not require postal codes. The generator uses BP-style prefixes; department/city mapping follows public geography and generated box/street values remain synthetic review data."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Identity Card",
+      "templates": [
+        "CNI{RAND9}"
+      ],
+      "pattern": "^CNI\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "IRB Canada: Republic of the Congo national identity card",
+        "url": "https://www.justice.gov/file/cog104973fepdf/dl",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "The public response describes the CNI followed by a personal identification number on the card, but does not confirm a current public number length, checksum or semantic digit rule. Template includes CNI as a document-family marker and random digits only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Republic of the Congo ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/cog/a/o/docs-per-type.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms ordinary passport entries for the Republic of the Congo. The public listing does not confirm passport-number grammar, so generation remains template-only synthetic."
+    }
+  }
 }

@@ -5,8 +5,49 @@
   "country": "Guinea Conakry",
   "locale": "fr-GN",
   "availability": "review",
-  "names": { "male": ["Mamadou", "Ibrahima", "Sekou", "Abdoulaye"], "female": ["Aminata", "Aissatou", "Binta", "Kadiatou"], "last": ["Camara", "Diallo", "Conte", "Keita"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "User requested Guinea Conakry as a separate product GEO even though the country code matches Guinea." },
-  "phones": { "countryCallingCode": "+224", "nationalLength": 9, "prefixes": ["6"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Shares Guinea numbering assumptions until validated separately." },
-  "locations": { "regions": [{ "name": "Conakry", "cities": [{ "name": "Conakry", "postalPrefixes": ["001"], "streets": ["Corniche Nord", "Avenue de la Republique"] }] }, { "name": "Kindia", "cities": [{ "name": "Kindia", "postalPrefixes": ["300"], "streets": ["Route Nationale", "Rue du Centre"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Guinea Conakry location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; previous Guinea candidate was rejected as generic filler." } }
+  "names": {
+    "male": ["Mamadou", "Ibrahima", "Sekou", "Abdoulaye", "Alpha", "Ousmane", "Mohamed", "Amadou", "Lansana", "Aboubacar", "Sory", "Alhassane"],
+    "female": ["Aminata", "Aissatou", "Binta", "Kadiatou", "Fatoumata", "Mariam", "Hawa", "Hadja", "Nene", "Ramatoulaye", "Maimouna", "Mariama"],
+    "last": ["Camara", "Diallo", "Conte", "Keita", "Barry", "Bah", "Balde", "Sow", "Toure", "Sylla", "Traore", "Kourouma"],
+    "quality": "sample_verified",
+    "source": { "title": "Forebears Guinea forenames and surnames frequency tables", "url": "https://forebears.io/guinea/forenames", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+    "notes": "Uses Guinea public frequency data while preserving Guinea Conakry as a separate product GEO. This is not an official civil registry export."
+  },
+  "phones": {
+    "countryCallingCode": "+224",
+    "nationalLength": 9,
+    "prefixes": ["6"],
+    "quality": "sample_verified",
+    "source": { "title": "ITU National Numbering Plans: Guinea (+224)", "url": "https://www.itu.int/ITU-T/inr/nnp/", "type": "official", "checkedAt": "2026-07-30" },
+    "notes": "Shares Guinea +224 numbering constraints. Exact current mobile allocation blocks were not directly extracted here, so generation remains constrained synthetic data."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Conakry", "cities": [{ "name": "Conakry", "postalPrefixes": ["001 BP "], "streets": ["Corniche Nord", "Avenue de la Republique", "Route Le Prince", "Boulevard du Commerce"] }] },
+      { "name": "Kindia", "cities": [{ "name": "Kindia", "postalPrefixes": ["BP "], "streets": ["Route Nationale", "Rue du Centre", "Route de Mamou"] }] },
+      { "name": "Boke", "cities": [{ "name": "Boke", "postalPrefixes": ["BP "], "streets": ["Avenue de la Prefecture", "Rue du Port", "Route de Kamsar"] }] },
+      { "name": "Mamou", "cities": [{ "name": "Mamou", "postalPrefixes": ["BP "], "streets": ["Route de Dalaba", "Rue Centrale", "Avenue du Marche"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": { "title": "UPU General Addressing Issues: Guinea postcode notes", "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+    "notes": "Guinea Conakry uses the same public address constraints as Guinea. Conakry keeps the 001 BP example shape; other BP prefixes and streets are synthetic review seeds."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Identity Card",
+      "templates": ["{RAND9}"],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "IRB Canada: Guinea national identity card characteristics", "url": "https://www.ecoi.net/en/document/1146298.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "notes": "Public source confirms national identity card characteristics and requirements, but no official public number grammar, checksum or semantic digit rule was found. Generated value is a synthetic placeholder."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": { "title": "PRADO Guinea ordinary passport document entries", "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gin/a/docs-per-category.html", "type": "trusted_reference", "checkedAt": "2026-07-30" },
+      "notes": "PRADO confirms Guinea ordinary passport entries. Public listings do not confirm the visible passport-number grammar; generation remains template-only synthetic."
+    }
+  }
 }

@@ -11,66 +11,79 @@
     "last": ["Dos Santos", "Manuel", "Domingos", "Ferreira", "Afonso", "Cunha", "Pereira"],
     "quality": "sample_verified",
     "source": {
-      "title": "Legacy in-app Angola name samples",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "Forebears Angola forenames and surnames frequency tables",
+      "url": "https://forebears.io/angola/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from the existing in-app Angola name pool; keep review until an external source is attached."
+    "notes": "Localized name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+244",
     "nationalLength": 9,
-    "prefixes": ["923"],
-    "quality": "synthetic_pattern",
+    "prefixes": ["91", "923", "93"],
+    "quality": "sample_verified",
     "source": {
-      "title": "Legacy in-app Angola phone rule",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "ITU Angola national numbering plan listing",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from the existing +244923 generator prefix; verify against current numbering metadata before marking active."
+    "notes": "ITU lists Angola under country code +244. Public numbering summaries based on regulator/ITU data describe nine-digit national numbers and mobile service starting 91, 923 and 93; kept sample_verified because the current country-specific ITU allocation table was not directly extracted into this dataset."
   },
   "locations": {
     "regions": [
       {
         "name": "Luanda",
-        "cities": [{ "name": "Luanda", "postalPrefixes": ["100"], "streets": ["Avenida 4 de Fevereiro", "Rua Amilcar Cabral"] }]
+        "cities": [{ "name": "Luanda", "postalPrefixes": ["BP "], "streets": ["Avenida 4 de Fevereiro", "Rua Amilcar Cabral", "Rua Frederik Engels"] }]
       },
       {
         "name": "Huila",
-        "cities": [{ "name": "Lubango", "postalPrefixes": ["130"], "streets": ["Avenida da Independencia", "Rua da Se"] }]
+        "cities": [{ "name": "Lubango", "postalPrefixes": ["BP "], "streets": ["Avenida da Independencia", "Rua da Se"] }]
       },
       {
         "name": "Benguela",
         "cities": [
-          { "name": "Benguela", "postalPrefixes": ["120"], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] },
-          { "name": "Lobito", "postalPrefixes": ["120"], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] }
+          { "name": "Benguela", "postalPrefixes": ["BP "], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] },
+          { "name": "Lobito", "postalPrefixes": ["BP "], "streets": ["Avenida Aires de Almeida Santos", "Rua 31 de Janeiro"] }
         ]
       }
     ],
     "quality": "synthetic_pattern",
     "source": {
-      "title": "Legacy in-app Angola location samples",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "UPU Angola addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/AGOEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "notes": "UPU confirms Angola address examples using street/locality lines and BP contact addressing. postalPrefixes use 'BP ' as a generator marker with synthetic trailing digits; generated addresses are not postal-code validated."
   },
   "documents": {
+    "national_identifier": {
+      "label": "National Identifier",
+      "templates": ["{RAND7}-{RANDL1}{RAND2}-{RAND2}"],
+      "pattern": "^\\d{7}-[A-Z]\\d{2}-\\d{2}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Public financial-institution identifier format list: Angola National Identifier",
+        "url": "https://danskebank.fi/-/media/pdf/danske-bank/fi/en/national-identifier-list-final.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "A public secondary identifier list gives the display shape 9999999-X99-99. No official public checksum, semantic digit logic or allocation rule was found, so values remain synthetic placeholders."
+    },
     "passport": {
       "label": "Passport",
       "templates": ["N{RAND7}"],
       "pattern": "^N\\d{7}$",
-      "quality": "verified",
+      "quality": "synthetic_pattern",
       "source": {
-        "title": "Angola ordinary passport visual pattern review",
-        "url": "https://www.ecoi.net/en/document/2095422.html",
+        "title": "PRADO Angola ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/AGO-AO-01001/index.html",
         "type": "trusted_reference",
-        "checkedAt": "2026-07-27"
+        "checkedAt": "2026-07-31"
       },
-      "notes": "Confirmed ordinary passport visual pattern from the previous validation pass: N plus seven digits."
+      "notes": "PRADO confirms the Angola ordinary passport document family, but the public entry reviewed does not confirm the visible passport number grammar. The N plus seven digits template is retained only as a synthetic placeholder."
     }
   }
 }

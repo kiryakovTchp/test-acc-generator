@@ -6,45 +6,88 @@
   "locale": "fr-SN",
   "availability": "review",
   "names": {
-    "male": ["Mamadou", "Cheikh", "Ibrahima", "Ousmane", "Moussa", "Abdou"],
-    "female": ["Fatou", "Awa", "Aminata", "Mariama", "Coumba", "Sokhna"],
-    "last": ["Diop", "Ndiaye", "Sow", "Fall", "Ba", "Gueye"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy migration Senegal name samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Representative synthetic Senegalese names; attach a stronger source before marking active."
+    "male": ["Mamadou", "Cheikh", "Ibrahima", "Ousmane", "Moussa", "Abdou", "Amadou", "Modou", "Alioune", "Pape"],
+    "female": ["Fatou", "Awa", "Aminata", "Mariama", "Coumba", "Sokhna", "Astou", "Ndeye", "Mame", "Khady"],
+    "last": ["Diop", "Ndiaye", "Sow", "Fall", "Ba", "Gueye", "Diallo", "Sarr", "Seck", "Faye"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Senegal forenames and surnames frequency tables",
+      "url": "https://forebears.io/senegal/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy name seed with localized samples."
   },
   "phones": {
     "countryCallingCode": "+221",
     "nationalLength": 9,
-    "prefixes": ["70"],
-    "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Senegal phone rule", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from the existing +22170 generator prefix; verify against current numbering metadata."
+    "prefixes": ["70", "75", "76", "77", "78"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Senegal national numbering plan communication of 3.X.2023",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000B80006PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU confirms country code +221 and nine-digit national significant numbers. Listed leading digits are public mobile-style allocations; generated numbers are synthetic and not checked for assignment or portability."
   },
   "locations": {
     "regions": [
       {
         "name": "Dakar",
         "cities": [
-          { "name": "Dakar", "postalPrefixes": ["110"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot"] },
-          { "name": "Pikine", "postalPrefixes": ["110"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot"] }
+          { "name": "Dakar", "postalPrefixes": ["12500"], "streets": ["Avenue Cheikh Anta Diop", "Rue Carnot", "Avenue Blaise Diagne"] },
+          { "name": "Pikine", "postalPrefixes": ["12500"], "streets": ["Route des Niayes", "Rue 10", "Avenue de Pikine"] }
         ]
       },
-      { "name": "Thies", "cities": [{ "name": "Thies", "postalPrefixes": ["210"], "streets": ["Avenue General de Gaulle", "Route de Mbour"] }] },
-      { "name": "Diourbel", "cities": [{ "name": "Touba", "postalPrefixes": ["310"], "streets": ["Avenue Cheikh Ahmadou Bamba", "Route de Darou"] }] }
+      {
+        "name": "Thies",
+        "cities": [
+          { "name": "Thies", "postalPrefixes": ["21000"], "streets": ["Avenue General de Gaulle", "Route de Mbour", "Rue de la Gare"] }
+        ]
+      },
+      {
+        "name": "Diourbel",
+        "cities": [
+          { "name": "Touba", "postalPrefixes": ["31000"], "streets": ["Avenue Cheikh Ahmadou Bamba", "Route de Darou", "Avenue 28"] }
+        ]
+      }
     ],
     "quality": "synthetic_pattern",
-    "source": { "title": "Legacy in-app Senegal location samples", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "source": {
+      "title": "UPU Senegal addressing example",
+      "url": "https://youbianku.com/files/upu/SEN.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU confirms Senegal uses five-digit postcodes placed to the left of the delivery office name. City/street pairings and selected prefixes are synthetic review data, not delivery-validated addresses."
   },
   "documents": {
     "ecowas_id_card_number": {
       "label": "ECOWAS ID Card Number",
       "templates": ["{RAND17}"],
       "pattern": "^\\d{17}$",
-      "quality": "verified",
-      "source": { "title": "Senegal ECOWAS biometric identity card decree", "url": "https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/", "type": "official", "checkedAt": "2026-07-27" },
-      "notes": "Senegal decree states the ECOWAS identity card number contains 17 digits. Generated values are synthetic and not registry-checked."
+      "quality": "sample_verified",
+      "source": {
+        "title": "Senegal ECOWAS biometric identity card decree",
+        "url": "https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The decree directly confirms a 17-digit card number and describes semantic components. Generated values intentionally use a plain random template; sex, region, date-of-birth, and sequence semantics are not implemented."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Senegal ordinary passport SEN-AO-03001",
+        "url": "https://www.consilium.europa.eu/prado/en/SEN-AO-03001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms the ordinary passport document but no public passport-number grammar was found. The generated format remains an unconfirmed synthetic placeholder."
     }
   }
 }

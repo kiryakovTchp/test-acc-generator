@@ -5,8 +5,72 @@
   "country": "Niger",
   "locale": "fr-NE",
   "availability": "review",
-  "names": { "male": ["Moussa", "Issoufou", "Oumarou", "Abdou"], "female": ["Aissa", "Fatouma", "Mariam", "Hadiza"], "last": ["Mahamadou", "Issaka", "Garba", "Seyni"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Niger name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+227", "nationalLength": 8, "prefixes": ["8", "9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Niger phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Niamey", "cities": [{ "name": "Niamey", "postalPrefixes": ["800"], "streets": ["Avenue de l'Independance", "Boulevard Mali Bero"] }] }, { "name": "Maradi", "cities": [{ "name": "Maradi", "postalPrefixes": ["400"], "streets": ["Avenue de la Republique", "Rue du Marche"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Niger location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Niger was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": ["Moussa", "Issoufou", "Oumarou", "Abdou"],
+    "female": ["Aissa", "Fatouma", "Mariam", "Hadiza"],
+    "last": ["Mahamadou", "Issaka", "Garba", "Seyni"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Niger forenames and surnames frequency tables",
+      "url": "https://forebears.io/niger/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables support representative Nigerien names. This is not an official civil registry export; gender grouping remains a review seed."
+  },
+  "phones": {
+    "countryCallingCode": "+227",
+    "nationalLength": 8,
+    "prefixes": ["74"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Niger national numbering plan update",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200009B0003PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/ARCEP confirms country code +227, eight-digit mobile-network services and a public 74 mobile NDC. Broad 8/9 generation was removed until additional active mobile NDCs are directly sourced."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Niamey", "cities": [{ "name": "Niamey", "postalPrefixes": ["800"], "streets": ["Avenue de l'Independance", "Boulevard Mali Bero"] }] },
+      { "name": "Maradi", "cities": [{ "name": "Maradi", "postalPrefixes": ["400"], "streets": ["Avenue de la Republique", "Rue du Marche"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Niger postal addressing example",
+      "url": "https://youbianku.com/files/upu/NER.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU example confirms Niger address ordering and a four-digit Niamey postcode sample. Region/city/street values remain representative review data; postalPrefixes are generator prefixes, not complete postcodes."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Biometric Identity Card Number",
+      "templates": ["CNI{RAND9}"],
+      "pattern": "^CNI\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Niger government launch of AES biometric national identity card",
+        "url": "https://www.gouv.ne/index.php/les-discours-du-premier-ministre/1120-nouvelle-carte-nationale-d-identite-biometrique-aes-le-premier-ministre-nigerien-enrole",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official government material confirms the biometric national identity card program, but no public number grammar, checksum or semantic digit rule was confirmed. CNI is a generator marker, not a claimed literal prefix."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Niger government AES biometric passport enrolment notice",
+        "url": "https://www.gouv.ne/index.php/90-autres-actualites/1234-passeport-biometrique-aes-le-president-tiani-s-enrole-et-appelle-a-renforcer-la-fiabilite-des-documents-d-identite-du-niger",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official government material confirms biometric passport enrolment context. No public passport-number grammar was confirmed, so generation remains template-only synthetic."
+    }
+  }
 }

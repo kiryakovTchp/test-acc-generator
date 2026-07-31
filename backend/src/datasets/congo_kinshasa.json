@@ -5,8 +5,182 @@
   "country": "Congo (Kinshasa)",
   "locale": "fr-CD",
   "availability": "review",
-  "names": { "male": ["Jean", "Patrice", "Cedric", "Joseph"], "female": ["Marie", "Grace", "Chantal", "Nadine"], "last": ["Ilunga", "Kabila", "Mbuyi", "Tshibanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+243", "nationalLength": 9, "prefixes": ["8", "9"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefixes for review dataset." },
-  "locations": { "regions": [{ "name": "Kinshasa", "cities": [{ "name": "Kinshasa", "postalPrefixes": ["100"], "streets": ["Boulevard du 30 Juin", "Avenue Kasa-Vubu"] }] }, { "name": "Haut-Katanga", "cities": [{ "name": "Lubumbashi", "postalPrefixes": ["200"], "streets": ["Avenue Lumumba", "Avenue Kasavubu"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Congo Kinshasa passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": [
+      "Jean",
+      "Patrice",
+      "Cedric",
+      "Joseph",
+      "Christian",
+      "Emmanuel",
+      "Patrick",
+      "Daniel",
+      "Pierre",
+      "Alain",
+      "Dieudonne",
+      "Tresor"
+    ],
+    "female": [
+      "Marie",
+      "Grace",
+      "Chantal",
+      "Nadine",
+      "Jeanne",
+      "Francine",
+      "Aline",
+      "Diane",
+      "Esther",
+      "Merveille",
+      "Esperance",
+      "Sarah"
+    ],
+    "last": [
+      "Ilunga",
+      "Kabila",
+      "Mbuyi",
+      "Tshibanda",
+      "Kabongo",
+      "Mwamba",
+      "Mulumba",
+      "Kasongo",
+      "Mutombo",
+      "Tshisekedi",
+      "Mabika",
+      "Lukusa"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Democratic Republic of the Congo forenames and surnames frequency tables",
+      "url": "https://forebears.io/democratic-republic-of-the-congo/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. This is not an official civil registry sample; gender buckets are review seeds."
+  },
+  "phones": {
+    "countryCallingCode": "+243",
+    "nationalLength": 9,
+    "prefixes": [
+      "8",
+      "9"
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "ITU National Numbering Plans: Dem. Rep. of the Congo (+243)",
+      "url": "https://www.itu.int/ITU-T/inr/nnp/",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU lists the Democratic Republic of the Congo under country code +243. Public numbering references commonly show mobile-like 8/9-leading ranges, but the exact current allocation table was not directly confirmed here; generation is constrained synthetic data only."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Kinshasa",
+        "cities": [
+          {
+            "name": "Kinshasa",
+            "postalPrefixes": [
+              "1004"
+            ],
+            "streets": [
+              "Boulevard du 30 Juin",
+              "Avenue Kasa-Vubu",
+              "Avenue de la Poste",
+              "Boulevard Lumumba"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Haut-Katanga",
+        "cities": [
+          {
+            "name": "Lubumbashi",
+            "postalPrefixes": [
+              "2000"
+            ],
+            "streets": [
+              "Avenue Lumumba",
+              "Avenue Kasavubu",
+              "Avenue Mobutu",
+              "Route de Kipushi"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Nord-Kivu",
+        "cities": [
+          {
+            "name": "Goma",
+            "postalPrefixes": [
+              "3000"
+            ],
+            "streets": [
+              "Avenue des Volcans",
+              "Avenue du Lac",
+              "Route de Sake"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Sud-Kivu",
+        "cities": [
+          {
+            "name": "Bukavu",
+            "postalPrefixes": [
+              "1324"
+            ],
+            "streets": [
+              "Avenue Patrice Emery Lumumba",
+              "Avenue Kasa-Vubu",
+              "Route d'Uvira"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU Congo (Dem. Rep.) addressing examples",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/codEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU confirms a seven-digit postcode positioned before locality/province and gives Kinshasa examples. Other city prefixes and street choices are synthetic review seeds and are not validated against a national address database."
+  },
+  "documents": {
+    "voter_card_number": {
+      "label": "Voter Card",
+      "templates": [
+        "{RAND12}"
+      ],
+      "pattern": "^\\d{12}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "IRB Canada: Democratic Republic of the Congo voter cards",
+        "url": "https://www.ecoi.net/en/document/2092753.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Public sources describe the voter card as a widely used/de facto identity document in DRC contexts. No official public number grammar, checksum or semantic digit rule was confirmed, so the number is a synthetic template only."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Democratic Republic of Congo ordinary passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/cod/a/docs-per-category.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms DRC ordinary passport entries. The public listing does not confirm passport-number grammar; generation remains template-only synthetic."
+    }
+  }
 }

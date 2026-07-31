@@ -5,8 +5,72 @@
   "country": "Mauritius",
   "locale": "en-MU",
   "availability": "review",
-  "names": { "male": ["Rajesh", "Kevin", "Jean", "Amit"], "female": ["Anjali", "Priya", "Marie", "Nisha"], "last": ["Ramlall", "Seewoosagur", "Appadoo", "Ramgoolam"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mauritius name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+230", "nationalLength": 8, "prefixes": ["5"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mauritius phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Port Louis", "cities": [{ "name": "Port Louis", "postalPrefixes": ["11"], "streets": ["Sir William Newton Street", "Royal Road"] }] }, { "name": "Plaines Wilhems", "cities": [{ "name": "Curepipe", "postalPrefixes": ["74"], "streets": ["Route Royale", "Queen Elizabeth Avenue"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mauritius location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Mauritius passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["Rajesh", "Kevin", "Jean", "Amit"],
+    "female": ["Anjali", "Priya", "Marie", "Nisha"],
+    "last": ["Ramlall", "Seewoosagur", "Appadoo", "Ramgoolam"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Mauritius forenames and surnames frequency tables",
+      "url": "https://forebears.io/mauritius/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables support representative Mauritian names. This is not an official civil registry export; gender grouping remains a review seed."
+  },
+  "phones": {
+    "countryCallingCode": "+230",
+    "nationalLength": 8,
+    "prefixes": ["5", "707"],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Mauritius national numbering plan communication of 23.X.2025",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000880015PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/ICTA confirms the migration of non-geographic mobile numbers to eight digits and a public 707X XXXX mobile allocation. The existing 5-leading mobile-style range is retained as a conservative review prefix; generated numbers are not portability-checked."
+  },
+  "locations": {
+    "regions": [
+      { "name": "Port Louis", "cities": [{ "name": "Port Louis", "postalPrefixes": ["11"], "streets": ["Sir William Newton Street", "Royal Road"] }] },
+      { "name": "Plaines Wilhems", "cities": [{ "name": "Curepipe", "postalPrefixes": ["74"], "streets": ["Route Royale", "Queen Elizabeth Avenue"] }] }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "Mauritius Post post code finder",
+      "url": "https://www.mauritiuspost.mu/find-your-post-code/",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Mauritius Post confirms a public post-code finder by locality. District/city/street values are representative review samples; postalPrefixes are partial generator prefixes, not complete postcodes."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Identity Card Number",
+      "templates": ["NIC{RAND10}"],
+      "pattern": "^NIC\\d{10}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Mauritius National Identity Card Act text",
+        "url": "https://mauritiuslii.org/akn/mu/act/1985/60/eng%402017-06-30",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "The Act confirms the card records an NIC number. No current official public grammar, checksum or semantic digit logic was confirmed; NIC is a generator marker, not a claimed literal prefix."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": ["{RANDL1}{RAND8}"],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Mauritius passport document entries",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/com/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms Mauritius passport document families, but the public listing does not confirm passport-number grammar."
+    }
+  }
 }

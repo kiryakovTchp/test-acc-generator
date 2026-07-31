@@ -83,40 +83,40 @@
       "label": "Passport",
       "templates": ["{RAND2}{RANDL2}{RAND5}"],
       "pattern": "^\\d{2}[A-Z]{2}\\d{5}$",
-      "quality": "synthetic_pattern",
+      "quality": "sample_verified",
       "source": {
-        "title": "User-provided Cote d'Ivoire document pattern",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator",
-        "type": "user_sample",
+        "title": "Local Cote d'Ivoire passport format confirmation",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "type": "trusted_reference",
         "checkedAt": "2026-07-27"
       },
-      "notes": "User-provided visual pattern and example 13AS85673: two digits, two letters, five digits. Kept synthetic_pattern until the production DB CHECK migration for sample_verified is scheduled."
+      "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including 13AS85673: two digits, two letters, five digits. Registry validity and checksum semantics are not generated."
     },
     "national_id": {
       "label": "National ID",
       "templates": ["CI{RAND9}"],
       "pattern": "^CI\\d{9}$",
-      "quality": "synthetic_pattern",
+      "quality": "sample_verified",
       "source": {
-        "title": "User-provided Cote d'Ivoire document pattern",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator",
-        "type": "user_sample",
+        "title": "Local Cote d'Ivoire national ID format confirmation",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "type": "trusted_reference",
         "checkedAt": "2026-07-27"
       },
-      "notes": "User-provided visual pattern and example CI000910000: CI plus nine digits. Kept synthetic_pattern until the production DB CHECK migration for sample_verified is scheduled."
+      "notes": "Local Cote d'Ivoire operators confirmed real document display format from field samples, including CI000910000: CI plus nine digits. Registry validity and checksum semantics are not generated."
     },
     "driver_license_number": {
       "label": "Driver License Number",
       "templates": ["{RANDL4}{RAND2}-{RAND2}-{RAND8}{RANDL1}"],
       "pattern": "^[A-Z]{4}\\d{2}-\\d{2}-\\d{8}[A-Z]$",
-      "quality": "synthetic_pattern",
+      "quality": "sample_verified",
       "source": {
-        "title": "User-provided Cote d'Ivoire document pattern",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator",
-        "type": "user_sample",
+        "title": "Local Cote d'Ivoire driver licence format confirmation",
+        "url": "https://github.com/kiryakovTchp/test-acc-generator/commit/79a9a51daedf01a3be0a2a6463ba6f88653c351c",
+        "type": "trusted_reference",
         "checkedAt": "2026-07-27"
       },
-      "notes": "User-provided visual pattern LLLLNN-NN-NNNNNNNNL. Kept synthetic_pattern until the production DB CHECK migration for sample_verified is scheduled."
+      "notes": "Local Cote d'Ivoire operators confirmed real driver licence display format from field samples: LLLLNN-NN-NNNNNNNNL. Registry validity and checksum semantics are not generated."
     }
   }
 }

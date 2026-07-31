@@ -11,29 +11,29 @@
     "last": ["Jallow", "Ceesay", "Sarr", "Njie", "Touray", "Darboe", "Camara"],
     "quality": "sample_verified",
     "source": {
-      "title": "Legacy in-app Gambia name samples",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "Forebears Gambia forenames and surnames frequency tables",
+      "url": "https://forebears.io/gambia/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from the existing in-app Gambia name pool; keep review until an external source is attached."
+    "notes": "Localized name pool refreshed against public frequency tables. Gender buckets remain sample-level because they are not sourced from an official civil registry."
   },
   "phones": {
     "countryCallingCode": "+220",
     "nationalLength": 7,
-    "prefixes": ["30"],
-    "quality": "synthetic_pattern",
+    "prefixes": ["2", "3", "4", "5", "6", "7", "9"],
+    "quality": "verified",
     "source": {
-      "title": "Legacy in-app Gambia phone rule",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "ITU Gambia national numbering plan communication of 26.XI.2019",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T020200004F0006PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from the existing +22030 generator prefix, normalized to seven national digits; verify against current numbering metadata."
+    "notes": "ITU/PURA confirms country code +220 and seven-digit national numbers, with public/mobile/fixed allocations beginning with these first digits. Generated numbers are synthetic and not checked for live assignment or portability."
   },
   "locations": {
     "regions": [
-      { "name": "Banjul", "cities": [{ "name": "Banjul", "postalPrefixes": ["220"], "streets": ["Independence Drive", "Marina Parade"] }] },
+      { "name": "Banjul", "cities": [{ "name": "Banjul", "postalPrefixes": ["220"], "streets": ["Independence Drive", "Marina Parade", "Liberation Avenue"] }] },
       {
         "name": "Kanifing",
         "cities": [
@@ -45,12 +45,12 @@
     ],
     "quality": "synthetic_pattern",
     "source": {
-      "title": "Legacy in-app Gambia location samples",
-      "url": "https://github.com/kiryakovTchp/test-acc-generator",
-      "type": "assumption",
-      "checkedAt": "2026-07-27"
+      "title": "UPU Gambia addressing example",
+      "url": "https://www.upu.int/UPU/media/upu/PostalEntitiesFiles/addressingUnit/gmbEn.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
     },
-    "notes": "Migrated from existing linked region/city/street samples; postal prefixes remain synthetic placeholders."
+    "notes": "UPU confirms Gambian address examples with street and locality lines but no public postcode grammar. postalPrefixes remain synthetic product placeholders for stable test data generation."
   },
   "documents": {
     "passport": {
@@ -59,25 +59,25 @@
       "pattern": "^PC\\d{7}$",
       "quality": "synthetic_pattern",
       "source": {
-        "title": "Legacy Gambia passport candidate",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator",
-        "type": "assumption",
-        "checkedAt": "2026-07-27"
+        "title": "PRADO Gambia ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/GMB-AO-01001/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
       },
-      "notes": "Draft candidate is PC plus seven digits; official exact visual grammar still needs sample-level confirmation."
+      "notes": "PRADO confirms the Gambian ordinary passport document family, but the public entry reviewed does not confirm the visible passport number grammar. The PC plus seven digits template remains a synthetic placeholder."
     },
     "national_identification_number": {
       "label": "National Identification Number",
       "templates": ["{RAND11}"],
       "pattern": "^\\d{11}$",
-      "quality": "synthetic_pattern",
+      "quality": "sample_verified",
       "source": {
-        "title": "Legacy Gambia NIN candidate",
-        "url": "https://github.com/kiryakovTchp/test-acc-generator",
-        "type": "assumption",
-        "checkedAt": "2026-07-27"
+        "title": "Gambia National Digital Identity Strategy",
+        "url": "https://www.uneca.org/sites/default/files/TCND/Digital%20ID%20Transformation%20Strategy%20_Gambia%20V_9.pdf",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
       },
-      "notes": "Source review indicated Gambian NIN is 11 digits; keep review until refreshed official source confirms current card grammar."
+      "notes": "The public national digital identity strategy confirms an 11-digit NIN on the biometric ID card and describes the leading date-of-birth component. Generation intentionally uses a random 11-digit template because the public source did not provide enough implementation detail for a safe date-order/checksum or allocation rule."
     }
   }
 }

@@ -5,8 +5,114 @@
   "country": "Zimbabwe",
   "locale": "en-ZW",
   "availability": "review",
-  "names": { "male": ["Tawanda", "Kudakwashe", "Tendai", "Simba"], "female": ["Rumbidzai", "Chipo", "Nyasha", "Tariro"], "last": ["Moyo", "Ncube", "Dube", "Sibanda"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+263", "nationalLength": 9, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Harare", "cities": [{ "name": "Harare", "postalPrefixes": ["000"], "streets": ["Samora Machel Avenue", "Nelson Mandela Avenue"] }] }, { "name": "Bulawayo", "cities": [{ "name": "Bulawayo", "postalPrefixes": ["900"], "streets": ["Fife Street", "Leopold Takawira Avenue"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Legacy migration Zimbabwe passport seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern pending country-specific validation." } }
+  "names": {
+    "male": ["John", "Peter", "Tendai", "Charles", "Joseph", "Blessing", "Kudakwashe", "Tawanda"],
+    "female": ["Elizabeth", "Chipo", "Maria", "Alice", "Rumbidzai", "Nyasha", "Tariro", "Memory"],
+    "last": ["Moyo", "Ncube", "Sibanda", "Dube", "Ndlovu", "Mpofu", "Sithole", "Ngwenya"],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Zimbabwe forenames and surnames frequency tables",
+      "url": "https://forebears.io/zimbabwe/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "Public frequency tables were used to replace the legacy seed with broader localized samples. Gender buckets remain sample-level because they are not sourced from an official civil registry."
+  },
+  "phones": {
+    "countryCallingCode": "+263",
+    "nationalLength": 9,
+    "prefixes": [
+      "712",
+      "713",
+      "714",
+      "715",
+      "716",
+      "717",
+      "718",
+      "719",
+      "732",
+      "733",
+      "734",
+      "735",
+      "736",
+      "737",
+      "738",
+      "739",
+      "771",
+      "772",
+      "773",
+      "774",
+      "775",
+      "776",
+      "777",
+      "778",
+      "779",
+      "782",
+      "783",
+      "784",
+      "785",
+      "786",
+      "787"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Zimbabwe national numbering plan communication of 12.XII.2018",
+      "url": "https://www.itu.int/dms_pub/itu-t/oth/02/02/T02020000E90004PDFE.pdf",
+      "type": "official",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "ITU/POTRAZ confirms country code +263, nine-digit mobile national significant numbers, and these mobile NDC/subscriber-block starts. Generated numbers are not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Harare",
+        "cities": [{ "name": "Harare", "postalPrefixes": ["000"], "streets": ["Samora Machel Avenue", "Nelson Mandela Avenue", "Julius Nyerere Way"] }]
+      },
+      {
+        "name": "Bulawayo",
+        "cities": [{ "name": "Bulawayo", "postalPrefixes": ["900"], "streets": ["Fife Street", "Leopold Takawira Avenue", "Main Street"] }]
+      },
+      {
+        "name": "Midlands",
+        "cities": [{ "name": "Gweru", "postalPrefixes": ["800"], "streets": ["Robert Mugabe Way", "Sixth Street"] }]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU General Addressing Issues countries without postcodes table",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-31"
+    },
+    "notes": "UPU lists Zimbabwe among countries that do not require postal codes. postalPrefixes are product-only placeholders for stable generation, not claimed postal codes."
+  },
+  "documents": {
+    "passport": {
+      "label": "Passport",
+      "templates": ["ZWP{RAND6}"],
+      "pattern": "^ZWP\\d{6}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Zimbabwe ordinary passport document entry",
+        "url": "https://www.consilium.europa.eu/prado/en/ZWE-AO-01002/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "PRADO confirms the Zimbabwe ordinary passport document family and document numbering features, but no public passport-number grammar was confirmed. ZWP is a generator marker, not a claimed passport prefix."
+    },
+    "national_identity_card_number": {
+      "label": "National Identity Card Number",
+      "templates": ["ID{RAND8}"],
+      "pattern": "^ID\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Zimbabwe Embassy national identity card service information",
+        "url": "https://www.zimlondon.gov.zw/?p=6188",
+        "type": "official",
+        "checkedAt": "2026-07-31"
+      },
+      "notes": "Official embassy material confirms the national identity card is issued to citizens from age 16 and is required for several services, but no official public number grammar, checksum or semantic digit rule was confirmed. ID is a generator marker, not a claimed card prefix."
+    }
+  }
 }

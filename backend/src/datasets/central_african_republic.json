@@ -5,8 +5,183 @@
   "country": "Central African Republic",
   "locale": "fr-CF",
   "availability": "review",
-  "names": { "male": ["Jean", "Bienvenu", "Armel", "Patrick"], "female": ["Marie", "Grace", "Nadine", "Clarisse"], "last": ["Koyara", "Dologuele", "Ngakola", "Bemba"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic name seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Review seed; replace with curated localized name pools." },
-  "phones": { "countryCallingCode": "+236", "nationalLength": 8, "prefixes": ["7"], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic phone seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Conservative mobile-like prefix for review dataset." },
-  "locations": { "regions": [{ "name": "Bangui", "cities": [{ "name": "Bangui", "postalPrefixes": ["100"], "streets": ["Avenue Boganda", "Avenue de l'Independance"] }] }, { "name": "Ombella-Mpoko", "cities": [{ "name": "Bimbo", "postalPrefixes": ["200"], "streets": ["Route de Mbaiki", "Rue Centrale"] }] }], "quality": "synthetic_pattern", "source": { "title": "Legacy migration Central African Republic location seed", "url": "https://github.com/kiryakovTchp/test-acc-generator", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "City/street/postal data is a synthetic review seed." },
-  "documents": { "passport": { "label": "Passport", "templates": ["{RANDL1}{RAND8}"], "pattern": "^[A-Z]\\d{8}$", "quality": "synthetic_pattern", "source": { "title": "Identity dataset review notes", "url": "https://github.com/kiryakovTchp/test-acc-generator/blob/main/docs/IDENTITY_DATASET_DECISION_MATRIX.md", "type": "assumption", "checkedAt": "2026-07-27" }, "notes": "Placeholder synthetic pattern; Central African Republic was listed as not suitable for verified document generation yet." } }
+  "names": {
+    "male": [
+      "Jean",
+      "Bienvenu",
+      "Armel",
+      "Patrick",
+      "Joseph",
+      "Daniel",
+      "Sylvain",
+      "Christian",
+      "Emmanuel",
+      "Anicet",
+      "Blaise",
+      "Firmin"
+    ],
+    "female": [
+      "Marie",
+      "Grace",
+      "Nadine",
+      "Clarisse",
+      "Chantal",
+      "Diane",
+      "Sylvie",
+      "Francine",
+      "Aline",
+      "Esperance",
+      "Carine",
+      "Jeanne"
+    ],
+    "last": [
+      "Dologuele",
+      "Ngakola",
+      "Koyara",
+      "Bemba",
+      "Dacko",
+      "Boganda",
+      "Ziguele",
+      "Mandaba",
+      "Goumba",
+      "Mbaikoua",
+      "Kette",
+      "Yekatom"
+    ],
+    "quality": "sample_verified",
+    "source": {
+      "title": "Forebears Central African Republic forenames and surnames frequency tables",
+      "url": "https://forebears.io/central-african-republic/forenames",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "Public frequency tables were used to seed localized given names and surnames. The source is not an official civil registry export; gender buckets are review seeds based on public usage."
+  },
+  "phones": {
+    "countryCallingCode": "+236",
+    "nationalLength": 8,
+    "prefixes": [
+      "70",
+      "72",
+      "75",
+      "77"
+    ],
+    "quality": "verified",
+    "source": {
+      "title": "ITU Central African Republic numbering plan communication",
+      "url": "https://www.itu.int/itudoc/itu-t/number/c/caf/85677_ww9.doc",
+      "type": "official",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "ITU material confirms country code +236, eight-digit national numbering, and mobile ranges including 70, 72, 75 and 77. Generated numbers are synthetic and are not checked for live assignment or portability."
+  },
+  "locations": {
+    "regions": [
+      {
+        "name": "Bangui",
+        "cities": [
+          {
+            "name": "Bangui",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue Boganda",
+              "Avenue de l'Independance",
+              "Avenue des Martyrs",
+              "Rue du Commerce"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Ombella-Mpoko",
+        "cities": [
+          {
+            "name": "Bimbo",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Route de Mbaiki",
+              "Rue Centrale",
+              "Route de Bangui"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Ouaka",
+        "cities": [
+          {
+            "name": "Bambari",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue de la Prefecture",
+              "Rue du Marche",
+              "Route de Grimari"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Mambere-Kadei",
+        "cities": [
+          {
+            "name": "Berberati",
+            "postalPrefixes": [
+              "BP "
+            ],
+            "streets": [
+              "Avenue Barthelemy Boganda",
+              "Rue du Centre",
+              "Route de Carnot"
+            ]
+          }
+        ]
+      }
+    ],
+    "quality": "synthetic_pattern",
+    "source": {
+      "title": "UPU General Addressing Issues: countries without postcode requirement",
+      "url": "https://www.upu.int/UPU/media/upu/documents/PostCode/General-Addressing-Issues.pdf",
+      "type": "trusted_reference",
+      "checkedAt": "2026-07-30"
+    },
+    "notes": "UPU lists Central African Republic among countries that do not require postal codes. The dataset uses BP-style generator prefixes; province/city links follow public geography, while street names and generated box numbers remain synthetic review data."
+  },
+  "documents": {
+    "national_identity_card_number": {
+      "label": "National Identity Card",
+      "templates": [
+        "{RAND9}"
+      ],
+      "pattern": "^\\d{9}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "Central African Republic Embassy passport requirements",
+        "url": "https://www.usrcaembassy.org/services/passport",
+        "type": "official",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "Embassy passport requirements list the Carte Nationale d'Identite as an identity document. No public official number grammar, checksum or semantic digit rule was found; generated values are synthetic placeholders."
+    },
+    "passport": {
+      "label": "Passport",
+      "templates": [
+        "{RANDL1}{RAND8}"
+      ],
+      "pattern": "^[A-Z]\\d{8}$",
+      "quality": "synthetic_pattern",
+      "source": {
+        "title": "PRADO Central African Republic document country page",
+        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/caf/index.html",
+        "type": "trusted_reference",
+        "checkedAt": "2026-07-30"
+      },
+      "notes": "PRADO confirms Central African Republic travel/identity document coverage, but no public passport-number grammar was confirmed. The template remains synthetic."
+    }
+  }
 }
