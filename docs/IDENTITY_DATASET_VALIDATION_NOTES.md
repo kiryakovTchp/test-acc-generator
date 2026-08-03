@@ -58,7 +58,7 @@ Evidence-tier rules:
 | BW | omang | `sample_verified` | `synthetic_pattern` | Government source confirms Omang issuance, but not the nine-digit number grammar. |
 | GM | national_identification_number | `sample_verified` | `synthetic_pattern` | Evidence is secondary strategy material, not a primary issuer source. |
 | GE | personal_number | `verified` | `synthetic_pattern` | OECD source is secondary; no primary official issuer source was found in this pass. |
-| KZ | iin | `synthetic_pattern` | `verified` | Ministry of Internal Affairs rules on Adilet confirm 12 digits and the two-cycle checksum algorithm; Government Resolution No. 565 transition program confirms the public YYMMDD birth-date prefix, sex/century digit, registration-sequence digits, and control digit. Generated values are still not live registry assignments. |
+| KZ | iin | `synthetic_pattern` | `verified` | Ministry of Internal Affairs rules on Adilet confirm 12 digits and the two-cycle checksum algorithm; Government Resolution No. 565 transition program confirms the citizen-style YYMMDD birth-date prefix, sex/century digit, registration-sequence digits, and control digit. Existing assigned IIN validation must remain limited to 12 digits and checksum because foreigner or historical registrations may contain semantic exceptions. Generated values are synthetic and are not checked against the live government registry. |
 | RW | national_identity_number | `verified` | `synthetic_pattern` | World Bank source is secondary; no primary issuer source was found in this pass. |
 | SN | ecowas_id_card_number | `sample_verified` | `verified` | Official decree explicitly defines the card number as 17 digits. |
 

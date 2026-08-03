@@ -58,10 +58,10 @@ const EVIDENCE = {
   'kazakhstan.iin': {
     type: 'explicit_grammar',
     url: 'https://adilet.zan.kz/rus/docs/V2300032942; https://adilet.zan.kz/rus/docs/P030000565_',
-    description: 'Current Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle mod 11 control digit algorithm. Official Kazakhstan transition program describes the first six digits as YYMMDD birth date, the seventh digit as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit.',
-    observedShape: '^\\d{12}$ with digits 1-6 = YYMMDD birth date, digit 7 = sex/century (odd male, even female; 3/4 for 20th century, 5/6 for 21st), digits 8-11 = registration sequence, and digit 12 calculated from the first 11 digits using weights 1..11 then 3..11,1,2 when the first result is 10.',
+    description: 'Current Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle mod 11 control digit algorithm. Official Kazakhstan transition program describes the citizen-style digit structure: first six digits as YYMMDD birth date, seventh digit as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit.',
+    observedShape: '^\\d{12}$ citizen-style generation with digits 1-6 = YYMMDD birth date, digit 7 = sex/century (odd male, even female; 3/4 for 20th century, 5/6 for 21st), digits 8-11 = synthetic registration sequence, and digit 12 calculated from the first 11 digits using weights 1..11 then 3..11,1,2 when the first result is 10.',
     versionStatus: 'Order of the Minister of Internal Affairs of Kazakhstan No. 521 dated 29/06/2023 and Government Resolution No. 565 transition program dated 11/06/2003; both viewed on Adilet updated 31/07/2026.',
-    requiredAction: 'Keep verified for public 12-digit/checksum grammar and historical official semantic digit structure; not live registry validation.',
+    requiredAction: 'Keep verified for citizen-style synthetic generation. Existing assigned IIN validation must be limited to 12 digits and checksum; do not reject assigned IINs on DOB, sex, or century semantics because foreigner and historical registrations can contain exceptions. Generated values are not checked against the live government registry.',
   },
   'malawi.passport': {
     type: 'explicit_grammar',

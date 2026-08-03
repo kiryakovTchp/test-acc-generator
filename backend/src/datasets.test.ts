@@ -132,6 +132,9 @@ test('kazakhstan iin verification report uses official semantic and checksum evi
   assert.match(row, /two-cycle control digit|two-cycle mod 11/);
   assert.match(row, /YYMMDD birth date/);
   assert.match(row, /sex\/century/);
+  assert.match(row, /citizen-style/);
+  assert.match(row, /do not reject assigned IINs on DOB, sex, or century semantics/);
+  assert.match(row, /foreigner and historical registrations can contain exceptions/);
   assert.match(row, /\| match \| verified \|/);
   assert.doesNotMatch(row, /No independent evidence entry|Runtime quality\/source type/);
 });
@@ -666,6 +669,10 @@ test('kazakhstan iin document matches birth date gender and checksum', () => {
     assert.equal(Number(value[6]) % 2 === 1, gender === 'male');
     assert.equal(validateKazakhstanIin(value), true);
   }
+});
+
+test('kazakhstan iin checksum validator does not reject semantic exceptions', () => {
+  assert.equal(validateKazakhstanIin('990101000004'), true);
 });
 
 test("cote d'ivoire document rules match provided patterns", () => {

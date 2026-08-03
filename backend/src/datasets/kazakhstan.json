@@ -198,7 +198,7 @@
         "type": "official",
         "checkedAt": "2026-08-03"
       },
-      "notes": "Kazakhstan Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle control digit algorithm used by runtime. Government Resolution No. 565 transition program on Adilet describes digits 1-6 as YYMMDD birth date, digit 7 as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit. Runtime implements that public grammar for realistic test data; generated values are still not live registry assignments."
+      "notes": "Runtime generates Kazakhstan citizen-style IIN values using the publicly documented YYMMDD birth-date, century/gender, registration-sequence, and control-digit structure. Valid assigned IINs, particularly foreigner or historical registrations, may contain semantic exceptions; existing IIN validation must be limited to 12 digits and checksum rather than rejecting on date of birth, sex, or century digits. Generated values are synthetic and are not checked against the live government registry."
     }
   }
 }
