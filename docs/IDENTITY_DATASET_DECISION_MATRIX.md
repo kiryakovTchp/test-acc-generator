@@ -14,18 +14,18 @@ examples, and blockers, see `docs/DOCUMENT_DATASET_VERIFICATION.md`.
 | `verified` quality | 12 |
 | `sample_verified` quality | 8 |
 | `synthetic_pattern` quality | 73 |
-| Audit verdict `match` | 17 |
+| Audit verdict `match` | 16 |
 | Audit verdict `mismatch` | 0 |
-| Audit verdict `insufficient evidence` | 42 |
+| Audit verdict `insufficient evidence` | 43 |
 | Audit verdict `outdated document` | 0 |
 | Audit verdict `source does not confirm number format` | 34 |
-| Production blockers | 76 |
+| Production blockers | 77 |
 
 ## Evidence-Backed Match Rules
 
 These rules match explicit independent evidence. They are still synthetic
-generated values and are not registry-validated. There are 17 evidence-backed
-`match` rules: 12 `verified` + `explicit_grammar` and 5 `sample_verified` +
+generated values and are not registry-validated. There are 16 evidence-backed
+`match` rules: 12 `verified` + `explicit_grammar` and 4 `sample_verified` +
 `readable_specimen`.
 
 | GEO | Runtime type | Pattern | Quality | Evidence type | Limit |
@@ -43,14 +43,13 @@ generated values and are not registry-validated. There are 17 evidence-backed
 | SN | ecowas_id_card_number | `^\d{17}$` | `verified` | `explicit_grammar` | Official decree confirms 17-digit card number. |
 | UZ | pinfl | `^\d{14}$` | `verified` | `explicit_grammar` | Official my.gov.uz confirms 14-digit PINFL. |
 | GA | passport | `^\d{2}SP\d{5}$` | `sample_verified` | `readable_specimen` | PRADO specimen shape only; current document `GAB-AO-03001`, valid, first issued `01/11/2013`. |
-| MW | personal_number | `^\d{7}/\d$` | `sample_verified` | `readable_specimen` | PRADO specimen shape only. |
 | SL | passport | `^\d{7}$` | `sample_verified` | `readable_specimen` | PRADO specimen shape only; `SLE` is country code, not Passport No. |
 | SL | personal_number | `^\d{9}$` | `sample_verified` | `readable_specimen` | PRADO specimen shape only. |
 | TZ | national_identification_number | `^\d{8}-\d{5}-\d{5}-\d{2}$` | `sample_verified` | `readable_specimen` | Official NIDA display sample only. |
 
 ## Must Remain Review-Only / Production Blockers
 
-- The remaining 76 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 39 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`.
+- The remaining 77 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 40 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`.
 - All `synthetic_pattern` rules remain production blockers unless an exact official grammar or readable official specimen is attached.
 - PRADO country/category/listing URLs confirm document existence, not number grammar.
 - Cote d'Ivoire passport, national ID, and driver licence remain user-sample-only display-shape seeds.
@@ -63,5 +62,5 @@ generated values and are not registry-validated. There are 17 evidence-backed
 
 The document side is not ready for production as a verified dataset. It is ready
 only as an explicitly evidence-tagged review dataset where production consumers
-can use the 17 evidence-backed `match` rules cautiously and block or warn on all
+can use the 16 evidence-backed `match` rules cautiously and block or warn on all
 other rules.

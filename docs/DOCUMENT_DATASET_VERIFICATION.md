@@ -6,7 +6,7 @@ Scope: runtime document rules from `backend/src/datasets/*.json`, `backend/src/d
 
 Runtime inventory: 93 document rules; 12 verified, 8 sample_verified, 73 synthetic_pattern.
 
-Verdict summary: 17 match; 0 mismatch; 42 insufficient evidence; 0 outdated document; 34 source does not confirm number format.
+Verdict summary: 16 match; 0 mismatch; 43 insufficient evidence; 0 outdated document; 34 source does not confirm number format.
 
 Methodology:
 
@@ -19,7 +19,7 @@ Methodology:
 
 ## Evidence-Backed Match Rules
 
-These 17 rules are confirmed only within their stated evidence limits. They are synthetic generated values, not live government-registry assignments.
+These 16 rules are confirmed only within their stated evidence limits. They are synthetic generated values, not live government-registry assignments.
 
 ### verified + explicit_grammar (12)
 
@@ -36,20 +36,19 @@ These 17 rules are confirmed only within their stated evidence limits. They are 
 - senegal.ecowas_id_card_number: Keep verified for public shape only; runtime does not implement semantic components.
 - uzbekistan.pinfl: Keep verified for public shape only.
 
-### sample_verified + readable_specimen (5)
+### sample_verified + readable_specimen (4)
 
 - gabon.passport: Keep sample_verified only; do not promote without national grammar.
-- malawi.personal_number: Keep sample_verified only.
 - sierra_leone.passport: Keep sample_verified only.
 - sierra_leone.personal_number: Keep sample_verified only.
 - tanzania.national_identification_number: Keep sample_verified only; do not infer full allocation semantics.
 
 ## Production Blocker Groups
 
-The remaining 76 rules must stay production blockers. Do not promote them only to reduce blocker count.
+The remaining 77 rules must stay production blockers. Do not promote them only to reduce blocker count.
 
 - 34 source does not confirm number format: mostly PRADO document/category/listing pages or government pages that confirm document existence but not a readable number field.
-- 39 insufficient independent evidence: no exact current official grammar or readable official specimen was attached in this pass, so these stay synthetic/review-only.
+- 40 insufficient independent evidence: no exact current official grammar or readable official specimen was attached in this pass, so these stay synthetic/review-only.
 - 3 Cote d'Ivoire user-sample display-shape rules: passport, national_id, driver_license_number remain sample display-shape seeds, but their audit verdict stays insufficient evidence.
 
 ## Findings
@@ -109,7 +108,7 @@ The remaining 76 rules must stay production blockers. Do not promote them only t
 | liberia | Liberia (LR) | passport | templates:{RANDL1}{RAND8}; pattern:^[A-Z]\d{8}$ | A11111111 | https://www.consilium.europa.eu/prado/en/prado-documents/lbr/a/docs-per-category.html | none | none | No independent evidence entry. Runtime quality/source type was not used as proof. | PRADO listing/category only; exact current document version not proven by this source URL. | none | source does not confirm number format | synthetic_pattern | Production blocker: attach an exact official/PRADO evidence entry or keep as synthetic_pattern review-only. |
 | malawi | Malawi (MW) | national_identity_number | templates:{RAND8}; pattern:^\d{8}$ | 11111111 | https://www.nrb.gov.mw/ | none | none | No independent evidence entry. Runtime quality/source type was not used as proof. | Official source exists, but no independent number-format evidence entry is attached. | none | insufficient evidence | synthetic_pattern | Production blocker: do not promote without explicit grammar or readable official specimen. |
 | malawi | Malawi (MW) | passport | templates:MWA{RAND6}, MWZ{RAND6}; pattern:^MW[AZ]\d{6}$ | MWA111111 | current:number_format https://www.malawiembassy.de/.cm4all/uproc.php/0/MALAWI%20e-PASSPORT.pdf?_=1766b210d8f&cdp=a | explicit_grammar | current:number_format | Official e-passport factsheet states ordinary passport numbering prefixes MWAxxxxxx for 36 pages and MWZxxxxxx for 48 pages. | Official e-passport factsheet; current status not independently versioned in runtime. | ^MW[AZ]\d{6}$ | match | verified | Keep verified for prefix/length only; no registry validation. |
-| malawi | Malawi (MW) | personal_number | templates:{RAND7}/{RAND1}; pattern:^\d{7}/\d$ | 1111111/1 | current:number_format https://www.consilium.europa.eu/prado/en/prado-documents/mwi/a/docs-per-category.html | readable_specimen | current:number_format | PRADO specimen context shows Personal No. 1212433/2. | PRADO specimen-level evidence; exact version status not encoded in runtime source URL. | 1212433/2 -> /^\d{7}\/\d$/ | match | sample_verified | Keep sample_verified only. |
+| malawi | Malawi (MW) | personal_number | templates:{RAND7}/{RAND1}; pattern:^\d{7}/\d$ | 1111111/1 | current:document_version_not_number_format https://www.consilium.europa.eu/prado/en/MWI-AO-02001/index.html | unreadable_specimen_page | current:document_version_not_number_format | PRADO exact document page confirms Malawi ordinary passport MWI-AO-02001 is valid, but the accessible page does not expose a readable Personal No. field or the previously claimed 1212433/2 value. | PRADO MWI-AO-02001 exact page; valid, first issued 01/01/2011, generated by PRADO on 01/07/2021. No readable personal-number specimen is exposed in the accessible page. | none | insufficient evidence | sample_verified | Production blocker: keep quality review-only or attach a readable official specimen/biodata image that exposes Personal No. value. |
 | mali | Mali (ML) | national_identification_number_nina | templates:{RAND10}; pattern:^\d{10}$ | 1111111111 | https://www.irb-cisr.gc.ca/en/country-information/rir/Pages/index.aspx?doc=457155 | none | none | No independent evidence entry. Runtime quality/source type was not used as proof. | Secondary/trusted reference; current issuing status not established. | none | insufficient evidence | synthetic_pattern | Production blocker: do not promote without explicit grammar or readable official specimen. |
 | mali | Mali (ML) | passport | templates:{RANDL1}{RAND8}; pattern:^[A-Z]\d{8}$ | A11111111 | https://www.consilium.europa.eu/prado/en/prado-documents/mli/a/docs-per-category.html | none | none | No independent evidence entry. Runtime quality/source type was not used as proof. | PRADO listing/category only; exact current document version not proven by this source URL. | none | source does not confirm number format | synthetic_pattern | Production blocker: attach an exact official/PRADO evidence entry or keep as synthetic_pattern review-only. |
 | mauritius | Mauritius (MU) | national_identity_card_number | templates:{RAND10}; pattern:^\d{10}$ | 1111111111 | https://mauritiuslii.org/akn/mu/act/1985/60/eng%402017-06-30 | none | none | No independent evidence entry. Runtime quality/source type was not used as proof. | Official source exists, but no independent number-format evidence entry is attached. | none | insufficient evidence | synthetic_pattern | Production blocker: do not promote without explicit grammar or readable official specimen. |
@@ -197,6 +196,7 @@ The remaining 76 rules must stay production blockers. Do not promote them only t
 - liberia.national_identification_number: insufficient evidence; Production blocker: do not promote without explicit grammar or readable official specimen.
 - liberia.passport: source does not confirm number format; Production blocker: attach an exact official/PRADO evidence entry or keep as synthetic_pattern review-only.
 - malawi.national_identity_number: insufficient evidence; Production blocker: do not promote without explicit grammar or readable official specimen.
+- malawi.personal_number: insufficient evidence; Production blocker: keep quality review-only or attach a readable official specimen/biodata image that exposes Personal No. value.
 - mali.national_identification_number_nina: insufficient evidence; Production blocker: do not promote without explicit grammar or readable official specimen.
 - mali.passport: source does not confirm number format; Production blocker: attach an exact official/PRADO evidence entry or keep as synthetic_pattern review-only.
 - mauritius.national_identity_card_number: insufficient evidence; Production blocker: do not promote without explicit grammar or readable official specimen.

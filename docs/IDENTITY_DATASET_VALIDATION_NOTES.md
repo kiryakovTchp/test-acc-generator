@@ -10,18 +10,18 @@ source of truth for current generated document values.
 
 - Runtime document rules: 93.
 - Quality counts: 12 `verified`, 8 `sample_verified`, 73 `synthetic_pattern`.
-- Evidence-backed audit verdicts: 17 `match`, 0 `mismatch`, 42 `insufficient evidence`, 0 `outdated document`, 34 `source does not confirm number format`.
+- Evidence-backed audit verdicts: 16 `match`, 0 `mismatch`, 43 `insufficient evidence`, 0 `outdated document`, 34 `source does not confirm number format`.
 - `generic_intl` is a fallback/test GEO and is not a confirmed real document dataset.
-- Document generation is still review-heavy: 76 runtime rules remain production blockers because explicit independent evidence is missing, insufficient, or does not confirm number format.
+- Document generation is still review-heavy: 77 runtime rules remain production blockers because explicit independent evidence is missing, insufficient, or does not confirm number format.
 
 ## Evidence Split
 
 The 93 runtime document rules split into two groups:
 
-- 17 evidence-backed `match` rules with rule-specific limits. This group contains 12 `verified` + `explicit_grammar` rules and 5 `sample_verified` + `readable_specimen` rules.
-- 76 production blockers. This group contains 34 rules where the source confirms document existence but not number format, 39 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules whose audit verdict remains `insufficient evidence`.
+- 16 evidence-backed `match` rules with rule-specific limits. This group contains 12 `verified` + `explicit_grammar` rules and 4 `sample_verified` + `readable_specimen` rules.
+- 77 production blockers. This group contains 34 rules where the source confirms document existence but not number format, 40 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules whose audit verdict remains `insufficient evidence`.
 
-The 17 `match` rules are not a blanket production-verified dataset: each keeps its own limitation, and none of the synthetic generated values are checked against a live government registry.
+The 16 `match` rules are not a blanket production-verified dataset: each keeps its own limitation, and none of the synthetic generated values are checked against a live government registry.
 
 ## Methodology
 
@@ -74,7 +74,7 @@ Evidence-tier rules:
 ## Production Verdict
 
 The document dataset is not production-ready as a verified document generator.
-It is usable only as an explicitly evidence-tagged review dataset: the 17
+It is usable only as an explicitly evidence-tagged review dataset: the 16
 evidence-backed `match` rules can be used with their stated limits, while the
-remaining 76 rules must remain production blockers until exact official grammar
+remaining 77 rules must remain production blockers until exact official grammar
 or readable official specimen evidence is attached.

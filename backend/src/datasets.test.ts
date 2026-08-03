@@ -43,7 +43,6 @@ test('official specimen values match the expected runtime pattern without promot
     ['gabon', 'passport', '13SP01349'],
     ['malawi', 'passport', 'MWA123456'],
     ['malawi', 'passport', 'MWZ123456'],
-    ['malawi', 'personal_number', '1212433/2'],
     ['sierra_leone', 'passport', '0114439'],
     ['sierra_leone', 'personal_number', '000119146'],
     ['tanzania', 'national_identification_number', '19760517-37227-00002-17'],
@@ -118,26 +117,40 @@ test('document verification summary counts match the report rows and decision ma
   const matrixMatchCount = Number(decisionMatrix.match(/\| Audit verdict `match` \| (\d+) \|/)?.[1]);
   const verifiedMatches = rows.filter((row) => row[verdictIndex] === 'match' && row[qualityIndex] === 'verified' && row[evidenceTypeIndex] === 'explicit_grammar');
   const sampleVerifiedMatches = rows.filter((row) => row[verdictIndex] === 'match' && row[qualityIndex] === 'sample_verified' && row[evidenceTypeIndex] === 'readable_specimen');
+  const sourceDoesNotConfirmBlockers = rows.filter((row) => row[verdictIndex] === 'source does not confirm number format');
+  const insufficientIndependentEvidenceBlockers = rows.filter((row) => row[verdictIndex] === 'insufficient evidence' && row[0] !== 'cote_divoire');
+  const coteDivoireSampleBlockers = rows.filter((row) => row[0] === 'cote_divoire' && row[verdictIndex] !== 'match');
+  const blockerGroupIds = [
+    ...sourceDoesNotConfirmBlockers,
+    ...insufficientIndependentEvidenceBlockers,
+    ...coteDivoireSampleBlockers,
+  ].map((row) => `${row[0]}.${row[2]}`);
+  const uniqueBlockerGroupIds = new Set(blockerGroupIds);
 
-  assert.equal(reportMatchCount, 17);
+  assert.equal(reportMatchCount, 16);
   assert.equal(rowMatchCount, reportMatchCount);
-  assert.equal(rowBlockerCount, 76);
+  assert.equal(rowBlockerCount, 77);
   assert.equal(verifiedMatches.length, 12);
-  assert.equal(sampleVerifiedMatches.length, 5);
+  assert.equal(sampleVerifiedMatches.length, 4);
+  assert.equal(sourceDoesNotConfirmBlockers.length, 34);
+  assert.equal(insufficientIndependentEvidenceBlockers.length, 40);
+  assert.equal(coteDivoireSampleBlockers.length, 3);
+  assert.equal(blockerGroupIds.length, rowBlockerCount);
+  assert.equal(uniqueBlockerGroupIds.size, blockerGroupIds.length);
   assert.equal(matrixMatchCount, reportMatchCount);
   assert.match(decisionMatrix, new RegExp(`can use the ${reportMatchCount} evidence-backed \\\`match\\\` rules cautiously`));
   assert.match(report, /## Evidence-Backed Match Rules/);
   assert.match(report, /### verified \+ explicit_grammar \(12\)/);
-  assert.match(report, /### sample_verified \+ readable_specimen \(5\)/);
-  assert.match(report, /The remaining 76 rules must stay production blockers/);
+  assert.match(report, /### sample_verified \+ readable_specimen \(4\)/);
+  assert.match(report, /The remaining 77 rules must stay production blockers/);
   assert.match(report, /34 source does not confirm number format/);
-  assert.match(report, /39 insufficient independent evidence/);
+  assert.match(report, /40 insufficient independent evidence/);
   assert.match(report, /3 Cote d'Ivoire user-sample display-shape rules/);
-  assert.match(decisionMatrix, /17 evidence-backed\s+`match` rules: 12 `verified` \+ `explicit_grammar` and 5 `sample_verified` \+\s+`readable_specimen`/);
-  assert.match(decisionMatrix, /The remaining 76 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 39 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`/);
-  assert.match(validationNotes, /17 evidence-backed `match` rules with rule-specific limits/);
-  assert.match(validationNotes, /76 production blockers/);
-  assert.match(validationNotes, /34 rules where the source confirms document existence but not number format, 39 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules/);
+  assert.match(decisionMatrix, /16 evidence-backed\s+`match` rules: 12 `verified` \+ `explicit_grammar` and 4 `sample_verified` \+\s+`readable_specimen`/);
+  assert.match(decisionMatrix, /The remaining 77 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 40 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`/);
+  assert.match(validationNotes, /16 evidence-backed `match` rules with rule-specific limits/);
+  assert.match(validationNotes, /77 production blockers/);
+  assert.match(validationNotes, /34 rules where the source confirms document existence but not number format, 40 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules/);
 });
 
 test('document verification match rows have the expected verified and sample-verified composition', () => {
@@ -173,13 +186,25 @@ test('document verification match rows have the expected verified and sample-ver
   ]);
   assert.deepEqual(sampleVerifiedMatchIds, [
     'gabon.passport',
-    'malawi.personal_number',
     'sierra_leone.passport',
     'sierra_leone.personal_number',
     'tanzania.national_identification_number',
   ]);
   assert.equal(coteDivoireRows.length, 3);
   assert.equal(coteDivoireRows.every((row) => row[11] === 'insufficient evidence' && row[12] === 'sample_verified'), true);
+  assert.equal(rows.find((row) => row[0] === 'malawi' && row[2] === 'personal_number')?.[11], 'insufficient evidence');
+});
+
+test('readable specimen evidence cannot use PRADO listing pages', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const rows = report.split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
+
+  for (const row of rows.filter((item) => item[6] === 'readable_specimen')) {
+    assert.doesNotMatch(row[5], /(?:docs-per-category|docs-all|prado-documents\/[^/]+\/(?:index\.html)?$)/, `${row[0]}.${row[2]}: readable_specimen cannot use PRADO listing/category pages`);
+  }
 });
 
 test('document verification matches require explicit independent evidence', () => {
