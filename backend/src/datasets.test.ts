@@ -120,15 +120,18 @@ test('document verification matches require explicit independent evidence', () =
   }
 });
 
-test('kazakhstan iin verification report uses official checksum evidence', () => {
+test('kazakhstan iin verification report uses official semantic and checksum evidence', () => {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
   const row = report.split('\n').find((line) => line.startsWith('| kazakhstan |') && line.includes('| iin |'));
 
   assert.ok(row, 'kazakhstan.iin: missing from document verification report');
   assert.match(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/V2300032942/);
+  assert.match(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/P030000565_/);
   assert.match(row, /explicit_grammar/);
   assert.match(row, /two-cycle control digit|two-cycle mod 11/);
+  assert.match(row, /YYMMDD birth date/);
+  assert.match(row, /sex\/century/);
   assert.match(row, /\| match \| verified \|/);
   assert.doesNotMatch(row, /No independent evidence entry|Runtime quality\/source type/);
 });

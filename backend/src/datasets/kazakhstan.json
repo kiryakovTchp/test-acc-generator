@@ -193,12 +193,12 @@
       "pattern": "^\\d{12}$",
       "quality": "verified",
       "source": {
-        "title": "Kazakhstan Ministry of Internal Affairs IIN formation rules",
+        "title": "Kazakhstan Ministry of Internal Affairs IIN rules and government transition program",
         "url": "https://adilet.zan.kz/rus/docs/V2300032942",
         "type": "official",
         "checkedAt": "2026-08-03"
       },
-      "notes": "Kazakhstan Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle control digit algorithm used by runtime. Runtime also derives the first six digits from profile date of birth and the seventh digit from century/gender for realistic test data; those semantic digits remain generated, but this evidence entry verifies the public 12-digit/checksum grammar rather than live registry assignment."
+      "notes": "Kazakhstan Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle control digit algorithm used by runtime. Government Resolution No. 565 transition program on Adilet describes digits 1-6 as YYMMDD birth date, digit 7 as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit. Runtime implements that public grammar for realistic test data; generated values are still not live registry assignments."
     }
   }
 }
