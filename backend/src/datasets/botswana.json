@@ -241,14 +241,14 @@
         "{RAND9}"
       ],
       "pattern": "^\\d{9}$",
-      "quality": "sample_verified",
+      "quality": "synthetic_pattern",
       "source": {
-        "title": "Botswana Examination Council registration form Omang input rule",
-        "url": "https://malepa.bec.co.bw/MalepaonlineBGCSE/xpgRegistration.aspx",
-        "type": "government_sample",
-        "checkedAt": "2026-07-27"
+        "title": "Botswana Government national identity card application",
+        "url": "https://www.gov.bw/civil-registration/national-identity-card-application",
+        "type": "official",
+        "checkedAt": "2026-08-03"
       },
-      "notes": "Government services confirm Omang is the national identity document; a public Botswana Examination Council registration form validates Omang as nine numeric digits. No official checksum, semantic digit rule or live registry validation was found, so generation is a simple synthetic nine-digit value."
+      "notes": "The government service confirms the National Identity Document (Omang), but does not publish a public number grammar or specimen value. The nine-digit runtime shape remains synthetic_pattern until issuer-level grammar or a readable official specimen is attached."
     },
     "passport": {
       "label": "Passport",

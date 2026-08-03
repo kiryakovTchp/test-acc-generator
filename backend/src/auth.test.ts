@@ -186,8 +186,8 @@ test('startup migrates account history document quality check for sample verifie
       const { generateAccount } = await import(${JSON.stringify(new URL('./services/accountService.ts', import.meta.url).href)});
       const item = await generateAccount({
         userId: 1,
-        geoKey: 'botswana',
-        documentType: 'omang',
+        geoKey: 'gabon',
+        documentType: 'passport',
         role: 'user',
         persona: 'standard_user',
         emailProvider: {
@@ -200,7 +200,7 @@ test('startup migrates account history document quality check for sample verifie
         }
       });
       if (item?.documentQuality !== 'sample_verified') {
-        throw new Error('Botswana Omang generation did not persist sample_verified');
+        throw new Error('Gabon passport generation did not persist sample_verified');
       }
       const preserved = db.prepare("SELECT COUNT(*) AS count FROM account_history WHERE email = 'legacy@example.test'").get().count;
       if (preserved !== 1) {

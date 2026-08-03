@@ -212,14 +212,14 @@
         "{RAND17}"
       ],
       "pattern": "^\\d{17}$",
-      "quality": "sample_verified",
+      "quality": "verified",
       "source": {
         "title": "Senegal ECOWAS biometric identity card decree",
         "url": "https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/",
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "The decree directly confirms a 17-digit card number and describes semantic components. Generated values intentionally use a plain random template; sex, region, date-of-birth, and sequence semantics are not implemented."
+      "notes": "The decree directly confirms a 17-digit card number and describes semantic components. This verifies the public runtime shape only; generated values intentionally use a plain random template and do not implement sex, region, date-of-birth, or sequence semantics."
     },
     "passport": {
       "label": "Passport",

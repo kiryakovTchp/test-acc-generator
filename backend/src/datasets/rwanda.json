@@ -150,14 +150,14 @@
         "{RAND16}"
       ],
       "pattern": "^\\d{16}$",
-      "quality": "verified",
+      "quality": "synthetic_pattern",
       "source": {
         "title": "World Bank Rwanda ID4D Diagnostic: 16-digit National Identity Number",
         "url": "https://documents1.worldbank.org/curated/en/257581546882856591/pdf/128624-REVISED-PUBLIC-Rwanda-ID4D-Diagnostic-01042019.pdf",
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "World Bank confirms a 16-digit NIN printed on the card. Generated values are random 16-digit test values only; no semantic groups, checksum, uniqueness, or registry validation is implemented."
+      "notes": "World Bank ID4D diagnostic states a 16-digit NIN is printed on the card, but no primary issuer source was confirmed in this audit. Generated values are random 16-digit test values only; no semantic groups, checksum, uniqueness, or registry validation is implemented."
     },
     "passport": {
       "label": "Passport",

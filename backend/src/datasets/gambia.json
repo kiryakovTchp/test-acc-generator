@@ -214,14 +214,14 @@
         "{RAND11}"
       ],
       "pattern": "^\\d{11}$",
-      "quality": "sample_verified",
+      "quality": "synthetic_pattern",
       "source": {
         "title": "Gambia National Digital Identity Strategy",
         "url": "https://www.uneca.org/sites/default/files/TCND/Digital%20ID%20Transformation%20Strategy%20_Gambia%20V_9.pdf",
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "The public national digital identity strategy confirms an 11-digit NIN on the biometric ID card and describes the leading date-of-birth component. Generation intentionally uses a random 11-digit template because the public source did not provide enough implementation detail for a safe date-order/checksum or allocation rule."
+      "notes": "The public national digital identity strategy describes an 11-digit NIN, but it is not the issuing authority or a primary government page. Generation remains a random 11-digit synthetic_pattern until an official issuer source or readable official specimen is attached."
     }
   }
 }

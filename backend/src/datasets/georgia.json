@@ -219,14 +219,14 @@
         "{RAND11}"
       ],
       "pattern": "^\\d{11}$",
-      "quality": "verified",
+      "quality": "synthetic_pattern",
       "source": {
         "title": "OECD Georgia TIN guidance",
         "url": "https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/georgia-tin.pdf",
         "type": "trusted_reference",
         "checkedAt": "2026-07-30"
       },
-      "notes": "OECD guidance confirms the Georgian citizen personal number/TIN is 11 digits. Older public descriptions mention internal meaning, but no current official checksum or semantic digit rule was implemented; generated values are random synthetic 11-digit numbers."
+      "notes": "OECD guidance states the Georgian citizen personal number/TIN is 11 digits, but no primary official issuer page was confirmed in this audit. Generated values remain random synthetic 11-digit numbers and are not registry-validated."
     }
   }
 }

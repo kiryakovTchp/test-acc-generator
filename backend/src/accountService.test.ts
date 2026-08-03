@@ -161,7 +161,7 @@ test("cote d'ivoire dataset follows provided document shapes", async () => {
 test('kazakhstan iin starts with profile date of birth', async () => {
   const item = await generateAccount({ userId: 1, geoKey: 'kazakhstan', documentType: 'iin', role: 'user', persona: 'standard_user', emailProvider: provider });
   const birthPrefix = (item?.dateOfBirth ?? '').replace(/^(\d{2})(\d{2})-(\d{2})-(\d{2})$/, '$2$3$4');
-  assert.equal(item?.documentQuality, 'verified');
+  assert.equal(item?.documentQuality, 'synthetic_pattern');
   assert.match(item?.documentValue ?? '', /^\d{12}$/);
   assert.equal(item?.documentValue.slice(0, 6), birthPrefix);
   assert.equal(validateKazakhstanIin(item?.documentValue ?? ''), true);

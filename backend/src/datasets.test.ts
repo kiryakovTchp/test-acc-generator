@@ -96,7 +96,28 @@ test('document verification report stays synchronized with runtime rules', () =>
     assert.ok(report.includes(`| ${documentType} |`), `${datasetKey}.${documentType}: missing document type from verification report`);
   }
 
-  assert.match(report, /Runtime inventory: 93 document rules; 13 verified, 11 sample_verified, 69 synthetic_pattern\./);
+  assert.match(report, /Runtime inventory: 93 document rules; 11 verified, 8 sample_verified, 74 synthetic_pattern\./);
+  assert.doesNotMatch(report, /Official source confirms runtime shape/);
+  assert.doesNotMatch(report, /Sample-level shape \^/);
+});
+
+test('document verification matches require explicit independent evidence', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const rows = report.split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
+
+  for (const row of rows) {
+    const [datasetKey, , documentType, , , , evidenceType, evidenceDescription, , observedShape, verdict, quality] = row;
+    if (verdict !== 'match') continue;
+
+    assert.notEqual(evidenceType, 'none', `${datasetKey}.${documentType}: match requires explicit evidence`);
+    assert.notEqual(observedShape, 'none', `${datasetKey}.${documentType}: match requires observed shape`);
+    assert.doesNotMatch(evidenceDescription, /runtime quality|runtime pattern/i, `${datasetKey}.${documentType}: evidence must not be derived from runtime`);
+    if (quality === 'verified') assert.equal(evidenceType, 'explicit_grammar', `${datasetKey}.${documentType}: verified match requires explicit_grammar`);
+    if (quality === 'sample_verified') assert.equal(evidenceType, 'readable_specimen', `${datasetKey}.${documentType}: sample_verified match requires readable_specimen`);
+  }
 });
 
 test('country dataset schema rejects misspelled required fields and invalid source dates', () => {
@@ -558,7 +579,7 @@ test('benin document rules match configured public-source limits', () => {
 test('botswana document rules match configured public-source limits', () => {
   const dataset = getDataset('botswana');
 
-  assert.equal(dataset.documents.omang.quality, 'sample_verified');
+  assert.equal(dataset.documents.omang.quality, 'synthetic_pattern');
   assert.equal(dataset.documents.passport.quality, 'synthetic_pattern');
 
   for (let i = 0; i < 1000; i += 1) {
