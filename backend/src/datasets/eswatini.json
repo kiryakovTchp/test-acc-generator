@@ -229,9 +229,9 @@
     "national_identity_card_number": {
       "label": "National Identity Card Number",
       "templates": [
-        "ID{RAND8}"
+        "{RAND9}"
       ],
-      "pattern": "^ID\\d{8}$",
+      "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Eswatini Government identity cards service requirements",
@@ -239,14 +239,14 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official source confirms identity-card issuance and PIN context for some applicants, but no public number grammar, checksum or semantic digit rule was confirmed. ID is a generator marker, not a claimed card prefix."
+      "notes": "Official source confirms identity-card issuance and PIN context for some applicants, but no public number grammar, checksum or semantic digit rule was confirmed. Runtime is aligned with the Swaziland GEO and does not prefix the generated value with ID because no source confirms that the document label is part of the number."
     },
     "passport": {
       "label": "Passport",
       "templates": [
-        "SZ{RAND7}"
+        "{RANDL1}{RAND8}"
       ],
-      "pattern": "^SZ\\d{7}$",
+      "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Eswatini Government travel documents and passports requirements",
@@ -254,7 +254,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official source confirms Eswatini passport and travel-document issuance, but no public passport-number grammar was confirmed. SZ is a generator marker, not a claimed passport prefix."
+      "notes": "Official source confirms Eswatini passport and travel-document issuance, but no public passport-number grammar was confirmed. Runtime is aligned with the Swaziland GEO and does not prefix the generated value with the country code because no source confirms that it is part of the passport number."
     }
   }
 }

@@ -129,9 +129,9 @@
     "national_identity_card_number": {
       "label": "National Identity Card Number",
       "templates": [
-        "NIC{RAND10}"
+        "{RAND10}"
       ],
-      "pattern": "^NIC\\d{10}$",
+      "pattern": "^\\d{10}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Mauritius National Identity Card Act text",
@@ -139,7 +139,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "The Act confirms the card records an NIC number. No current official public grammar, checksum or semantic digit logic was confirmed; NIC is a generator marker, not a claimed literal prefix."
+      "notes": "The Act confirms the card records an NIC number. No current official public grammar, checksum or semantic digit logic was confirmed; runtime no longer prefixes the generated value with NIC because no source confirms that the field label is part of the number."
     },
     "passport": {
       "label": "Passport",

@@ -216,9 +216,9 @@
     "national_identity_number": {
       "label": "National Identity Number",
       "templates": [
-        "NID{RAND8}"
+        "{RAND8}"
       ],
-      "pattern": "^NID\\d{8}$",
+      "pattern": "^\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Malawi National Registration Bureau national ID overview",
@@ -226,7 +226,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official NRB material confirms the National ID and a unique identification number, QR code and MRZ, but no public number grammar, checksum or semantic digit rule was confirmed. NID is a generator marker, not a claimed card prefix."
+      "notes": "Official NRB material confirms the National ID and a unique identification number, QR code and MRZ, but no public number grammar, checksum or semantic digit rule was confirmed. Runtime no longer prefixes the generated value with NID because no source confirms that the document label is part of the number."
     },
     "passport": {
       "label": "Passport",

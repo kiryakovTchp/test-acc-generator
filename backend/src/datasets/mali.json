@@ -127,9 +127,9 @@
     "national_identification_number_nina": {
       "label": "National Identification Number (NINA)",
       "templates": [
-        "NINA{RAND10}"
+        "{RAND10}"
       ],
-      "pattern": "^NINA\\d{10}$",
+      "pattern": "^\\d{10}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "IRB Canada Mali national identification number legal reference",
@@ -137,7 +137,7 @@
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Public sources confirm the NINA exists and appears on Malian identity/voter documents, but no official public number length, checksum or semantic digit rule was confirmed. NINA is a generator marker, not a claimed literal prefix."
+      "notes": "Public sources confirm the NINA exists and appears on Malian identity/voter documents, but no official public number length, checksum or semantic digit rule was confirmed. Runtime no longer prefixes the generated value with NINA because no source confirms that the field label is part of the number."
     },
     "passport": {
       "label": "Passport",

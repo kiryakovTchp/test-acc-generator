@@ -128,9 +128,9 @@
     "national_identity_card_number": {
       "label": "Bilhete de Identidade Number",
       "templates": [
-        "BI{RAND10}"
+        "{RAND10}"
       ],
-      "pattern": "^BI\\d{10}$",
+      "pattern": "^\\d{10}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "PRADO Mozambique passport and identity document country listing",
@@ -138,7 +138,7 @@
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Public sources confirm Mozambique identity/travel document context but no official public BI number grammar, checksum or semantic digit rule was confirmed. BI is a generator marker, not a claimed literal prefix."
+      "notes": "Public sources confirm Mozambique identity/travel document context but no official public BI number grammar, checksum or semantic digit rule was confirmed. Runtime no longer prefixes the generated value with BI because no source confirms that the document label is part of the number."
     },
     "passport": {
       "label": "Passport",

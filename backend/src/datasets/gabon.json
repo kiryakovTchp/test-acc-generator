@@ -241,17 +241,17 @@
     "passport": {
       "label": "Passport",
       "templates": [
-        "{RANDL1}{RAND8}"
+        "{RAND2}SP{RAND5}"
       ],
-      "pattern": "^[A-Z]\\d{8}$",
-      "quality": "synthetic_pattern",
+      "pattern": "^\\d{2}SP\\d{5}$",
+      "quality": "sample_verified",
       "source": {
-        "title": "PRADO Gabon ordinary passport document entry",
-        "url": "https://www.consilium.europa.eu/prado/en/prado-documents/gab/a/docs-per-category.html",
+        "title": "PRADO Gabon ordinary passport GAB-AO-03001",
+        "url": "https://www.consilium.europa.eu/prado/en/GAB-AO-03001/index.html",
         "type": "trusted_reference",
-        "checkedAt": "2026-07-27"
+        "checkedAt": "2026-08-03"
       },
-      "notes": "PRADO confirms Gabon ordinary passport document versions. The public PRADO category reviewed does not confirm a passport number grammar, so this template is only a synthetic placeholder and does not reuse a single specimen as a public rule."
+      "notes": "PRADO lists current ordinary passport version GAB-AO-03001 as valid, first issued 01/11/2013. The public specimen reviewed shows passport-number display shape 13SP01349; generation uses only that specimen-level shape and does not claim a full national grammar."
     }
   }
 }

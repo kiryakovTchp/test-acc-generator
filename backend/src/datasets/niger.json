@@ -127,9 +127,9 @@
     "national_identity_card_number": {
       "label": "National Biometric Identity Card Number",
       "templates": [
-        "CNI{RAND9}"
+        "{RAND9}"
       ],
-      "pattern": "^CNI\\d{9}$",
+      "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Niger government launch of AES biometric national identity card",
@@ -137,7 +137,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official government material confirms the biometric national identity card program, but no public number grammar, checksum or semantic digit rule was confirmed. CNI is a generator marker, not a claimed literal prefix."
+      "notes": "Official government material confirms the biometric national identity card program, but no public number grammar, checksum or semantic digit rule was confirmed. Runtime no longer prefixes the generated value with CNI because no source confirms that the document label is part of the number."
     },
     "passport": {
       "label": "Passport",

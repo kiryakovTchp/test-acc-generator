@@ -134,11 +134,11 @@ test('sierra leone and togo dataset follow provided document specimens', async (
   assert.match(togoDriverLicence?.documentValue ?? '', /^\d{8}$/);
 });
 
-test('gabon dataset follows public-source document placeholders', async () => {
+test('gabon dataset follows public-source document evidence tiers', async () => {
   const passport = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'passport', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(passport?.country, 'Gabon');
-  assert.equal(passport?.documentQuality, 'synthetic_pattern');
-  assert.match(passport?.documentValue ?? '', /^[A-Z]\d{8}$/);
+  assert.equal(passport?.documentQuality, 'sample_verified');
+  assert.match(passport?.documentValue ?? '', /^\d{2}SP\d{5}$/);
 
   const nip = await generateAccount({ userId: 1, geoKey: 'gabon', documentType: 'personal_identification_number', role: 'user', persona: 'standard_user', emailProvider: provider });
   assert.equal(nip?.documentQuality, 'synthetic_pattern');

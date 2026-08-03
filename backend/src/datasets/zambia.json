@@ -230,9 +230,9 @@
     "passport": {
       "label": "Passport",
       "templates": [
-        "ZMP{RAND6}"
+        "{RANDL1}{RAND8}"
       ],
-      "pattern": "^ZMP\\d{6}$",
+      "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "PRADO Zambia ordinary passport document entry",
@@ -240,14 +240,14 @@
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "PRADO confirms the Zambia ordinary passport document family, but the public entry reviewed does not confirm a passport-number grammar. ZMP is a generator marker, not a claimed passport prefix."
+      "notes": "PRADO confirms the Zambia ordinary passport document family, but the public entry reviewed does not confirm a passport-number grammar. Runtime no longer prefixes the generated value with the country code because PRADO does not confirm that it is part of the passport number."
     },
     "national_registration_card_number": {
       "label": "National Registration Card Number",
       "templates": [
-        "NRC{RAND8}"
+        "{RAND13}"
       ],
-      "pattern": "^NRC\\d{8}$",
+      "pattern": "^\\d{13}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Zambia Ministry of Home Affairs national registration service",
@@ -255,7 +255,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official public material confirms National Registration Card issuance, but no official public NRC number grammar, checksum or semantic digit rule was confirmed. NRC is a generator marker, not a claimed card prefix."
+      "notes": "Official Ministry material confirms National Registration Card issuance and reports the new identity card contains a new 13-digit national registration identity number. No checksum or semantic digit rule was confirmed, so the rule remains synthetic_pattern and values are not registry-validated."
     }
   }
 }

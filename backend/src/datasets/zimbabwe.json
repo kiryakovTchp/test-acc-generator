@@ -199,9 +199,9 @@
     "passport": {
       "label": "Passport",
       "templates": [
-        "ZWP{RAND6}"
+        "{RANDL1}{RAND8}"
       ],
-      "pattern": "^ZWP\\d{6}$",
+      "pattern": "^[A-Z]\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "PRADO Zimbabwe ordinary passport document entry",
@@ -209,14 +209,14 @@
         "type": "trusted_reference",
         "checkedAt": "2026-07-31"
       },
-      "notes": "PRADO confirms the Zimbabwe ordinary passport document family and document numbering features, but no public passport-number grammar was confirmed. ZWP is a generator marker, not a claimed passport prefix."
+      "notes": "PRADO confirms the Zimbabwe ordinary passport document family and document numbering features, but no public passport-number grammar was confirmed. Runtime no longer prefixes the generated value with the country code because PRADO does not confirm that it is part of the passport number."
     },
     "national_identity_card_number": {
       "label": "National Identity Card Number",
       "templates": [
-        "ID{RAND8}"
+        "{RAND8}"
       ],
-      "pattern": "^ID\\d{8}$",
+      "pattern": "^\\d{8}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "Zimbabwe Embassy national identity card service information",
@@ -224,7 +224,7 @@
         "type": "official",
         "checkedAt": "2026-07-31"
       },
-      "notes": "Official embassy material confirms the national identity card is issued to citizens from age 16 and is required for several services, but no official public number grammar, checksum or semantic digit rule was confirmed. ID is a generator marker, not a claimed card prefix."
+      "notes": "Official embassy material confirms the national identity card is issued to citizens from age 16 and is required for several services, but no official public number grammar, checksum or semantic digit rule was confirmed. Runtime no longer prefixes the generated value with ID because no source confirms that the document label is part of the number."
     }
   }
 }

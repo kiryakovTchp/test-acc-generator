@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { countryDatasetSchema, generateDatasetDocument, generateDatasetPhone, listCountryDatasets, loadCountryDatasets, validateKazakhstanIin } from './datasets.js';
 import type { CountryDataset } from './datasets.js';
 import { calculateAge, generatePersonaProfile } from './utils.js';
@@ -17,6 +20,83 @@ test('country datasets have required blocks and sources', () => {
     assert.match(dataset.phones.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
     assert.match(dataset.locations.source.checkedAt, /^\d{4}-\d{2}-\d{2}$/);
   }
+});
+
+test('all document templates and generators repeatedly match their own pattern', () => {
+  for (const dataset of listCountryDatasets()) {
+    for (const [documentType, rule] of Object.entries(dataset.documents)) {
+      const pattern = new RegExp(rule.pattern);
+      for (let i = 0; i < 250; i += 1) {
+        const value = generateDatasetDocument(rule, {
+          dateOfBirth: i % 2 === 0 ? '1991-07-27' : '2002-01-09',
+          gender: i % 2 === 0 ? 'female' : 'male',
+          region: dataset.locations.regions[0].name,
+        });
+        assert.match(value, pattern, `${dataset.key}.${documentType}: ${value} did not match ${rule.pattern}`);
+      }
+    }
+  }
+});
+
+test('official specimen values match the expected runtime pattern without promoting full national grammar', () => {
+  const specimens = [
+    ['gabon', 'passport', '13SP01349'],
+    ['malawi', 'passport', 'MWA123456'],
+    ['malawi', 'passport', 'MWZ123456'],
+    ['malawi', 'personal_number', '1212433/2'],
+    ['sierra_leone', 'passport', '0114439'],
+    ['sierra_leone', 'personal_number', '000119146'],
+    ['tanzania', 'national_identification_number', '19760517-37227-00002-17'],
+  ] as const;
+
+  for (const [datasetKey, documentType, specimen] of specimens) {
+    const rule = getDataset(datasetKey).documents[documentType];
+    assert.ok(rule, `${datasetKey}.${documentType}: missing runtime rule`);
+    assert.match(specimen, new RegExp(rule.pattern), `${datasetKey}.${documentType}: specimen ${specimen} does not match ${rule.pattern}`);
+  }
+
+  assert.equal(getDataset('gabon').documents.passport.quality, 'sample_verified');
+  assert.equal(getDataset('gabon').documents.personal_identification_number.quality, 'synthetic_pattern');
+});
+
+test('verified document quality is not based on local samples assumptions or PRADO listings alone', () => {
+  for (const dataset of listCountryDatasets()) {
+    for (const [documentType, rule] of Object.entries(dataset.documents)) {
+      if (rule.quality !== 'verified') continue;
+      assert.notEqual(rule.source.type, 'user_sample', `${dataset.key}.${documentType}: verified cannot use user_sample`);
+      assert.notEqual(rule.source.type, 'government_sample', `${dataset.key}.${documentType}: one government sample is not enough for verified`);
+      assert.notEqual(rule.source.type, 'assumption', `${dataset.key}.${documentType}: verified cannot use assumption`);
+      assert.doesNotMatch(rule.source.url, /consilium\.europa\.eu\/prado\/.*(?:docs-per-|prado-documents)/, `${dataset.key}.${documentType}: verified cannot rely on PRADO listings`);
+    }
+  }
+});
+
+test('unconfirmed country MRZ or document labels are not generated as document numbers', () => {
+  const forbiddenLiteralTemplatePrefixes = /^(?:ZMP|ZWP|NRC|CNI|NIC|BI|NID|NINA|SZ|ID)\{/;
+
+  for (const dataset of listCountryDatasets()) {
+    for (const [documentType, rule] of Object.entries(dataset.documents)) {
+      for (const template of rule.templates ?? []) {
+        assert.doesNotMatch(template, forbiddenLiteralTemplatePrefixes, `${dataset.key}.${documentType}: ${template} includes an unconfirmed document/country marker`);
+      }
+    }
+  }
+});
+
+test('document verification report stays synchronized with runtime rules', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const rows = report.split('\n').filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '));
+  const runtimeRules = listCountryDatasets().flatMap((dataset) => Object.keys(dataset.documents).map((documentType) => `${dataset.key} | ${documentType}`));
+
+  assert.equal(rows.length, runtimeRules.length, 'document verification row count must match runtime document rules');
+  for (const ruleKey of runtimeRules) {
+    const [datasetKey, documentType] = ruleKey.split(' | ');
+    assert.ok(report.includes(`| ${datasetKey} |`), `${datasetKey}: missing from document verification report`);
+    assert.ok(report.includes(`| ${documentType} |`), `${datasetKey}.${documentType}: missing document type from verification report`);
+  }
+
+  assert.match(report, /Runtime inventory: 93 document rules; 13 verified, 11 sample_verified, 69 synthetic_pattern\./);
 });
 
 test('country dataset schema rejects misspelled required fields and invalid source dates', () => {
@@ -522,7 +602,7 @@ test('gabon document rules match configured public-source limits', () => {
   const nipRule = dataset.documents.personal_identification_number;
 
   assert.equal(nipRule.quality, 'synthetic_pattern');
-  assert.equal(dataset.documents.passport.quality, 'synthetic_pattern');
+  assert.equal(dataset.documents.passport.quality, 'sample_verified');
 
   for (let i = 0; i < 1000; i += 1) {
     for (const rule of Object.values(dataset.documents)) {

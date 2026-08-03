@@ -215,9 +215,9 @@
     "national_identity_card_number": {
       "label": "National Identity Card",
       "templates": [
-        "CNI{RAND9}"
+        "{RAND9}"
       ],
-      "pattern": "^CNI\\d{9}$",
+      "pattern": "^\\d{9}$",
       "quality": "synthetic_pattern",
       "source": {
         "title": "IRB Canada: Republic of the Congo national identity card",
@@ -225,7 +225,7 @@
         "type": "trusted_reference",
         "checkedAt": "2026-07-30"
       },
-      "notes": "The public response describes the CNI followed by a personal identification number on the card, but does not confirm a current public number length, checksum or semantic digit rule. Template includes CNI as a document-family marker and random digits only."
+      "notes": "The public response describes the CNI followed by a personal identification number on the card, but does not confirm a current public number length, checksum or semantic digit rule. Runtime no longer prefixes the generated value with CNI because no source confirms that the document label is part of the number."
     },
     "passport": {
       "label": "Passport",

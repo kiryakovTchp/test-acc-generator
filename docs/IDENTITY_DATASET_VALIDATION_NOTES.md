@@ -1,102 +1,49 @@
 # Identity Dataset Validation Notes
 
-Working notes for the 38-geo identity dataset draft received on 2026-07-14.
-This document is not an implementation plan and does not mark any unreviewed
-document pattern as production-verified.
+Checked at: 2026-08-03
 
-Decision summary and country suitability list:
-`docs/IDENTITY_DATASET_DECISION_MATRIX.md`.
+This note is synchronized with runtime datasets after the document-number audit in
+`docs/DOCUMENT_DATASET_VERIFICATION.md`. Runtime, not older draft notes, is the
+source of truth for current generated document values.
 
-## Dataset Snapshot
+## Runtime Snapshot
 
-- Dataset status: `draft`.
-- Entities: 38.
-- Phone examples: 38/38 parse through libphonenumber.
-- Cities: 1513 total, 1253 linked to ISO subdivision codes in the audit.
-- Document candidates: 76 in manual review queue.
-- Current application coverage: 8 geos in `backend/src/geo-rules.json`.
+- Runtime document rules: 93.
+- Quality counts: 13 `verified`, 11 `sample_verified`, 69 `synthetic_pattern`.
+- `generic_intl` is a fallback/test GEO and is not a confirmed real document dataset.
+- Document generation is still review-heavy: 72 runtime rules remain production blockers because the source is insufficient or does not confirm number format.
 
-## Source Review
+## Confirmed Runtime Changes From This Audit
 
-| Source | Dataset use | Initial verdict | Notes |
-| --- | --- | --- | --- |
-| Google libphonenumber | Phone metadata and examples | Accept | Strong source of truth for phone parsing. Pin library version. |
-| pycountry / ISO 3166-2 | Subdivision identifiers | Accept with snapshot caveat | Good technical source, but not a live ISO authority. Store version/snapshot date. |
-| GeoNames | Cities and admin links | Accept with attribution | CC BY data. Keep attribution and expect unresolved or stale admin mappings. |
-| Faker | Localized names | Partial accept | Accept only locales with real country-specific person providers. Keep seed-only names as inferred. |
-
-## Current App vs Dataset
-
-The current app is deliberately synthetic:
-
-- `geo-rules.json` stores only `key`, `label`, and document templates.
-- `utils.ts` has hand-written geography, phone prefixes, and shared name pools.
-- Most current document templates are placeholders, not real visual formats.
-
-The new dataset is broader and should be treated as a master draft:
-
-- phone metadata can replace current prefix-based phones later;
-- geography can replace hand-written country/region/city pools later;
-- names need source-tier filtering;
-- document candidates must stay manual-review until a source confirms them.
-
-## Document Validation Pass 1
-
-| Geo | Candidate | Dataset type | Proposed normalized type | Verdict | Source / rationale |
+| GEO | Document | Previous runtime | Current runtime | Quality | Reason |
 | --- | --- | --- | --- | --- | --- |
-| NG | `^\d{11}$` | national_id | national_identity_number | confirmed | NIMC says the NIN consists of 11 numbers: https://nimc.gov.ng/nin |
-| KZ | `^\d{12}$` with `YYMMDD` prefix | iin | individual_identification_number | confirmed + user-provided rule | eGov Kazakhstan says IIN is a 12-digit combination and appears on ID/passport: https://egov.kz/cms/en/articles/iin_info. Generate the first six digits from profile date of birth, e.g. `2002-01-09` -> `020109`, then append six random digits. |
-| UZ | `^\d{14}$` | national_id | personal_identification_number | confirmed | my.gov.uz says PINFL is a unique 14-digit number: https://my.gov.uz/ru/static/jshshir-for-foreigners |
-| IE | `^\d{7}[A-Z]{1,2}$` | national_id | pps_number | rename | This is a PPS number, not a national ID document: https://www.gov.ie/en/department-of-social-protection/services/get-a-personal-public-service-pps-number/ |
-| GE | `^\d{11}$` | national_id | personal_number | confirmed for citizens | OECD Georgia TIN notes the 11-digit number is the same as the national identity card number for citizen natural persons: https://www.oecd.org/content/dam/oecd/en/topics/policy-issue-focus/aeoi/georgia-tin.pdf |
-| GH | `^GHA-\d{9}-\d{1}$` | national_id | ghana_card_pin | confirmed | NIA FAQ gives `GHA-000000000-0`: https://register.nia.gov.gh/faqs |
-| ZM | `^\d{6}/\d{2}/\d{1}$` | national_id | national_registration_card_number | probable | Zambia government sources confirm NRC as national registration card; exact slash format still needs official confirmation. |
-| UG | `^C[MF]\d{12}$` | national_id | national_identification_number | probable | NIRA confirms NIN/National ID; exact prefix/length still needs official confirmation. |
-| TZ | `^\d{8}-\d{5}-\d{5}-\d{2}$` | national_id | national_identification_number | sample_verified | NIDA shows one 20-digit NIN display sample with hyphens, e.g. `19760517-37227-00002-17`; runtime generates only that sample display shape with random digits: https://services.nida.go.tz/requestctrnm |
-| SN | `^\d{13,14}$` | national_id | ecowas_id_card_number | reject/replace | Senegal decree says the ECOWAS identity card number contains 17 digits: https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/ |
-| ET | `^\d{9,10}$` | national_id | fayda_identification_number | reject/replace | Ethiopia National ID says Fayda is a 12-digit unique identification number: https://id.gov.et/ |
-| AO | `^N\d{7}$` | passport | passport | confirmed | Immigration/refugee-source summary describes ordinary passport serial as `N` plus seven digits; PRADO confirms the passport document family: https://www.ecoi.net/en/document/2095422.html |
-| CM | `^\d{9}$` | national_id | national_id_card_number | probable | Public Cameroon ID samples show 9-digit CNI numbers; government decree confirms CNI issuance but exact number grammar still needs official text/sample source. |
-| SS | `^\d{11}$` | national_id | national_identity_number | reject/needs fresh source | Search results repeatedly resolve to Sudan, not South Sudan. Sudan has an 11-digit national number, but that must not be transferred to South Sudan without a South Sudanese source. |
-| SS | `^[A-Z0-9<]{9}$` | passport | passport | reject/replace | Generic MRZ-like seed. A bank reference list gives South Sudan passport number as `X99999999` (one letter plus eight digits), but this is secondary and still needs official confirmation. |
-| GN | `^[A-Z0-9<]{9}$` | passport | passport | reject/replace | PRADO confirms Guinea passport document families, but the candidate is only generic MRZ filler and not a country-specific visual pattern: https://www.consilium.europa.eu/prado/en/prado-documents/gin/a/o/docs-per-type.html |
-| KE | `^A\d{7}$` | passport | passport | probable | Kenya Immigration confirms ordinary passport A/B/C series by booklet size; exact number grammar still needs a document sample or PRADO page: https://immigration.go.ke/type-and-fees/ |
-| KE | `^\d{8}$` | national_id | national_id_card_number | probable | Kenya citizen services use national ID number as a core identifier, but exact 8-digit grammar still needs an official form/sample citation. |
-| GA | `^\d{2}SP\d{5}$` | passport | passport | specimen-based | User-provided PRADO specimen with non-placeholder value shows `Passport No` as `13SP01349`; `GAB` is displayed separately as the country code. |
-| CI | `^\d{2}[A-Z]{2}\d{5}$` | passport | passport | local sample_verified | User-provided Cote d'Ivoire field sample supports display shape only, including `13AS85673`; no national grammar/checksum semantics are confirmed. |
-| CI | `^CI\d{9}$` | national_id | national_id | local sample_verified | User-provided Cote d'Ivoire field sample supports display shape only, including `CI000910000`; no national grammar/checksum semantics are confirmed. |
-| CI | `^[A-Z]{4}\d{2}-\d{2}-\d{8}[A-Z]$` | driver_license_number | driver_license_number | local sample_verified | User-provided Cote d'Ivoire field sample supports driver licence display shape only: `LLLLNN-NN-NNNNNNNNL`; no national grammar/checksum semantics are confirmed. |
-| MW | `^MW[AZ]\d{6}$` | passport | passport | verified | Official Malawi e-Passport factsheet states ordinary passport prefixes `MWAxxxxxx` for 36 pages and `MWZxxxxxx` for 48 pages: https://www.malawiembassy.de/.cm4all/uproc.php/0/MALAWI%20e-PASSPORT.pdf?_=1766b210d8f&cdp=a |
-| MW | `^\d{7}/\d$` | personal_number | personal_number | sample_verified | PRADO specimen context supports `Personal No` slash form, e.g. `1212433/2`; keep as sample-level only until an official rule confirms cross-document logic. |
-| SL | `^\d{7}$` | passport | passport | sample_verified | PRADO specimen context supports `Passport No` as seven digits, e.g. `0114439`; `SLE` is displayed separately as the country code. This is not a full national grammar or checksum confirmation. |
-| SL | `^\d{9}$` | personal_number | personal_number | sample_verified | PRADO specimen context supports `Personal No` as nine digits, e.g. `000119146`. This is not a full national grammar or checksum confirmation. |
-| TG | `^X[BS]\d{6}$` | passport | passport | specimen-based | User-provided PRADO ordinary passport specimens show X-series passport numbers such as `XB000072` and `XS000288`. |
-| TG | `^D\d{7}$` | diplomatic_passport | diplomatic_passport | specimen-based | User-provided PRADO diplomatic passport specimen shows a D-series number, e.g. `D9000426`; keep separate from ordinary passport. |
-| TG | `^\d{8}$` | driver_license | driver_license_number | partial specimen | User-provided driving licence sample is partially redacted; visible pieces suggest a numeric licence number, but exact grammar is not verified. |
-| UZ | `^[A-Z]{2}\d{7}$` | passport | passport | probable | Secondary banking/KYC lists show Uzbekistan passport as 9 chars, `XX9999999`; official migration sources confirm passport use but not the visible grammar. |
-| NG | `^[A-Z]\d{8}$` | passport | passport | probable | Nigerian Immigration and PRADO confirm current passport document families; exact visual number grammar still needs a sample-level source: https://immigration.gov.ng/passports/ and https://www.consilium.europa.eu/prado/en/prado-documents/nga/a/docs-per-category.html |
-| UG | `^B\d{7}$` | passport | passport | probable | Uganda official passport portal and PRADO confirm document families, but not the exact number grammar: https://passports.go.ug/ and https://www.consilium.europa.eu/prado/en/prado-documents/uga/a/docs-per-category.html |
+| GA | passport | `^[A-Z]\d{8}$` | `^\d{2}SP\d{5}$` | `sample_verified` | PRADO current ordinary passport `GAB-AO-03001` is valid and first issued `01/11/2013`; reviewed specimen display shape is `13SP01349`. This confirms only specimen shape, not national grammar. |
+| CG | national_identity_card_number | `^CNI\d{9}$` | `^\d{9}$` | `synthetic_pattern` | `CNI` was only a document label/marker; no source confirms it as part of the generated number. |
+| SZ / Eswatini | national_identity_card_number | `^ID\d{8}$` | `^\d{9}$` | `synthetic_pattern` | Aligned with Swaziland GEO; `ID` label removed from generated value. |
+| SZ / Eswatini | passport | `^SZ\d{7}$` | `^[A-Z]\d{8}$` | `synthetic_pattern` | Aligned with Swaziland GEO; country code removed from generated value. |
+| MW | national_identity_number | `^NID\d{8}$` | `^\d{8}$` | `synthetic_pattern` | `NID` was only a document label/marker; no source confirms it as part of the generated number. |
+| ML | national_identification_number_nina | `^NINA\d{10}$` | `^\d{10}$` | `synthetic_pattern` | `NINA` was only a field/document label; no source confirms it as part of the generated number. |
+| MU | national_identity_card_number | `^NIC\d{10}$` | `^\d{10}$` | `synthetic_pattern` | `NIC` was only a field/document label; no source confirms it as part of the generated number. |
+| MZ | national_identity_card_number | `^BI\d{10}$` | `^\d{10}$` | `synthetic_pattern` | `BI` was only a document label; no source confirms it as part of the generated number. |
+| NE | national_identity_card_number | `^CNI\d{9}$` | `^\d{9}$` | `synthetic_pattern` | `CNI` was only a document label/marker; no source confirms it as part of the generated number. |
+| ZM | passport | `^ZMP\d{6}$` | `^[A-Z]\d{8}$` | `synthetic_pattern` | `ZMP` country/document marker removed; PRADO page does not confirm it as the passport number prefix. |
+| ZM | national_registration_card_number | `^NRC\d{8}$` | `^\d{13}$` | `synthetic_pattern` | Ministry material says the new NRC identity card contains a 13-digit national registration identity number; no checksum/semantics published. |
+| ZW | passport | `^ZWP\d{6}$` | `^[A-Z]\d{8}$` | `synthetic_pattern` | `ZWP` country/document marker removed; PRADO page does not confirm it as the passport number prefix. |
+| ZW | national_identity_card_number | `^ID\d{8}$` | `^\d{8}$` | `synthetic_pattern` | `ID` was only a document label/marker; no source confirms it as part of the generated number. |
 
-## Modeling Notes
+## Evidence Rules
 
-Do not overload `national_id` for every non-passport identifier. Split identity
-document fields before importing reviewed data:
+- `verified`: official source directly defines structure, length, prefix, or algorithm/checksum.
+- `sample_verified`: official/public specimen confirms a displayed shape, but not a full national grammar.
+- `synthetic_pattern`: source confirms document existence or a plausible secondary pattern, but not enough for production-verified generation.
+- A PRADO country page, PRADO category/listing page, or search result is not enough to confirm a visible document number.
+- Country/MRZ codes such as `GAB`, `SLE`, `ZMB`, `ZWE`, or document labels such as `CNI`, `NRC`, `NIC`, `BI`, `ID`, `NINA` must not be generated as part of the document number unless an exact source shows them inside the number field.
 
-- `passport`
-- `national_id_card`
-- `national_identity_number`
-- `personal_identification_number`
-- `tax_or_social_number`
-- `other_identifier`
+## Production Verdict
 
-For generation quality, store both:
-
-- `verification.status`: `verified`, `probable`, `unknown`, `rejected`
-- `verification.source_url` and `source_tier`
-
-## Immediate Recommendations
-
-1. Promote only confirmed document candidates to `verified`.
-2. Keep probable candidates available only as `synthetic_pattern` or `review_required`.
-3. Rename IE PPS, UZ PINFL, KZ IIN, GE personal number, and NG NIN away from generic `national_id`.
-4. Continue validation by prioritizing geos already present in the app, then high-volume dataset geos.
+The document dataset is not production-ready as a verified document generator.
+It is usable only as a mixed-quality review dataset: the `verified` and
+official `sample_verified` rules can be used with their stated limits, while
+`synthetic_pattern`, user-sample-only, and PRADO-listing-only rules must remain
+production blockers until exact official grammar or readable official specimen
+evidence is attached.
