@@ -14,6 +14,15 @@ source of truth for current generated document values.
 - `generic_intl` is a fallback/test GEO and is not a confirmed real document dataset.
 - Document generation is still review-heavy: 76 runtime rules remain production blockers because explicit independent evidence is missing, insufficient, or does not confirm number format.
 
+## Evidence Split
+
+The 93 runtime document rules split into two groups:
+
+- 17 evidence-backed `match` rules with rule-specific limits. This group contains 12 `verified` + `explicit_grammar` rules and 5 `sample_verified` + `readable_specimen` rules.
+- 76 production blockers. This group contains 34 rules where the source confirms document existence but not number format, 39 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules whose audit verdict remains `insufficient evidence`.
+
+The 17 `match` rules are not a blanket production-verified dataset: each keeps its own limitation, and none of the synthetic generated values are checked against a live government registry.
+
 ## Methodology
 
 The document report no longer treats runtime `quality`, `source.type`, or a

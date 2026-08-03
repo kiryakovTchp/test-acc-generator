@@ -17,6 +17,41 @@ Methodology:
 - PRADO country/category pages, government service pages, secondary PDFs, and `source.type` do not by themselves confirm document-number format.
 - Country/MRZ/document labels are not allowed inside generated numbers unless the evidence shows them inside the displayed number field.
 
+## Evidence-Backed Match Rules
+
+These 17 rules are confirmed only within their stated evidence limits. They are synthetic generated values, not live government-registry assignments.
+
+### verified + explicit_grammar (12)
+
+- burkina_faso.national_personal_identification_number: Keep verified for public shape only; no checksum or registry validation.
+- ethiopia.fayda_identification_number: Keep verified for public shape only; no live assignment validation.
+- ghana.ghana_card_pin: Keep verified for public display shape only.
+- ireland.pps_number: Keep verified; keep type as PPS rather than national ID document.
+- ireland.passport_card_number: Keep verified for public shape only.
+- kazakhstan.iin: Keep verified for citizen-style synthetic generation. Existing assigned IIN validation must be limited to 12 digits and checksum; do not reject assigned IINs on DOB, sex, or century semantics because foreigner and historical registrations can contain exceptions. Generated values are not checked against the live government registry.
+- malawi.passport: Keep verified for prefix/length only; no registry validation.
+- mozambique.tax_identification_number_nuit: Keep verified for public shape only; no checksum implemented.
+- namibia.national_identity_number: Keep verified for public shape only.
+- nigeria.nin: Keep verified for length only; no registry validation.
+- senegal.ecowas_id_card_number: Keep verified for public shape only; runtime does not implement semantic components.
+- uzbekistan.pinfl: Keep verified for public shape only.
+
+### sample_verified + readable_specimen (5)
+
+- gabon.passport: Keep sample_verified only; do not promote without national grammar.
+- malawi.personal_number: Keep sample_verified only.
+- sierra_leone.passport: Keep sample_verified only.
+- sierra_leone.personal_number: Keep sample_verified only.
+- tanzania.national_identification_number: Keep sample_verified only; do not infer full allocation semantics.
+
+## Production Blocker Groups
+
+The remaining 76 rules must stay production blockers. Do not promote them only to reduce blocker count.
+
+- 34 source does not confirm number format: mostly PRADO document/category/listing pages or government pages that confirm document existence but not a readable number field.
+- 39 insufficient independent evidence: no exact current official grammar or readable official specimen was attached in this pass, so these stay synthetic/review-only.
+- 3 Cote d'Ivoire user-sample display-shape rules: passport, national_id, driver_license_number remain sample display-shape seeds, but their audit verdict stays insufficient evidence.
+
 ## Findings
 
 | Dataset | GEO | Document type | Runtime pattern/template | Generated example | Exact evidence/source | Evidence type | Evidence status | Evidence description | Document version/status | Observed shape | Verdict | Quality | Required action |

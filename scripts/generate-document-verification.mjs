@@ -209,6 +209,13 @@ for (const file of fs.readdirSync(datasetDir).filter((item) => item.endsWith('.j
 
 const counts = countBy(rows, (row) => row.verdict);
 const qualityCounts = countBy(rows, (row) => row.quality);
+const matchRows = rows.filter((row) => row.verdict === 'match');
+const blockerRows = rows.filter((row) => row.verdict !== 'match');
+const verifiedMatchRows = matchRows.filter((row) => row.quality === 'verified' && row.evidenceType === 'explicit_grammar');
+const sampleVerifiedMatchRows = matchRows.filter((row) => row.quality === 'sample_verified' && row.evidenceType === 'readable_specimen');
+const sourceDoesNotConfirmRows = rows.filter((row) => row.verdict === 'source does not confirm number format');
+const coteDivoireSampleRows = rows.filter((row) => row.dataset === 'cote_divoire' && row.quality === 'sample_verified' && row.verdict !== 'match');
+const insufficientIndependentEvidenceRows = rows.filter((row) => row.verdict === 'insufficient evidence' && row.dataset !== 'cote_divoire');
 
 let markdown = '# Document Dataset Verification\n\n';
 markdown += 'Checked at: 2026-08-03\n\n';
@@ -222,6 +229,21 @@ markdown += '- `verified` can be `match` only with `explicit_grammar` evidence.\
 markdown += '- `sample_verified` can be `match` only with `readable_specimen` evidence.\n';
 markdown += '- PRADO country/category pages, government service pages, secondary PDFs, and `source.type` do not by themselves confirm document-number format.\n';
 markdown += '- Country/MRZ/document labels are not allowed inside generated numbers unless the evidence shows them inside the displayed number field.\n\n';
+markdown += '## Evidence-Backed Match Rules\n\n';
+markdown += `These ${matchRows.length} rules are confirmed only within their stated evidence limits. They are synthetic generated values, not live government-registry assignments.\n\n`;
+markdown += `### verified + explicit_grammar (${verifiedMatchRows.length})\n\n`;
+for (const row of verifiedMatchRows) {
+  markdown += `- ${row.dataset}.${row.documentType}: ${row.action}\n`;
+}
+markdown += `\n### sample_verified + readable_specimen (${sampleVerifiedMatchRows.length})\n\n`;
+for (const row of sampleVerifiedMatchRows) {
+  markdown += `- ${row.dataset}.${row.documentType}: ${row.action}\n`;
+}
+markdown += '\n## Production Blocker Groups\n\n';
+markdown += `The remaining ${blockerRows.length} rules must stay production blockers. Do not promote them only to reduce blocker count.\n\n`;
+markdown += `- ${sourceDoesNotConfirmRows.length} source does not confirm number format: mostly PRADO document/category/listing pages or government pages that confirm document existence but not a readable number field.\n`;
+markdown += `- ${insufficientIndependentEvidenceRows.length} insufficient independent evidence: no exact current official grammar or readable official specimen was attached in this pass, so these stay synthetic/review-only.\n`;
+markdown += `- ${coteDivoireSampleRows.length} Cote d'Ivoire user-sample display-shape rules: ${coteDivoireSampleRows.map((row) => row.documentType).join(', ')} remain sample display-shape seeds, but their audit verdict stays insufficient evidence.\n\n`;
 markdown += '## Findings\n\n';
 markdown += '| Dataset | GEO | Document type | Runtime pattern/template | Generated example | Exact evidence/source | Evidence type | Evidence status | Evidence description | Document version/status | Observed shape | Verdict | Quality | Required action |\n';
 markdown += '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n';

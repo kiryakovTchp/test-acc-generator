@@ -24,7 +24,9 @@ examples, and blockers, see `docs/DOCUMENT_DATASET_VERIFICATION.md`.
 ## Evidence-Backed Match Rules
 
 These rules match explicit independent evidence. They are still synthetic
-generated values and are not registry-validated.
+generated values and are not registry-validated. There are 17 evidence-backed
+`match` rules: 12 `verified` + `explicit_grammar` and 5 `sample_verified` +
+`readable_specimen`.
 
 | GEO | Runtime type | Pattern | Quality | Evidence type | Limit |
 | --- | --- | --- | --- | --- | --- |
@@ -48,6 +50,7 @@ generated values and are not registry-validated.
 
 ## Must Remain Review-Only / Production Blockers
 
+- The remaining 76 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 39 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`.
 - All `synthetic_pattern` rules remain production blockers unless an exact official grammar or readable official specimen is attached.
 - PRADO country/category/listing URLs confirm document existence, not number grammar.
 - Cote d'Ivoire passport, national ID, and driver licence remain user-sample-only display-shape seeds.

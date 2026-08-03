@@ -105,18 +105,81 @@ test('document verification summary counts match the report rows and decision ma
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
   const decisionMatrix = fs.readFileSync(path.join(root, 'docs/IDENTITY_DATASET_DECISION_MATRIX.md'), 'utf8');
+  const validationNotes = fs.readFileSync(path.join(root, 'docs/IDENTITY_DATASET_VALIDATION_NOTES.md'), 'utf8');
   const rows = report.split('\n')
     .filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '))
     .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
   const verdictIndex = 11;
+  const qualityIndex = 12;
+  const evidenceTypeIndex = 6;
   const reportMatchCount = Number(report.match(/Verdict summary: (\d+) match/)?.[1]);
   const rowMatchCount = rows.filter((row) => row[verdictIndex] === 'match').length;
+  const rowBlockerCount = rows.filter((row) => row[verdictIndex] !== 'match').length;
   const matrixMatchCount = Number(decisionMatrix.match(/\| Audit verdict `match` \| (\d+) \|/)?.[1]);
+  const verifiedMatches = rows.filter((row) => row[verdictIndex] === 'match' && row[qualityIndex] === 'verified' && row[evidenceTypeIndex] === 'explicit_grammar');
+  const sampleVerifiedMatches = rows.filter((row) => row[verdictIndex] === 'match' && row[qualityIndex] === 'sample_verified' && row[evidenceTypeIndex] === 'readable_specimen');
 
   assert.equal(reportMatchCount, 17);
   assert.equal(rowMatchCount, reportMatchCount);
+  assert.equal(rowBlockerCount, 76);
+  assert.equal(verifiedMatches.length, 12);
+  assert.equal(sampleVerifiedMatches.length, 5);
   assert.equal(matrixMatchCount, reportMatchCount);
   assert.match(decisionMatrix, new RegExp(`can use the ${reportMatchCount} evidence-backed \\\`match\\\` rules cautiously`));
+  assert.match(report, /## Evidence-Backed Match Rules/);
+  assert.match(report, /### verified \+ explicit_grammar \(12\)/);
+  assert.match(report, /### sample_verified \+ readable_specimen \(5\)/);
+  assert.match(report, /The remaining 76 rules must stay production blockers/);
+  assert.match(report, /34 source does not confirm number format/);
+  assert.match(report, /39 insufficient independent evidence/);
+  assert.match(report, /3 Cote d'Ivoire user-sample display-shape rules/);
+  assert.match(decisionMatrix, /17 evidence-backed\s+`match` rules: 12 `verified` \+ `explicit_grammar` and 5 `sample_verified` \+\s+`readable_specimen`/);
+  assert.match(decisionMatrix, /The remaining 76 runtime document rules stay production blockers: 34 sources confirm document existence but not number format, 39 have insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules remain `insufficient evidence`/);
+  assert.match(validationNotes, /17 evidence-backed `match` rules with rule-specific limits/);
+  assert.match(validationNotes, /76 production blockers/);
+  assert.match(validationNotes, /34 rules where the source confirms document existence but not number format, 39 rules with insufficient independent evidence, and 3 Cote d'Ivoire user-sample display-shape rules/);
+});
+
+test('document verification match rows have the expected verified and sample-verified composition', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const rows = report.split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
+  const matchRows = rows.filter((row) => row[11] === 'match');
+  const verifiedMatchIds = matchRows
+    .filter((row) => row[12] === 'verified' && row[6] === 'explicit_grammar')
+    .map((row) => `${row[0]}.${row[2]}`)
+    .sort();
+  const sampleVerifiedMatchIds = matchRows
+    .filter((row) => row[12] === 'sample_verified' && row[6] === 'readable_specimen')
+    .map((row) => `${row[0]}.${row[2]}`)
+    .sort();
+  const coteDivoireRows = rows.filter((row) => row[0] === 'cote_divoire');
+
+  assert.deepEqual(verifiedMatchIds, [
+    'burkina_faso.national_personal_identification_number',
+    'ethiopia.fayda_identification_number',
+    'ghana.ghana_card_pin',
+    'ireland.passport_card_number',
+    'ireland.pps_number',
+    'kazakhstan.iin',
+    'malawi.passport',
+    'mozambique.tax_identification_number_nuit',
+    'namibia.national_identity_number',
+    'nigeria.nin',
+    'senegal.ecowas_id_card_number',
+    'uzbekistan.pinfl',
+  ]);
+  assert.deepEqual(sampleVerifiedMatchIds, [
+    'gabon.passport',
+    'malawi.personal_number',
+    'sierra_leone.passport',
+    'sierra_leone.personal_number',
+    'tanzania.national_identification_number',
+  ]);
+  assert.equal(coteDivoireRows.length, 3);
+  assert.equal(coteDivoireRows.every((row) => row[11] === 'insufficient evidence' && row[12] === 'sample_verified'), true);
 });
 
 test('document verification matches require explicit independent evidence', () => {
