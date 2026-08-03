@@ -9,6 +9,7 @@ const outputPath = path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md');
 const EVIDENCE = {
   'burkina_faso.national_personal_identification_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://autriche.diplomatie.gov.bf/index.php/services/passeport/',
     description: 'Passport requirements state that the personal identification number (N.I.P.) on the CNIB has 17 digits.',
     observedShape: '^\\d{17}$',
@@ -17,6 +18,7 @@ const EVIDENCE = {
   },
   'ethiopia.fayda_identification_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://id.gov.et/',
     description: 'National ID Program page states that a Fayda Number is a 12 digit unique identification number issued by NIDP.',
     observedShape: '^\\d{12}$',
@@ -25,6 +27,7 @@ const EVIDENCE = {
   },
   'gabon.passport': {
     type: 'readable_specimen',
+    status: 'current',
     url: 'https://www.consilium.europa.eu/prado/en/GAB-AO-03001/index.html',
     description: 'PRADO current ordinary passport specimen shows Passport No. 13SP01349.',
     observedShape: '13SP01349 -> /^\\d{2}SP\\d{5}$/',
@@ -33,6 +36,7 @@ const EVIDENCE = {
   },
   'ghana.ghana_card_pin': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://register.nia.gov.gh/faqs',
     description: 'NIA FAQ states Ghanaian PINs start with country code GHA followed by ten digits, displayed as GHA-000000000-0.',
     observedShape: '^GHA-\\d{9}-\\d$',
@@ -41,6 +45,7 @@ const EVIDENCE = {
   },
   'ireland.pps_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://www.gov.ie/en/department-of-social-protection/services/get-a-personal-public-service-pps-number/',
     description: 'Official PPS page defines the PPS number as seven numbers followed by either one or two letters.',
     observedShape: '^\\d{7}[A-Z]{1,2}$',
@@ -49,6 +54,7 @@ const EVIDENCE = {
   },
   'ireland.passport_card_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://www.oireachtas.ie/en/debates/question/2022-09-08/767/',
     description: 'Official parliamentary answer states passport card numbers begin with C followed by eight digits.',
     observedShape: '^C\\d{8}$',
@@ -57,7 +63,20 @@ const EVIDENCE = {
   },
   'kazakhstan.iin': {
     type: 'explicit_grammar',
-    url: 'https://adilet.zan.kz/rus/docs/V2300032942; https://adilet.zan.kz/rus/docs/P030000565_',
+    sources: [
+      {
+        status: 'current',
+        purpose: 'checksum_and_length',
+        url: 'https://adilet.zan.kz/rus/docs/V2300032942',
+        description: 'Order of the Minister of Internal Affairs of Kazakhstan No. 521 defines IIN as a unique 12-digit combination and publishes the two-cycle mod 11 control digit algorithm.',
+      },
+      {
+        status: 'historical',
+        purpose: 'historical_semantic_evidence',
+        url: 'https://adilet.zan.kz/rus/docs/P030000565_',
+        description: 'Government Resolution No. 565 transition program describes the citizen-style digit structure: first six digits as YYMMDD birth date, seventh digit as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit.',
+      },
+    ],
     description: 'Current Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle mod 11 control digit algorithm. Official Kazakhstan transition program describes the citizen-style digit structure: first six digits as YYMMDD birth date, seventh digit as sex/century, digits 8-11 as registration sequence, and digit 12 as the control digit.',
     observedShape: '^\\d{12}$ citizen-style generation with digits 1-6 = YYMMDD birth date, digit 7 = sex/century (odd male, even female; 3/4 for 20th century, 5/6 for 21st), digits 8-11 = synthetic registration sequence, and digit 12 calculated from the first 11 digits using weights 1..11 then 3..11,1,2 when the first result is 10.',
     versionStatus: 'Order of the Minister of Internal Affairs of Kazakhstan No. 521 dated 29/06/2023 and Government Resolution No. 565 transition program dated 11/06/2003; both viewed on Adilet updated 31/07/2026.',
@@ -65,6 +84,7 @@ const EVIDENCE = {
   },
   'malawi.passport': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://www.malawiembassy.de/.cm4all/uproc.php/0/MALAWI%20e-PASSPORT.pdf?_=1766b210d8f&cdp=a',
     description: 'Official e-passport factsheet states ordinary passport numbering prefixes MWAxxxxxx for 36 pages and MWZxxxxxx for 48 pages.',
     observedShape: '^MW[AZ]\\d{6}$',
@@ -73,6 +93,7 @@ const EVIDENCE = {
   },
   'malawi.personal_number': {
     type: 'readable_specimen',
+    status: 'current',
     url: 'https://www.consilium.europa.eu/prado/en/prado-documents/mwi/a/docs-per-category.html',
     description: 'PRADO specimen context shows Personal No. 1212433/2.',
     observedShape: '1212433/2 -> /^\\d{7}\\/\\d$/',
@@ -81,6 +102,7 @@ const EVIDENCE = {
   },
   'mozambique.tax_identification_number_nuit': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://www.at.gov.mz/eng/Perguntas-Frequentes2/NUIT',
     description: 'Mozambique Revenue Authority FAQ defines NUIT as a unique taxpayer identification number containing nine digits.',
     observedShape: '^\\d{9}$',
@@ -89,6 +111,7 @@ const EVIDENCE = {
   },
   'namibia.national_identity_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://mhaiss.gov.na/documents/292728/553941/Identification%2BAct%2B21%2Bof%2B1996.pdf/f74661d2-8cbe-b31f-5249-ebc90d4988eb?download=true&t=1665685065951&version=1.0',
     description: 'Identification Act source defines identity number as the eleven-digit number assigned to a person.',
     observedShape: '^\\d{11}$',
@@ -97,6 +120,7 @@ const EVIDENCE = {
   },
   'nigeria.nin': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://www.nimc.gov.ng/',
     description: 'NIMC public material defines NIN as an 11-digit number.',
     observedShape: '^\\d{11}$',
@@ -105,6 +129,7 @@ const EVIDENCE = {
   },
   'senegal.ecowas_id_card_number': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://dge.sn/decret-n-2016-1536-du-29-septembre-2016-portant-application-de-la-loi-n-2016-09-du-14-mars-2016-instituant-une-carte-didentite-biometrique-cedeao-publie-au-jors-n-6965-du-5/',
     description: 'Senegal decree directly states that the ECOWAS biometric identity card number contains 17 digits.',
     observedShape: '^\\d{17}$',
@@ -113,6 +138,7 @@ const EVIDENCE = {
   },
   'sierra_leone.passport': {
     type: 'readable_specimen',
+    status: 'current',
     url: 'https://www.consilium.europa.eu/prado/en/SLE-AO-01001/index.html',
     description: 'PRADO specimen shows Passport No. 0114439; SLE is country code, not the passport number.',
     observedShape: '0114439 -> /^\\d{7}$/',
@@ -121,6 +147,7 @@ const EVIDENCE = {
   },
   'sierra_leone.personal_number': {
     type: 'readable_specimen',
+    status: 'current',
     url: 'https://www.consilium.europa.eu/prado/en/SLE-AO-01001/index.html',
     description: 'PRADO specimen shows Personal No. 000119146.',
     observedShape: '000119146 -> /^\\d{9}$/',
@@ -129,6 +156,7 @@ const EVIDENCE = {
   },
   'tanzania.national_identification_number': {
     type: 'readable_specimen',
+    status: 'current',
     url: 'https://services.nida.go.tz/requestctrnm',
     description: 'Official NIDA service displays sample NIN 19760517-37227-00002-17.',
     observedShape: '19760517-37227-00002-17 -> /^\\d{8}-\\d{5}-\\d{5}-\\d{2}$/',
@@ -137,6 +165,7 @@ const EVIDENCE = {
   },
   'uzbekistan.pinfl': {
     type: 'explicit_grammar',
+    status: 'current',
     url: 'https://my.gov.uz/en/static/jshshir-for-foreigners',
     description: 'Official my.gov.uz page defines PINFL/JSHSHIR as a 14-digit personal identification number.',
     observedShape: '^\\d{14}$',
@@ -165,8 +194,9 @@ for (const file of fs.readdirSync(datasetDir).filter((item) => item.endsWith('.j
       documentType,
       runtime: runtimeShape(rule),
       generated,
-      source: evidence?.url ?? rule.source.url,
+      source: evidence ? formatEvidenceSources(evidence) : rule.source.url,
       evidenceType: evidence?.type ?? 'none',
+      evidenceStatus: evidence ? evidenceStatus(evidence) : 'none',
       evidenceDescription: evidence?.description ?? 'No independent evidence entry. Runtime quality/source type was not used as proof.',
       status: evidence?.versionStatus ?? versionStatus(rule),
       observedShape: evidence?.observedShape ?? 'none',
@@ -187,16 +217,17 @@ markdown += `Runtime inventory: ${rows.length} document rules; ${qualityCounts.v
 markdown += `Verdict summary: ${counts.match ?? 0} match; ${counts.mismatch ?? 0} mismatch; ${counts['insufficient evidence'] ?? 0} insufficient evidence; ${counts['outdated document'] ?? 0} outdated document; ${counts['source does not confirm number format'] ?? 0} source does not confirm number format.\n\n`;
 markdown += 'Methodology:\n\n';
 markdown += '- `match` requires an explicit evidence registry entry independent of runtime quality and runtime pattern.\n';
+markdown += '- Evidence sources carry machine-readable `current`, `historical`, `outdated`, or `unknown` status. A historical source may support generated semantics, but cannot by itself prove a mandatory current rule.\n';
 markdown += '- `verified` can be `match` only with `explicit_grammar` evidence.\n';
 markdown += '- `sample_verified` can be `match` only with `readable_specimen` evidence.\n';
 markdown += '- PRADO country/category pages, government service pages, secondary PDFs, and `source.type` do not by themselves confirm document-number format.\n';
 markdown += '- Country/MRZ/document labels are not allowed inside generated numbers unless the evidence shows them inside the displayed number field.\n\n';
 markdown += '## Findings\n\n';
-markdown += '| Dataset | GEO | Document type | Runtime pattern/template | Generated example | Exact evidence/source | Evidence type | Evidence description | Document version/status | Observed shape | Verdict | Quality | Required action |\n';
-markdown += '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n';
+markdown += '| Dataset | GEO | Document type | Runtime pattern/template | Generated example | Exact evidence/source | Evidence type | Evidence status | Evidence description | Document version/status | Observed shape | Verdict | Quality | Required action |\n';
+markdown += '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |\n';
 
 for (const row of rows) {
-  markdown += `| ${cell(row.dataset)} | ${cell(row.geo)} | ${cell(row.documentType)} | ${cell(row.runtime)} | ${cell(row.generated)} | ${cell(row.source)} | ${cell(row.evidenceType)} | ${cell(row.evidenceDescription)} | ${cell(row.status)} | ${cell(row.observedShape)} | ${cell(row.verdict)} | ${cell(row.quality)} | ${cell(row.action)} |\n`;
+  markdown += `| ${cell(row.dataset)} | ${cell(row.geo)} | ${cell(row.documentType)} | ${cell(row.runtime)} | ${cell(row.generated)} | ${cell(row.source)} | ${cell(row.evidenceType)} | ${cell(row.evidenceStatus)} | ${cell(row.evidenceDescription)} | ${cell(row.status)} | ${cell(row.observedShape)} | ${cell(row.verdict)} | ${cell(row.quality)} | ${cell(row.action)} |\n`;
 }
 
 markdown += '\n## Production Blockers\n\n';
@@ -213,6 +244,9 @@ function classify(rule, evidence) {
     }
     return 'insufficient evidence';
   }
+  const statuses = evidenceStatuses(evidence);
+  if (statuses.includes('outdated')) return 'outdated document';
+  if (!statuses.includes('current')) return 'insufficient evidence';
   if (rule.quality === 'verified' && evidence.type !== 'explicit_grammar') return 'mismatch';
   if (rule.quality === 'sample_verified' && evidence.type !== 'readable_specimen') return 'mismatch';
   if (rule.quality === 'synthetic_pattern') return 'mismatch';
@@ -248,6 +282,31 @@ function generateExample(rule) {
   if (rule.generator === 'kazakhstan_iin') return '910727400010';
   if (rule.generator === 'nigeria_nin') return '12345678901';
   return fillTemplate(rule.templates[0]);
+}
+
+function evidenceSources(evidence) {
+  return evidence.sources ?? [{
+    status: evidence.status ?? 'unknown',
+    purpose: evidence.purpose ?? 'number_format',
+    url: evidence.url,
+    description: evidence.description,
+  }];
+}
+
+function evidenceStatuses(evidence) {
+  return evidenceSources(evidence).map((source) => source.status ?? 'unknown');
+}
+
+function evidenceStatus(evidence) {
+  return evidenceSources(evidence)
+    .map((source) => `${source.status ?? 'unknown'}:${source.purpose ?? 'number_format'}`)
+    .join(', ');
+}
+
+function formatEvidenceSources(evidence) {
+  return evidenceSources(evidence)
+    .map((source) => `${source.status ?? 'unknown'}:${source.purpose ?? 'number_format'} ${source.url}`)
+    .join(', ');
 }
 
 function fillTemplate(template) {

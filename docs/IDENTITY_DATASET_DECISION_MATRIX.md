@@ -60,5 +60,5 @@ generated values and are not registry-validated.
 
 The document side is not ready for production as a verified dataset. It is ready
 only as an explicitly evidence-tagged review dataset where production consumers
-can use the 16 evidence-backed `match` rules cautiously and block or warn on all
+can use the 17 evidence-backed `match` rules cautiously and block or warn on all
 other rules.

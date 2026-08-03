@@ -101,6 +101,24 @@ test('document verification report stays synchronized with runtime rules', () =>
   assert.doesNotMatch(report, /Sample-level shape \^/);
 });
 
+test('document verification summary counts match the report rows and decision matrix', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const decisionMatrix = fs.readFileSync(path.join(root, 'docs/IDENTITY_DATASET_DECISION_MATRIX.md'), 'utf8');
+  const rows = report.split('\n')
+    .filter((line) => line.startsWith('| ') && !line.startsWith('| ---') && !line.includes(' Document type '))
+    .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
+  const verdictIndex = 11;
+  const reportMatchCount = Number(report.match(/Verdict summary: (\d+) match/)?.[1]);
+  const rowMatchCount = rows.filter((row) => row[verdictIndex] === 'match').length;
+  const matrixMatchCount = Number(decisionMatrix.match(/\| Audit verdict `match` \| (\d+) \|/)?.[1]);
+
+  assert.equal(reportMatchCount, 17);
+  assert.equal(rowMatchCount, reportMatchCount);
+  assert.equal(matrixMatchCount, reportMatchCount);
+  assert.match(decisionMatrix, new RegExp(`can use the ${reportMatchCount} evidence-backed \\\`match\\\` rules cautiously`));
+});
+
 test('document verification matches require explicit independent evidence', () => {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
@@ -109,10 +127,11 @@ test('document verification matches require explicit independent evidence', () =
     .map((line) => line.split('|').slice(1, -1).map((cell) => cell.trim()));
 
   for (const row of rows) {
-    const [datasetKey, , documentType, , , , evidenceType, evidenceDescription, , observedShape, verdict, quality] = row;
+    const [datasetKey, , documentType, , , , evidenceType, evidenceStatus, evidenceDescription, , observedShape, verdict, quality] = row;
     if (verdict !== 'match') continue;
 
     assert.notEqual(evidenceType, 'none', `${datasetKey}.${documentType}: match requires explicit evidence`);
+    assert.match(evidenceStatus, /\bcurrent:/, `${datasetKey}.${documentType}: match requires current evidence status`);
     assert.notEqual(observedShape, 'none', `${datasetKey}.${documentType}: match requires observed shape`);
     assert.doesNotMatch(evidenceDescription, /runtime quality|runtime pattern/i, `${datasetKey}.${documentType}: evidence must not be derived from runtime`);
     if (quality === 'verified') assert.equal(evidenceType, 'explicit_grammar', `${datasetKey}.${documentType}: verified match requires explicit_grammar`);
@@ -126,9 +145,10 @@ test('kazakhstan iin verification report uses official semantic and checksum evi
   const row = report.split('\n').find((line) => line.startsWith('| kazakhstan |') && line.includes('| iin |'));
 
   assert.ok(row, 'kazakhstan.iin: missing from document verification report');
-  assert.match(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/V2300032942/);
-  assert.match(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/P030000565_/);
+  assert.match(row, /current:checksum_and_length https:\/\/adilet\.zan\.kz\/rus\/docs\/V2300032942/);
+  assert.match(row, /historical:historical_semantic_evidence https:\/\/adilet\.zan\.kz\/rus\/docs\/P030000565_/);
   assert.match(row, /explicit_grammar/);
+  assert.match(row, /current:checksum_and_length, historical:historical_semantic_evidence/);
   assert.match(row, /two-cycle control digit|two-cycle mod 11/);
   assert.match(row, /YYMMDD birth date/);
   assert.match(row, /sex\/century/);
@@ -136,6 +156,7 @@ test('kazakhstan iin verification report uses official semantic and checksum evi
   assert.match(row, /do not reject assigned IINs on DOB, sex, or century semantics/);
   assert.match(row, /foreigner and historical registrations can contain exceptions/);
   assert.match(row, /\| match \| verified \|/);
+  assert.doesNotMatch(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/V2300032942;\s*https:\/\/adilet\.zan\.kz\/rus\/docs\/P030000565_/);
   assert.doesNotMatch(row, /No independent evidence entry|Runtime quality\/source type/);
 });
 
