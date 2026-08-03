@@ -9,10 +9,10 @@ source of truth for current generated document values.
 ## Runtime Snapshot
 
 - Runtime document rules: 93.
-- Quality counts: 11 `verified`, 8 `sample_verified`, 74 `synthetic_pattern`.
-- Evidence-backed audit verdicts: 16 `match`, 0 `mismatch`, 43 `insufficient evidence`, 0 `outdated document`, 34 `source does not confirm number format`.
+- Quality counts: 12 `verified`, 8 `sample_verified`, 73 `synthetic_pattern`.
+- Evidence-backed audit verdicts: 17 `match`, 0 `mismatch`, 42 `insufficient evidence`, 0 `outdated document`, 34 `source does not confirm number format`.
 - `generic_intl` is a fallback/test GEO and is not a confirmed real document dataset.
-- Document generation is still review-heavy: 77 runtime rules remain production blockers because explicit independent evidence is missing, insufficient, or does not confirm number format.
+- Document generation is still review-heavy: 76 runtime rules remain production blockers because explicit independent evidence is missing, insufficient, or does not confirm number format.
 
 ## Methodology
 
@@ -58,14 +58,14 @@ Evidence-tier rules:
 | BW | omang | `sample_verified` | `synthetic_pattern` | Government source confirms Omang issuance, but not the nine-digit number grammar. |
 | GM | national_identification_number | `sample_verified` | `synthetic_pattern` | Evidence is secondary strategy material, not a primary issuer source. |
 | GE | personal_number | `verified` | `synthetic_pattern` | OECD source is secondary; no primary official issuer source was found in this pass. |
-| KZ | iin | `verified` | `synthetic_pattern` | eGov confirms 12 digits, but not the runtime checksum algorithm. |
+| KZ | iin | `synthetic_pattern` | `verified` | Ministry of Internal Affairs rules on Adilet confirm 12 digits and the two-cycle checksum algorithm; runtime DOB and century/gender semantics remain generated test-data semantics, not live registry validation. |
 | RW | national_identity_number | `verified` | `synthetic_pattern` | World Bank source is secondary; no primary issuer source was found in this pass. |
 | SN | ecowas_id_card_number | `sample_verified` | `verified` | Official decree explicitly defines the card number as 17 digits. |
 
 ## Production Verdict
 
 The document dataset is not production-ready as a verified document generator.
-It is usable only as an explicitly evidence-tagged review dataset: the 16
+It is usable only as an explicitly evidence-tagged review dataset: the 17
 evidence-backed `match` rules can be used with their stated limits, while the
-remaining 77 rules must remain production blockers until exact official grammar
+remaining 76 rules must remain production blockers until exact official grammar
 or readable official specimen evidence is attached.

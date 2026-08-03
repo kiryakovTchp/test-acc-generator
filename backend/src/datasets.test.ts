@@ -96,7 +96,7 @@ test('document verification report stays synchronized with runtime rules', () =>
     assert.ok(report.includes(`| ${documentType} |`), `${datasetKey}.${documentType}: missing document type from verification report`);
   }
 
-  assert.match(report, /Runtime inventory: 93 document rules; 11 verified, 8 sample_verified, 74 synthetic_pattern\./);
+  assert.match(report, /Runtime inventory: 93 document rules; 12 verified, 8 sample_verified, 73 synthetic_pattern\./);
   assert.doesNotMatch(report, /Official source confirms runtime shape/);
   assert.doesNotMatch(report, /Sample-level shape \^/);
 });
@@ -118,6 +118,19 @@ test('document verification matches require explicit independent evidence', () =
     if (quality === 'verified') assert.equal(evidenceType, 'explicit_grammar', `${datasetKey}.${documentType}: verified match requires explicit_grammar`);
     if (quality === 'sample_verified') assert.equal(evidenceType, 'readable_specimen', `${datasetKey}.${documentType}: sample_verified match requires readable_specimen`);
   }
+});
+
+test('kazakhstan iin verification report uses official checksum evidence', () => {
+  const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+  const report = fs.readFileSync(path.join(root, 'docs/DOCUMENT_DATASET_VERIFICATION.md'), 'utf8');
+  const row = report.split('\n').find((line) => line.startsWith('| kazakhstan |') && line.includes('| iin |'));
+
+  assert.ok(row, 'kazakhstan.iin: missing from document verification report');
+  assert.match(row, /https:\/\/adilet\.zan\.kz\/rus\/docs\/V2300032942/);
+  assert.match(row, /explicit_grammar/);
+  assert.match(row, /two-cycle control digit|two-cycle mod 11/);
+  assert.match(row, /\| match \| verified \|/);
+  assert.doesNotMatch(row, /No independent evidence entry|Runtime quality\/source type/);
 });
 
 test('country dataset schema rejects misspelled required fields and invalid source dates', () => {

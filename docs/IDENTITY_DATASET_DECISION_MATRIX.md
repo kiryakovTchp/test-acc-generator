@@ -11,15 +11,15 @@ examples, and blockers, see `docs/DOCUMENT_DATASET_VERIFICATION.md`.
 | Metric | Count |
 | --- | ---: |
 | Runtime document rules | 93 |
-| `verified` quality | 11 |
+| `verified` quality | 12 |
 | `sample_verified` quality | 8 |
-| `synthetic_pattern` quality | 74 |
-| Audit verdict `match` | 16 |
+| `synthetic_pattern` quality | 73 |
+| Audit verdict `match` | 17 |
 | Audit verdict `mismatch` | 0 |
-| Audit verdict `insufficient evidence` | 43 |
+| Audit verdict `insufficient evidence` | 42 |
 | Audit verdict `outdated document` | 0 |
 | Audit verdict `source does not confirm number format` | 34 |
-| Production blockers | 77 |
+| Production blockers | 76 |
 
 ## Evidence-Backed Match Rules
 
@@ -33,6 +33,7 @@ generated values and are not registry-validated.
 | GH | ghana_card_pin | `^GHA-\d{9}-\d$` | `verified` | `explicit_grammar` | NIA FAQ confirms displayed PIN shape. |
 | IE | pps_number | `^\d{7}[A-Z]{1,2}$` | `verified` | `explicit_grammar` | PPS number, not national ID card. |
 | IE | passport_card_number | `^C\d{8}$` | `verified` | `explicit_grammar` | Official parliamentary answer confirms C plus eight digits. |
+| KZ | iin | `^\d{12}$` | `verified` | `explicit_grammar` | Ministry of Internal Affairs rules confirm 12 digits and the two-cycle checksum algorithm; generated DOB and century/gender semantics are not live registry validation. |
 | MW | passport | `^MW[AZ]\d{6}$` | `verified` | `explicit_grammar` | Official factsheet confirms ordinary passport prefixes only. |
 | MZ | tax_identification_number_nuit | `^\d{9}$` | `verified` | `explicit_grammar` | Official tax authority confirms 9-digit NUIT. |
 | NA | national_identity_number | `^\d{11}$` | `verified` | `explicit_grammar` | Official act/source confirms 11-digit identity number. |
@@ -51,7 +52,7 @@ generated values and are not registry-validated.
 - PRADO country/category/listing URLs confirm document existence, not number grammar.
 - Cote d'Ivoire passport, national ID, and driver licence remain user-sample-only display-shape seeds.
 - Gabon NIP remains `synthetic_pattern`; the current source does not prove control characters or full NIP semantics.
-- Botswana Omang, Gambia NIN, Georgia personal number, Kazakhstan IIN checksum, and Rwanda NIN are now blockers because the previous evidence was secondary, circular, or did not prove runtime semantics.
+- Botswana Omang, Gambia NIN, Georgia personal number, and Rwanda NIN are now blockers because the previous evidence was secondary, circular, or did not prove runtime semantics. Kazakhstan IIN is verified for the official 12-digit/checksum grammar via Ministry of Internal Affairs rules; generated DOB and century/gender semantics are not live registry validation.
 - Eswatini and Swaziland share the same runtime document shapes for `countryCode` `SZ`, but both remain synthetic because official pages do not publish number grammar.
 - `generic_intl` is a fallback and must not be counted as a confirmed GEO.
 

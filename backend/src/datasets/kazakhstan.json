@@ -191,14 +191,14 @@
       "label": "Individual Identification Number",
       "generator": "kazakhstan_iin",
       "pattern": "^\\d{12}$",
-      "quality": "synthetic_pattern",
+      "quality": "verified",
       "source": {
-        "title": "Kazakhstan eGov Individual identification number (IIN)",
-        "url": "https://egov.kz/cms/en/articles/iin_info",
+        "title": "Kazakhstan Ministry of Internal Affairs IIN formation rules",
+        "url": "https://adilet.zan.kz/rus/docs/V2300032942",
         "type": "official",
         "checkedAt": "2026-08-03"
       },
-      "notes": "Kazakhstan eGov confirms IIN as a unique 12-digit identifier displayed on ID cards/passports, but the public official page reviewed does not publish the checksum algorithm used by runtime. The generator remains internally consistent but quality is synthetic_pattern until the checksum is confirmed by a primary official source."
+      "notes": "Kazakhstan Ministry of Internal Affairs rules define IIN as a unique 12-digit combination and publish the two-cycle control digit algorithm used by runtime. Runtime also derives the first six digits from profile date of birth and the seventh digit from century/gender for realistic test data; those semantic digits remain generated, but this evidence entry verifies the public 12-digit/checksum grammar rather than live registry assignment."
     }
   }
 }

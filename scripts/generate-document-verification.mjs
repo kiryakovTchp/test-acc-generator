@@ -55,6 +55,14 @@ const EVIDENCE = {
     versionStatus: 'Official parliamentary answer; passport-card version not separately encoded.',
     requiredAction: 'Keep verified for public shape only.',
   },
+  'kazakhstan.iin': {
+    type: 'explicit_grammar',
+    url: 'https://adilet.zan.kz/rus/docs/V2300032942',
+    description: 'Current Ministry of Internal Affairs IIN formation rules state that IIN is a unique 12-digit combination and define the 12th control digit with the two-cycle mod 11 algorithm.',
+    observedShape: '^\\d{12}$ with 12th digit calculated from the first 11 digits using weights 1..11, then 3..11,1,2 when the first result is 10.',
+    versionStatus: 'Order of the Minister of Internal Affairs of Kazakhstan No. 521 dated 29/06/2023; updated Adilet text as of 31/07/2026.',
+    requiredAction: 'Keep verified for public 12-digit/checksum grammar; runtime DOB and century/gender semantics are generated for realistic test data but are not live registry validation.',
+  },
   'malawi.passport': {
     type: 'explicit_grammar',
     url: 'https://www.malawiembassy.de/.cm4all/uproc.php/0/MALAWI%20e-PASSPORT.pdf?_=1766b210d8f&cdp=a',
