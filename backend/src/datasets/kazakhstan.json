@@ -120,7 +120,7 @@
             "addresses": [
               {
                 "addressLine": "Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана",
-                "postalCode": "Z05P1P8",
+                "postalCode": "010000",
                 "source": {
                   "title": "Astana IT University",
                   "url": "https://www.openstreetmap.org/node/10575843769",
@@ -132,7 +132,7 @@
                 "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Astana%20IT%20University%20Astana%20Kazakhstan",
                 "nominatimSnapshot": {
                   "displayName": "Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана",
-                  "postalCode": "Z05P1P8",
+                  "postalCode": "010000",
                   "latitude": 51.0908607,
                   "longitude": 71.4184149,
                   "osmUrl": "https://www.openstreetmap.org/node/10575843769"

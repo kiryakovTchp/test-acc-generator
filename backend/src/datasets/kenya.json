@@ -133,7 +133,6 @@
             "addresses": [
               {
                 "addressLine": "University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central",
-                "postalCode": "40141",
                 "source": {
                   "title": "University of Nairobi Kisumu Campus",
                   "url": "https://www.openstreetmap.org/way/1172998264",
@@ -145,7 +144,7 @@
                 "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=University%20of%20Nairobi%20Kisumu%20Campus%20Kisumu%20Kenya",
                 "nominatimSnapshot": {
                   "displayName": "University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central",
-                  "postalCode": "40141",
+                  "postalCode": null,
                   "latitude": -0.1042829,
                   "longitude": 34.7534167,
                   "osmUrl": "https://www.openstreetmap.org/way/1172998264"

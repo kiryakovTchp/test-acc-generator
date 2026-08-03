@@ -2,7 +2,7 @@
 
 Checked at: 2026-07-31
 
-Summary: 165 map-sourced address records across dataset cities; 56 include a map/source postcode; 109 have no postcode in the selected map record. postalCode is omitted when absent.
+Summary: 165 map-sourced address records across dataset cities; 54 include a map/source postcode; 111 have no postcode in the selected map record. postalCode is omitted when absent.
 
 Notes:
 
@@ -107,11 +107,11 @@ Notes:
 | ireland | County Cork | Cork | Premier Inn Cork City Centre Hotel, 11, Morrison's Quay, Morrison's Island, Centre A ED, Cork | T12 PF78 | way/1304929937 | https://www.openstreetmap.org/way/1304929937 |
 | ireland | County Galway | Galway | Galway City Hostel, Frenchville Lane, Eyre Square, Cathair na Gaillimhe, County Galway, Connacht | H91 W862 | node/450249853 | https://www.openstreetmap.org/node/450249853 |
 | kazakhstan | Almaty | Almaty | Алматы Энергетика және Байланыс Университетi, Байтұрсынұлы көшесі, Көктем, Бостандық ауданы, Алматы | 050013 | way/286610625 | https://www.openstreetmap.org/way/286610625 |
-| kazakhstan | Astana | Astana | Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана | Z05P1P8 | node/10575843769 | https://www.openstreetmap.org/node/10575843769 |
+| kazakhstan | Astana | Astana | Astana IT University, С1, Мәңгілік Ел даңғылы, Есіл ауданы, Астана | 010000 | node/10575843769 | https://www.openstreetmap.org/node/10575843769 |
 | kazakhstan | Shymkent | Shymkent | City Hotel, 4, Республика даңғылы, Абай ауданы, Шымкент | 160018 | node/6604845802 | https://www.openstreetmap.org/node/6604845802 |
 | kenya | Nairobi County | Nairobi | Nairobi General Post Office, Kenyatta Avenue, City Square sublocation, Starehe location, CBD division, Starehe | 00100 | node/1537504486 | https://www.openstreetmap.org/node/1537504486 |
 | kenya | Mombasa County | Mombasa | Jambo Paradise Hotel - Mombasa, Tana Street, Saba Saba, Tononoka, Mombasa, Tononoka ward | 80112 | node/6054561497 | https://www.openstreetmap.org/node/6054561497 |
-| kenya | Kisumu County | Kisumu | University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central | 40141 | way/1172998264 | https://www.openstreetmap.org/way/1172998264 |
+| kenya | Kisumu County | Kisumu | University of Nairobi Kisumu Campus, Oginga Odinga Street, Lower Railways, Milimani, Southern sublocation, Kisumu Central | absent | way/1172998264 | https://www.openstreetmap.org/way/1172998264 |
 | lesotho | Maseru | Maseru | Victoria Hotel, Kingsway, Qhobosheane Government Complex, Maseru Central, Maseru, Maseru District | absent | node/4482888294 | https://www.openstreetmap.org/node/4482888294 |
 | lesotho | Leribe | Hlotse | Standard Lesotho Bank, Hlotse Main Street, Ha Letlatsa (Tsifa-Limali), Lisemeng (Hlotse), Hlotse, Leribe District | absent | node/5856832585 | https://www.openstreetmap.org/node/5856832585 |
 | liberia | Montserrado | Monrovia | JF Kennedy Medical Center Hospital, 24th, 24th Street, Behind JFK, Sinkor, Monrovia | 1000 | way/94957267 | https://www.openstreetmap.org/way/94957267 |
@@ -131,10 +131,10 @@ Notes:
 | namibia | Erongo | Walvis Bay | Bank Windhoek, Rikumbi Kandanga Road, Walvis Bay, Erongo Region, Namibia | 13013 | node/2517228191 | https://www.openstreetmap.org/node/2517228191 |
 | niger | Niamey | Niamey | Bravia Hotel, Rue PL - 23, Château 1, Plateau, Arrondissement Communal Niamey 1, Niamey | 8001 | node/6759191628 | https://www.openstreetmap.org/node/6759191628 |
 | niger | Maradi | Maradi | Bank of Africa, Avenue Diori Hamani, Maradi, Madarounfa, Maradi, Niger | absent | node/3900153015 | https://www.openstreetmap.org/node/3900153015 |
-| nigeria | Lagos | Lagos | Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos | 100242 | relation/7774249 | https://www.openstreetmap.org/relation/7774249 |
+| nigeria | Lagos | Lagos | Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos | absent | relation/7774249 | https://www.openstreetmap.org/relation/7774249 |
 | nigeria | Lagos | Ikeja | Lagos State University Teaching Hospital, Simbiat Abiola Road, Ikeja, Lagos, Nigeria | absent | way/704991085 | https://www.openstreetmap.org/way/704991085 |
 | nigeria | Federal Capital Territory | Abuja | Sheraton Abuja Hotel, Ladi Kwali Street, Wuse, Abuja, Municipal Area Council, Federal Capital Territory | absent | relation/12194914 | https://www.openstreetmap.org/relation/12194914 |
-| nigeria | Rivers | Port Harcourt | Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers | 520052 | way/756560005 | https://www.openstreetmap.org/way/756560005 |
+| nigeria | Rivers | Port Harcourt | Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers | 500101 | way/756560005 | https://www.openstreetmap.org/way/756560005 |
 | rwanda | Kigali City | Kigali | BANK 🏦, bank, KG 109 Street, Gasabo District, City of Kigali, Rwanda | absent | node/10840168352 | https://www.openstreetmap.org/node/10840168352 |
 | rwanda | Northern Province | Musanze | SHASTE CITY HOTEL, NR2, Muhoza, Musanze District, Northern Province | absent | node/13041461018 | https://www.openstreetmap.org/node/13041461018 |
 | senegal | Dakar | Dakar | keur  aminata hotel dakar, Rue FA-47, Fass Delorme, Commune de Gueule Tapée-Fass-Colobane, Arrondissement de Dakar-Plateau, Dakar | 13500 | node/11268758870 | https://www.openstreetmap.org/node/11268758870 |

@@ -109,7 +109,6 @@
             "addresses": [
               {
                 "addressLine": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos",
-                "postalCode": "100242",
                 "source": {
                   "title": "Lagos City Hall",
                   "url": "https://www.openstreetmap.org/relation/7774249",
@@ -121,7 +120,7 @@
                 "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Lagos%20City%20Hall%20Lagos%20Nigeria",
                 "nominatimSnapshot": {
                   "displayName": "Lagos City Hall, Catholic Mission Street, Lagos, Lagos Island, Lagos",
-                  "postalCode": "100242",
+                  "postalCode": null,
                   "latitude": 6.4506523,
                   "longitude": 3.397143,
                   "osmUrl": "https://www.openstreetmap.org/relation/7774249"
@@ -198,7 +197,7 @@
             "addresses": [
               {
                 "addressLine": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers",
-                "postalCode": "520052",
+                "postalCode": "500101",
                 "source": {
                   "title": "Braithwaite Memorial Hospital",
                   "url": "https://www.openstreetmap.org/way/756560005",
@@ -210,7 +209,7 @@
                 "nominatimLookupUrl": "https://nominatim.openstreetmap.org/ui/search.html?q=Braithwaite%20Memorial%20Hospital%20Port%20Harcourt%20Nigeria",
                 "nominatimSnapshot": {
                   "displayName": "Braithwaite Memorial Hospital, Port Harcourt - Aba Expressway, Old GRA, Port-Harcourt, Rivers",
-                  "postalCode": "520052",
+                  "postalCode": "500101",
                   "latitude": 4.7799488,
                   "longitude": 7.0138997,
                   "osmUrl": "https://www.openstreetmap.org/way/756560005"
