@@ -125,6 +125,10 @@ button {
   line-height: 1.1;
 }
 
+.login-card-signin h1 {
+  margin-top: 0;
+}
+
 .login-card p {
   margin: 0;
   color: var(--muted);
@@ -154,9 +158,17 @@ button {
   margin: 20px 0 0;
 }
 
+.login-card-signin .login-fields {
+  margin-top: 22px;
+}
+
+.login-card-signin .primary-button {
+  margin-top: 16px;
+}
+
 .login-helper-link {
   display: block;
-  margin-top: 14px;
+  margin-top: 16px;
   color: var(--active);
   font-size: 13px;
   font-weight: 600;

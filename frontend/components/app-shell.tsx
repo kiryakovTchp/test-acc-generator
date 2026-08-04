@@ -1382,8 +1382,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   if (!user) {
     return (
       <main className="login-shell">
-        <form className="login-card" onSubmit={doLogin}>
-          <div className="login-badge">{t('Internal QA console')}</div>
+        <form className="login-card login-card-signin" onSubmit={doLogin}>
           <h1>{t('Test User Console')}</h1>
           <p>{locale === 'ru' ? 'Создавайте тестовые профили, копируйте регистрационные данные и проверяйте письма верификации.' : 'Generate test identities, copy registration data, and inspect mailbox verification.'}</p>
           <div className="login-fields">
