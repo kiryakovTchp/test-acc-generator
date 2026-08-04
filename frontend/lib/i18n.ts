@@ -115,7 +115,6 @@ const RU: Record<string, string> = {
   'Inbox refresh per minute': 'Проверок почты в минуту',
   'Inbox refresh': 'Проверка почты',
   'Interface language': 'Язык интерфейса',
-  'Internal QA console': 'Внутренняя QA-консоль',
   'Invite': 'Инвайт',
   'Invite link': 'Ссылка инвайта',
   'Invite links create new users directly inside this workspace.': 'Инвайт-ссылки создают новых пользователей сразу в этой рабочей области.',
