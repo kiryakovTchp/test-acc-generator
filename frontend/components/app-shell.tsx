@@ -1369,7 +1369,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     return (
       <main className="auth-loading-shell" aria-label={t('Loading workspace')}>
         <div className="auth-loading-panel">
-          <div className="sidebar-brand-mark">QA</div>
+          <div className="sidebar-brand-mark" aria-hidden="true">
+            <img src="/favicon.svg" alt="" />
+          </div>
           <strong>{t('Test User Console')}</strong>
           <span>{t('Loading workspace')}</span>
         </div>
@@ -1407,7 +1409,9 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
       <aside className="sidebar">
         <div className="sidebar-main">
           <div className="sidebar-brand">
-            <div className="sidebar-brand-mark">QA</div>
+            <div className="sidebar-brand-mark" aria-hidden="true">
+              <img src="/favicon.svg" alt="" />
+            </div>
             <div>
               <strong>{t('Test User Console')}</strong>
               <span>{t('Identity generation workspace')}</span>
