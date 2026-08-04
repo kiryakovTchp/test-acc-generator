@@ -3240,13 +3240,17 @@ function ChangelogView({ locale = 'en' }: { locale?: Locale }) {
   const t = (text: string) => tr(locale, text);
   const releases = [
     {
-      version: 'Next release',
-      status: locale === 'ru' ? 'готовится' : 'planned',
-      date: locale === 'ru' ? 'следующий релиз' : 'next release',
+      version: 'Document dataset audit',
+      status: locale === 'ru' ? 'в проде' : 'in production',
+      date: '2026-08-04',
       items: [
-        locale === 'ru' ? 'Кураторская проверка country datasets и статусов качества.' : 'Curated country datasets with quality status notes.',
-        locale === 'ru' ? 'Аккуратные уведомления генерации без перекрытия рабочего экрана.' : 'Compact generation notifications that keep the workspace usable.',
-        locale === 'ru' ? 'Отдельное сохранение языка интерфейса без смены пароля.' : 'Interface language saved independently from password changes.',
+        locale === 'ru' ? 'Проведен полный аудит 93 runtime document rules с отдельной evidence-моделью вместо вывода подтверждения из runtime quality.' : 'Audited all 93 runtime document rules with a separate evidence model instead of deriving proof from runtime quality.',
+        locale === 'ru' ? 'Документные правила разделены на 16 evidence-backed matches и 77 production blockers; dataset больше не заявляется как полностью official-verified.' : 'Document rules are split into 16 evidence-backed matches and 77 production blockers; the dataset is no longer presented as fully official-verified.',
+        locale === 'ru' ? 'Добавлены статусы источников current, historical, outdated и unknown; match требует актуального current evidence.' : 'Added current, historical, outdated, and unknown evidence statuses; match now requires current evidence.',
+        locale === 'ru' ? 'Kazakhstan IIN оставлен verified для synthetic citizen-style генерации, а validator ограничен 12 digits + checksum из-за foreigner/historical exceptions.' : 'Kazakhstan IIN remains verified for synthetic citizen-style generation, while validation is limited to 12 digits plus checksum because of foreigner and historical exceptions.',
+        locale === 'ru' ? 'Malawi personal number переведен в insufficient evidence: PRADO page подтверждает версию паспорта, но не читаемый формат Personal No.' : 'Malawi personal number moved to insufficient evidence: the PRADO page confirms the passport version, not a readable Personal No. format.',
+        locale === 'ru' ? 'Добавлены guard-тесты для evidence requirements, blocker partitions, PRADO listing pages и синхронизации отчетов.' : 'Added guard tests for evidence requirements, blocker partitions, PRADO listing pages, and report synchronization.',
+        locale === 'ru' ? 'UI-полировка: Bulk count больше не уезжает вниз, View all test users стал текстовой ссылкой, sidebar brand использует favicon.' : 'UI polish: Bulk count no longer drops out of the panel, View all test users is a text link, and the sidebar brand now uses the favicon.',
       ],
     },
     {
@@ -3266,9 +3270,9 @@ function ChangelogView({ locale = 'en' }: { locale?: Locale }) {
       <div className="utility-header changelog-header">
         <div>
           <h2>{t('Changelog')}</h2>
-          <p>{locale === 'ru' ? 'Страница для заметок по релизам перед выкладкой и после нее.' : 'Release notes for preparation and post-release tracking.'}</p>
+          <p>{locale === 'ru' ? 'Короткие заметки о прод-релизах и важных dataset/security изменениях.' : 'Concise notes for production releases and important dataset/security changes.'}</p>
         </div>
-        <span className="badge tone-active">{locale === 'ru' ? 'черновик' : 'draft'}</span>
+        <span className="badge tone-success">{locale === 'ru' ? 'прод' : 'production'}</span>
       </div>
 
       <div className="changelog-list">
