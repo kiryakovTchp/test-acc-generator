@@ -1086,6 +1086,8 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
   }
 
   async function loadDetail(id: number) {
+    setTempMailbox(null);
+    setTempMailboxInbox(null);
     setDetail(await apiFetch<Detail>(`/history/${id}?debug=1`, token));
   }
 
@@ -1161,6 +1163,7 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
         method: 'POST',
         body: JSON.stringify({ mailboxProvider }),
       });
+      setDetail(null);
       setTempMailbox(mailbox);
       setTempMailboxInbox(null);
       await refreshUsage();
@@ -1187,6 +1190,11 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
     } finally {
       setIsRefreshingTempMailbox(false);
     }
+  }
+
+  function openTemporaryMailbox() {
+    if (!tempMailbox) return;
+    setDetail(null);
   }
 
   async function saveSiteAccountId() {
@@ -1948,11 +1956,13 @@ export default function AppShell({ view = 'main' }: { view?: AppView }) {
               setAccountRole={setAccountRole}
               bulkCount={bulkCount}
               setBulkCount={setBulkCount}
+              mailboxProvider={mailboxProvider}
               tempMailbox={tempMailbox}
               tempMailboxInbox={tempMailboxInbox}
               isCreatingMailbox={isCreatingMailbox}
               isRefreshingTempMailbox={isRefreshingTempMailbox}
               onCreateMailbox={createTemporaryMailbox}
+              onOpenTemporaryMailbox={openTemporaryMailbox}
               onRefreshTempMailbox={refreshTemporaryMailbox}
               onRefreshInbox={(waitMs = 30000) => refreshInboxForDetail(waitMs)}
               isRefreshingInbox={isRefreshingInbox}
@@ -2260,11 +2270,13 @@ function UtilityView({
   setAccountRole,
   bulkCount,
   setBulkCount,
+  mailboxProvider,
   tempMailbox,
   tempMailboxInbox,
   isCreatingMailbox,
   isRefreshingTempMailbox,
   onCreateMailbox,
+  onOpenTemporaryMailbox,
   onRefreshTempMailbox,
   onRefreshInbox,
   isRefreshingInbox,
@@ -2344,11 +2356,13 @@ function UtilityView({
   setAccountRole: (value: 'admin' | 'user') => void;
   bulkCount: number;
   setBulkCount: (value: number) => void;
+  mailboxProvider: MailboxProviderKey;
   tempMailbox: TempMailbox | null;
   tempMailboxInbox: MailboxInbox | null;
   isCreatingMailbox: boolean;
   isRefreshingTempMailbox: boolean;
   onCreateMailbox: () => void;
+  onOpenTemporaryMailbox: () => void;
   onRefreshTempMailbox: (waitMs?: number) => void;
   onRefreshInbox: (waitMs?: number) => void;
   isRefreshingInbox: boolean;
@@ -2492,7 +2506,17 @@ function UtilityView({
                     <small>{copiedField === 'temp-mailbox-password' ? t('Copied') : t('Copy')}</small>
                   </button>
                 </div>
-                <StandaloneInbox inbox={tempMailboxInbox} address={tempMailbox.address} locale={locale} />
+                <StandaloneInbox
+                  inbox={tempMailboxInbox}
+                  address={tempMailbox.address}
+                  onActivate={() => {
+                    const url = tempMailboxInbox?.primaryVerificationLink?.url
+                      ?? tempMailboxInbox?.links.find((link) => link.isPrimary)?.url
+                      ?? tempMailboxInbox?.links[0]?.url;
+                    if (url) openSafeExternalLink(url);
+                  }}
+                  locale={locale}
+                />
               </>
             ) : (
               <div className="email-empty-state">
@@ -2508,22 +2532,40 @@ function UtilityView({
               <thead>
                 <tr>
                   <th>Email</th>
+                  <th>GEO</th>
+                  <th>{locale === 'ru' ? 'Локация' : 'Location'}</th>
                   <th>{t('Test user')}</th>
+                  <th>{locale === 'ru' ? 'Provider' : 'Provider'}</th>
                   <th>{t('Status')}</th>
                   <th>{locale === 'ru' ? 'Создано' : 'Created'}</th>
                   <th />
                 </tr>
               </thead>
               <tbody>
+                {tempMailbox ? (
+                  <tr className={cn(!detail && 'is-selected')}>
+                    <td><strong>{tempMailbox.address}</strong><span>{locale === 'ru' ? 'Временный ящик' : 'Temporary mailbox'}</span></td>
+                    <td>{locale === 'ru' ? 'Без GEO' : 'No GEO'}</td>
+                    <td>{locale === 'ru' ? 'Отдельный mailbox' : 'Standalone mailbox'}</td>
+                    <td>—</td>
+                    <td>{mailboxProviderLabel(tempMailbox.provider ?? mailboxProvider)}</td>
+                    <td><span className={cn('badge', `tone-${statusTone(tempMailboxInbox?.status === 'email_received' ? 'email_received' : 'waiting')}`)}>{statusLabel(tempMailboxInbox?.status === 'email_received' ? 'email_received' : 'waiting', locale)}</span></td>
+                    <td>{locale === 'ru' ? 'Текущая сессия' : 'Current session'}</td>
+                    <td><button type="button" className="micro-button" onClick={onOpenTemporaryMailbox}>{t('Open')}</button></td>
+                  </tr>
+                ) : null}
                 {history.map((item) => {
                   const status = mapHistoryStatus(item);
                   return (
                     <tr key={item.id} className={cn(detail?.id === item.id && 'is-selected')}>
-                      <td><strong>{item.email}</strong><span>{item.geoLabel}</span></td>
+                      <td><strong>{item.email}</strong><span>{item.siteAccountId || item.username}</span></td>
+                      <td>{item.geoLabel}</td>
+                      <td><strong>{item.city}</strong><span>{item.region || item.country}</span></td>
                       <td>{item.siteAccountId || item.username}</td>
-	                      <td><span className={cn('badge', `tone-${statusTone(status)}`)}>{statusLabel(status, locale)}</span></td>
+                      <td>{mailboxProviderLabel(item.mailboxProvider)}</td>
+                      <td><span className={cn('badge', `tone-${statusTone(status)}`)}>{statusLabel(status, locale)}</span></td>
                       <td>{formatCompactDate(item.createdAt)}</td>
-	                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>{t('Open')}</button></td>
+                      <td><button type="button" className="micro-button" onClick={() => onLoadDetail(item.id)}>{t('Open')}</button></td>
                     </tr>
                   );
                 })}
@@ -3452,9 +3494,24 @@ function EmailMessage({
   );
 }
 
-function StandaloneInbox({ inbox, address, locale = 'en' }: { inbox: MailboxInbox | null; address: string; locale?: Locale }) {
+function StandaloneInbox({
+  inbox,
+  address,
+  onActivate,
+  locale = 'en',
+}: {
+  inbox: MailboxInbox | null;
+  address: string;
+  onActivate: () => void;
+  locale?: Locale;
+}) {
   const hasEmail = inbox?.status === 'email_received' && Boolean(inbox.subject || inbox.plainText || inbox.rawHtml);
   const emailHtml = inbox?.rawHtml ? buildEmailSrcDoc(inbox.rawHtml) : '';
+  const activationLink = inbox?.primaryVerificationLink?.url
+    ?? inbox?.links.find((link) => link.isPrimary)?.url
+    ?? inbox?.links[0]?.url
+    ?? '';
+  const activationHost = activationLink ? safeHostname(activationLink) : '';
 
   if (!inbox) {
     return (
@@ -3475,34 +3532,47 @@ function StandaloneInbox({ inbox, address, locale = 'en' }: { inbox: MailboxInbo
   }
 
   return (
-    <article className="email-message">
-      <div className="email-message-meta">
+    <section className="email-message-card standalone-email-card">
+      <div className="email-message-toolbar">
         <div>
-          <span>{tr(locale, 'From')}</span>
-          <strong>{inbox.sender || tr(locale, 'Unknown sender')}</strong>
+          <h3>{tr(locale, 'Mailbox message')}</h3>
+          <p>{tr(locale, 'Original inbox message')}</p>
         </div>
-        <div>
-          <span>{tr(locale, 'Subject')}</span>
-          <strong>{inbox.subject || tr(locale, 'No subject')}</strong>
-        </div>
-        <div>
-          <span>{tr(locale, 'Received')}</span>
-          <strong>{formatDate(inbox.receivedAt)}</strong>
+        <div className="email-message-actions">
+          <button className="micro-button email-open-button" onClick={onActivate} disabled={!activationLink}>{tr(locale, 'Open verification')}</button>
+          {activationHost ? <span className="link-host-preview">{activationHost}</span> : null}
         </div>
       </div>
 
-      {emailHtml ? (
-        <iframe
-          className="email-message-frame"
-          title={`Email message for ${address}`}
-          sandbox=""
-          referrerPolicy="no-referrer"
-          srcDoc={emailHtml}
-        />
-      ) : (
-        <pre className="email-message-text">{inbox.plainText}</pre>
-      )}
-    </article>
+      <article className="email-message">
+        <div className="email-message-meta">
+          <div>
+            <span>{tr(locale, 'From')}</span>
+            <strong>{inbox.sender || tr(locale, 'Unknown sender')}</strong>
+          </div>
+          <div>
+            <span>{tr(locale, 'Subject')}</span>
+            <strong>{inbox.subject || tr(locale, 'No subject')}</strong>
+          </div>
+          <div>
+            <span>{tr(locale, 'Received')}</span>
+            <strong>{formatDate(inbox.receivedAt)}</strong>
+          </div>
+        </div>
+
+        {emailHtml ? (
+          <iframe
+            className="email-message-frame"
+            title={`Email message for ${address}`}
+            sandbox=""
+            referrerPolicy="no-referrer"
+            srcDoc={emailHtml}
+          />
+        ) : (
+          <pre className="email-message-text">{inbox.plainText}</pre>
+        )}
+      </article>
+    </section>
   );
 }
 

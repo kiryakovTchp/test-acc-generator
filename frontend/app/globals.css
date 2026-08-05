@@ -3122,7 +3122,29 @@ body {
 }
 
 .mailboxes-table {
-  min-width: 680px;
+  min-width: 980px;
+}
+
+.mailboxes-table td {
+  vertical-align: middle;
+}
+
+.mailboxes-table td strong,
+.mailboxes-table td span {
+  display: block;
+}
+
+.mailboxes-table td strong {
+  overflow: hidden;
+  max-width: 260px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mailboxes-table td span {
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: 11px;
 }
 
 .settings-grid {
