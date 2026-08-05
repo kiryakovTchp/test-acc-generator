@@ -3281,6 +3281,17 @@ function ChangelogView({ locale = 'en' }: { locale?: Locale }) {
   const t = (text: string) => tr(locale, text);
   const releases = [
     {
+      version: 'Mailbox verification workflow',
+      status: locale === 'ru' ? 'в проде' : 'in production',
+      date: '2026-08-05',
+      items: [
+        locale === 'ru' ? 'На странице Mailboxes добавлена кнопка Open verification для временных ящиков: открывается primary verification link или первая найденная ссылка из письма.' : 'Added Open verification on Mailboxes for temporary inboxes, using the primary verification link or the first parsed link in the email.',
+        locale === 'ru' ? 'Временный mailbox теперь сразу открывается после создания, а выбор сохраненного mailbox очищает временный просмотр, чтобы не смешивать контексты.' : 'Temporary mailboxes now open immediately after creation, and selecting a saved mailbox clears the temporary view to keep contexts separate.',
+        locale === 'ru' ? 'Таблица Mailboxes теперь показывает созданные email отдельными строками с GEO, локацией, test user, provider, статусом inbox и датой создания.' : 'The Mailboxes table now lists created emails with dedicated GEO, location, test user, provider, inbox status, and created-at columns.',
+        locale === 'ru' ? 'Текущий временный ящик добавлен в таблицу текущей сессии с provider и inbox status.' : 'The current temporary mailbox is listed in the session table with provider and inbox status.',
+      ],
+    },
+    {
       version: 'Document dataset audit',
       status: locale === 'ru' ? 'в проде' : 'in production',
       date: '2026-08-04',
